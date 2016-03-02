@@ -1,0 +1,52 @@
+{% extends "UmbriaProLocoBundle::frontend.html.twig" %}
+
+{% block content %}
+    <div class="container">
+        <div class="row">
+            <table>
+                <tbody>
+                <tr>
+                    <th>Id</th>
+                    <td>{{ iat.id }}</td>
+                </tr>
+                <tr>
+                    <th>Denominazione</th>
+                    <td>{{ iat.denominazione }}</td>
+                </tr>
+                <tr>
+                    <th>Listacomuni</th>
+                    <td>{{ iat.listaComuni }}</td>
+                </tr>
+                <tr>
+                    <th>Streetaddress</th>
+                    <td>{{ iat.streetAddress }}</td>
+                </tr>
+                <tr>
+                    <th>Postalcode</th>
+                    <td>{{ iat.postalCode }}</td>
+                </tr>
+                <tr>
+                    <th>Addresslocality</th>
+                    <td>{{ iat.addressLocality }}</td>
+                </tr>
+                <tr>
+                    <th>Codiceistatcomune</th>
+                    <td>{{ iat.codiceIstatComune }}</td>
+                </tr>
+                <tr>
+                    <th>Addressregion</th>
+                    <td>{{ iat.addressRegion }}</td>
+                </tr>
+                <tr>
+                    <th>Latitude</th>
+                    <td>{{ iat.latitude }}</td>
+                </tr>
+                <tr>
+                    <th>Longitude</th>
+                    <td>{{ iat.longitude }}</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endblock %}

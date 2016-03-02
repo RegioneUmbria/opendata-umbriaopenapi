@@ -1,0 +1,155 @@
+{% extends "UmbriaProLocoBundle::frontend.html.twig" %}
+
+{% block content %}
+    <div id="map" class="map-large"></div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+
+    <script>
+        var map;
+        var clusterer = null;
+        var umbriaCenter = {lat: 42.9895317, lng: 12.0176207};
+
+        // lista delle posizioni
+        var places = [
+            {% for entity in entities %}
+            {
+                id: {{ entity.id }},
+                name: "{{ entity.name }}",
+                type: "{{ entity.type }}",
+                latitude: {{ entity.latitude }},
+                longitude: {{ entity.longitude }},
+                latLng: {lat: {{ entity.latitude }}, lng: {{ entity.longitude }}},
+                href: "{{ entity.href }}"
+            },
+            {% endfor %}
+        ];
+
+        function initMap() {
+            // opzioni mappa
+            var mapOptions = {
+                center: umbriaCenter,
+                zoom: 11
+            };
+
+            // creazione mappa
+            map = new google.maps.Map(document.getElementById('map'), mapOptions);
+            // GEOLOCATION
+            geolocation();
+
+            // aggiunta maker
+            var bounds = new google.maps.LatLngBounds();
+            for (var i = 0; i < places.length; i++) {
+                addMarkerCall(places[i], bounds, i * 10);
+            }
+
+            // opzioni cluster
+            var mcOptions = {maxZoom: 15};
+
+            // creazione clusterer
+            clusterer = new MarkerClusterer(map, [], mcOptions);
+        }
+
+        function addMarkerCall(place, bounds, interval) {
+            setTimeout(function () {
+                addMarker(place, bounds)
+            }, interval);
+        }
+
+        function addMarker(place, bounds) {
+            var name = place.name;
+            var type = place.type;
+            var latLng = place.latLng;
+            var href = place.href;
+
+            var markerIcon;
+            if (type == 'tourism_attractor') {
+                markerIcon = '{{ asset('img/map/marker_red.png') }}';
+            } else if (type == 'tourism_proposal') {
+                markerIcon = '{{ asset('img/map/marker_orange.png') }}';
+            } else if (type == 'tourism_event') {
+                markerIcon = '{{ asset('img/map/marker_green.png') }}';
+            } else if (type == 'tourism_travel_agency') {
+                markerIcon = '{{ asset('img/map/marker_yellow.png') }}';
+            } else if (type == 'tourism_consortium') {
+                markerIcon = '{{ asset('img/map/marker_purple.png') }}';
+            } else if (type == 'tourism_profession') {
+                markerIcon = '{{ asset('img/map/marker_blue.png') }}';
+            } else if (type == 'tourism_iat') {
+                markerIcon = '{{ asset('img/map/marker_blue_dark.png') }}';
+            }
+
+            var marker = new google.maps.Marker({
+                position: latLng,
+                map: map,
+                title: name,
+                draggable: false,
+                icon: markerIcon,
+                animation: google.maps.Animation.DROP
+            });
+
+            clusterer.addMarker(marker);
+
+            var contentString = '<div id="content">' +
+                    '<h5>' +
+                    name +
+                    '</h5>' +
+                    '<a href="' +
+                    href +
+                    '">show</a>' +
+                    '</div>';
+
+            // infowindow
+            var infowindow = new google.maps.InfoWindow({
+                content: contentString
+            });
+            marker.addListener('click', function () {
+                infowindow.open(map, marker);
+            });
+
+            bounds.extend(marker.position);
+            map.fitBounds(bounds);
+        }
+
+        //_______________________________________________ GEOLOCATION
+        function geolocation() {
+            // Try HTML5 geolocation
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(function (position) {
+
+                    var pos = {lat: position.coords.latitude, lng: position.coords.longitude};
+
+                    var marker_green = '{{ asset('img/map/marker_user.png') }}';
+
+                    var marker = new google.maps.Marker({
+                        position: pos,
+                        map: map,
+                        title: 'La tua posizione',
+                        draggable: false,
+                        icon: marker_green,
+                        animation: google.maps.Animation.DROP
+                    });
+
+                }, function () {
+                    handleNoGeolocation(true);
+                });
+            } else {
+                // Browser doesn't support Geolocation
+                handleNoGeolocation(false);
+            }
+        }
+
+        function handleNoGeolocation(errorFlag) {
+            var content;
+            if (errorFlag) {
+                content = 'Error: The Geolocation service failed.';
+            } else {
+                content = 'Error: Your browser doesn\'t support geolocation.';
+            }
+        }
+
+    </script>
+    <script async defer src="https://maps.googleapis.com/maps/api/js?callback=initMap"></script>
+{% endblock %}

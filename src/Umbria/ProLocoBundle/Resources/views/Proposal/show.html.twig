@@ -1,0 +1,75 @@
+{% extends "UmbriaProLocoBundle::frontend.html.twig" %}
+
+{% block content %}
+    <div class="container">
+        <div class="row">
+            <table>
+                <tbody>
+                <tr>
+                    <th>Id</th>
+                    <td>{{ proposal.id }}</td>
+                </tr>
+                <tr>
+                    <th>Idcontenuto</th>
+                    <td>{{ proposal.idContenuto }}</td>
+                </tr>
+                <tr>
+                    <th>Nomeproposta</th>
+                    <td>{{ proposal.nomeProposta }}</td>
+                </tr>
+                <tr>
+                    <th>Urlrisorsa</th>
+                    <td>{{ proposal.urlRisorsa }}</td>
+                </tr>
+                <tr>
+                    <th>Keywords</th>
+                    <td>{{ proposal.keywords }}</td>
+                </tr>
+                <tr>
+                    <th>Descrizionesintetica</th>
+                    <td>{{ proposal.descrizioneSintetica }}</td>
+                </tr>
+                <tr>
+                    <th>Titolotesto</th>
+                    <td>{{ proposal.titoloTesto }}</td>
+                </tr>
+                <tr>
+                    <th>Abstract</th>
+                    <td>{{ proposal.abstract }}</td>
+                </tr>
+                <tr>
+                    <th>Immagini</th>
+                    <td>{{ proposal.immagini }}</td>
+                </tr>
+                <tr>
+                    <th>Linkesterniassociati</th>
+                    <td>{{ proposal.linkEsterniAssociati }}</td>
+                </tr>
+                <tr>
+                    <th>Luogoda</th>
+                    <td>{{ proposal.luogoDa }}</td>
+                </tr>
+                <tr>
+                    <th>Luogoa</th>
+                    <td>{{ proposal.luogoA }}</td>
+                </tr>
+                <tr>
+                    <th>Immaginespalladestra</th>
+                    <td>{{ proposal.immagineSpallaDestra }}</td>
+                </tr>
+                </tbody>
+            </table>
+
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+
+    <script>
+        $(function () {
+            $('[data-toggle="tooltip"]').tooltip()
+        })
+    </script>
+{% endblock %}

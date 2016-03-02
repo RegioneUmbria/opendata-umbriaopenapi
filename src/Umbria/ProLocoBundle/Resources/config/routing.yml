@@ -1,0 +1,31 @@
+umbria_pro_loco_attractor:
+    resource: "@UmbriaProLocoBundle/Resources/config/routing/attractor.yml"
+    prefix:   /tourism/attractor
+
+umbria_pro_loco_proposal:
+    resource: "@UmbriaProLocoBundle/Resources/config/routing/proposal.yml"
+    prefix:   /tourism/proposal
+
+umbria_pro_loco_event:
+    resource: "@UmbriaProLocoBundle/Resources/config/routing/event.yml"
+    prefix:   /tourism/event
+
+umbria_pro_loco_travelagency:
+    resource: "@UmbriaProLocoBundle/Resources/config/routing/travelagency.yml"
+    prefix:   /travel-agency
+
+umbria_pro_loco_consortium:
+    resource: "@UmbriaProLocoBundle/Resources/config/routing/consortium.yml"
+    prefix:   /consortium
+
+umbria_pro_loco_profession:
+    resource: "@UmbriaProLocoBundle/Resources/config/routing/profession.yml"
+    prefix:   /profession
+
+umbria_pro_loco_iat:
+    resource: "@UmbriaProLocoBundle/Resources/config/routing/iat.yml"
+    prefix:   /iat
+
+umbria_pro_loco_homepage:
+    path:     /tourism/map
+    defaults: { _controller: UmbriaProLocoBundle:Default:index }

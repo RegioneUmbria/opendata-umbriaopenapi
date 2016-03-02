@@ -1,0 +1,9 @@
+consortium_index:
+    path:     /
+    defaults: { _controller: "UmbriaProLocoBundle:Consortium:index" }
+    methods:  GET
+
+consortium_show:
+    path:     /{id}/show
+    defaults: { _controller: "UmbriaProLocoBundle:Consortium:show" }
+    methods:  GET

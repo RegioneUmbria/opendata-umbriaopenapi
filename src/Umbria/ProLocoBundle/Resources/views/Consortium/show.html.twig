@@ -1,0 +1,40 @@
+{% extends "UmbriaProLocoBundle::frontend.html.twig" %}
+
+{% block content %}
+    <div class="container">
+        <div class="row">
+
+            <table>
+                <tbody>
+                <tr>
+                    <th>Id</th>
+                    <td>{{ consortium.id }}</td>
+                </tr>
+                <tr>
+                    <th>Idelemento</th>
+                    <td>{{ consortium.idElemento }}</td>
+                </tr>
+                <tr>
+                    <th>Idcontenuto</th>
+                    <td>{{ consortium.idContenuto }}</td>
+                </tr>
+                <tr>
+                    <th>Denominazione</th>
+                    <td>{{ consortium.denominazione }}</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+
+    <script>
+        $(function () {
+            $('[data-toggle="tooltip"]').tooltip()
+        })
+    </script>
+{% endblock %}
+

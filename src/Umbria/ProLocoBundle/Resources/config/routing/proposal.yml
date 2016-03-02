@@ -1,0 +1,9 @@
+proposal_index:
+    path:     /
+    defaults: { _controller: "UmbriaProLocoBundle:Proposal:index" }
+    methods:  GET
+
+proposal_show:
+    path:     /{id}/show
+    defaults: { _controller: "UmbriaProLocoBundle:Proposal:show" }
+    methods:  GET

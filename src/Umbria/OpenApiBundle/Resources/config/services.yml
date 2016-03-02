@@ -1,0 +1,36 @@
+parameters:
+
+    url_proposal: http://odn.cloudapp.net/dataset/33be3077-9612-4ef2-bf39-c0eb01dd6079/resource/314a56f5-383a-432b-a148-7039286c46b9/download/proposteitIT.zipproposteitIT.rdf
+    url_proposal_silk: null
+    proposal_days_to_old: 0
+
+    url_attractor: http://odn.cloudapp.net/dataset/70878b0a-a16f-4d65-9c92-62b64cafc15b/resource/ee5efd9d-a557-4736-b72f-38553b048416/download/attrattoriitIT.zipattrattoriitIT.rdf
+    url_attractor_silk: http://odn.cloudapp.net/dataset/70878b0a-a16f-4d65-9c92-62b64cafc15b/resource/d38b5fc5-e288-4829-8f41-f5d4f6726515/download/owlSameAsDBpedia.rdf
+    attractor_days_to_old: 0
+
+    url_event: http://odn.cloudapp.net/dataset/b888cb75-07a9-449b-a2af-578accd70bfc/resource/76b7ebf6-2bd1-4282-8c80-c8af8e51d062/download/eventiitIT.zipeventiitIT.rdf
+    url_event_silk: null
+    event_days_to_old: 0
+
+    url_travel_agency: http://odn.cloudapp.net/dataset/a87cee68-4682-4915-9309-d432f2546434/resource/7f7df02d-0ec3-4aa9-b41e-fb2729b9af46/download/agenzie-turisticheitIT.zipagenzie-turisticheitIT.rdf
+    url_travel_agency_silk: null
+    travel_agency_days_to_old: 0
+
+    url_consortium: http://odn.cloudapp.net/dataset/617e0893-9eea-4778-81cb-a18602928a6c/resource/f390fc3f-e648-404b-99ef-27ff1afc7881/download/consorziitIT.zipconsorziitIT.rdf
+    url_consortium_silk: null
+    consortium_days_to_old: 0
+
+    url_profession: http://odn.cloudapp.net/dataset/f8d3ec7a-68a7-400f-9dfe-39b95984c2aa/resource/5ff6581c-6fd6-4f8b-acc0-40458f015956/download/professioni-turisticheitIT.zipprofessioni-turisticheitIT.rdf
+    url_profession_silk: null
+    profession_days_to_old: 0
+
+    url_iat: http://odn.cloudapp.net/dataset/d2cc6cd2-0eac-4497-9dab-ce11a998bf9a/resource/feebf21b-74c4-4158-a3cc-33362f85708b/download/iatitIT.zipiatitIT.rdf
+    url_iat_silk: null
+    iat_days_to_old: 0
+
+services:
+    umbria_open_api.curl_builder:
+        class: Umbria\OpenApiBundle\Service\CurlBuilder
+        arguments: [@doctrine.orm.entity_manager, @jms_serializer]
+    umbria_open_api.filter_bag:
+        class: Umbria\OpenApiBundle\Service\FilterBag

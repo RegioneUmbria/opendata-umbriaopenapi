@@ -1,0 +1,13 @@
+umbria_open_api_homepage:
+    path:     /
+    defaults: { _controller: UmbriaOpenApiBundle:Default:index }
+
+# API REST
+umbria_open_api_tourism_proposal: { type: rest, resource: 'Umbria\OpenApiBundle\Controller\Tourism\ProposalController' }
+umbria_open_api_tourism_attractor: { type: rest, resource: 'Umbria\OpenApiBundle\Controller\Tourism\AttractorController' }
+umbria_open_api_tourism_event: { type: rest, resource: 'Umbria\OpenApiBundle\Controller\Tourism\EventController' }
+umbria_open_api_tourism_travel_agency: { type: rest, resource: 'Umbria\OpenApiBundle\Controller\Tourism\TravelAgencyController' }
+umbria_open_api_tourism_consortium: { type: rest, resource: 'Umbria\OpenApiBundle\Controller\Tourism\ConsortiumController' }
+umbria_open_api_tourism_profession: { type: rest, resource: 'Umbria\OpenApiBundle\Controller\Tourism\ProfessionController' }
+umbria_open_api_tourism_iat: { type: rest, resource: 'Umbria\OpenApiBundle\Controller\Tourism\IatController' }
+

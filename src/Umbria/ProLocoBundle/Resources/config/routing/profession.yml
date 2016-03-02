@@ -1,0 +1,9 @@
+profession_index:
+    path:     /
+    defaults: { _controller: "UmbriaProLocoBundle:Profession:index" }
+    methods:  GET
+
+profession_show:
+    path:     /{id}/show
+    defaults: { _controller: "UmbriaProLocoBundle:Profession:show" }
+    methods:  GET
