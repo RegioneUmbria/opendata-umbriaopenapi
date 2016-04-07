@@ -3,50 +3,98 @@
 {% block content %}
     <div class="container">
         <div class="row">
-            <table>
-                <tbody>
-                <tr>
-                    <th>Id</th>
-                    <td>{{ iat.id }}</td>
-                </tr>
-                <tr>
-                    <th>Denominazione</th>
-                    <td>{{ iat.denominazione }}</td>
-                </tr>
-                <tr>
-                    <th>Listacomuni</th>
-                    <td>{{ iat.listaComuni }}</td>
-                </tr>
-                <tr>
-                    <th>Streetaddress</th>
-                    <td>{{ iat.streetAddress }}</td>
-                </tr>
-                <tr>
-                    <th>Postalcode</th>
-                    <td>{{ iat.postalCode }}</td>
-                </tr>
-                <tr>
-                    <th>Addresslocality</th>
-                    <td>{{ iat.addressLocality }}</td>
-                </tr>
-                <tr>
-                    <th>Codiceistatcomune</th>
-                    <td>{{ iat.codiceIstatComune }}</td>
-                </tr>
-                <tr>
-                    <th>Addressregion</th>
-                    <td>{{ iat.addressRegion }}</td>
-                </tr>
-                <tr>
-                    <th>Latitude</th>
-                    <td>{{ iat.latitude }}</td>
-                </tr>
-                <tr>
-                    <th>Longitude</th>
-                    <td>{{ iat.longitude }}</td>
-                </tr>
-                </tbody>
-            </table>
+            <div class="page-header">
+                <h2>
+                    {{ iat.denominazione }}
+                </h2>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-7">
+                <p>
+                    {{ iat.listaComuni }}
+                </p>
+                <p>
+                <address>
+                    <strong>{{ iat.denominazione }}</strong><br>
+                    {% if iat.streetAddress != '' %}
+                        {{ iat.streetAddress }}
+                    {% endif %}
+                    <br>
+                    {% if iat.addressLocality != '' %}
+                        {{ iat.addressLocality }}
+                    {% endif %}
+                    {% if iat.addressRegion != '' %}
+                        , {{ iat.addressRegion }}
+                    {% endif %}
+                    {% if iat.postalCode != '' %}
+                        {{ iat.postalCode }}
+                    {% endif %}
+                </p>
+                <p>
+                    {% for phone in iat.phone %}
+                        <abbr title="Phone">P:</abbr> {{ phone.numTelefono }}<br>
+                    {% endfor %}
+                    {% for faxNumber in iat.faxNumber %}
+                        <abbr title="Fax number">F:</abbr> {{ faxNumber.numFax }}<br>
+                    {% endfor %}
+                    {% for mbox in iat.mbox %}
+                        <abbr title="Email">E:</abbr> {{ mbox.email }}<br>
+                    {% endfor %}
+                </address>
+                </p>
+            </div>
+            <div class="col-md-5">
+                <div class="row">
+                    <table class="table table-condensed">
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <small>coordinate</small>
+                                </td>
+                                <td>
+                                    {% if iat.latitude != '' %}
+                                        {{ iat.latitude }},{{ iat.longitude }}
+                                    {% else %}
+                                        -
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="row">
+                    <table class="table table-condensed">
+                        <tbody>
+                        <tr>
+                            <td>
+                                <small>tipo</small>
+                            </td>
+                            <td>
+                                http://dati.umbria.it/tourism/ontology/AgenziaViaggio
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <br/>
+            <ol class="breadcrumb">
+                <li><a href="{{ path('iat_index') }}">Lista Iat</a></li>
+                <li class="active">{{ iat.denominazione }}</li>
+            </ol>
         </div>
     </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+
+    <script>
+        $(function () {
+            $('[data-toggle="tooltip"]').tooltip()
+        })
+    </script>
 {% endblock %}

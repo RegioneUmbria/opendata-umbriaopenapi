@@ -31,10 +31,12 @@
                     {% endfor %}
                 </p>
                 <hr>
+                {% if attractor.dbpediaAbstract != '' %}
                 <h4>Informazioni DBpedia</h4>
                 <p>
                     {{ attractor.dbpediaAbstract }}
                 </p>
+                {% endif %}
             </div>
             <div class="col-md-5">
                 <div class="row">
@@ -51,7 +53,13 @@
                             <td>
                                 <small>keywords</small>
                             </td>
-                            <td>{{ attractor.keywords }}</td>
+                            <td>
+                                {% if attractor.keywords != '' %}
+                                    {{ attractor.keywords }}
+                                {% else %}
+                                    -
+                                {% endif %}
+                            </td>
                         </tr>
                         <tr>
                             <td>
@@ -65,7 +73,7 @@
                                     {% elseif coordinate.dbpediaLatitude != '' %}
                                         <small>dbpedia:
                                         </small> {{ coordinate.dbpediaLatitude }},{{ coordinate.dbpediaLongitude }}
-                                    {% else %}
+                                    {% elseif coordinate.googleLatitude != '' %}
                                         <small>google:
                                         </small>
                                         <a href="https://www.google.it/maps/?q=loc:{{ coordinate.googleLatitude }},{{ coordinate.googleLongitude }}"
@@ -74,6 +82,8 @@
                                         <span class="glyphicon glyphicon-info-sign pull-right" data-toggle="tooltip"
                                               data-placement="top"
                                               title="Posizione calcola. Non se ne garantisce l'affidabilità"></span>
+                                    {% else %}
+                                        -
                                     {% endif %}
                                 {% endfor %}
                             </td>
@@ -82,13 +92,25 @@
                             <td>
                                 <small>comune</small>
                             </td>
-                            <td>{{ attractor.comune }}</td>
+                            <td>
+                                {% if attractor.comune != '' %}
+                                {{ attractor.comune }}
+                                {% else %}
+                                    -
+                                {% endif %}
+                            </td>
                         </tr>
                         <tr>
                             <td>
                                 <small>codice ISTAT</small>
                             </td>
-                            <td>{{ attractor.codiceIstatComune }}</td>
+                            <td>
+                                {% if attractor.codiceIstatComune != '' %}
+                                    {{ attractor.codiceIstatComune }}
+                                {% else %}
+                                    -
+                                {% endif %}
+                            </td>
                         </tr>
                         <tr>
                             <td>
@@ -124,9 +146,13 @@
                                 <small>pagina dbpedia</small>
                             </td>
                             <td>
-                                <a href="{{ attractor.dbpediaResource }}" target="_blank">
-                                    {{ attractor.dbpediaResource }}
-                                </a>
+                                {% if attractor.dbpediaResource != '' %}
+                                    <a href="{{ attractor.dbpediaResource }}" target="_blank">
+                                        {{ attractor.dbpediaResource }}
+                                    </a>
+                                {% else %}
+                                    -
+                                {% endif %}
                             </td>
                         </tr>
                         <tr>
@@ -134,15 +160,19 @@
                                 <small>pagina wikipedia</small>
                             </td>
                             <td>
-                                <a href="{{ attractor.wikipediaLink }}"
-                                   target="_blank">{{ attractor.wikipediaLink }}</a>
+                                {% if attractor.wikipediaLink != '' %}
+                                    <a href="{{ attractor.wikipediaLink }}"
+                                       target="_blank">{{ attractor.wikipediaLink }}</a>
+                                {% else %}
+                                    -
+                                {% endif %}
                             </td>
                         </tr>
                         </tbody>
                     </table>
                 </div>
                 <div class="row">
-                    <img src="{{ attractor.immagineSpallaDestra }}">
+                    <img src="{{ attractor.immagineSpallaDestra }}" height="150">
                 </div>
             </div>
         </div>

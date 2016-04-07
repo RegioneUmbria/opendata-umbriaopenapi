@@ -1,0 +1,3 @@
+umbria_telegram_bot_homepage:
+    path:     /
+    defaults: { _controller: UmbriaTelegramBotBundle:Default:index }

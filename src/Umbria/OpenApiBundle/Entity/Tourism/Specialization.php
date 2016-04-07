@@ -36,4 +36,62 @@ class Specialization
      * @ORM\JoinColumn(name="profession_id", referencedColumnName="id")
      */
     private $professione;
+
+    /**
+     * Get id
+     *
+     * @return integer
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    /**
+     * Set spec
+     *
+     * @param string $spec
+     *
+     * @return Specialization
+     */
+    public function setSpec($spec)
+    {
+        $this->spec = $spec;
+
+        return $this;
+    }
+
+    /**
+     * Get spec
+     *
+     * @return string
+     */
+    public function getSpec()
+    {
+        return $this->spec;
+    }
+
+    /**
+     * Set professione
+     *
+     * @param \Umbria\OpenApiBundle\Entity\Tourism\Profession $professione
+     *
+     * @return Specialization
+     */
+    public function setProfessione(\Umbria\OpenApiBundle\Entity\Tourism\Profession $professione = null)
+    {
+        $this->professione = $professione;
+
+        return $this;
+    }
+
+    /**
+     * Get professione
+     *
+     * @return \Umbria\OpenApiBundle\Entity\Tourism\Profession
+     */
+    public function getProfessione()
+    {
+        return $this->professione;
+    }
 }

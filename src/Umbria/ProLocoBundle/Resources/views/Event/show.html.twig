@@ -3,56 +3,105 @@
 {% block content %}
     <div class="container">
         <div class="row">
-
-            <table>
-                <tbody>
-                <tr>
-                    <th>Id</th>
-                    <td>{{ event.id }}</td>
-                </tr>
-                <tr>
-                    <th>Idcontenuto</th>
-                    <td>{{ event.idContenuto }}</td>
-                </tr>
-                <tr>
-                    <th>Homepage</th>
-                    <td>{{ event.homepage }}</td>
-                </tr>
-                <tr>
-                    <th>Eventdescription</th>
-                    <td>{{ event.eventDescription }}</td>
-                </tr>
-                <tr>
-                    <th>Startdate</th>
-                    <td>{{ event.startDate }}</td>
-                </tr>
-                <tr>
-                    <th>Enddate</th>
-                    <td>{{ event.endDate }}</td>
-                </tr>
-                <tr>
-                    <th>Titolotesto</th>
-                    <td>{{ event.titoloTesto }}</td>
-                </tr>
-                <tr>
-                    <th>Linkesterniassociati</th>
-                    <td>{{ event.linkEsterniAssociati }}</td>
-                </tr>
-                <tr>
-                    <th>Immaginespalladestra</th>
-                    <td>{{ event.immagineSpallaDestra }}</td>
-                </tr>
-                <tr>
-                    <th>Immaginecopertina</th>
-                    <td>{{ event.immagineCopertina }}</td>
-                </tr>
-                <tr>
-                    <th>Testoalternativoimmaginecopertina</th>
-                    <td>{{ event.testoAlternativoImmagineCopertina }}</td>
-                </tr>
-                </tbody>
-            </table>
-
+            <div class="page-header">
+                <h2>
+                    {{ event.title }}
+                </h2>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-7">
+                <h4>{{ event.titoloTesto }}</h4>
+                <p>
+                    {{ event.eventDescription }}
+                </p>
+            </div>
+            <div class="col-md-5">
+                <div class="row">
+                    <table class="table table-condensed">
+                        <tbody>
+                        <tr>
+                            <td>
+                                <small>id contenuto</small>
+                            </td>
+                            <td>{{ event.idContenuto }}</td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <small>coordinate</small>
+                            </td>
+                            <td>
+                                {% for coordinate in event.coordinate %}
+                                    {% if coordinate.latitude != '' %}
+                                        <small>umbria:</small>
+                                        {{ coordinate.latitude }},{{ coordinate.longitude }}
+                                    {% elseif coordinate.dbpediaLatitude != '' %}
+                                        <small>dbpedia:
+                                        </small> {{ coordinate.dbpediaLatitude }},{{ coordinate.dbpediaLongitude }}
+                                    {% elseif coordinate.googleLatitude != '' %}
+                                        <small>google:
+                                        </small>
+                                        <a href="https://www.google.it/maps/?q=loc:{{ coordinate.googleLatitude }},{{ coordinate.googleLongitude }}"
+                                           target="_blank">{{ coordinate.googleLatitude }}
+                                            ,{{ coordinate.googleLongitude }}</a>
+                                        <span class="glyphicon glyphicon-info-sign pull-right" data-toggle="tooltip"
+                                              data-placement="top"
+                                              title="Posizione calcola. Non se ne garantisce l'affidabilità"></span>
+                                    {% else %}
+                                        -
+                                    {% endif %}
+                                {% endfor %}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <small>categorie</small>
+                            </td>
+                            <td>
+                                {% for categoria in event.categorie %}
+                                    {% if categoria.categoriaAssociata is not null %}
+                                        <span class="label label-default">{{ categoria.categoriaAssociata }}</span>
+                                        <br/>
+                                    {% endif %}
+                                {% endfor %}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <small>periodo</small>
+                            </td>
+                            <td>{{ event.startDate }} - {{ event.endDate }}</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="row">
+                    <table class="table table-condensed">
+                        <tbody>
+                        <tr>
+                            <td>
+                                <small>tipo</small>
+                            </td>
+                            <td>
+                                <a href="http://schema.org/Event" target="_blank">
+                                    http://schema.org/Event
+                                </a>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="row">
+                    <img src="{{ event.immagineSpallaDestra }}" height="150">
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <br/>
+            <ol class="breadcrumb">
+                <li><a href="{{ path('event_index') }}">Lista Eventi</a></li>
+                <li class="active">{{ event.title }}</li>
+            </ol>
         </div>
     </div>
 {% endblock %}
@@ -66,4 +115,3 @@
         })
     </script>
 {% endblock %}
-

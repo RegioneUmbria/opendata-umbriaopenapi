@@ -21,9 +21,11 @@ class AppKernel extends Kernel
             new JMS\AopBundle\JMSAopBundle(),
             new JMS\SerializerBundle\JMSSerializerBundle(),
             new Knp\Bundle\PaginatorBundle\KnpPaginatorBundle(),
+            new Shaygan\TelegramBotApiBundle\ShayganTelegramBotApiBundle(),
 
             new Umbria\OpenApiBundle\UmbriaOpenApiBundle(),
             new Umbria\ProLocoBundle\UmbriaProLocoBundle(),
+            new Umbria\TelegramBotBundle\UmbriaTelegramBotBundle(),
         );
 
         if (in_array($this->getEnvironment(), array('dev', 'test'), true)) {

@@ -1,3 +1,7 @@
+umbria_telegram_bot:
+    resource: "@UmbriaTelegramBotBundle/Resources/config/routing.yml"
+    prefix:   /telegram-bot/
+
 umbria_open_api:
     resource: "@UmbriaOpenApiBundle/Resources/config/routing.yml"
     prefix:   /

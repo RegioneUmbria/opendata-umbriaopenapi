@@ -4,6 +4,7 @@ imports:
     - { resource: services.yml }
     - { resource: "@UmbriaOpenApiBundle/Resources/config/services.yml" }
     - { resource: "@UmbriaProLocoBundle/Resources/config/services.yml" }
+    - { resource: "@UmbriaTelegramBotBundle/Resources/config/services.yml" }
 
 # Put parameters here that don't need to change on each machine where the app is deployed
 # http://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
@@ -103,3 +104,7 @@ knp_paginator:
         distinct: true                 # ensure distinct results, useful when ORM queries are using GROUP BY statements
     template:
         pagination: KnpPaginatorBundle:Pagination:twitter_bootstrap_v3_pagination.html.twig     # sliding pagination controls template
+
+# ShayganTelegramBotApiBundle Configuration
+shaygan_telegram_bot_api:
+    token: 149916497:AAH_szHI62uxTKgagOQcSQh9OU5UsAB2vNk

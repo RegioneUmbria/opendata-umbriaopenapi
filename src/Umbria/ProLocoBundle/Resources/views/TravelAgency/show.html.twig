@@ -1,40 +1,122 @@
-{% extends 'base.html.twig' %}
+{% extends "UmbriaProLocoBundle::frontend.html.twig" %}
 
-{% block body %}
-    <h1>TravelAgency</h1>
+{% block content %}
+    <div class="container">
+        <div class="row">
+            <div class="page-header">
+                <h2>
+                    {{ travelAgency.denominazione }}
+                </h2>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-7">
+                <p>
+                <address>
+                    <strong>{{ travelAgency.denominazione }}</strong><br>
+                    {% for address in travelAgency.address %}
+                        {% if address.streetAddress != '' %}
+                            {{ address.streetAddress }}
+                        {% endif %}
+                        <br>
+                        {% if address.addressLocality != '' %}
+                            {{ address.addressLocality }}
+                        {% endif %}
+                        {% if address.addressRegion != '' %}
+                            , {{ address.addressRegion }}
+                        {% endif %}
+                        {% if address.postalCode != '' %}
+                            {{ address.postalCode }}
+                        {% endif %}
+                        <br>
+                    {% endfor %}
+                    <br>
+                    {% for phone in travelAgency.phone %}
+                        <abbr title="Phone">P:</abbr> {{ phone.numTelefono }}<br>
+                    {% endfor %}
+                    {% for faxNumber in travelAgency.faxNumber %}
+                        <abbr title="Fax number">F:</abbr> {{ faxNumber.numFax }}<br>
+                    {% endfor %}
+                    {% for mbox in travelAgency.mbox %}
+                        <abbr title="Email">E:</abbr> {{ mbox.email }}<br>
+                    {% endfor %}
+                    {% for homepage in travelAgency.homepage %}
+                        <abbr title="Homepage">H:</abbr> {{ homepage.indirizzoInternet }}<br>
+                    {% endfor %}
+                </address>
+                </p>
+            </div>
+            <div class="col-md-5">
+                <div class="row">
+                    <table class="table table-condensed">
+                        <tbody>
+                        <tr>
+                            <td>
+                                <small>id contenuto</small>
+                            </td>
+                            <td>{{ travelAgency.idContenuto }}</td>
+                        </tr>
+                        {% for address in travelAgency.address %}
+                            <tr>
+                                <td>
+                                    <small>coordinate</small>
+                                </td>
+                                <td>
+                                    {% if address.latitude != '' %}
+                                        {{ address.latitude }},{{ address.longitude }}
+                                    {% else %}
+                                        -
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <small>codice ISTAT comune</small>
+                                </td>
+                                <td>
+                                    {% if address.codiceIstatComune != '' %}
+                                        {{ address.codiceIstatComune }}
+                                    {% else %}
+                                        -
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <div class="row">
+                    <table class="table table-condensed">
+                        <tbody>
+                        <tr>
+                            <td>
+                                <small>tipo</small>
+                            </td>
+                            <td>
+                                http://dati.umbria.it/tourism/ontology/AgenziaViaggio
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <br/>
+            <ol class="breadcrumb">
+                <li><a href="{{ path('travelagency_index') }}">Lista Agenzie Viaggio</a></li>
+                <li class="active">{{ travelAgency.denominazione }}</li>
+            </ol>
+        </div>
+    </div>
+{% endblock %}
 
-    <table>
-        <tbody>
-        <tr>
-            <th>Id</th>
-            <td>{{ travelAgency.id }}</td>
-        </tr>
-        <tr>
-            <th>Idelemento</th>
-            <td>{{ travelAgency.idElemento }}</td>
-        </tr>
-        <tr>
-            <th>Idcontenuto</th>
-            <td>{{ travelAgency.idContenuto }}</td>
-        </tr>
-        <tr>
-            <th>Denominazione</th>
-            <td>{{ travelAgency.denominazione }}</td>
-        </tr>
-        </tbody>
-    </table>
+{% block javascripts %}
+    {{ parent() }}
 
-    <ul>
-        <li>
-            <a href="{{ path('travelagency_index') }}">Back to the list</a>
-        </li>
-        <li>
-            <a href="{{ path('travelagency_edit', { 'id': travelAgency.id }) }}">Edit</a>
-        </li>
-        <li>
-            {{ form_start(delete_form) }}
-            <input type="submit" value="Delete">
-            {{ form_end(delete_form) }}
-        </li>
-    </ul>
+    <script>
+        $(function () {
+            $('[data-toggle="tooltip"]').tooltip()
+        })
+    </script>
 {% endblock %}

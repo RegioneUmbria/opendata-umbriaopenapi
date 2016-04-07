@@ -3,27 +3,124 @@
 {% block content %}
     <div class="container">
         <div class="row">
-            <table>
-                <tbody>
-                <tr>
-                    <th>Id</th>
-                    <td>{{ profession.id }}</td>
-                </tr>
-                <tr>
-                    <th>Idcontenuto</th>
-                    <td>{{ profession.idContenuto }}</td>
-                </tr>
-                <tr>
-                    <th>Firstname</th>
-                    <td>{{ profession.firstName }}</td>
-                </tr>
-                <tr>
-                    <th>Lastname</th>
-                    <td>{{ profession.lastName }}</td>
-                </tr>
-                </tbody>
-            </table>
-
+            <div class="page-header">
+                <h2>
+                    {{ profession.firstName }} {{ profession.lastName }}
+                </h2>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-7">
+                <p>
+                <address>
+                    <strong>{{ profession.firstName }} {{ profession.lastName }}</strong><br>
+                    {% for address in profession.address %}
+                        {% if address.streetAddress != '' %}
+                            {{ address.streetAddress }}
+                        {% endif %}
+                        <br>
+                        {% if address.addressLocality != '' %}
+                            {{ address.addressLocality }}
+                        {% endif %}
+                        {% if address.addressRegion != '' %}
+                            , {{ address.addressRegion }}
+                        {% endif %}
+                        {% if address.postalCode != '' %}
+                            {{ address.postalCode }}
+                        {% endif %}
+                        <br>
+                    {% endfor %}
+                    <br>
+                    {% for phone in profession.phone %}
+                        <abbr title="Phone">P:</abbr> {{ phone.numTelefono }}<br>
+                    {% endfor %}
+                    {% for faxNumber in profession.faxNumber %}
+                        <abbr title="Fax number">F:</abbr> {{ faxNumber.numFax }}<br>
+                    {% endfor %}
+                    {% for mbox in profession.mbox %}
+                        <abbr title="Email">E:</abbr> {{ mbox.email }}<br>
+                    {% endfor %}
+                    {% for homepage in profession.homepage %}
+                        <abbr title="Homepage">H:</abbr> {{ homepage.indirizzoInternet }}<br>
+                    {% endfor %}
+                </address>
+                </p>
+                <p>
+                    Lingue parlate:
+                    <br>
+                    {% for language in profession.language %}
+                        {{ language.linguaParlata }}<br>
+                    {% endfor %}
+                </p>
+                <p>
+                    Specializzazione:
+                    <br>
+                    {% for specializzazione in profession.specializzazione %}
+                        {{ specializzazione.spec }}<br>
+                    {% endfor %}
+                </p>
+            </div>
+            <div class="col-md-5">
+                <div class="row">
+                    <table class="table table-condensed">
+                        <tbody>
+                        <tr>
+                            <td>
+                                <small>id contenuto</small>
+                            </td>
+                            <td>{{ profession.idContenuto }}</td>
+                        </tr>
+                        {% for address in profession.address %}
+                            <tr>
+                                <td>
+                                    <small>coordinate</small>
+                                </td>
+                                <td>
+                                    {% if address.latitude != '' %}
+                                        {{ address.latitude }},{{ address.longitude }}
+                                    {% else %}
+                                        -
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <small>codice ISTAT comune</small>
+                                </td>
+                                <td>
+                                    {% if address.codiceIstatComune != '' %}
+                                        {{ address.codiceIstatComune }}
+                                    {% else %}
+                                        -
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <div class="row">
+                    <table class="table table-condensed">
+                        <tbody>
+                        <tr>
+                            <td>
+                                <small>tipo</small>
+                            </td>
+                            <td>
+                                http://dati.umbria.it/tourism/ontology/ProfessioniTuristiche
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <br/>
+            <ol class="breadcrumb">
+                <li><a href="{{ path('profession_index') }}">Lista Agenzie Viaggio</a></li>
+                <li class="active">{{ profession.firstName }} {{ profession.lastName }}</li>
+            </ol>
         </div>
     </div>
 {% endblock %}
@@ -37,4 +134,3 @@
         })
     </script>
 {% endblock %}
-

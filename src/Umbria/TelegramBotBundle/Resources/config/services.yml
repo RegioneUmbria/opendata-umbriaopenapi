@@ -1,0 +1,4 @@
+services:
+#    umbria_telegram_bot.example:
+#        class: Umbria\TelegramBotBundle\Example
+#        arguments: ["@service_id", "plain_value", %parameter%]

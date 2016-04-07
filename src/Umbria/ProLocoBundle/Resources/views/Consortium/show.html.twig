@@ -3,27 +3,110 @@
 {% block content %}
     <div class="container">
         <div class="row">
-
-            <table>
-                <tbody>
-                <tr>
-                    <th>Id</th>
-                    <td>{{ consortium.id }}</td>
-                </tr>
-                <tr>
-                    <th>Idelemento</th>
-                    <td>{{ consortium.idElemento }}</td>
-                </tr>
-                <tr>
-                    <th>Idcontenuto</th>
-                    <td>{{ consortium.idContenuto }}</td>
-                </tr>
-                <tr>
-                    <th>Denominazione</th>
-                    <td>{{ consortium.denominazione }}</td>
-                </tr>
-                </tbody>
-            </table>
+            <div class="page-header">
+                <h2>
+                    {{ consortium.denominazione }}
+                </h2>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-7">
+                <p>
+                <address>
+                    <strong>{{ consortium.denominazione }}</strong><br>
+                    {% for address in consortium.address %}
+                        {% if address.streetAddress != '' %}
+                            {{ address.streetAddress }}
+                        {% endif %}
+                        <br>
+                        {% if address.addressLocality != '' %}
+                            {{ address.addressLocality }}
+                        {% endif %}
+                        {% if address.addressRegion != '' %}
+                            , {{ address.addressRegion }}
+                        {% endif %}
+                        {% if address.postalCode != '' %}
+                            {{ address.postalCode }}
+                        {% endif %}
+                        <br>
+                    {% endfor %}
+                    <br>
+                    {% for phone in consortium.phone %}
+                        <abbr title="Phone">P:</abbr> {{ phone.numTelefono }}<br>
+                    {% endfor %}
+                    {% for faxNumber in consortium.faxNumber %}
+                        <abbr title="Fax number">F:</abbr> {{ faxNumber.numFax }}<br>
+                    {% endfor %}
+                    {% for mbox in consortium.mbox %}
+                        <abbr title="Email">E:</abbr> {{ mbox.email }}<br>
+                    {% endfor %}
+                    {% for homepage in consortium.homepage %}
+                        <abbr title="Homepage">H:</abbr> {{ homepage.indirizzoInternet }}<br>
+                    {% endfor %}
+                </address>
+                </p>
+            </div>
+            <div class="col-md-5">
+                <div class="row">
+                    <table class="table table-condensed">
+                        <tbody>
+                        <tr>
+                            <td>
+                                <small>id contenuto</small>
+                            </td>
+                            <td>{{ consortium.idContenuto }}</td>
+                        </tr>
+                        {% for address in consortium.address %}
+                            <tr>
+                                <td>
+                                    <small>coordinate</small>
+                                </td>
+                                <td>
+                                    {% if address.latitude != '' %}
+                                        {{ address.latitude }},{{ address.longitude }}
+                                    {% else %}
+                                        -
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <small>codice ISTAT comune</small>
+                                </td>
+                                <td>
+                                    {% if address.codiceIstatComune != '' %}
+                                        {{ address.codiceIstatComune }}
+                                    {% else %}
+                                        -
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <div class="row">
+                    <table class="table table-condensed">
+                        <tbody>
+                        <tr>
+                            <td>
+                                <small>tipo</small>
+                            </td>
+                            <td>
+                                http://dati.umbria.it/tourism/ontology/AgenziaViaggio
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <br/>
+            <ol class="breadcrumb">
+                <li><a href="{{ path('consortium_index') }}">Lista Agenzie Viaggio</a></li>
+                <li class="active">{{ consortium.denominazione }}</li>
+            </ol>
         </div>
     </div>
 {% endblock %}
@@ -37,4 +120,3 @@
         })
     </script>
 {% endblock %}
-

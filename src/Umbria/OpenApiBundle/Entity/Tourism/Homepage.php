@@ -48,4 +48,110 @@ class Homepage
      * @ORM\JoinColumn(name="professione_id", referencedColumnName="id")
      */
     private $professione;
+
+    /**
+     * Get id
+     *
+     * @return integer
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    /**
+     * Set indirizzoInternet
+     *
+     * @param string $indirizzoInternet
+     *
+     * @return Homepage
+     */
+    public function setIndirizzoInternet($indirizzoInternet)
+    {
+        $this->indirizzoInternet = $indirizzoInternet;
+
+        return $this;
+    }
+
+    /**
+     * Get indirizzoInternet
+     *
+     * @return string
+     */
+    public function getIndirizzoInternet()
+    {
+        return $this->indirizzoInternet;
+    }
+
+    /**
+     * Set agenziaViaggio
+     *
+     * @param \Umbria\OpenApiBundle\Entity\Tourism\TravelAgency $agenziaViaggio
+     *
+     * @return Homepage
+     */
+    public function setAgenziaViaggio(\Umbria\OpenApiBundle\Entity\Tourism\TravelAgency $agenziaViaggio = null)
+    {
+        $this->agenziaViaggio = $agenziaViaggio;
+
+        return $this;
+    }
+
+    /**
+     * Get agenziaViaggio
+     *
+     * @return \Umbria\OpenApiBundle\Entity\Tourism\TravelAgency
+     */
+    public function getAgenziaViaggio()
+    {
+        return $this->agenziaViaggio;
+    }
+
+    /**
+     * Set consorzio
+     *
+     * @param \Umbria\OpenApiBundle\Entity\Tourism\Consortium $consorzio
+     *
+     * @return Homepage
+     */
+    public function setConsorzio(\Umbria\OpenApiBundle\Entity\Tourism\Consortium $consorzio = null)
+    {
+        $this->consorzio = $consorzio;
+
+        return $this;
+    }
+
+    /**
+     * Get consorzio
+     *
+     * @return \Umbria\OpenApiBundle\Entity\Tourism\Consortium
+     */
+    public function getConsorzio()
+    {
+        return $this->consorzio;
+    }
+
+    /**
+     * Set professione
+     *
+     * @param \Umbria\OpenApiBundle\Entity\Tourism\Profession $professione
+     *
+     * @return Homepage
+     */
+    public function setProfessione(\Umbria\OpenApiBundle\Entity\Tourism\Profession $professione = null)
+    {
+        $this->professione = $professione;
+
+        return $this;
+    }
+
+    /**
+     * Get professione
+     *
+     * @return \Umbria\OpenApiBundle\Entity\Tourism\Profession
+     */
+    public function getProfessione()
+    {
+        return $this->professione;
+    }
 }

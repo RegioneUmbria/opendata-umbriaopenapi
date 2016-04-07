@@ -3,63 +3,125 @@
 {% block content %}
     <div class="container">
         <div class="row">
-            <table>
-                <tbody>
-                <tr>
-                    <th>Id</th>
-                    <td>{{ proposal.id }}</td>
-                </tr>
-                <tr>
-                    <th>Idcontenuto</th>
-                    <td>{{ proposal.idContenuto }}</td>
-                </tr>
-                <tr>
-                    <th>Nomeproposta</th>
-                    <td>{{ proposal.nomeProposta }}</td>
-                </tr>
-                <tr>
-                    <th>Urlrisorsa</th>
-                    <td>{{ proposal.urlRisorsa }}</td>
-                </tr>
-                <tr>
-                    <th>Keywords</th>
-                    <td>{{ proposal.keywords }}</td>
-                </tr>
-                <tr>
-                    <th>Descrizionesintetica</th>
-                    <td>{{ proposal.descrizioneSintetica }}</td>
-                </tr>
-                <tr>
-                    <th>Titolotesto</th>
-                    <td>{{ proposal.titoloTesto }}</td>
-                </tr>
-                <tr>
-                    <th>Abstract</th>
-                    <td>{{ proposal.abstract }}</td>
-                </tr>
-                <tr>
-                    <th>Immagini</th>
-                    <td>{{ proposal.immagini }}</td>
-                </tr>
-                <tr>
-                    <th>Linkesterniassociati</th>
-                    <td>{{ proposal.linkEsterniAssociati }}</td>
-                </tr>
-                <tr>
-                    <th>Luogoda</th>
-                    <td>{{ proposal.luogoDa }}</td>
-                </tr>
-                <tr>
-                    <th>Luogoa</th>
-                    <td>{{ proposal.luogoA }}</td>
-                </tr>
-                <tr>
-                    <th>Immaginespalladestra</th>
-                    <td>{{ proposal.immagineSpallaDestra }}</td>
-                </tr>
-                </tbody>
-            </table>
+            <div class="page-header">
+                <h2>
+                    {{ proposal.nomeProposta }}
+                    <small>
+                        {{ proposal.descrizioneSintetica|raw }}
+                    </small>
+                    <a href="{{ proposal.urlRisorsa }}" target="_blank">
+                        <span class="glyphicon glyphicon-link pull-right" aria-hidden="true"></span>
+                    </a>
+                </h2>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-7">
+                <h4>{{ proposal.titoloTesto }}</h4>
+                <p>
+                    <small>
+                        {{ proposal.abstract|raw }}
+                    </small>
+                    <br/>
+                    <br/>
+                    {% for descrizione in proposal.descrizioni %}
+                        {{ descrizione.titolo|raw }}
+                        <br/>
+                        {{ descrizione.testo|raw }}
+                    {% endfor %}
+                </p>
+            </div>
+            <div class="col-md-5">
+                <div class="row">
 
+                    <table class="table table-condensed">
+                        <tbody>
+                        <tr>
+                            <td>
+                                <small>id contenuto</small>
+                            </td>
+                            <td>{{ proposal.idContenuto }}</td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <small>keywords</small>
+                            </td>
+                            <td>
+                                {% if proposal.keywords != '' %}
+                                    {{ proposal.keywords }}
+                                {% else %}
+                                    -
+                                {% endif %}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <small>coordinate</small>
+                            </td>
+                            <td>
+                                {% for coordinate in proposal.coordinate %}
+                                    {% if coordinate.latitude != '' %}
+                                        <small>umbria:</small>
+                                        {{ coordinate.latitude }},{{ coordinate.longitude }}
+                                    {% elseif coordinate.dbpediaLatitude != '' %}
+                                        <small>dbpedia:
+                                        </small> {{ coordinate.dbpediaLatitude }},{{ coordinate.dbpediaLongitude }}
+                                    {% elseif coordinate.googleLatitude != '' %}
+                                        <small>google:
+                                        </small>
+                                        <a href="https://www.google.it/maps/?q=loc:{{ coordinate.googleLatitude }},{{ coordinate.googleLongitude }}"
+                                           target="_blank">{{ coordinate.googleLatitude }}
+                                            ,{{ coordinate.googleLongitude }}</a>
+                                        <span class="glyphicon glyphicon-info-sign pull-right" data-toggle="tooltip"
+                                              data-placement="top"
+                                              title="Posizione calcola. Non se ne garantisce l'affidabilità"></span>
+                                    {% else %}
+                                        -
+                                    {% endif %}
+                                {% endfor %}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <small>categorie</small>
+                            </td>
+                            <td>
+                                {% for categoria in proposal.categorie %}
+                                    {% if categoria.categoriaAssociata is not null %}
+                                        <span class="label label-default">{{ categoria.categoriaAssociata }}</span>
+                                        <br/>
+                                    {% endif %}
+                                {% endfor %}
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="row">
+                    <table class="table table-condensed">
+                        <tbody>
+                        <tr>
+                            <td>
+                                <small>tipo</small>
+                            </td>
+                            <td>
+                                http://dati.umbria.it/tourism/ontology/TurismoProposte
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="row">
+                    <img src="{{ proposal.immagineSpallaDestra }}" height="150">
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <br/>
+            <ol class="breadcrumb">
+                <li><a href="{{ path('proposal_index') }}">Lista Proposte</a></li>
+                <li class="active">{{ proposal.nomeProposta }}</li>
+            </ol>
         </div>
     </div>
 {% endblock %}
