@@ -107,4 +107,8 @@ knp_paginator:
 
 # ShayganTelegramBotApiBundle Configuration
 shaygan_telegram_bot_api:
-    token: 149916497:AAH_szHI62uxTKgagOQcSQh9OU5UsAB2vNk
+    token: 219692651:AAF-tlf3Y5wnxM4SQ-RBMYdWxABwyqbXpsg
+    webhook:
+        domain: disco-openapi.azurewebsites.net/web/app_dev.php
+        path_prefix: ~ # you can add prefix, if your web site is not on the root
+        update_receiver: shaygan.my_update_receiver # sample update receiver

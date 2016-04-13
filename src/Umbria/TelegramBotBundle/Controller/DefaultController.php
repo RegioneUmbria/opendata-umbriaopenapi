@@ -13,8 +13,10 @@ class DefaultController extends Controller
 
         // test the API by calling getMe method
         $user = $api->getMe();
+        $update = $api->getUpdates();
 
-        print_r($user);
+
+        print_r($update);
         die;
 
         return $this->render('UmbriaTelegramBotBundle:Default:index.html.twig');
