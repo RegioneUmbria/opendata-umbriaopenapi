@@ -4,9 +4,54 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "73dae2709e57337aee069ad8f4c766f6",
-    "content-hash": "a02a374f3a2b6001a4621e5a6083808e",
+    "hash": "3beba1d46479439e8363379f08f9f47f",
+    "content-hash": "c0b2d4c0ab46199030202e1c8229df76",
     "packages": [
+        {
+            "name": "anthonymartin/geo-location",
+            "version": "v1.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/anthonymartin/GeoLocation.php.git",
+                "reference": "a54a562dfe8ae3eef9a5863552401d26bc80e921"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/anthonymartin/GeoLocation.php/zipball/a54a562dfe8ae3eef9a5863552401d26bc80e921",
+                "reference": "a54a562dfe8ae3eef9a5863552401d26bc80e921",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.0"
+            },
+            "type": "class",
+            "autoload": {
+                "psr-0": {
+                    "AnthonyMartin": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "CC 3.0"
+            ],
+            "authors": [
+                {
+                    "name": "Anthony Martin",
+                    "email": "anthony@replaycreative.com",
+                    "homepage": "http://replaycreative.com",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Retrieve bounding coordinates, distances, longitude and latitude with GeoLocation.class.php",
+            "homepage": "https://github.com/anthonymartin/GeoLocation.php",
+            "keywords": [
+                "bounding coordinates",
+                "distances",
+                "geocoding",
+                "geolocation"
+            ],
+            "time": "2013-10-25 21:13:03"
+        },
         {
             "name": "doctrine/annotations",
             "version": "v1.2.7",
@@ -2186,20 +2231,20 @@
         },
         {
             "name": "symfony/monolog-bundle",
-            "version": "2.11.0",
+            "version": "2.11.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/monolog-bundle.git",
-                "reference": "d156f625dc3ce04f44e6d0ce36ae19cc35f51a97"
+                "reference": "e7caf4936c7be82bc6d68df87f1d23a0d5bf6e00"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/monolog-bundle/zipball/d156f625dc3ce04f44e6d0ce36ae19cc35f51a97",
-                "reference": "d156f625dc3ce04f44e6d0ce36ae19cc35f51a97",
+                "url": "https://api.github.com/repos/symfony/monolog-bundle/zipball/e7caf4936c7be82bc6d68df87f1d23a0d5bf6e00",
+                "reference": "e7caf4936c7be82bc6d68df87f1d23a0d5bf6e00",
                 "shasum": ""
             },
             "require": {
-                "monolog/monolog": "~1.12",
+                "monolog/monolog": "~1.18",
                 "php": ">=5.3.2",
                 "symfony/config": "~2.3|~3.0",
                 "symfony/dependency-injection": "~2.3|~3.0",
@@ -2242,7 +2287,7 @@
                 "log",
                 "logging"
             ],
-            "time": "2016-04-12 18:48:21"
+            "time": "2016-04-13 16:21:01"
         },
         {
             "name": "symfony/polyfill-apcu",
