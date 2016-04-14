@@ -21,14 +21,16 @@ class UpdateReceiver implements UpdateReceiverInterface
     {
         $message = json_decode(json_encode($update->message), true);
 
-        if(($message['location']['latitude']>=45 AND $message['location']['latitude']<=45.7)
+        $text = implode(",", $message);
+
+        /*if(($message['location']['latitude']>=45 AND $message['location']['latitude']<=45.7)
             AND ($message['location']['longitude']>=9 AND $message['location']['longitude']<=9.5)){
 
-            $pos = "Sei in provincia di Milano";
+            $text = "Sei in provincia di Milano";
 
-        } else {$pos = "Non sei in provincia di Milano";}
+        } else {$text = "Non sei in provincia di Milano";}*/
 
-        switch ($message['text']) {
+        /*switch ($message['text']) {
             case "/about":
                 $text = "I'm a samble Telegram Bot";
                 break;
@@ -42,13 +44,9 @@ class UpdateReceiver implements UpdateReceiverInterface
                 $text .= "/help - show this help message\n";
                 $text .= "/hello - show hello message\n";
             break;
-        }
+        }*/
 
-        if($text!=null){
             $this->telegramBotApi->sendMessage($message['chat']['id'], $text);
-        }
-        if($pos!=null){
-            $this->telegramBotApi->sendMessage($message['chat']['id'], $pos);
-        }
+
     }
 }
