@@ -40,14 +40,16 @@ class UpdateReceiver implements UpdateReceiverInterface
                     $text = "UmbriaTourismBot ti permette di ricevere informazioni turistiche. Invia la tua posizione per scoprire tutte le bellezze che la nostra regione ha in serbo per te";
                     break;
                 case "/hello":
-                    $text = "Ciao ". $message['from']['first_name']." Oggi ti consiglio di visitare la Gola del Bottaccione";
+                    $text = "Ciao ". $message['from']['first_name'].". Oggi ti consiglio di visitare la Gola del Bottaccione";
                     break;
                 case "/help":
+                case "/start":
+                    $text = "UmbriaTourismBot ti permette di ricevere informazioni turistiche. Invia la tua posizione per scoprire tutte le bellezze che la nostra regione ha in serbo per te\n\n";
                 default :
-                    $text = "Command List:\n";
-                    $text .= "/about - About this bot\n";
-                    $text .= "/help - show this help message\n";
-                    $text .= "/hello - show hello message\n";
+                    $text .= "Lista comandi:\n";
+                    $text .= "/about - Informazioni sul bot\n";
+                    $text .= "/help - Visualizzazione comandi disponibili\n";
+                    $text .= "/hello - Suggerimenti\n";
                     break;
             }
 
