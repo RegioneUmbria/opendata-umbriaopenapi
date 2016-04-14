@@ -2,3 +2,7 @@ services:
 #    umbria_telegram_bot.example:
 #        class: Umbria\TelegramBotBundle\Example
 #        arguments: ["@service_id", "plain_value", %parameter%]
+
+    umbria_telegram_bot.my_update_receiver:
+        class: Umbria\TelegramBotBundle\UpdateReceiver\UpdateReceiver
+        arguments: ['@shaygan.telegram_bot_api', '%shaygan_telegram_bot_api.config%']
