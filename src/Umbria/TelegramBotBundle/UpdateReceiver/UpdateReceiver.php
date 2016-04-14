@@ -4,6 +4,7 @@ namespace Umbria\TelegramBotBundle\UpdateReceiver;
 
 use Shaygan\TelegramBotApiBundle\TelegramBotApi;
 use Shaygan\TelegramBotApiBundle\Type\Update;
+use TelegramBot\Api\Types\ReplyKeyboardMarkup;
 
 class UpdateReceiver implements UpdateReceiverInterface
 {
@@ -19,7 +20,14 @@ class UpdateReceiver implements UpdateReceiverInterface
 
     public function handleUpdate(Update $update)
     {
+        $arrayOfArraysOfStrings = array(
+            array("/hello", "/help", "/about")
+        );
+        $newKeyboard = new ReplyKeyboardMarkup($arrayOfArraysOfStrings);
         $message = json_decode(json_encode($update->message), true);
+
+        /*$newArray = array('/hello' => "/hello", '/help' => "/help", '/about' => "/about");
+        $newKeyboard = json_encode($newArray, true);*/
 
         // Controllo se all'interno dell'Umbria
         if(isset($message['location'])) {
@@ -53,7 +61,10 @@ class UpdateReceiver implements UpdateReceiverInterface
                     break;
             }
 
-            $this->telegramBotApi->sendMessage($message['chat']['id'], $text);
+            $newKeyboardCond = $message['text'];
+            if(!strcmp($newKeyboardCond, "/start")) {
+                $this->telegramBotApi->sendMessage($message['chat']['id'], $text, $newKeyboard);
+            } else {$this->telegramBotApi->sendMessage($message['chat']['id'], $text);}
         }
 
     }
