@@ -21,7 +21,14 @@ class UpdateReceiver implements UpdateReceiverInterface
     {
         $message = json_decode(json_encode($update->message), true);
 
-        switch ($message['text']) {
+        if(($message['latitude']>=45 AND $message['latitude']<=45.7)
+            AND ($message['longitude']>=9 AND $message['longitude']<=9.5)){
+
+            $text = "Sei in provincia di Milano";
+
+        } else {$text = "Non sei in provincia di Milano";}
+
+        /*switch ($message['text']) {
             case "/about":
                 $text = "I'm a samble Telegram Bot";
                 break;
@@ -35,7 +42,7 @@ class UpdateReceiver implements UpdateReceiverInterface
                 $text .= "/help - show this help message\n";
                 $text .= "/hello - show hello message\n";
             break;
-        }
+        }*/
 
         $this->telegramBotApi->sendMessage($message['chat']['id'], $text);
     }
