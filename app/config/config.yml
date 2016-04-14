@@ -111,4 +111,4 @@ shaygan_telegram_bot_api:
     webhook:
         domain: disco-openapi.azurewebsites.net/web/app_dev.php
         path_prefix: ~ # you can add prefix, if your web site is not on the root
-        update_receiver: umbria_telegram_bot.my_update_receiversm
+        update_receiver: umbria_telegram_bot.my_update_receiver
