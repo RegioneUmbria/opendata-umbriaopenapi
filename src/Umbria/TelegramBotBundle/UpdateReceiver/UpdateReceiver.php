@@ -28,7 +28,7 @@ class UpdateReceiver implements UpdateReceiverInterface
 
         } else {$text = "Non sei in provincia di Milano";}
 
-        /*switch ($message['text']) {
+        switch ($message['text']) {
             case "/about":
                 $text = "I'm a samble Telegram Bot";
                 break;
@@ -42,7 +42,7 @@ class UpdateReceiver implements UpdateReceiverInterface
                 $text .= "/help - show this help message\n";
                 $text .= "/hello - show hello message\n";
             break;
-        }*/
+        }
 
         $this->telegramBotApi->sendMessage($message['chat']['id'], $text);
     }
