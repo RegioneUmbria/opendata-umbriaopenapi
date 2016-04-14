@@ -61,9 +61,10 @@ class UpdateReceiver implements UpdateReceiverInterface
                     break;
             }
 
-
+            $newKeyboardCond = $message['text'];
+            if(strcmp($newKeyboard, "/start") XOR strcmp($newKeyboard, "/help")){
                 $this->telegramBotApi->sendMessage($message['chat']['id'], $text, null, false, null, $newKeyboard);
-
+            } else $this->telegramBotApi->sendMessage($message['chat']['id'], $text);
         }
 
     }
