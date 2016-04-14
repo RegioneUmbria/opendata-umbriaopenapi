@@ -21,13 +21,12 @@ class UpdateReceiver implements UpdateReceiverInterface
     {
         $message = json_decode(json_encode($update->message), true);
 
+        // Controllo se all'interno dell'Umbria
         if(isset($message['location'])) {
             if (($message['location']['latitude'] >= 45 AND $message['location']['latitude'] <= 45.7)
                 AND ($message['location']['longitude'] >= 9 AND $message['location']['longitude'] <= 9.5)
             ) {
-
                 $text = "Sei in provincia di Milano";
-
             } else {
                 $text = "Non sei in provincia di Milano";
             }
@@ -38,10 +37,10 @@ class UpdateReceiver implements UpdateReceiverInterface
         if(isset($message['text'])) {
             switch ($message['text']) {
                 case "/about":
-                    $text = "I'm a samble Telegram Bot";
+                    $text = "UmbriaTourismBot ti permette di ricevere informazioni turistiche. Invia la tua posizione per scoprire tutte le bellezze che la nostra regione ha in serbo per te";
                     break;
                 case "/hello":
-                    $text = "Ciao ciao dalla Gola del Bottaccione";
+                    $text = "Ciao ". $message['from']['first_name']." Oggi ti consiglio di visitare la Gola del Bottaccione";
                     break;
                 case "/help":
                 default :
