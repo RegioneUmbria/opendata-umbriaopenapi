@@ -24,9 +24,9 @@ class UpdateReceiver implements UpdateReceiverInterface
         if(($message['location']['latitude']>=45 AND $message['location']['latitude']<=45.7)
             AND ($message['location']['longitude']>=9 AND $message['location']['longitude']<=9.5)){
 
-            $text = "Sei in provincia di Milano";
+            $pos = "Sei in provincia di Milano";
 
-        } else {$text = "Non sei in provincia di Milano";}
+        } else {$pos = "Non sei in provincia di Milano";}
 
         switch ($message['text']) {
             case "/about":
@@ -44,6 +44,11 @@ class UpdateReceiver implements UpdateReceiverInterface
             break;
         }
 
-        $this->telegramBotApi->sendMessage($message['chat']['id'], $text);
+        if($text!=null){
+            $this->telegramBotApi->sendMessage($message['chat']['id'], $text);
+        }
+        if($pos!=null){
+            $this->telegramBotApi->sendMessage($message['chat']['id'], $pos);
+        }
     }
 }
