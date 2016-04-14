@@ -21,8 +21,8 @@ class UpdateReceiver implements UpdateReceiverInterface
     {
         $message = json_decode(json_encode($update->message), true);
 
-        if(($message['latitude']>=45 AND $message['latitude']<=45.7)
-            AND ($message['longitude']>=9 AND $message['longitude']<=9.5)){
+        if(($message['location']['latitude']>=45 AND $message['location']['latitude']<=45.7)
+            AND ($message['location']['longitude']>=9 AND $message['location']['longitude']<=9.5)){
 
             $text = "Sei in provincia di Milano";
 
