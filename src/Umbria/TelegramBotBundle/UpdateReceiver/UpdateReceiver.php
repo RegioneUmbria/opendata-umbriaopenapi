@@ -23,15 +23,12 @@ class UpdateReceiver implements UpdateReceiverInterface
 
         switch ($message['text']) {
             case "/about":
-            case "/about@{$this->config['bot_name']}":
                 $text = "I'm a samble Telegram Bot";
                 break;
             case "/hello":
-            case "/hello@{$this->config['bot_name']}":
                 $text = "Ciao ciao dalla Gola del Bottaccione";
                 break;
             case "/help":
-            case "/help@{$this->config['bot_name']}":
             default :
                 $text = "Command List:\n";
                 $text .= "/about - About this bot\n";
