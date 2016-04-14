@@ -23,7 +23,7 @@ class UpdateReceiver implements UpdateReceiverInterface
         $arrayOfArraysOfStrings = array(
             array("/hello", "/help", "/about")
         );
-        $newKeyboard = new ReplyKeyboardMarkup($arrayOfArraysOfStrings, null, true);
+        $newKeyboard = new ReplyKeyboardMarkup($arrayOfArraysOfStrings, true, true);
         $message = json_decode(json_encode($update->message), true);
 
         /*$newArray = array('/hello' => "/hello", '/help' => "/help", '/about' => "/about");
