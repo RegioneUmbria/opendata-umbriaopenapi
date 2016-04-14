@@ -62,8 +62,8 @@ class UpdateReceiver implements UpdateReceiverInterface
             }
 
 
-                $this->telegramBotApi->sendMessage($message['chat']['id'], $text, $newKeyboard);
-            
+                $this->telegramBotApi->sendMessage($message['chat']['id'], $text, null, false, null, $newKeyboard);
+
         }
 
     }
