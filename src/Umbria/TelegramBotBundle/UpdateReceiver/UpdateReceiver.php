@@ -33,16 +33,15 @@ class UpdateReceiver implements UpdateReceiverInterface
     public function handleUpdate(Update $update)
     {
         $arrayOfArraysOfStrings = array(
-            array("/about", "/hello"),
-            array("/help", "/pos")
+            array("/about", "/hello","/help")
         );
         $newKeyboard = new ReplyKeyboardMarkup($arrayOfArraysOfStrings, true, true);
         $message = json_decode(json_encode($update->message), true);
 
         // Controllo se all'interno dell'Umbria
         if (isset($message['location'])) {
-            $text = "La lista degli attrattori nel raggio di 30km e': \n";
-            $text .= $this->createQuery($message['location']['latitude'], $message['location']['longitude'], 30);
+            //$text = "La lista degli attrattori nel raggio di 30km e': \n";
+            $text = $this->createQuery($message['location']['latitude'], $message['location']['longitude'], 30);
             /*if (($message['location']['latitude'] >= 45 AND $message['location']['latitude'] <= 45.7)
                 AND ($message['location']['longitude'] >= 9 AND $message['location']['longitude'] <= 9.5)
             ) {
@@ -70,7 +69,6 @@ class UpdateReceiver implements UpdateReceiverInterface
                     $text .= "/about - Informazioni sul bot\n";
                     $text .= "/hello - Suggerimenti\n";
                     $text .= "/help - Visualizzazione comandi disponibili\n";
-                    $text .= "/pos - Scopri gli attrattori più vicini a te!\n";
                     break;
             }
 
