@@ -41,7 +41,7 @@ class UpdateReceiver implements UpdateReceiverInterface
         // Controllo se all'interno dell'Umbria
         if (isset($message['location'])) {
             //$text = "La lista degli attrattori nel raggio di 30km e': \n";
-            $text = $this->createQuery($message['location']['latitude'], $message['location']['longitude'], 30, false);
+            $text = $this->createQuery($message['location']['latitude'], $message['location']['longitude'], 100, false);
             /*if (($message['location']['latitude'] >= 45 AND $message['location']['latitude'] <= 45.7)
                 AND ($message['location']['longitude'] >= 9 AND $message['location']['longitude'] <= 9.5)
             ) {
@@ -86,6 +86,9 @@ class UpdateReceiver implements UpdateReceiverInterface
             ->select('c')
             ->from('UmbriaOpenApiBundle:Tourism\Coordinate', 'c');
 
+        $lat = 43.3513193;
+        $lng = 12.575316599999951;
+        $radius = 10;
         if ($lat && $lng) {
             $lat = floatval($lat);
             $lng = floatval($lng);
@@ -133,11 +136,11 @@ class UpdateReceiver implements UpdateReceiverInterface
         if ($rand) {
             $key = array_rand($pois);
             $poi = $pois[$key];
-            print_r($poi);
+            $resultPoi = print_r($poi);
+            return $resultPoi;
         } else {
             $result = print_r($pois, true);
+            return $result;
         }
-
-        return $result;
     }
 }
