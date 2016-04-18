@@ -33,23 +33,23 @@ class UpdateReceiver implements UpdateReceiverInterface
     public function handleUpdate(Update $update)
     {
         $arrayOfArraysOfStrings = array(
-            array("/hello", "/help", "/about")
+            array("/about", "/hello"),
+            array("/help", "/pos")
         );
         $newKeyboard = new ReplyKeyboardMarkup($arrayOfArraysOfStrings, true, true);
         $message = json_decode(json_encode($update->message), true);
 
-        /*$newArray = array('/hello' => "/hello", '/help' => "/help", '/about' => "/about");
-        $newKeyboard = json_encode($newArray, true);*/
-
         // Controllo se all'interno dell'Umbria
         if (isset($message['location'])) {
-            if (($message['location']['latitude'] >= 45 AND $message['location']['latitude'] <= 45.7)
+            $text = "La lista degli attrattori nel raggio di 30km e': \n";
+            $text .= $this->createQuery($message['location']['latitude'], $message['location']['longitude'], 30);
+            /*if (($message['location']['latitude'] >= 45 AND $message['location']['latitude'] <= 45.7)
                 AND ($message['location']['longitude'] >= 9 AND $message['location']['longitude'] <= 9.5)
             ) {
                 $text = "Sei in provincia di Milano";
             } else {
                 $text = "Non sei in provincia di Milano";
-            }
+            }*/
 
             $this->telegramBotApi->sendMessage($message['chat']['id'], $text);
         }
@@ -68,8 +68,9 @@ class UpdateReceiver implements UpdateReceiverInterface
                 default :
                     $text .= "Lista comandi:\n";
                     $text .= "/about - Informazioni sul bot\n";
-                    $text .= "/help - Visualizzazione comandi disponibili\n";
                     $text .= "/hello - Suggerimenti\n";
+                    $text .= "/help - Visualizzazione comandi disponibili\n";
+                    $text .= "/pos - Scopri gli attrattori più vicini a te!\n";
                     break;
             }
 
@@ -87,9 +88,6 @@ class UpdateReceiver implements UpdateReceiverInterface
             ->select('c')
             ->from('UmbriaOpenApiBundle:Tourism\Coordinate', 'c');
 
-        $lat = 43.3513193;
-        $lng = 12.575316599999951;
-        $radius = 10;
         if ($lat && $lng) {
             $lat = floatval($lat);
             $lng = floatval($lng);
@@ -139,7 +137,7 @@ class UpdateReceiver implements UpdateReceiverInterface
             $poi = $pois[$key];
             print_r($poi);
         } else {
-            print_r($pois);
+            print_r($pois, true);
         }
     }
 }
