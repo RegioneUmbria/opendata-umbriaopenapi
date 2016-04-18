@@ -137,7 +137,7 @@ class UpdateReceiver implements UpdateReceiverInterface
         if ($rand) {
             $key = array_rand($pois);
             $poi = $pois[$key];
-            print_r($pois);
+            print_r($poi);
         } else {
             print_r($pois);
         }
