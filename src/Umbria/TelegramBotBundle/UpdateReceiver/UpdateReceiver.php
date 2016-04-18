@@ -4,12 +4,12 @@ namespace Umbria\TelegramBotBundle\UpdateReceiver;
 
 use AnthonyMartin\GeoLocation\GeoLocation;
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Query\Parameter;
+use JMS\DiExtraBundle\Annotation as DI;
 use Shaygan\TelegramBotApiBundle\TelegramBotApi;
 use Shaygan\TelegramBotApiBundle\Type\Update;
-use JMS\DiExtraBundle\Annotation as DI;
-use Doctrine\DBAL\Types\Type;
 use TelegramBot\Api\Types\ReplyKeyboardMarkup;
 use Umbria\OpenApiBundle\Entity\Tourism\Coordinate;
 
@@ -74,14 +74,14 @@ class UpdateReceiver implements UpdateReceiverInterface
             }
 
             $newKeyboardCond = $message['text'];
-            if(strcmp($newKeyboardCond, "/start") XOR strcmp($newKeyboardCond, "/help")){
+            if (strcmp($newKeyboardCond, "/start") XOR strcmp($newKeyboardCond, "/help")) {
                 $this->telegramBotApi->sendMessage($message['chat']['id'], $text, null, false, null, $newKeyboard);
             } else $this->telegramBotApi->sendMessage($message['chat']['id'], $text);
         }
 
     }
 
-    public function createQuery($lat, $lng, $radius)
+    public function createQuery($lat, $lng, $radius, $rand)
     {
         $builder = $this->em->createQueryBuilder()
             ->select('c')
@@ -123,13 +123,23 @@ class UpdateReceiver implements UpdateReceiverInterface
         }
 
         $query = $builder->getQuery();
-        $result = $query->getResult();
+        $coordinates = $query->getResult();
 
+        $pois = array();
         /** @var Coordinate $poi */
-        foreach($result as $poi){
-            if($poi->getAttrattore() != null)
-                print_r($poi->getAttrattore()->getDenominazione());
+        foreach ($coordinates as $poi) {
+            $attractor = $poi->getAttrattore();
+            if ($attractor != null) {
+                $pois[] = $attractor;
+            }
+        }
+
+        if ($rand) {
+            $key = array_rand($pois);
+            $poi = $pois[$key];
+            print_r($pois);
+        } else {
+            print_r($pois);
         }
     }
-
 }
