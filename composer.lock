@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "3beba1d46479439e8363379f08f9f47f",
-    "content-hash": "c0b2d4c0ab46199030202e1c8229df76",
+    "hash": "511f275efec44997daa4aa72872ac688",
+    "content-hash": "53482919555e2dc77e643e7bfc0002c5",
     "packages": [
         {
             "name": "anthonymartin/geo-location",
@@ -51,6 +51,69 @@
                 "geolocation"
             ],
             "time": "2013-10-25 21:13:03"
+        },
+        {
+            "name": "craue/geo-bundle",
+            "version": "1.3.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/craue/CraueGeoBundle.git",
+                "reference": "ebe451476bbf476cd18957a7bfc66875fcd87513"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/craue/CraueGeoBundle/zipball/ebe451476bbf476cd18957a7bfc66875fcd87513",
+                "reference": "ebe451476bbf476cd18957a7bfc66875fcd87513",
+                "shasum": ""
+            },
+            "require": {
+                "doctrine/doctrine-bundle": "~1.3",
+                "doctrine/orm": "~2.3",
+                "php": "^5.3.2|~7.0",
+                "symfony/framework-bundle": "~2.3|~3.0"
+            },
+            "require-dev": {
+                "doctrine/data-fixtures": "~1.0",
+                "phpunit/phpunit": "~4.1|~5.0",
+                "symfony/phpunit-bridge": "~2.7|~3.0",
+                "symfony/symfony": "~2.3|~3.0"
+            },
+            "suggest": {
+                "doctrine/data-fixtures": "*"
+            },
+            "type": "symfony-bundle",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.3.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Craue\\GeoBundle\\": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Christian Raue",
+                    "email": "christian.raue@gmail.com"
+                },
+                {
+                    "name": "Symfony Community",
+                    "homepage": "https://github.com/craue/CraueGeoBundle/contributors"
+                }
+            ],
+            "description": "Doctrine functions for calculating geographical distances in your Symfony project.",
+            "homepage": "https://github.com/craue/CraueGeoBundle",
+            "keywords": [
+                "Symfony2",
+                "geo",
+                "symfony3"
+            ],
+            "time": "2015-12-29 22:38:05"
         },
         {
             "name": "doctrine/annotations",

@@ -22,6 +22,7 @@ class AppKernel extends Kernel
             new JMS\SerializerBundle\JMSSerializerBundle(),
             new Knp\Bundle\PaginatorBundle\KnpPaginatorBundle(),
             new Shaygan\TelegramBotApiBundle\ShayganTelegramBotApiBundle(),
+            new Craue\GeoBundle\CraueGeoBundle(),
 
             new Umbria\OpenApiBundle\UmbriaOpenApiBundle(),
             new Umbria\ProLocoBundle\UmbriaProLocoBundle(),

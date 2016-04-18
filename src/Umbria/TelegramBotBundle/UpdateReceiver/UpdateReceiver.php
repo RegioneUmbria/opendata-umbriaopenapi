@@ -11,6 +11,7 @@ use Shaygan\TelegramBotApiBundle\Type\Update;
 use JMS\DiExtraBundle\Annotation as DI;
 use Doctrine\DBAL\Types\Type;
 use TelegramBot\Api\Types\ReplyKeyboardMarkup;
+use Umbria\OpenApiBundle\Entity\Tourism\Coordinate;
 
 class UpdateReceiver implements UpdateReceiverInterface
 {
@@ -80,32 +81,32 @@ class UpdateReceiver implements UpdateReceiverInterface
 
     }
 
-    public function createQuery($lat, $lng)
+    public function createQuery($lat, $lng, $radius)
     {
         $builder = $this->em->createQueryBuilder()
-            ->select('s')
-            ->from('UmbriaOpenApiBundle:Tourism\Attractor', 's');
+            ->select('c')
+            ->from('UmbriaOpenApiBundle:Tourism\Coordinate', 'c');
 
+        $lat = 43.3513193;
+        $lng = 12.575316599999951;
+        $radius = 10;
         if ($lat && $lng) {
-            $lat = floatval($lat);
-            $lng = floatval($lng);
-            $radius = 10;
-
             $lat = floatval($lat);
             $lng = floatval($lng);
             $radius = floatval($radius);
 
             $location = GeoLocation::fromDegrees($lat, $lng);
             /** @var GeoLocation[] $bounds */
+            /** @noinspection PhpInternalEntityUsedInspection */
             $bounds = $location->boundingCoordinates($radius, 'km');
 
             // AS HIDDEN consente di definire un campo di ordinamento (usabile in having) senza alterare
             // il risultato restituito né il formato di restituzione!
             $alias = 'HIDDEN distance';
-            $builder->select("s, GEO_DISTANCE(:lat, :lng, s.latitude, s.longitude) AS $alias")
-                ->andWhere('s.latitude BETWEEN :minLat and :maxLat')
-                ->andWhere('s.longitude BETWEEN :minLng and :maxLng')
-                ->andWhere('GEO_DISTANCE(:lat, :lng, s.latitude, s.longitude) < :radius')
+            $builder->select("c, GEO_DISTANCE(:lat, :lng, c.latitude, c.longitude) AS $alias")
+                ->andWhere('c.latitude BETWEEN :minLat and :maxLat')
+                ->andWhere('c.longitude BETWEEN :minLng and :maxLng')
+                ->andWhere('GEO_DISTANCE(:lat, :lng, c.latitude, c.longitude) < :radius')
                 ->orderBy('distance');
 
             // è necessario specificare i tipi dei parametri come INTEGER per evitare che doctrine
@@ -119,7 +120,15 @@ class UpdateReceiver implements UpdateReceiverInterface
                 new Parameter('maxLng', $bounds[1]->getLongitudeInDegrees(), Type::INTEGER),
                 new Parameter('radius', $radius, Type::INTEGER),
             )));
+        }
 
+        $query = $builder->getQuery();
+        $result = $query->getResult();
+
+        /** @var Coordinate $poi */
+        foreach($result as $poi){
+            if($poi->getAttrattore() != null)
+                print_r($poi->getAttrattore()->getDenominazione());
         }
     }
 

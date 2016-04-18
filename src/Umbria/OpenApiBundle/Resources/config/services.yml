@@ -4,8 +4,8 @@ parameters:
     url_proposal_silk: null
     proposal_days_to_old: 0
 
-    url_attractor: http://odn.cloudapp.net/dataset/70878b0a-a16f-4d65-9c92-62b64cafc15b/resource/ee5efd9d-a557-4736-b72f-38553b048416/download/attrattoriitIT.zipattrattoriitIT.rdf
-    url_attractor_silk: http://odn.cloudapp.net/dataset/70878b0a-a16f-4d65-9c92-62b64cafc15b/resource/d38b5fc5-e288-4829-8f41-f5d4f6726515/download/owlSameAsDBpedia.rdf
+    url_attractor: http://odn.cloudapp.net/dataset/64fcc71f-0fd5-438d-87c6-a2fb5a9f1740/resource/ef95d711-9d5a-451b-8a95-83a6713b8075/download/attrattoriitIT.zipattrattoriitIT.rdf
+    url_attractor_silk: http://odn.cloudapp.net/dataset/64fcc71f-0fd5-438d-87c6-a2fb5a9f1740/resource/0bfc6ad7-2257-4f7b-a982-11d6d3abadf6/download/owlSameAsDBpedia.rdf
     attractor_days_to_old: 0
 
     url_event: http://odn.cloudapp.net/dataset/b888cb75-07a9-449b-a2af-578accd70bfc/resource/76b7ebf6-2bd1-4282-8c80-c8af8e51d062/download/eventiitIT.zipeventiitIT.rdf
