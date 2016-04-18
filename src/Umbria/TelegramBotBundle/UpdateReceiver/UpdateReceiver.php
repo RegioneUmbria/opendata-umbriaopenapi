@@ -41,7 +41,7 @@ class UpdateReceiver implements UpdateReceiverInterface
         // Controllo se all'interno dell'Umbria
         if (isset($message['location'])) {
             //$text = "La lista degli attrattori nel raggio di 30km e': \n";
-            $text = $this->createQuery($message['location']['latitude'], $message['location']['longitude'], 30);
+            $text = $this->createQuery($message['location']['latitude'], $message['location']['longitude'], 30, false);
             /*if (($message['location']['latitude'] >= 45 AND $message['location']['latitude'] <= 45.7)
                 AND ($message['location']['longitude'] >= 9 AND $message['location']['longitude'] <= 9.5)
             ) {
