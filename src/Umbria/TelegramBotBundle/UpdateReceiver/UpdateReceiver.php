@@ -135,7 +135,9 @@ class UpdateReceiver implements UpdateReceiverInterface
             $poi = $pois[$key];
             print_r($poi);
         } else {
-            print_r($pois, true);
+            $result = print_r($pois, true);
         }
+
+        return $result;
     }
 }
