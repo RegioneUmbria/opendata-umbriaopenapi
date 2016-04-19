@@ -139,11 +139,11 @@ class UpdateReceiver implements UpdateReceiverInterface
             $poi = $pois[$key];
             return $poi->getDenominazione();
         } else {
-            $listOfResults[] = array_values($pois);
-            foreach ($listOfResults as $res){
-                $result[] = $res->getDenominazione();
+            foreach ($pois as $res){
+                $result = $res->getDenominazione();
+                $nearbyAttr[] = $result;
             }
-            return implode(", ", $result);
+            return implode(", ", $nearbyAttr);
         }
     }
 }
