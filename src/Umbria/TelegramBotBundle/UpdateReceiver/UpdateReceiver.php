@@ -47,11 +47,11 @@ class UpdateReceiver implements UpdateReceiverInterface
             if (($latitude >= 42.36 AND $latitude <= 43.60)
                 AND ($longitude >= 11.88 AND $longitude <= 13.25)
             ) {
-                $text = "Ciao " . $message['from']['first_name'] . ". Sei troppo lontano dall'Umbria. Vienici a trovare! Puoi trovare: " . $this->createQuery(43.105275, 12.391995, 100, true);
-            }
-            else {
                 $text = $this->createQuery($message['location']['latitude'], $message['location']['longitude'], 10, false);
                 //$text = $this->createQuery(43.105275, 12.391995, 10, false);
+            }
+            else {
+                $text = "Ciao " . $message['from']['first_name'] . ". Sei troppo lontano dall'Umbria. Vienici a trovare! Puoi trovare: " . $this->createQuery(43.105275, 12.391995, 100, true);
             }
 
             $this->telegramBotApi->sendMessage($message['chat']['id'], $text);
