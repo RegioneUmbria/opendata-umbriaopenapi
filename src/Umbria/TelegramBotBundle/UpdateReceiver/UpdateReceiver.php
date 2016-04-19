@@ -145,7 +145,7 @@ class UpdateReceiver implements UpdateReceiverInterface
             $resource = $this->retrieveUrlRisorsa($pois);
             $max = sizeof($pois);
             for($i=0; $i<$max; $i++){
-                $stringResult[i] = $den[i] .  "\n" . $desc[i] . "\n" . $resource[i] . "\n";
+                $stringResult[$i] = $den[$i] .  "\n" . $desc[$i] . "\n" . $resource[$i] . "\n";
             }
             return implode("\n", $stringResult);
         }
