@@ -47,8 +47,7 @@ class UpdateReceiver implements UpdateReceiverInterface
             if (($latitude >= 42.36 AND $latitude <= 43.60)
                 AND ($longitude >= 11.88 AND $longitude <= 13.25)
             ) {
-                $text = $this->createQuery($message['location']['latitude'], $message['location']['longitude'], 10, false);
-                //$text = $this->createQuery(43.105275, 12.391995, 10, false);
+                $text = $this->createQuery($latitude, $longitude, 10, false);
             }
             else {
                 $text = "Ciao " . $message['from']['first_name'] . ". Sei troppo lontano dall'Umbria. Vienici a trovare! Puoi trovare: " . $this->createQuery(43.105275, 12.391995, 100, true);
@@ -63,7 +62,7 @@ class UpdateReceiver implements UpdateReceiverInterface
                     $text = "UmbriaTourismBot ti permette di ricevere informazioni turistiche. Invia la tua posizione per scoprire tutte le bellezze che la nostra regione ha in serbo per te";
                     break;
                 case "/hello":
-                    $text = "Ciao " . $message['from']['first_name'] . ". Oggi ti consiglio di visitare la Gola del Bottaccione";
+                    $text = "Ciao " . $message['from']['first_name'] . ". Oggi ti consiglio di visitare ". $this->createQuery(43.105275, 12.391995, 100, true);
                     break;
                 case "/help":
                 case "/start":
