@@ -11,6 +11,7 @@ use JMS\DiExtraBundle\Annotation as DI;
 use Shaygan\TelegramBotApiBundle\TelegramBotApi;
 use Shaygan\TelegramBotApiBundle\Type\Update;
 use TelegramBot\Api\Types\ReplyKeyboardMarkup;
+use Umbria\OpenApiBundle\Entity\Tourism\Attractor;
 use Umbria\OpenApiBundle\Entity\Tourism\Coordinate;
 
 class UpdateReceiver implements UpdateReceiverInterface
@@ -41,7 +42,7 @@ class UpdateReceiver implements UpdateReceiverInterface
         // Controllo se all'interno dell'Umbria
         if (isset($message['location'])) {
             //$text = "La lista degli attrattori nel raggio di 30km e': \n";
-            $text = $this->createQuery($message['location']['latitude'], $message['location']['longitude'], 100, false);
+            $text = $this->createQuery($message['location']['latitude'], $message['location']['longitude'], 10, false);
             /*if (($message['location']['latitude'] >= 45 AND $message['location']['latitude'] <= 45.7)
                 AND ($message['location']['longitude'] >= 9 AND $message['location']['longitude'] <= 9.5)
             ) {
@@ -88,7 +89,6 @@ class UpdateReceiver implements UpdateReceiverInterface
 
         $lat = 43.3513193;
         $lng = 12.575316599999951;
-        $radius = 10;
         if ($lat && $lng) {
             $lat = floatval($lat);
             $lng = floatval($lng);
@@ -135,12 +135,11 @@ class UpdateReceiver implements UpdateReceiverInterface
 
         if ($rand) {
             $key = array_rand($pois);
+            /** @var Attractor $poi */
             $poi = $pois[$key];
-            $resultPoi = print_r($poi);
-            return $resultPoi;
+            return $poi->getDenominazione();
         } else {
-            $result = print_r($pois, true);
-            return $result;
+            return print_r($pois, true);
         }
     }
 }
