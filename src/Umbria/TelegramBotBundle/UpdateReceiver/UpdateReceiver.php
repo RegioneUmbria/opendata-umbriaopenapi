@@ -56,9 +56,9 @@ class UpdateReceiver implements UpdateReceiverInterface
             }
             else {
                 $text = "Ciao " . $message['from']['first_name'] . ". Sei troppo lontano dall'Umbria. Da noi puoi trovare: " . $this->createQuery(43.105275, 12.391995, 100, true);
+                $this->telegramBotApi->sendMessage($message['chat']['id'], $text);
             }
 
-            $this->telegramBotApi->sendMessage($message['chat']['id'], $text);
         }
 
         if (isset($message['text'])) {
@@ -112,7 +112,7 @@ class UpdateReceiver implements UpdateReceiverInterface
                 ->andWhere('c.longitude BETWEEN :minLng and :maxLng')
                 ->andWhere('GEO_DISTANCE(:lat, :lng, c.latitude, c.longitude) < :radius')
                 ->orderBy('distance')
-                ->setMaxResults(5);
+                ->setMaxResults(4);
 
             // è necessario specificare i tipi dei parametri come INTEGER per evitare che doctrine
             // inserisca gli apici, cosa che impedisce il funzionamento della query.
