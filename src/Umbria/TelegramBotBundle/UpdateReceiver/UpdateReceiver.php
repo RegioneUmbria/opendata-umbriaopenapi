@@ -38,17 +38,21 @@ class UpdateReceiver implements UpdateReceiverInterface
         $newKeyboard = new ReplyKeyboardMarkup($arrayOfArraysOfStrings, true, true);
         $message = json_decode(json_encode($update->message), true);
 
-        // Controllo se all'interno dell'Umbria
+        // LOCATION
         if (isset($message['location'])) {
-            //$text = "La lista degli attrattori nel raggio di 30km e': \n";
-            $text = $this->createQuery($message['location']['latitude'], $message['location']['longitude'], 10, false);
-            /*if (($message['location']['latitude'] >= 45 AND $message['location']['latitude'] <= 45.7)
-                AND ($message['location']['longitude'] >= 9 AND $message['location']['longitude'] <= 9.5)
+            $latitude =$message['location']['latitude'];
+            $longitude = $message['location']['longitude'];
+
+            // Controllo se all'interno dell'Umbria
+            if (($latitude >= 42.36 AND $latitude <= 43.60)
+                AND ($longitude >= 11.88 AND $longitude <= 13.25)
             ) {
-                $text = "Sei in provincia di Milano";
-            } else {
-                $text = "Non sei in provincia di Milano";
-            }*/
+                $text = "Ciao " . $message['from']['first_name'] . ". Sei troppo lontano dall'Umbria. Vienici a trovare! Puoi trovare: " . $this->createQuery(43.105275, 12.391995, 100, true);
+            }
+            else {
+                $text = $this->createQuery($message['location']['latitude'], $message['location']['longitude'], 10, false);
+                //$text = $this->createQuery(43.105275, 12.391995, 10, false);
+            }
 
             $this->telegramBotApi->sendMessage($message['chat']['id'], $text);
         }
@@ -86,8 +90,6 @@ class UpdateReceiver implements UpdateReceiverInterface
             ->select('c')
             ->from('UmbriaOpenApiBundle:Tourism\Coordinate', 'c');
 
-        $lat = 43.3513193;
-        $lng = 12.575316599999951;
         if ($lat && $lng) {
             $lat = floatval($lat);
             $lng = floatval($lng);
