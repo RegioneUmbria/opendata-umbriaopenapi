@@ -81,7 +81,7 @@ class UpdateReceiver implements UpdateReceiverInterface
                 case "/start":
                     $text = "UmbriaTourismBot ti permette di ricevere informazioni turistiche. Invia la tua posizione per scoprire tutte le bellezze che la nostra regione ha in serbo per te\n\n";
                 default :
-                    $text .= "Lista comandi:\n";
+                    $text = "Lista comandi:\n";
                     $text .= "/about - Informazioni sul bot\n";
                     $text .= "/hello - Suggerimenti\n";
                     $text .= "/help - Visualizzazione comandi disponibili\n";
