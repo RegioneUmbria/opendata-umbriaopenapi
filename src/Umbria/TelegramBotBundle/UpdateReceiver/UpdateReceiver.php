@@ -151,7 +151,10 @@ class UpdateReceiver implements UpdateReceiverInterface
             $key = array_rand($pois);
             /** @var Attractor $poi */
             $poi = $pois[$key];
-            $stringResult[] = $poi->getDenominazione();
+            $den = $this->retrieveDenominazione($poi);
+            $desc = $this->retrieveDescrizione($poi);
+            $resource = $this->retrieveUrlRisorsa($poi);
+            $stringResult[] = strtoupper($den) .  "\n" . strip_tags($desc) . "\n" . $resource . "\n";
             return $stringResult;
         } else {
             $den = $this->retrieveDenominazione($pois);
@@ -162,7 +165,6 @@ class UpdateReceiver implements UpdateReceiverInterface
                 $stringResult[$i] = strtoupper($den[$i]) .  "\n" . strip_tags($desc[$i]) . "\n" . $resource[$i] . "\n";
             }
             return $stringResult;
-            //return implode("\n", $stringResult);
         }
     }
 
