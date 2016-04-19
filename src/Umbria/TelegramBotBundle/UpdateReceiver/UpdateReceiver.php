@@ -50,9 +50,9 @@ class UpdateReceiver implements UpdateReceiverInterface
                 $arrayOfMessages = $this->createQuery($latitude, $longitude, 10, false);
                 $text = "Vicino a te puoi trovare: \n";
                 $this->telegramBotApi->sendMessage($message['chat']['id'], $text);
-                $i = 0;
+                $i = 1;
                 foreach ($arrayOfMessages as $msg){
-                    $text = $i;
+                    $text = $i . ") ";
                     $text .= $msg;
                     $this->telegramBotApi->sendMessage($message['chat']['id'], $text);
                     $i++;
