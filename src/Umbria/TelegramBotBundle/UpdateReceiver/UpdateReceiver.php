@@ -140,11 +140,38 @@ class UpdateReceiver implements UpdateReceiverInterface
             $poi = $pois[$key];
             return $poi->getDenominazione();
         } else {
-            foreach ($pois as $res){
-                $result = $res->getDenominazione();
-                $nearbyAttr[] = $result;
+            $den = $this->retrieveDenominazione($pois);
+            $desc = $this->retrieveDescrizione($pois);
+            $resource = $this->retrieveUrlRisorsa($pois);
+            $max = sizeof($pois);
+            for($i=0; $i<$max; $i++){
+                $stringResult[i] = $den[i] .  "\n" . $desc[i] . "\n" . $resource[i] . "\n";
             }
-            return implode(", ", $nearbyAttr);
+            return implode("\n", $stringResult);
         }
+    }
+
+    public function retrieveDenominazione($pois){
+        foreach ($pois as $res){
+            $result = $res->getDenominazione();
+            $nearbyAttr[] = $result;
+        }
+        return implode(", ", $nearbyAttr);
+    }
+
+    public function retrieveDescrizione($pois){
+        foreach ($pois as $res){
+            $result = $res->getDescrizioneSintetica();
+            $nearbyAttr[] = $result;
+        }
+        return implode(", ", $nearbyAttr);
+    }
+
+    public function retrieveUrlRisorsa($pois){
+        foreach ($pois as $res){
+            $result = $res->getUrlRisorsa();
+            $nearbyAttr[] = $result;
+        }
+        return implode(", ", $nearbyAttr);
     }
 }
