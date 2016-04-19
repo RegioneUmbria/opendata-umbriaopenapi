@@ -138,8 +138,7 @@ class UpdateReceiver implements UpdateReceiverInterface
             $poi = $pois[$key];
             return $poi->getDenominazione();
         } else {
-            $return = implode('--', $pois);
-            return $return;
+            return count($pois);
         }
     }
 }
