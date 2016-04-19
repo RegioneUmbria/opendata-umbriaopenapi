@@ -57,7 +57,9 @@ class UpdateReceiver implements UpdateReceiverInterface
                 }
             }
             else {
-                $text = "Ciao " . $message['from']['first_name'] . ". Sei troppo lontano dall'Umbria. Da noi puoi trovare: " . $this->createQuery(43.105275, 12.391995, 100, true);
+                $arrayOfMessages = $this->createQuery(43.105275, 12.391995, 100, true);
+                $plainText = implode("\n", $arrayOfMessages);
+                $text = "Ciao " . $message['from']['first_name'] . ". Sei troppo lontano dall'Umbria. Da noi puoi trovare: " . $plainText;
                 $this->telegramBotApi->sendMessage($message['chat']['id'], $text);
             }
 
@@ -69,7 +71,9 @@ class UpdateReceiver implements UpdateReceiverInterface
                     $text = "UmbriaTourismBot ti permette di ricevere informazioni turistiche. Invia la tua posizione per scoprire tutte le bellezze che la nostra regione ha in serbo per te";
                     break;
                 case "/hello":
-                    $text = "Ciao " . $message['from']['first_name'] . ". Oggi ti consiglio di visitare ". $this->createQuery(43.105275, 12.391995, 100, true);
+                    $arrayOfMessages = $this->createQuery(43.105275, 12.391995, 100, true);
+                    $plainText = implode("\n", $arrayOfMessages);
+                    $text = "Ciao " . $message['from']['first_name'] . ". Oggi ti consiglio di visitare ". $plainText;
                     break;
                 case "/help":
                 case "/start":
