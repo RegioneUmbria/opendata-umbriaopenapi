@@ -47,12 +47,12 @@ class UpdateReceiver implements UpdateReceiverInterface
             if (($latitude >= 42.36 AND $latitude <= 43.60)
                 AND ($longitude >= 11.88 AND $longitude <= 13.25)
             ) {
-                //$text = $this->createQuery($latitude, $longitude, 10, false);
                 $arrayOfMessages = $this->createQuery($latitude, $longitude, 10, false);
                 $text = "Vicino a te puoi trovare: \n";
                 $this->telegramBotApi->sendMessage($message['chat']['id'], $text);
                 foreach ($arrayOfMessages as $msg){
-                    $text = $msg;
+                    $text = "1) ";
+                    $text .= $msg;
                     $this->telegramBotApi->sendMessage($message['chat']['id'], $text);
                 }
             }
@@ -153,7 +153,7 @@ class UpdateReceiver implements UpdateReceiverInterface
             $resource = $this->retrieveUrlRisorsa($pois);
             $max = sizeof($pois);
             for($i=0; $i<$max; $i++){
-                $stringResult[$i] ="<b>" . $den[$i] . "</b>" .  "\n" . $desc[$i] . "\n" . $resource[$i] . "\n";
+                $stringResult[$i] = strtoupper($den[$i]) .  "\n" . $desc[$i] . "\n" . $resource[$i] . "\n";
             }
             return $stringResult;
             //return implode("\n", $stringResult);
