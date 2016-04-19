@@ -50,10 +50,12 @@ class UpdateReceiver implements UpdateReceiverInterface
                 $arrayOfMessages = $this->createQuery($latitude, $longitude, 10, false);
                 $text = "Vicino a te puoi trovare: \n";
                 $this->telegramBotApi->sendMessage($message['chat']['id'], $text);
+                $i = 0;
                 foreach ($arrayOfMessages as $msg){
-                    $text = "1) ";
+                    $text = $i;
                     $text .= $msg;
                     $this->telegramBotApi->sendMessage($message['chat']['id'], $text);
+                    $i++;
                 }
             }
             else {
@@ -157,7 +159,7 @@ class UpdateReceiver implements UpdateReceiverInterface
             $resource = $this->retrieveUrlRisorsa($pois);
             $max = sizeof($pois);
             for($i=0; $i<$max; $i++){
-                $stringResult[$i] = strtoupper($den[$i]) .  "\n" . $desc[$i] . "\n" . $resource[$i] . "\n";
+                $stringResult[$i] = strtoupper($den[$i]) .  "\n" . strip_tags($desc[$i]) . "\n" . $resource[$i] . "\n";
             }
             return $stringResult;
             //return implode("\n", $stringResult);
