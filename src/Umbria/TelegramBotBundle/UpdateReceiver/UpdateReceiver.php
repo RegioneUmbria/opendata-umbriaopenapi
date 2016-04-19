@@ -106,7 +106,8 @@ class UpdateReceiver implements UpdateReceiverInterface
                 ->andWhere('c.latitude BETWEEN :minLat and :maxLat')
                 ->andWhere('c.longitude BETWEEN :minLng and :maxLng')
                 ->andWhere('GEO_DISTANCE(:lat, :lng, c.latitude, c.longitude) < :radius')
-                ->orderBy('distance');
+                ->orderBy('distance')
+                ->setMaxResults(5);
 
             // è necessario specificare i tipi dei parametri come INTEGER per evitare che doctrine
             // inserisca gli apici, cosa che impedisce il funzionamento della query.
