@@ -156,7 +156,7 @@ class UpdateReceiver implements UpdateReceiverInterface
             $result = $res->getDenominazione();
             $nearbyAttr[] = $result;
         }
-        return implode(", ", $nearbyAttr);
+        return $nearbyAttr;
     }
 
     public function retrieveDescrizione($pois){
@@ -164,7 +164,7 @@ class UpdateReceiver implements UpdateReceiverInterface
             $result = $res->getDescrizioneSintetica();
             $nearbyAttr[] = $result;
         }
-        return implode(", ", $nearbyAttr);
+        return $nearbyAttr;
     }
 
     public function retrieveUrlRisorsa($pois){
@@ -172,6 +172,6 @@ class UpdateReceiver implements UpdateReceiverInterface
             $result = $res->getUrlRisorsa();
             $nearbyAttr[] = $result;
         }
-        return implode(", ", $nearbyAttr);
+        return $nearbyAttr;
     }
 }
