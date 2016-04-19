@@ -50,7 +50,7 @@ class UpdateReceiver implements UpdateReceiverInterface
                 $text = $this->createQuery($latitude, $longitude, 10, false);
             }
             else {
-                $text = "Ciao " . $message['from']['first_name'] . ". Sei troppo lontano dall'Umbria. Vienici a trovare! Puoi trovare: " . $this->createQuery(43.105275, 12.391995, 100, true);
+                $text = "Ciao " . $message['from']['first_name'] . ". Sei troppo lontano dall'Umbria. Da noi puoi trovare: " . $this->createQuery(43.105275, 12.391995, 100, true);
             }
 
             $this->telegramBotApi->sendMessage($message['chat']['id'], $text);
