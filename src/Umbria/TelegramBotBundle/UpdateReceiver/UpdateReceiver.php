@@ -47,7 +47,12 @@ class UpdateReceiver implements UpdateReceiverInterface
             if (($latitude >= 42.36 AND $latitude <= 43.60)
                 AND ($longitude >= 11.88 AND $longitude <= 13.25)
             ) {
-                $text = $this->createQuery($latitude, $longitude, 10, false);
+                //$text = $this->createQuery($latitude, $longitude, 10, false);
+                $arrayOfMessages = $this->createQuery($latitude, $longitude, 10, false);
+                foreach ($arrayOfMessages as $msg){
+                    $text = $msg;
+                    $this->telegramBotApi->sendMessage($message['chat']['id'], $text);
+                }
             }
             else {
                 $text = "Ciao " . $message['from']['first_name'] . ". Sei troppo lontano dall'Umbria. Da noi puoi trovare: " . $this->createQuery(43.105275, 12.391995, 100, true);
@@ -138,7 +143,8 @@ class UpdateReceiver implements UpdateReceiverInterface
             $key = array_rand($pois);
             /** @var Attractor $poi */
             $poi = $pois[$key];
-            return $poi->getDenominazione();
+            $stringResult[] = $poi->getDenominazione();
+            return $stringResult;
         } else {
             $den = $this->retrieveDenominazione($pois);
             $desc = $this->retrieveDescrizione($pois);
@@ -147,7 +153,8 @@ class UpdateReceiver implements UpdateReceiverInterface
             for($i=0; $i<$max; $i++){
                 $stringResult[$i] = $den[$i] .  "\n" . $desc[$i] . "\n" . $resource[$i] . "\n";
             }
-            return implode("\n", $stringResult);
+            return $stringResult;
+            //return implode("\n", $stringResult);
         }
     }
 
