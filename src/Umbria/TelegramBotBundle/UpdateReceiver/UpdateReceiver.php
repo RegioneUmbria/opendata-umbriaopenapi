@@ -5,7 +5,6 @@ namespace Umbria\TelegramBotBundle\UpdateReceiver;
 use AnthonyMartin\GeoLocation\GeoLocation;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\DBAL\Types\Type;
-use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Query\Parameter;
 use JMS\DiExtraBundle\Annotation as DI;
 use Shaygan\TelegramBotApiBundle\TelegramBotApi;
@@ -16,19 +15,19 @@ use Umbria\OpenApiBundle\Entity\Tourism\Coordinate;
 
 class UpdateReceiver implements UpdateReceiverInterface
 {
-    /**
-     * @var EntityManager
-     * @DI\Inject("doctrine.orm.entity_manager")
-     */
-    public $em;
-
-    private $config;
     private $telegramBotApi;
+    private $config;
 
-    public function __construct(TelegramBotApi $telegramBotApi, $config)
+    /**
+     * @var \Doctrine\ORM\EntityManager
+     */
+    private $em;
+
+    public function __construct(TelegramBotApi $telegramBotApi, $config, $em)
     {
         $this->telegramBotApi = $telegramBotApi;
         $this->config = $config;
+        $this->em = $em;
     }
 
     public function handleUpdate(Update $update)
