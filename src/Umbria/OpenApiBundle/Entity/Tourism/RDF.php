@@ -24,7 +24,7 @@ class RDF
     private $id;
 
     /**
-     * @ORM\OneToMany(targetEntity="Proposal", mappedBy="rdf", cascade={"merge"})
+     * @ORM\OneToMany(targetEntity="Proposal", mappedBy="rdf", cascade={"merge"}, orphanRemoval=true)
      *
      * @JMS\Type("ArrayCollection<Umbria\OpenApiBundle\Entity\Tourism\Proposal>")
      * @JMS\XmlList(entry="Description")
@@ -34,7 +34,7 @@ class RDF
     private $proposte;
 
     /**
-     * @ORM\OneToMany(targetEntity="Attractor", mappedBy="rdf", cascade={"merge"})
+     * @ORM\OneToMany(targetEntity="Attractor", mappedBy="rdf", cascade={"merge"}, orphanRemoval=true)
      *
      * @JMS\Type("ArrayCollection<Umbria\OpenApiBundle\Entity\Tourism\Attractor>")
      * @JMS\XmlList(entry="Description")
@@ -44,7 +44,7 @@ class RDF
     private $attrattori;
 
     /**
-     * @ORM\OneToMany(targetEntity="Event", mappedBy="rdf", cascade={"merge"})
+     * @ORM\OneToMany(targetEntity="Event", mappedBy="rdf", cascade={"merge"}, orphanRemoval=true)
      *
      * @JMS\Type("ArrayCollection<Umbria\OpenApiBundle\Entity\Tourism\Event>")
      * @JMS\XmlList(entry="Description")
@@ -54,7 +54,7 @@ class RDF
     private $eventi;
 
     /**
-     * @ORM\OneToMany(targetEntity="TravelAgency", mappedBy="rdf", cascade={"merge"})
+     * @ORM\OneToMany(targetEntity="TravelAgency", mappedBy="rdf", cascade={"merge"}, orphanRemoval=true)
      *
      * @JMS\Type("ArrayCollection<Umbria\OpenApiBundle\Entity\Tourism\TravelAgency>")
      * @JMS\XmlList(entry="Description")
@@ -64,7 +64,7 @@ class RDF
     private $agenzieViaggio;
 
     /**
-     * @ORM\OneToMany(targetEntity="Consortium", mappedBy="rdf", cascade={"merge"})
+     * @ORM\OneToMany(targetEntity="Consortium", mappedBy="rdf", cascade={"merge"}, orphanRemoval=true)
      *
      * @JMS\Type("ArrayCollection<Umbria\OpenApiBundle\Entity\Tourism\Consortium>")
      * @JMS\XmlList(entry="Description")
@@ -74,7 +74,7 @@ class RDF
     private $consorzi;
 
     /**
-     * @ORM\OneToMany(targetEntity="Profession", mappedBy="rdf", cascade={"merge"})
+     * @ORM\OneToMany(targetEntity="Profession", mappedBy="rdf", cascade={"merge"}, orphanRemoval=true)
      *
      * @JMS\Type("ArrayCollection<Umbria\OpenApiBundle\Entity\Tourism\Profession>")
      * @JMS\XmlList(entry="Description")
@@ -84,7 +84,7 @@ class RDF
     private $professioni;
 
     /**
-     * @ORM\OneToMany(targetEntity="Iat", mappedBy="rdf", cascade={"merge"})
+     * @ORM\OneToMany(targetEntity="Iat", mappedBy="rdf", cascade={"merge"}, orphanRemoval=true)
      *
      * @JMS\Type("ArrayCollection<Umbria\OpenApiBundle\Entity\Tourism\Iat>")
      * @JMS\XmlList(entry="Description")
@@ -351,5 +351,39 @@ class RDF
     public function getIat()
     {
         return $this->iat;
+    }
+
+    public function has($attributeName)
+    {
+        if ($attributeName == 'tourism-attractor') {
+            if ($this->getAttrattori()->count() > 0) {
+                return true;
+            }
+        } elseif ($attributeName == 'tourism-proposal') {
+            if ($this->getProposte()->count() > 0) {
+                return true;
+            }
+        } elseif ($attributeName == 'tourism-event') {
+            if ($this->getEventi()->count() > 0) {
+                return true;
+            }
+        } elseif ($attributeName == 'tourism-travel-agency') {
+            if ($this->getAgenzieViaggio()->count() > 0) {
+                return true;
+            }
+        } elseif ($attributeName == 'tourism-consortium') {
+            if ($this->getConsorzi()->count() > 0) {
+                return true;
+            }
+        } elseif ($attributeName == 'tourism-profession') {
+            if ($this->getProfessioni()->count() > 0) {
+                return true;
+            }
+        } elseif ($attributeName == 'tourism-iat') {
+            if ($this->getIat()->count() > 0) {
+                return true;
+            }
+        }
+        return false;
     }
 }
