@@ -39,20 +39,8 @@ class CurlBuilder
 
         /** @var RDF $rdf */
         foreach ($rdfs as $rdf) {
-            if ($entityType == 'tourism-attractor') {
-                $this->deleteEntities($rdf->getAttrattori());
-            } elseif ($entityType == 'tourism-proposal') {
-                $this->deleteEntities($rdf->getProposte());
-            } elseif ($entityType == 'tourism-event') {
-                $this->deleteEntities($rdf->getEventi());
-            } elseif ($entityType == 'tourism-travel-agency') {
-                $this->deleteEntities($rdf->getAgenzieViaggio());
-            } elseif ($entityType == 'tourism-consortium') {
-                $this->deleteEntities($rdf->getConsorzi());
-            } elseif ($entityType == 'tourism-profession') {
-                $this->deleteEntities($rdf->getProfessioni());
-            } elseif ($entityType == 'tourism-iat') {
-                $this->deleteEntities($rdf->getIat());
+            if ($rdf->has($entityType)) {
+                $this->em->remove($rdf);
             }
         }
         $this->em->flush();
@@ -339,6 +327,7 @@ class CurlBuilder
             curl_setopt($ch, CURLOPT_HEADER, 0);
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
             curl_setopt($ch, CURLOPT_TIMEOUT, 10);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
             $content = curl_exec($ch);
             curl_close($ch);
 
@@ -401,6 +390,14 @@ class CurlBuilder
         $rdf = str_replace('</schema:', '</', $rdf);
         $rdf = str_replace('<dcterms:', '<', $rdf);
         $rdf = str_replace('</dcterms:', '</', $rdf);
+        $rdf = str_replace('<geo:', '<', $rdf);
+        $rdf = str_replace('</geo:', '</', $rdf);
+        $rdf = str_replace('<rdfs:', '<', $rdf);
+        $rdf = str_replace('</rdfs:', '</', $rdf);
+        $rdf = str_replace('<dbpedia-owl:', '<', $rdf);
+        $rdf = str_replace('</dbpedia-owl:', '</', $rdf);
+        $rdf = str_replace('<bibo:', '<', $rdf);
+        $rdf = str_replace('</bibo:', '</', $rdf);
         $rdf = str_replace('<!--<group:', '<', $rdf);
         $rdf = str_replace('<!--</group:', '</', $rdf);
         $rdf = str_replace('>-->', '>', $rdf);
