@@ -24,6 +24,7 @@ class Attractor
      * @ORM\GeneratedValue(strategy="AUTO")
      *
      * @JMS\Groups({"attractor.*"})
+     * @JMS\Exclude()
      */
     private $id;
 
@@ -45,6 +46,7 @@ class Attractor
      * @ORM\Column(type="integer")
      *
      * @JMS\Type("integer")
+     * @JMS\SerializedName("id")
      *
      * @JMS\Groups({"attractor.*"})
      */
@@ -54,6 +56,8 @@ class Attractor
      * @ORM\Column(type="string", length=255)
      *
      * @JMS\Type("string")
+     *
+     * @JMS\SerializedName("label")
      *
      * @JMS\Groups({"attractor.*"})
      */
@@ -73,6 +77,8 @@ class Attractor
      *
      * @JMS\Type("string")
      *
+     * @JMS\SerializedName("abstract")
+     *
      * @JMS\Groups({"attractor.*"})
      */
     private $descrizioneSintetica;
@@ -81,6 +87,8 @@ class Attractor
      * @ORM\Column(type="string", length=255)
      *
      * @JMS\Type("string")
+     *
+     * @JMS\SerializedName("subject")
      *
      * @JMS\Groups({"attractor.*"})
      */
@@ -176,6 +184,8 @@ class Attractor
      *
      * @JMS\Type("string")
      *
+     * @JMS\SerializedName("municipality")
+     *
      * @JMS\Groups({"attractor.*"})
      */
     private $comune;
@@ -184,6 +194,8 @@ class Attractor
      * @ORM\Column(type="string", length=255)
      *
      * @JMS\Type("string")
+     *
+     ** @JMS\SerializedName("istat")
      *
      * @JMS\Groups({"attractor.*"})
      */
