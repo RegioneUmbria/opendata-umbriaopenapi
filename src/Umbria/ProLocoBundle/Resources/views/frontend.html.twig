@@ -26,26 +26,56 @@
                     </li>
                     <li>
                         <form class="navbar-form navbar-left">
-                            <input id="museusCheckbox" type="checkbox" onclick="toggleGroup()" checked="checked">
+                            <input type="checkbox" onclick="toggleGroup('tourism_attractor')" checked="checked">
                         </form>
                     </li>
                     <li>
                         <a href="{{ path('proposal_index') }}">Proposte</a>
                     </li>
                     <li>
+                        <form class="navbar-form navbar-left">
+                            <input type="checkbox" onclick="toggleGroup('tourism_proposal')" checked="checked">
+                        </form>
+                    </li>
+                    <li>
                         <a href="{{ path('event_index') }}">Eventi</a>
+                    </li>
+                    <li>
+                        <form class="navbar-form navbar-left">
+                            <input type="checkbox" onclick="toggleGroup('tourism_event')" checked="checked">
+                        </form>
                     </li>
                     <li>
                         <a href="{{ path('travelagency_index') }}">Agenzie di Viaggio</a>
                     </li>
                     <li>
+                        <form class="navbar-form navbar-left">
+                            <input type="checkbox" onclick="toggleGroup('tourism_travelagency')" checked="checked">
+                        </form>
+                    </li>
+                    <li>
                         <a href="{{ path('consortium_index') }}">Consorzi</a>
+                    </li>
+                    <li>
+                        <form class="navbar-form navbar-left">
+                            <input type="checkbox" onclick="toggleGroup('tourism_consortium')" checked="checked">
+                        </form>
                     </li>
                     <li>
                         <a href="{{ path('profession_index') }}">Professioni Turistiche</a>
                     </li>
                     <li>
+                        <form class="navbar-form navbar-left">
+                            <input type="checkbox" onclick="toggleGroup('tourism_profession')" checked="checked">
+                        </form>
+                    </li>
+                    <li>
                         <a href="{{ path('iat_index') }}">Iat</a>
+                    </li>
+                    <li>
+                        <form class="navbar-form navbar-left">
+                            <input type="checkbox" onclick="toggleGroup('tourism_iat')" checked="checked">
+                        </form>
                     </li>
                 </ul>
                 <ul class="nav navbar-nav navbar-right">

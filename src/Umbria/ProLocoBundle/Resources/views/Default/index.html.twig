@@ -12,7 +12,15 @@
         var clusterer = null;
         var umbriaCenter = {lat: 42.9895317, lng: 12.0176207};
 
-        var proposalMarker = [];
+        var markerGroups = {
+            "tourism_attractor": [],
+            "tourism_proposal": [],
+            "tourism_event": [],
+            "tourism_travel_agency": [],
+            "tourism_consortium": [],
+            "tourism_profession": [],
+            "tourism_iat": []
+        };
 
         // lista delle posizioni
         var places = [
@@ -104,9 +112,9 @@
                 animation: google.maps.Animation.DROP
             });
 
-            if (type == 'tourism_proposal') {
-                proposalMarker.push(marker);
-            }
+            // creazione array markers
+            if (!markerGroups[type]) markerGroups[type] = [];
+            markerGroups[type].push(marker);
 
             clusterer.addMarker(marker);
 
@@ -168,9 +176,9 @@
             }
         }
 
-        function toggleGroup() {
-            for (var i = 0; i < proposalMarker.length; i++) {
-                var marker = proposalMarker[i];
+        function toggleGroup(type) {
+            for (var i = 0; i < markerGroups[type].length; i++) {
+                var marker = markerGroups[type][i];
                 if (!marker.getVisible()) {
                     marker.setVisible(true);
                 } else {
