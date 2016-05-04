@@ -1,6 +1,6 @@
 parameters:
 
-    url_proposal: http://odn.cloudapp.net/dataset/33be3077-9612-4ef2-bf39-c0eb01dd6079/resource/314a56f5-383a-432b-a148-7039286c46b9/download/proposteitIT.zipproposteitIT.rdf
+    url_proposal: http://odn.cloudapp.net/dataset/33be3077-9612-4ef2-bf39-c0eb01dd6079/resource/258536a5-39e0-46bf-81c9-b118fd70aaed/download/proposteitIT.zipproposteitIT.rdf
     url_proposal_silk: null
     proposal_days_to_old: 0
 

@@ -50,6 +50,18 @@
 
             // creazione clusterer
             clusterer = new MarkerClusterer(map, [], mcOptions);
+
+            // riposizionamento mappa
+            latCenter = Cookies.get('lat');
+            lngCenter = Cookies.get('lng');
+
+            if(latCenter != null && lngCenter != null){
+            map.setCenter({lat: parseFloat(latCenter), lng: parseFloat(lngCenter)});
+            map.setZoom(15);
+
+            Cookies.remove('lat');
+            Cookies.remove('lng');
+            }
         }
 
         function addMarkerCall(place, bounds, interval) {
