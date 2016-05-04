@@ -12,6 +12,8 @@
         var clusterer = null;
         var umbriaCenter = {lat: 42.9895317, lng: 12.0176207};
 
+        var proposalMarker = [];
+
         // lista delle posizioni
         var places = [
             {% for entity in entities %}
@@ -102,6 +104,10 @@
                 animation: google.maps.Animation.DROP
             });
 
+            if (type == 'tourism_proposal') {
+                proposalMarker.push(marker);
+            }
+
             clusterer.addMarker(marker);
 
             var contentString = '<div id="content">' +
@@ -159,6 +165,17 @@
                 content = 'Error: The Geolocation service failed.';
             } else {
                 content = 'Error: Your browser doesn\'t support geolocation.';
+            }
+        }
+
+        function toggleGroup() {
+            for (var i = 0; i < proposalMarker.length; i++) {
+                var marker = proposalMarker[i];
+                if (!marker.getVisible()) {
+                    marker.setVisible(true);
+                } else {
+                    marker.setVisible(false);
+                }
             }
         }
 
