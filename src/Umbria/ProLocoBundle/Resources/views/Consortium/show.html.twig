@@ -121,10 +121,12 @@
 
         {% set latitude = '' %}
         {% set longitude = '' %}
+        {% for address in consortium.address %}
         {% if address.latitude != '' %}
         {% set latitude = address.latitude %}
         {% set longitude = address.longitude %}
         {% endif %}
+        {% endfor %}
 
         // settaggio del cookie
         Cookies.set('lat', {{ latitude }});
