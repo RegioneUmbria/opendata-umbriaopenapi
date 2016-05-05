@@ -96,5 +96,16 @@
         $(function () {
             $('[data-toggle="tooltip"]').tooltip()
         })
+
+        {% set latitude = '' %}
+        {% set longitude = '' %}
+        {% if iat.latitude != '' %}
+        {% set latitude = iat.latitude %}
+        {% set longitude = iat.longitude %}
+        {% endif %}
+
+        // settaggio del cookie
+        Cookies.set('lat', {{ latitude }});
+        Cookies.set('lng', {{ longitude }});
     </script>
 {% endblock %}

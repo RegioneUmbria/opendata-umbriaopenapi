@@ -118,5 +118,16 @@
         $(function () {
             $('[data-toggle="tooltip"]').tooltip()
         })
+
+        {% set latitude = '' %}
+        {% set longitude = '' %}
+        {% if address.latitude != '' %}
+        {% set latitude = address.latitude %}
+        {% set longitude = address.longitude %}
+        {% endif %}
+
+        // settaggio del cookie
+        Cookies.set('lat', {{ latitude }});
+        Cookies.set('lng', {{ longitude }});
     </script>
 {% endblock %}
