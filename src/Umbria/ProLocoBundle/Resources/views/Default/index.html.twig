@@ -49,10 +49,25 @@
             // GEOLOCATION
             geolocation();
 
+            // riposizionamento mappa in relazione all'ultimo place visitato
+            changeBounds = true;
+            latCenter = Cookies.get('lat');
+            lngCenter = Cookies.get('lng');
+
+            if (latCenter != null && lngCenter != null) {
+                map.setCenter({lat: parseFloat(latCenter), lng: parseFloat(lngCenter)});
+                map.setZoom(15);
+
+                Cookies.remove('lat');
+                Cookies.remove('lng');
+
+                changeBounds = false;
+            }
+            
             // aggiunta maker
             var bounds = new google.maps.LatLngBounds();
             for (var i = 0; i < places.length; i++) {
-                addMarkerCall(places[i], bounds, i * 10);
+                addMarkerCall(places[i], bounds, i * 10, changeBounds);
             }
 
             // opzioni cluster
@@ -60,27 +75,15 @@
 
             // creazione clusterer
             clusterer = new MarkerClusterer(map, [], mcOptions);
-
-            // riposizionamento mappa
-            latCenter = Cookies.get('lat');
-            lngCenter = Cookies.get('lng');
-
-            if(latCenter != null && lngCenter != null){
-            map.setCenter({lat: parseFloat(latCenter), lng: parseFloat(lngCenter)});
-            map.setZoom(15);
-
-            Cookies.remove('lat');
-            Cookies.remove('lng');
-            }
         }
 
-        function addMarkerCall(place, bounds, interval) {
+        function addMarkerCall(place, bounds, interval, changeBounds) {
             setTimeout(function () {
-                addMarker(place, bounds)
+                addMarker(place, bounds, changeBounds)
             }, interval);
         }
 
-        function addMarker(place, bounds) {
+        function addMarker(place, bounds, changeBounds) {
             var name = place.name;
             var type = place.type;
             var latLng = place.latLng;
@@ -135,8 +138,10 @@
                 infowindow.open(map, marker);
             });
 
-            bounds.extend(marker.position);
-            map.fitBounds(bounds);
+            if(changeBounds){
+                bounds.extend(marker.position);
+                map.fitBounds(bounds);
+            }
         }
 
         //_______________________________________________ GEOLOCATION
