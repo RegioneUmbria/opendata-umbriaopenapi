@@ -204,9 +204,9 @@ class Attractor
     /**
      * @ORM\OneToMany(targetEntity="Category", mappedBy="attrattore", cascade={"merge", "remove"})
      *
-     * @JMS\Type("ArrayCollection<Umbria\OpenApiBundle\Entity\Tourism\Category>")
+     * @JMS\Type("ArrayCollection<Umbria\OpenApiBundle\Entity\Tourism\attractorCategory>")
      * @JMS\XmlList(entry="Description")
-     *
+     * @JMS\SerializedName("umb_descrizione")
      * @JMS\Groups({"attractor.*"})
      */
     private $categorie;
@@ -245,6 +245,15 @@ class Attractor
      * @JMS\Groups({"attractor.*"})
      */
     private $wikipediaLink;
+
+    /**
+     * @ORM\Column(type="string", nullable=true)
+     *
+     * @JMS\Groups({"attractor.*"})
+     */
+    private $locatedIn;
+
+
 
     /********** Constructor **/
     public function __construct()
@@ -704,6 +713,22 @@ class Attractor
     public function getWikipediaLink()
     {
         return $this->wikipediaLink;
+    }
+
+    /**
+     * @return string
+     */
+    public function getLocatedIn()
+    {
+        return $this->locatedIn;
+    }
+
+    /**
+     * @param string $locatedIn
+     */
+    public function setLocatedIn($locatedIn)
+    {
+        $this->locatedIn = $locatedIn;
     }
 
     /**
