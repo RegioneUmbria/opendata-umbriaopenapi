@@ -103,7 +103,7 @@ class ConsortiumController extends FOSRestController
     {
         $daysToOld = $this->container->getParameter('consortium_days_to_old');
         $url = $this->container->getParameter('url_consortium');
-        $urlSilk = $this->container->getParameter('url_consortium_silk');
+        $urlSilkSameAs = $this->container->getParameter('url_consortium_silk');
 
         $filters = $this->filterBag->getFilterBag($request);
         $offset = $filters->has('start') ? $filters->get('start') : 0;
@@ -124,7 +124,7 @@ class ConsortiumController extends FOSRestController
                 $this->em->persist($setting);
                 $this->em->flush();
 
-                $this->curlBuilder->updateEntities($url, $urlSilk, self::DATASET_TOURISM_CONSORTIUM);
+                $this->curlBuilder->updateEntities($url, self::DATASET_TOURISM_CONSORTIUM, $urlSilkSameAs);
             }
         } else {
             $setting = new Setting();
@@ -133,7 +133,7 @@ class ConsortiumController extends FOSRestController
             $this->em->persist($setting);
             $this->em->flush();
 
-            $this->curlBuilder->updateEntities($url, $urlSilk, self::DATASET_TOURISM_CONSORTIUM);
+            $this->curlBuilder->updateEntities($url, self::DATASET_TOURISM_CONSORTIUM, $urlSilkSameAs);
         }
 
         $builder = $this->em->createQueryBuilder()

@@ -101,7 +101,7 @@ class IatController extends FOSRestController
     {
         $daysToOld = $this->container->getParameter('iat_days_to_old');
         $url = $this->container->getParameter('url_iat');
-        $urlSilk = $this->container->getParameter('url_iat_silk');
+        $urlSilkSameAs = $this->container->getParameter('url_iat_silk');
 
         $filters = $this->filterBag->getFilterBag($request);
         $offset = $filters->has('start') ? $filters->get('start') : 0;
@@ -122,7 +122,7 @@ class IatController extends FOSRestController
                 $this->em->persist($setting);
                 $this->em->flush();
 
-                $this->curlBuilder->updateEntities($url, $urlSilk, self::DATASET_TOURISM_IAT);
+                $this->curlBuilder->updateEntities($url, self::DATASET_TOURISM_IAT, $urlSilkSameAs);
             }
         } else {
             $setting = new Setting();
@@ -131,7 +131,7 @@ class IatController extends FOSRestController
             $this->em->persist($setting);
             $this->em->flush();
 
-            $this->curlBuilder->updateEntities($url, $urlSilk, self::DATASET_TOURISM_IAT);
+            $this->curlBuilder->updateEntities($url, self::DATASET_TOURISM_IAT, $urlSilkSameAs);
         }
 
         $builder = $this->em->createQueryBuilder()

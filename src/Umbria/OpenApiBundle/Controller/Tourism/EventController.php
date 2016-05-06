@@ -94,7 +94,7 @@ class EventController extends FOSRestController
     {
         $daysToOld = $this->container->getParameter('event_days_to_old');
         $url = $this->container->getParameter('url_event');
-        $urlSilk = $this->container->getParameter('url_event_silk');
+        $urlSilkSameAs = $this->container->getParameter('url_event_silk');
 
         $filters = $this->filterBag->getFilterBag($request);
         $offset = $filters->has('start') ? $filters->get('start') : 0;
@@ -115,7 +115,7 @@ class EventController extends FOSRestController
                 $this->em->persist($setting);
                 $this->em->flush();
 
-                $this->curlBuilder->updateEntities($url, $urlSilk, self::DATASET_TOURISM_EVENT);
+                $this->curlBuilder->updateEntities($url, self::DATASET_TOURISM_EVENT, $urlSilkSameAs);
             }
         } else {
             $setting = new Setting();
@@ -124,7 +124,7 @@ class EventController extends FOSRestController
             $this->em->persist($setting);
             $this->em->flush();
 
-            $this->curlBuilder->updateEntities($url, $urlSilk, self::DATASET_TOURISM_EVENT);
+            $this->curlBuilder->updateEntities($url, self::DATASET_TOURISM_EVENT, $urlSilkSameAs);
         }
 
         $builder = $this->em->createQueryBuilder()
