@@ -94,7 +94,8 @@ class AttractorController extends FOSRestController
     {
         $daysToOld = $this->container->getParameter('attractor_days_to_old');
         $url = $this->container->getParameter('url_attractor');
-        $urlSilk = $this->container->getParameter('url_attractor_silk');
+        $urlSilkSameAs = $this->container->getParameter('url_attractor_silk');
+        $urlSilkLocatedIn = $this->container->getParameter('url_attractor_silk_located_in');
 
         $filters = $this->filterBag->getFilterBag($request);
         $offset = $filters->has('start') ? $filters->get('start') : 0;
@@ -115,7 +116,7 @@ class AttractorController extends FOSRestController
                 $this->em->persist($setting);
                 $this->em->flush();
 
-                $this->curlBuilder->updateEntities($url, $urlSilk, self::DATASET_TOURISM_ATTRACTOR);
+                $this->curlBuilder->updateEntities($url, self::DATASET_TOURISM_ATTRACTOR, $urlSilkSameAs, $urlSilkLocatedIn);
             }
         } else {
             $setting = new Setting();
@@ -124,7 +125,7 @@ class AttractorController extends FOSRestController
             $this->em->persist($setting);
             $this->em->flush();
 
-            $this->curlBuilder->updateEntities($url, $urlSilk, self::DATASET_TOURISM_ATTRACTOR);
+            $this->curlBuilder->updateEntities($url, self::DATASET_TOURISM_ATTRACTOR, $urlSilkSameAs, $urlSilkLocatedIn);
         }
 
         $builder = $this->em->createQueryBuilder()
