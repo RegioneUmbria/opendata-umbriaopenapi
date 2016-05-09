@@ -63,9 +63,13 @@
                                     {% if coordinate.latitude != '' %}
                                         <small>umbria:</small>
                                         {{ coordinate.latitude }},{{ coordinate.longitude }}
+                                        {% set latitude = coordinate.latitude %}
+                                        {% set longitude = coordinate.longitude %}
                                     {% elseif coordinate.dbpediaLatitude != '' %}
                                         <small>dbpedia:
                                         </small> {{ coordinate.dbpediaLatitude }},{{ coordinate.dbpediaLongitude }}
+                                        {% set latitude = coordinate.dbpediaLatitude %}
+                                        {% set longitude = coordinate.dbpediaLongitude %}
                                     {% elseif coordinate.googleLatitude != '' %}
                                         <small>google:
                                         </small>
@@ -75,6 +79,8 @@
                                         <span class="glyphicon glyphicon-info-sign pull-right" data-toggle="tooltip"
                                               data-placement="top"
                                               title="Posizione calcola. Non se ne garantisce l'affidabilità"></span>
+                                        {% set latitude = coordinate.googleLatitude %}
+                                        {% set longitude = coordinate.googleLongitude %}
                                     {% else %}
                                         -
                                     {% endif %}
@@ -133,5 +139,24 @@
         $(function () {
             $('[data-toggle="tooltip"]').tooltip()
         })
+
+        {% set latitude = '' %}
+        {% set longitude = '' %}
+        {% for coordinate in proposal.coordinate %}
+        {% if coordinate.latitude != '' %}
+        {% set latitude = coordinate.latitude %}
+        {% set longitude = coordinate.longitude %}
+        {% elseif coordinate.dbpediaLatitude != '' %}
+        {% set latitude = coordinate.dbpediaLatitude %}
+        {% set longitude = coordinate.dbpediaLongitude %}
+        {% elseif coordinate.googleLatitude != '' %}
+        {% set latitude = coordinate.googleLatitude %}
+        {% set longitude = coordinate.googleLongitude %}
+        {% endif %}
+        {% endfor %}
+
+        // settaggio del cookie
+        Cookies.set('lat', {{ latitude }});
+        Cookies.set('lng', {{ longitude }});
     </script>
 {% endblock %}
