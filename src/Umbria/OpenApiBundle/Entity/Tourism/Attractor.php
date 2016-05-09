@@ -38,6 +38,8 @@ class Attractor
      *
      * @JMS\Type("string")
      *
+     * @JMS\SerializedName("id")
+     *
      * @JMS\Groups({"attractor.*"})
      */
     private $idElemento;
@@ -204,9 +206,10 @@ class Attractor
     /**
      * @ORM\OneToMany(targetEntity="Category", mappedBy="attrattore", cascade={"merge", "remove"})
      *
-     * @JMS\Type("ArrayCollection<Umbria\OpenApiBundle\Entity\Tourism\attractorCategory>")
+     * @JMS\Type("ArrayCollection<Umbria\OpenApiBundle\Entity\Tourism\Category>")
+     *
      * @JMS\XmlList(entry="Description")
-     * @JMS\SerializedName("umb_descrizione")
+     *
      * @JMS\Groups({"attractor.*"})
      */
     private $categorie;

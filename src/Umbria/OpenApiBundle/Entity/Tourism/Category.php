@@ -27,6 +27,8 @@ class Category
      *
      * @JMS\Type("string")
      *
+     * @JMS\SerializedName("label")
+     *
      * @JMS\Groups({"category.*"})
      */
     private $cat;

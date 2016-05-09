@@ -32,7 +32,7 @@ class CurlBuilder
         $this->serializer = $serializer;
     }
 
-    public function updateEntities($url, $urlSilk, $entityType)
+    public function updateEntities($url, $entityType, $urlSameAs = null, $urlLocatedIn = null)
     {
         // rimozione vecchie entità
         $rdfs = $this->em->getRepository('UmbriaOpenApiBundle:Tourism\RDF')->findAll();
@@ -49,13 +49,21 @@ class CurlBuilder
         $rdf = $this->getResource($url);
         $xml = $this->xmlConversion($rdf);
 
-        // recupero rdf silk
-        if ($entityType == 'tourism-attractor') {
-            $rdfSilk = $this->getResource($urlSilk);
-            $xmlSilk = simplexml_load_string($this->xmlConversion($rdfSilk));
-            $dbpediaEntities = $xmlSilk->Description;
+        // recupero rdf silk samAs
+        $sameAsEntities = null;
+        if ($urlSameAs != null) {
+            $rdfSilkSameAs = $this->getResource($urlSameAs);
+            $xmlSameAs = simplexml_load_string($this->xmlConversion($rdfSilkSameAs));
+            $sameAsEntities = $xmlSameAs->Description;
         }
 
+        //recupero rdf silk locatedIn
+        $locatedInEntities = null;
+        if ($urlLocatedIn != null) {
+            $rdfSilkLocatedIn = $this->getResource($urlLocatedIn);
+            $xmlLocatedIn = simplexml_load_string($this->xmlConversion($rdfSilkLocatedIn));
+            $locatedInEntities = $xmlLocatedIn->Description;
+        }
         // Deserializzazione
         /** @var RDF $data */
         $data = $this->serializer->deserialize($xml, 'Umbria\OpenApiBundle\Entity\Tourism\RDF', 'xml');
@@ -80,46 +88,72 @@ class CurlBuilder
             /** @var Attractor $attractor */
             /* @noinspection PhpUndefinedVariableInspection */
             foreach ($entities as $attractor) {
-
-                // recupero risorsa DBpedia associata all'elemento
-                $dbpediaResource = null;
-                /* @noinspection PhpUndefinedVariableInspection */
-                foreach ($dbpediaEntities as $dbpediaEntity) {
-                    /* @noinspection PhpUndefinedMethodInspection */
-                    $attributes = $dbpediaEntity[0]->attributes();
-                    foreach ($attributes as $attribute) {
-                        // se id dell'elemento è uguale
-                        if ((string) $attribute[0] == $attractor->getIdElemento()) {
-                            $dbpediaAttributes = $dbpediaEntity[0]->sameAs->attributes();
-                            foreach ($dbpediaAttributes as $dbpediaAttribute) {
-                                $dbpediaResource = (string) $dbpediaAttribute[0];
+                if ($sameAsEntities != null) {
+                    // recupero sameAs DBpedia
+                    $dbpediaResource = null;
+                    /* @noinspection PhpUndefinedVariableInspection */
+                    foreach ($sameAsEntities as $dbpediaEntity) {
+                        /* @noinspection PhpUndefinedMethodInspection */
+                        $attributes = $dbpediaEntity[0]->attributes();
+                        foreach ($attributes as $attribute) {
+                            // se id dell'elemento è uguale
+                            $arrayURI = explode("/", (string)$attribute[0]);
+                            $idSameAs = end($arrayURI);
+                            if ($idSameAs == $attractor->getIdElemento()) {
+                                $dbpediaAttributes = $dbpediaEntity[0]->sameAs->attributes();
+                                foreach ($dbpediaAttributes as $dbpediaAttribute) {
+                                    $dbpediaResource = (string)$dbpediaAttribute[0];
+                                };
                             };
-                        };
+                        }
+                    }
+
+                    // DBpedia
+                    $dbpediaUrl = 'http://dbpedia.org/sparql?default-graph-uri=http%3A%2F%2Fdbpedia.org&query=select+distinct+*+where+%7B%3C' . $dbpediaResource . '%3E+%3Fp+%3Fo%7D+LIMIT+100&format=application%2Fsparql-results%2Bjson';
+                    $dbpediaResp = json_decode($this->getResource($dbpediaUrl), true);
+                    $bindings = $dbpediaResp['results']['bindings'];
+
+                    // Aggiunta risorsa DBpedia
+                    $attractor->setDbpediaResource($dbpediaResource);
+
+                    // Aggiunta abstract
+                    foreach ($bindings as $binding) {
+                        if ($binding['p']['value'] == 'http://dbpedia.org/ontology/abstract' and $binding['o']['xml:lang'] == 'it') {
+                            $attractor->setDbpediaAbstract($binding['o']['value']);
+                            $attractor->setDbpediaInfo(true);
+                        }
+                    }
+
+                    // Aggiunta link Wikipedia
+                    foreach ($bindings as $binding) {
+                        if ($binding['p']['value'] == 'http://xmlns.com/foaf/0.1/isPrimaryTopicOf') {
+                            $attractor->setWikipediaLink($binding['o']['value']);
+                            $attractor->setDbpediaInfo(true);
+                        }
                     }
                 }
 
-                // DBpedia
-                $dbpediaUrl = 'http://dbpedia.org/sparql?default-graph-uri=http%3A%2F%2Fdbpedia.org&query=select+distinct+*+where+%7B%3C'.$dbpediaResource.'%3E+%3Fp+%3Fo%7D+LIMIT+100&format=application%2Fsparql-results%2Bjson';
-                $dbpediaResp = json_decode($this->getResource($dbpediaUrl), true);
-                $bindings = $dbpediaResp['results']['bindings'];
-
-                // Aggiunta risorsa DBpedia
-                $attractor->setDbpediaResource($dbpediaResource);
-
-                // Aggiunta abstract
-                foreach ($bindings as $binding) {
-                    if ($binding['p']['value'] == 'http://dbpedia.org/ontology/abstract' and $binding['o']['xml:lang'] == 'it') {
-                        $attractor->setDbpediaAbstract($binding['o']['value']);
-                        $attractor->setDbpediaInfo(true);
+                if ($locatedInEntities != null) {
+                    //recupero locatedIn DBpedia
+                    $dbpediaLocatedIn = null;
+                    /* @noinspection PhpUndefinedVariableInspection */
+                    foreach ($locatedInEntities as $dbpediaEntity) {
+                        /* @noinspection PhpUndefinedMethodInspection */
+                        $attributes = $dbpediaEntity[0]->attributes();
+                        foreach ($attributes as $attribute) {
+                            // se id dell'elemento è uguale
+                            $arrayURI = explode("/", (string)$attribute[0]);
+                            $idLocatedIn = end($arrayURI);
+                            if ($idLocatedIn == $attractor->getIdElemento()) {
+                                $dbpediaAttributes = $dbpediaEntity[0]->locatedIn->attributes();
+                                foreach ($dbpediaAttributes as $dbpediaAttribute) {
+                                    $dbpediaLocatedIn = (string)$dbpediaAttribute[0];
+                                };
+                            };
+                        }
                     }
-                }
-
-                // Aggiunta link Wikipedia
-                foreach ($bindings as $binding) {
-                    if ($binding['p']['value'] == 'http://xmlns.com/foaf/0.1/isPrimaryTopicOf') {
-                        $attractor->setWikipediaLink($binding['o']['value']);
-                        $attractor->setDbpediaInfo(true);
-                    }
+                    // Aggiunta risorsa DBpedia locatedIn
+                    $attractor->setLocatedIn($dbpediaLocatedIn);
                 }
 
                 // Arricchimento coordinate
@@ -349,10 +383,18 @@ class CurlBuilder
     public function xmlConversion($rdf)
     {
         // Attrattori
+
+        $rdf = str_replace('<!--<group:categorie>', null, $rdf);
+        $rdf = str_replace('<!--</group:categorie>', null, $rdf);
+        $rdf = str_replace('<!--<group:descrizioni>', null, $rdf);
+        $rdf = str_replace('<!--</group:descrizioni>', null, $rdf);
+
         $rdf = str_replace('<umb:contenuto_relazionato>', null, $rdf);
         $rdf = str_replace('</umb:contenuto_relazionato>', null, $rdf);
-        $rdf = str_replace('<umb:descrizione>', null, $rdf);
-        $rdf = str_replace('</umb:descrizione>', null, $rdf);
+        $rdf = str_replace('<umb:categoria>', '<categorie>', $rdf);
+        $rdf = str_replace('</umb:categoria>', '</categorie>', $rdf);
+        $rdf = str_replace('<umb:descrizione>', '<descrizioni>', $rdf);
+        $rdf = str_replace('</umb:descrizione>', '</descrizioni>', $rdf);
         $rdf = str_replace('<umb:tempo_di_viaggio>', null, $rdf);
         $rdf = str_replace('</umb:tempo_di_viaggio>', null, $rdf);
         $rdf = str_replace('<umb:coordinate>', null, $rdf);
