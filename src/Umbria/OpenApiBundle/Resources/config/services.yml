@@ -4,8 +4,9 @@ parameters:
     url_proposal_silk: null
     proposal_days_to_old: 0
 
-    url_attractor: http://odn.cloudapp.net/dataset/64fcc71f-0fd5-438d-87c6-a2fb5a9f1740/resource/ef95d711-9d5a-451b-8a95-83a6713b8075/download/attrattoriitIT.zipattrattoriitIT.rdf
-    url_attractor_silk: http://odn.cloudapp.net/dataset/64fcc71f-0fd5-438d-87c6-a2fb5a9f1740/resource/0bfc6ad7-2257-4f7b-a982-11d6d3abadf6/download/owlSameAsDBpedia.rdf
+    url_attractor: https://odnt-srv01/internalcatalog/dataset/0b949158-3720-4bc8-9157-643f33a3530c/resource/5789b777-5168-492a-9cc6-8fa831387a55/download/attrattoriitIT.zipattrattoriitIT.rdf
+    url_attractor_silk: https://odnt-srv01/internalcatalog/dataset/0b949158-3720-4bc8-9157-643f33a3530c/resource/ee70b0e1-b871-473a-87d3-8c35c6008908/download/sameAsdbpediaresource.rdf
+    url_attractor_silk_located_in: https://odnt-srv01/internalcatalog/dataset/0b949158-3720-4bc8-9157-643f33a3530c/resource/2e6efb86-ada0-42ba-9752-a83a46373154/download/locatedIndbpediaresource.rdf
     attractor_days_to_old: 0
 
     url_event: http://odn.cloudapp.net/dataset/b888cb75-07a9-449b-a2af-578accd70bfc/resource/76b7ebf6-2bd1-4282-8c80-c8af8e51d062/download/eventiitIT.zipeventiitIT.rdf
