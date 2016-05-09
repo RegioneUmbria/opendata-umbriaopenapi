@@ -168,6 +168,20 @@
                                 {% endif %}
                             </td>
                         </tr>
+                        <tr>
+                            <td>
+                                <small>Localizzazione dbpedia</small>
+                            </td>
+                            <td>
+                                {% if attractor.locatedIn != '' %}
+                                    <a href="{{ attractor.locatedIn }}" target="_blank">
+                                        {{ attractor.locatedIn }}
+                                    </a>
+                                {% else %}
+                                    -
+                                {% endif %}
+                            </td>
+                        </tr>
                         </tbody>
                     </table>
                 </div>
