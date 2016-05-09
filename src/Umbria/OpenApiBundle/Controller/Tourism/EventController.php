@@ -138,7 +138,7 @@ class EventController extends FOSRestController
 
         $viewGroups = array(
             'response',
-            'rdf.*', 'event.*', 'description.*', 'category.*', 'info.*', 'travel-time.*', 'coordinate.*', 'download.*',
+            'rdf.*', 'event.*', 'description.*', 'category.*', 'info.*', 'travel-time.*', 'coordinate.*', 'download.*', 'image.*',
         );
 
         $view = new View(new EntityResponse($resultsPagination->getItems(), count($resultsPagination), $countPagination->getTotalItemCount()));
