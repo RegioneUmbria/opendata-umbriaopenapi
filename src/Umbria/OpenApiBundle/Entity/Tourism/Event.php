@@ -22,6 +22,7 @@ class Event
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
+     * @JMS\Exclude()
      */
     private $id;
 
@@ -36,6 +37,8 @@ class Event
      * @JMS\Type("string")
      *
      * @JMS\Groups({"event.*"})
+     *
+     * @JMS\SerializedName("id")
      */
     private $idElemento;
 
@@ -43,6 +46,8 @@ class Event
      * @ORM\Column(type="integer")
      *
      * @JMS\Type("integer")
+     *
+     * @JMS\SerializedName("id")
      *
      * @JMS\Groups({"event.*"})
      */

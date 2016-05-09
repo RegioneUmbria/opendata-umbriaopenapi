@@ -21,6 +21,7 @@ class Description
      * @ORM\GeneratedValue(strategy="AUTO")
      *
      * @JMS\Groups({"description.*"})
+     * @JMS\Exclude()
      */
     private $id;
 
