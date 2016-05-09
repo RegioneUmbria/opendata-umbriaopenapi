@@ -4,12 +4,12 @@ parameters:
     url_proposal_silk: null
     proposal_days_to_old: 0
 
-    url_attractor: https://odnt-srv01/internalcatalog/dataset/0b949158-3720-4bc8-9157-643f33a3530c/resource/5789b777-5168-492a-9cc6-8fa831387a55/download/attrattoriitIT.zipattrattoriitIT.rdf
-    url_attractor_silk: https://odnt-srv01/internalcatalog/dataset/0b949158-3720-4bc8-9157-643f33a3530c/resource/ee70b0e1-b871-473a-87d3-8c35c6008908/download/sameAsdbpediaresource.rdf
-    url_attractor_silk_located_in: https://odnt-srv01/internalcatalog/dataset/0b949158-3720-4bc8-9157-643f33a3530c/resource/2e6efb86-ada0-42ba-9752-a83a46373154/download/locatedIndbpediaresource.rdf
+    url_attractor: http://dati.umbria.it/dataset/ab39e23d-540f-4aa1-b27f-3fb244837545/resource/59822c9d-c9d6-4bcd-87c6-cd35a9f3d41d/download/attrattoriitit.zipattrattoriitit.rdf
+    url_attractor_silk: http://dati.umbria.it/dataset/ab39e23d-540f-4aa1-b27f-3fb244837545/resource/2d9c13bf-d48c-4df2-b272-8f183c06c4c0/download/sameasdbpediaresource.rdf
+    url_attractor_silk_located_in: http://dati.umbria.it/dataset/ab39e23d-540f-4aa1-b27f-3fb244837545/resource/138b1d6c-3f01-407d-9b5d-36841442d44b/download/locatedindbpediaresource.rdf
     attractor_days_to_old: 0
 
-    url_event: http://odn.cloudapp.net/dataset/b888cb75-07a9-449b-a2af-578accd70bfc/resource/76b7ebf6-2bd1-4282-8c80-c8af8e51d062/download/eventiitIT.zipeventiitIT.rdf
+    url_event: http://dati.umbria.it/dataset/410faa97-546b-4362-a6d7-f8794d18ed19/resource/795338cb-d5b6-40c2-98ad-05fcad7f194c/download/eventiitit.zipeventiitit.rdf
     url_event_silk: null
     event_days_to_old: 0
 
