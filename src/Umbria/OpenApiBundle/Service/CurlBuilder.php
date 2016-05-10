@@ -47,7 +47,7 @@ class CurlBuilder
 
         // recupero rdf elementi
         $rdf = $this->getResource($url);
-        $xml = $this->xmlConversion($rdf);
+        $xml = $this->xmlConversion($rdf, $entityType);
 
         // recupero rdf silk samAs
         $sameAsEntities = null;
@@ -380,10 +380,29 @@ class CurlBuilder
         return;
     }
 
-    public function xmlConversion($rdf)
+    public function xmlConversion($rdf, $entityType = null)
     {
-        // Attrattori
+        if ($entityType == 'tourism-attractor') {
+            $tagName = "attrattori";
+        }/* elseif ($entityType == 'tourism-proposal') {
+            $tagName = "proposte";
+        } */ elseif ($entityType == 'tourism-event') {
+            $tagName = "eventi";
+        }/* elseif ($entityType == 'tourism-travel-agency') {
+            $tagName = "agenzie_viaggio";
+        } elseif ($entityType == 'tourism-consortium') {
+            $tagName = "consorzi";
+        } elseif ($entityType == 'tourism-profession') {
+            $tagName = "professioni";
+        } elseif ($entityType == 'tourism-iat') {
+            $tagName = "iat";
+        }*/
 
+
+        if (isset($tagName)) {
+            $rdf = preg_replace('/<rdf:RDF.*?>/', "<rdf:RDF> <$tagName>", $rdf);
+            $rdf = preg_replace('/<\/rdf:RDF?>/', "</$tagName> </rdf:RDF>", $rdf);
+        }
 
         /*Attrattori,Eventi*/
         $rdf = str_replace('<umb:contenuto_relazionato>', null, $rdf);
