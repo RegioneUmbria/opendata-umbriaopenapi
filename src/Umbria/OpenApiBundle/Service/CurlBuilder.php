@@ -388,9 +388,9 @@ class CurlBuilder
             $tagName = "proposte";
         } elseif ($entityType == 'tourism-event') {
             $tagName = "eventi";
-        }/* elseif ($entityType == 'tourism-travel-agency') {
+        } elseif ($entityType == 'tourism-travel-agency') {
             $tagName = "agenzie_viaggio";
-        } elseif ($entityType == 'tourism-consortium') {
+        } /*elseif ($entityType == 'tourism-consortium') {
             $tagName = "consorzi";
         } elseif ($entityType == 'tourism-profession') {
             $tagName = "professioni";
@@ -404,23 +404,29 @@ class CurlBuilder
             $rdf = preg_replace('/<\/rdf:RDF?>/', "</$tagName> </rdf:RDF>", $rdf);
         }
 
+
         /*Attrattori,Eventi,Proposte*/
         $rdf = str_replace('<umb:contenuto_relazionato>', null, $rdf);
         $rdf = str_replace('</umb:contenuto_relazionato>', null, $rdf);
         $rdf = str_replace('<umb:categoria>', '<categorie>', $rdf);
         $rdf = str_replace('</umb:categoria>', '</categorie>', $rdf);
+        $rdf = preg_replace('/<\/categorie>[ \n\r]*<categorie>/', "", $rdf);
         $rdf = str_replace('<umb:descrizione>', '<descrizioni>', $rdf);
         $rdf = str_replace('</umb:descrizione>', '</descrizioni>', $rdf);
+        $rdf = preg_replace('/<\/descrizioni>[ \n\r]*<descrizioni>/', "", $rdf);
         $rdf = str_replace('<umb:coordinate>', '<coordinate>', $rdf);
         $rdf = str_replace('</umb:coordinate>', '</coordinate>', $rdf);
+        $rdf = preg_replace('/<\/coordinate>[ \n\r]*<coordinate>/', "", $rdf);
 
         /*Attrattori, Proposte*/
         $rdf = str_replace('<umb:tempo_di_viaggio>', '<tempi_di_viaggio>', $rdf);
         $rdf = str_replace('</umb:tempo_di_viaggio>', '</tempi_di_viaggio>', $rdf);
+        $rdf = preg_replace('/<\/tempi_di_viaggio>[ \n\r]*<tempi_di_viaggio>/', "", $rdf);
 
         /*Eventi*/
         $rdf = str_replace('<umb:immagine>', '<immagini>', $rdf);
         $rdf = str_replace('</umb:immagine>', '</immagini>', $rdf);
+        $rdf = preg_replace('/<\/immagini>[ \n\r]*<immagini>/', "", $rdf);
 
         $rdf = str_replace('<umb:abstract>', '<umb_abstract>', $rdf);
         $rdf = str_replace('</umb:abstract>', '</umb_abstract>', $rdf);
@@ -428,13 +434,33 @@ class CurlBuilder
         /*Proposte*/
         $rdf = str_replace('<umb:informazione>', '<informazioni>', $rdf);
         $rdf = str_replace('</umb:informazione>', '</informazioni>', $rdf);
+        $rdf = preg_replace('/<\/informazioni>[ \n\r]*<informazioni>/', "", $rdf);
+
+        /*Agenzie*/
+        $rdf = str_replace('<umb:indirizzo>', '<address>', $rdf);
+        $rdf = str_replace('</umb:indirizzo>', '</address>', $rdf);
+        $rdf = str_replace('<umb:telefoni>', '<phone>', $rdf);
+        $rdf = str_replace('</umb:telefoni>', '</phone>', $rdf);
+        $rdf = str_replace('<umb:fax>', '<fax_number>', $rdf);
+        $rdf = str_replace('</umb:fax>', '</fax_number>', $rdf);
+        $rdf = str_replace('<umb:email>', '<mbox>', $rdf);
+        $rdf = str_replace('</umb:email>', '</mbox>', $rdf);
+        $rdf = str_replace('<umb:homepage>', '<homepage>', $rdf);
+        $rdf = str_replace('</umb:homepage>', '</homepage>', $rdf);
+        $rdf = str_replace('<schema:telephone>', '<num_telefono>', $rdf);
+        $rdf = str_replace('</schema:telephone>', '</num_telefono>', $rdf);
+        $rdf = str_replace('<schema:faxNumber>', '<num_fax>', $rdf);
+        $rdf = str_replace('</schema:faxNumber>', '</num_fax>', $rdf);
+        $rdf = str_replace('<schema:email>', '<email>', $rdf);
+        $rdf = str_replace('</schema:email>', '</email>', $rdf);
+        $rdf = str_replace('<foaf:homepage>', '<homepage>', $rdf);
+        $rdf = str_replace('</foaf:homepage>', '</homepage>', $rdf);
+
 
         $rdf = str_replace('<umb:categoria>', null, $rdf);
         $rdf = str_replace('</umb:categoria>', null, $rdf);
         $rdf = str_replace('<umb:informazione>', null, $rdf);
         $rdf = str_replace('</umb:informazione>', null, $rdf);
-        $rdf = str_replace('<umb:indirizzo>', null, $rdf);
-        $rdf = str_replace('</umb:indirizzo>', null, $rdf);
         $rdf = str_replace('<umb:telefono>', null, $rdf);
         $rdf = str_replace('</umb:telefono>', null, $rdf);
         $rdf = str_replace('<umb:fax>', null, $rdf);
