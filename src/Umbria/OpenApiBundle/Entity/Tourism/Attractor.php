@@ -79,7 +79,6 @@ class Attractor
      *
      * @JMS\Type("string")
      *
-     * @JMS\SerializedName("abstract")
      *
      * @JMS\Groups({"attractor.*"})
      */
@@ -111,6 +110,7 @@ class Attractor
      * @JMS\Type("string")
      *
      * @JMS\Groups({"attractor.*"})
+     *
      */
     private $abstract;
 
