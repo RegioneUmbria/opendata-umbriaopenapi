@@ -384,9 +384,9 @@ class CurlBuilder
     {
         if ($entityType == 'tourism-attractor') {
             $tagName = "attrattori";
-        }/* elseif ($entityType == 'tourism-proposal') {
+        } elseif ($entityType == 'tourism-proposal') {
             $tagName = "proposte";
-        } */ elseif ($entityType == 'tourism-event') {
+        } elseif ($entityType == 'tourism-event') {
             $tagName = "eventi";
         }/* elseif ($entityType == 'tourism-travel-agency') {
             $tagName = "agenzie_viaggio";
@@ -404,7 +404,7 @@ class CurlBuilder
             $rdf = preg_replace('/<\/rdf:RDF?>/', "</$tagName> </rdf:RDF>", $rdf);
         }
 
-        /*Attrattori,Eventi*/
+        /*Attrattori,Eventi,Proposte*/
         $rdf = str_replace('<umb:contenuto_relazionato>', null, $rdf);
         $rdf = str_replace('</umb:contenuto_relazionato>', null, $rdf);
         $rdf = str_replace('<umb:categoria>', '<categorie>', $rdf);
@@ -414,7 +414,7 @@ class CurlBuilder
         $rdf = str_replace('<umb:coordinate>', '<coordinate>', $rdf);
         $rdf = str_replace('</umb:coordinate>', '</coordinate>', $rdf);
 
-        /*Attrattori*/
+        /*Attrattori, Proposte*/
         $rdf = str_replace('<umb:tempo_di_viaggio>', '<tempi_di_viaggio>', $rdf);
         $rdf = str_replace('</umb:tempo_di_viaggio>', '</tempi_di_viaggio>', $rdf);
 
@@ -422,13 +422,17 @@ class CurlBuilder
         $rdf = str_replace('<umb:immagine>', '<immagini>', $rdf);
         $rdf = str_replace('</umb:immagine>', '</immagini>', $rdf);
 
+        $rdf = str_replace('<umb:abstract>', '<umb_abstract>', $rdf);
+        $rdf = str_replace('</umb:abstract>', '</umb_abstract>', $rdf);
+
+        /*Proposte*/
+        $rdf = str_replace('<umb:informazione>', '<informazioni>', $rdf);
+        $rdf = str_replace('</umb:informazione>', '</informazioni>', $rdf);
 
         $rdf = str_replace('<umb:categoria>', null, $rdf);
         $rdf = str_replace('</umb:categoria>', null, $rdf);
         $rdf = str_replace('<umb:informazione>', null, $rdf);
         $rdf = str_replace('</umb:informazione>', null, $rdf);
-        $rdf = str_replace('<umb:download>', null, $rdf);
-        $rdf = str_replace('</umb:download>', null, $rdf);
         $rdf = str_replace('<umb:indirizzo>', null, $rdf);
         $rdf = str_replace('</umb:indirizzo>', null, $rdf);
         $rdf = str_replace('<umb:telefono>', null, $rdf);
