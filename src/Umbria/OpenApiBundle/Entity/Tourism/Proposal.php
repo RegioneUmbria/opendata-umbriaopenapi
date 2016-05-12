@@ -22,6 +22,7 @@ class Proposal
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
+     * @JMS\Exclude()
      */
     private $id;
 
@@ -36,6 +37,8 @@ class Proposal
      * @JMS\Type("string")
      *
      * @JMS\Groups({"proposal.*"})
+     *
+     * @JMS\SerializedName("id")
      */
     private $idElemento;
 
@@ -45,6 +48,8 @@ class Proposal
      * @JMS\Type("integer")
      *
      * @JMS\Groups({"proposal.*"})
+     *
+     * @JMS\SerializedName("id")
      */
     private $idContenuto;
 
@@ -54,6 +59,8 @@ class Proposal
      * @JMS\Type("string")
      *
      * @JMS\Groups({"proposal.*"})
+     *
+     * @JMS\SerializedName("label")
      */
     private $nomeProposta;
 
@@ -70,6 +77,8 @@ class Proposal
      * @ORM\Column(type="string", length=255)
      *
      * @JMS\Type("string")
+     *
+     * @JMS\SerializedName("subject")
      *
      * @JMS\Groups({"proposal.*"})
      */
@@ -241,6 +250,30 @@ class Proposal
     public function getType()
     {
         return self::TYPE;
+    }
+
+    /**
+     * Set idElemento.
+     *
+     * @param string $idElemento
+     *
+     * @return Proposal
+     */
+    public function setIdElemento($idElemento)
+    {
+        $this->idElemento = $idElemento;
+
+        return $this;
+    }
+
+    /**
+     * Get idElemento.
+     *
+     * @return string
+     */
+    public function getIdElemento()
+    {
+        return $this->idElemento;
     }
 
     /**
