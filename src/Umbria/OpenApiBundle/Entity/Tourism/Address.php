@@ -58,6 +58,9 @@ class Address
      * @JMS\Type("string")
      *
      * @JMS\Groups({"address.*"})
+     *
+     * @JMS\SerializedName("istat")
+     *
      */
     private $codiceIstatComune;
 

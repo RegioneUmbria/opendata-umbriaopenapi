@@ -28,6 +28,8 @@ class Homepage
      * @JMS\Type("string")
      *
      * @JMS\Groups({"homepage.*"})
+     *
+     * @JMS\SerializedName("url")
      */
     private $indirizzoInternet;
 

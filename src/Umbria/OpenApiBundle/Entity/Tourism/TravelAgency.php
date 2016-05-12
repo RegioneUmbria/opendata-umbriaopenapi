@@ -22,6 +22,7 @@ class TravelAgency
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
+     * @JMS\Exclude()
      */
     private $id;
 
@@ -36,6 +37,8 @@ class TravelAgency
      * @JMS\Type("string")
      *
      * @JMS\Groups({"travel-agency.*"})
+     *
+     * @JMS\SerializedName("id")
      */
     private $idElemento;
 
@@ -45,6 +48,8 @@ class TravelAgency
      * @JMS\Type("integer")
      *
      * @JMS\Groups({"travel-agency.*"})
+     *
+     * @JMS\SerializedName("id")
      */
     private $idContenuto;
 
@@ -54,6 +59,8 @@ class TravelAgency
      * @JMS\Type("string")
      *
      * @JMS\Groups({"travel-agency.*"})
+     *
+     * @JMS\SerializedName("label")
      */
     private $denominazione;
 
@@ -64,6 +71,8 @@ class TravelAgency
      * @JMS\XmlList(entry="Description")
      *
      * @JMS\Groups({"travel-agency.*"})
+     *
+     *
      */
     private $address;
 
@@ -82,7 +91,6 @@ class TravelAgency
      *
      * @JMS\Type("ArrayCollection<Umbria\OpenApiBundle\Entity\Tourism\FaxNumber>")
      * @JMS\XmlList(entry="Description")
-     * @JMS\SerializedName("faxNumber")
      *
      * @JMS\Groups({"travel-agency.*"})
      */

@@ -21,6 +21,7 @@ class Consortium
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
+     * @JMS\Exclude()
      */
     private $id;
 
@@ -35,6 +36,7 @@ class Consortium
      * @JMS\Type("string")
      *
      * @JMS\Groups({"consortium.*"})
+     * @JMS\SerializedName("id")
      */
     private $idElemento;
 
@@ -44,6 +46,9 @@ class Consortium
      * @JMS\Type("integer")
      *
      * @JMS\Groups({"consortium.*"})
+     * @JMS\SerializedName("id")
+     *
+     *
      */
     private $idContenuto;
 
@@ -53,6 +58,8 @@ class Consortium
      * @JMS\Type("string")
      *
      * @JMS\Groups({"consortium.*"})
+     *
+     * @JMS\SerializedName("label")
      */
     private $denominazione;
 
