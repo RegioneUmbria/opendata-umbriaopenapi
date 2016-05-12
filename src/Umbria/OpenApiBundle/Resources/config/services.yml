@@ -1,6 +1,6 @@
 parameters:
 
-    url_proposal: http://odn.cloudapp.net/dataset/33be3077-9612-4ef2-bf39-c0eb01dd6079/resource/258536a5-39e0-46bf-81c9-b118fd70aaed/download/proposteitIT.zipproposteitIT.rdf
+    url_proposal: http://dati.umbria.it/dataset/8b4f4b4b-7abc-4103-9082-96ba7023021d/resource/c46f350d-c2da-4204-aad9-c5d32ca3283c/download/proposteitit.zipproposteitit.rdf
     url_proposal_silk: null
     proposal_days_to_old: 0
 
