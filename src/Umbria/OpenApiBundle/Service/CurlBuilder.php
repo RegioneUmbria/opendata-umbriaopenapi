@@ -384,17 +384,127 @@ class CurlBuilder
     {
         if ($entityType == 'tourism-attractor') {
             $tagName = "attrattori";
+            $rdf = str_replace('<umb:contenuto_relazionato>', null, $rdf);
+            $rdf = str_replace('</umb:contenuto_relazionato>', null, $rdf);
+            $rdf = str_replace('<umb:categoria>', '<categorie>', $rdf);
+            $rdf = str_replace('</umb:categoria>', '</categorie>', $rdf);
+            $rdf = preg_replace('/<\/categorie>[ \n\r]*<categorie>/', "", $rdf);
+            $rdf = str_replace('<umb:descrizione>', '<descrizioni>', $rdf);
+            $rdf = str_replace('</umb:descrizione>', '</descrizioni>', $rdf);
+            $rdf = preg_replace('/<\/descrizioni>[ \n\r]*<descrizioni>/', "", $rdf);
+            $rdf = str_replace('<umb:coordinate>', '<coordinate>', $rdf);
+            $rdf = str_replace('</umb:coordinate>', '</coordinate>', $rdf);
+            $rdf = preg_replace('/<\/coordinate>[ \n\r]*<coordinate>/', "", $rdf);
+
+            $rdf = str_replace('<umb:abstract>', '<umb_abstract>', $rdf);
+            $rdf = str_replace('</umb:abstract>', '</umb_abstract>', $rdf);
+
+            $rdf = str_replace('<umb:tempo_di_viaggio>', '<tempi_di_viaggio>', $rdf);
+            $rdf = str_replace('</umb:tempo_di_viaggio>', '</tempi_di_viaggio>', $rdf);
+            $rdf = preg_replace('/<\/tempi_di_viaggio>[ \n\r]*<tempi_di_viaggio>/', "", $rdf);
         } elseif ($entityType == 'tourism-proposal') {
             $tagName = "proposte";
+            $rdf = str_replace('<umb:contenuto_relazionato>', null, $rdf);
+            $rdf = str_replace('</umb:contenuto_relazionato>', null, $rdf);
+            $rdf = str_replace('<umb:categoria>', '<categorie>', $rdf);
+            $rdf = str_replace('</umb:categoria>', '</categorie>', $rdf);
+            $rdf = preg_replace('/<\/categorie>[ \n\r]*<categorie>/', "", $rdf);
+            $rdf = str_replace('<umb:descrizione>', '<descrizioni>', $rdf);
+            $rdf = str_replace('</umb:descrizione>', '</descrizioni>', $rdf);
+            $rdf = preg_replace('/<\/descrizioni>[ \n\r]*<descrizioni>/', "", $rdf);
+            $rdf = str_replace('<umb:coordinate>', '<coordinate>', $rdf);
+            $rdf = str_replace('</umb:coordinate>', '</coordinate>', $rdf);
+            $rdf = preg_replace('/<\/coordinate>[ \n\r]*<coordinate>/', "", $rdf);
+
+            $rdf = str_replace('<umb:abstract>', '<umb_abstract>', $rdf);
+            $rdf = str_replace('</umb:abstract>', '</umb_abstract>', $rdf);
+
+            $rdf = str_replace('<umb:tempo_di_viaggio>', '<tempi_di_viaggio>', $rdf);
+            $rdf = str_replace('</umb:tempo_di_viaggio>', '</tempi_di_viaggio>', $rdf);
+            $rdf = preg_replace('/<\/tempi_di_viaggio>[ \n\r]*<tempi_di_viaggio>/', "", $rdf);
+
+            $rdf = str_replace('<umb:informazione>', '<informazioni>', $rdf);
+            $rdf = str_replace('</umb:informazione>', '</informazioni>', $rdf);
+            $rdf = preg_replace('/<\/informazioni>[ \n\r]*<informazioni>/', "", $rdf);
         } elseif ($entityType == 'tourism-event') {
             $tagName = "eventi";
+            $rdf = str_replace('<umb:contenuto_relazionato>', null, $rdf);
+            $rdf = str_replace('</umb:contenuto_relazionato>', null, $rdf);
+            $rdf = str_replace('<umb:categoria>', '<categorie>', $rdf);
+            $rdf = str_replace('</umb:categoria>', '</categorie>', $rdf);
+            $rdf = preg_replace('/<\/categorie>[ \n\r]*<categorie>/', "", $rdf);
+            $rdf = str_replace('<umb:descrizione>', '<descrizioni>', $rdf);
+            $rdf = str_replace('</umb:descrizione>', '</descrizioni>', $rdf);
+            $rdf = preg_replace('/<\/descrizioni>[ \n\r]*<descrizioni>/', "", $rdf);
+            $rdf = str_replace('<umb:coordinate>', '<coordinate>', $rdf);
+            $rdf = str_replace('</umb:coordinate>', '</coordinate>', $rdf);
+            $rdf = preg_replace('/<\/coordinate>[ \n\r]*<coordinate>/', "", $rdf);
+
+            $rdf = str_replace('<umb:abstract>', '<umb_abstract>', $rdf);
+            $rdf = str_replace('</umb:abstract>', '</umb_abstract>', $rdf);
+
+            $rdf = str_replace('<umb:immagine>', '<immagini>', $rdf);
+            $rdf = str_replace('</umb:immagine>', '</immagini>', $rdf);
+            $rdf = preg_replace('/<\/immagini>[ \n\r]*<immagini>/', "", $rdf);
         } elseif ($entityType == 'tourism-travel-agency') {
             $tagName = "agenzie_viaggio";
-        } /*elseif ($entityType == 'tourism-consortium') {
+            $rdf = str_replace('<umb:indirizzo>', '<address>', $rdf);
+            $rdf = str_replace('</umb:indirizzo>', '</address>', $rdf);
+            $rdf = preg_replace('/<\/address>[ \n\r]*<address>/', "", $rdf);
+            $rdf = str_replace('<schema:telephone>', '<phone><Description><num_telefono>', $rdf);
+            $rdf = str_replace('</schema:telephone>', '</num_telefono></Description></phone>', $rdf);
+            $rdf = preg_replace('/<\/phone>[ \n\r]*<phone>/', "", $rdf);
+            $rdf = str_replace('<schema:faxNumber>', '<fax_number><Description><num_fax>', $rdf);
+            $rdf = str_replace('</schema:faxNumber>', '</num_fax></Description></fax_number>', $rdf);
+            $rdf = preg_replace('/<\/fax_number>[ \n\r]*<fax_number>/', "", $rdf);
+            $rdf = str_replace('<schema:email>', '<mbox><Description><email>', $rdf);
+            $rdf = str_replace('</schema:email>', '</email></Description></mbox>', $rdf);
+            $rdf = preg_replace('/<\/mbox>[ \n\r]*<mbox>/', "", $rdf);
+            $rdf = str_replace('<foaf:homepage>', '<homepage><Description><url>', $rdf);
+            $rdf = str_replace('</foaf:homepage>', '</url></Description></homepage>', $rdf);
+            $rdf = preg_replace('/<\/homepage>[ \n\r]*<homepage>/', "", $rdf);
+        } elseif ($entityType == 'tourism-consortium') {
             $tagName = "consorzi";
+            $rdf = str_replace('<umb:indirizzo>', '<address>', $rdf);
+            $rdf = str_replace('</umb:indirizzo>', '</address>', $rdf);
+            $rdf = preg_replace('/<\/address>[ \n\r]*<address>/', "", $rdf);
+            $rdf = str_replace('<schema:telephone>', '<phone><Description><num_telefono>', $rdf);
+            $rdf = str_replace('</schema:telephone>', '</num_telefono></Description></phone>', $rdf);
+            $rdf = preg_replace('/<\/phone>[ \n\r]*<phone>/', "", $rdf);
+            $rdf = str_replace('<schema:faxNumber>', '<fax_number><Description><num_fax>', $rdf);
+            $rdf = str_replace('</schema:faxNumber>', '</num_fax></Description></fax_number>', $rdf);
+            $rdf = preg_replace('/<\/fax_number>[ \n\r]*<fax_number>/', "", $rdf);
+            $rdf = str_replace('<schema:email>', '<mbox><Description><email>', $rdf);
+            $rdf = str_replace('</schema:email>', '</email></Description></mbox>', $rdf);
+            $rdf = preg_replace('/<\/mbox>[ \n\r]*<mbox>/', "", $rdf);
+            $rdf = str_replace('<foaf:homepage>', '<homepage><Description><url>', $rdf);
+            $rdf = str_replace('</foaf:homepage>', '</url></Description></homepage>', $rdf);
+            $rdf = preg_replace('/<\/homepage>[ \n\r]*<homepage>/', "", $rdf);
         } elseif ($entityType == 'tourism-profession') {
             $tagName = "professioni";
-        } elseif ($entityType == 'tourism-iat') {
+            $rdf = str_replace('<umb:indirizzo>', '<address>', $rdf);
+            $rdf = str_replace('</umb:indirizzo>', '</address>', $rdf);
+            $rdf = preg_replace('/<\/address>[ \n\r]*<address>/', "", $rdf);
+            $rdf = str_replace('<schema:telephone>', '<phone><Description><num_telefono>', $rdf);
+            $rdf = str_replace('</schema:telephone>', '</num_telefono></Description></phone>', $rdf);
+            $rdf = preg_replace('/<\/phone>[ \n\r]*<phone>/', "", $rdf);
+            $rdf = str_replace('<schema:faxNumber>', '<fax_number><Description><num_fax>', $rdf);
+            $rdf = str_replace('</schema:faxNumber>', '</num_fax></Description></fax_number>', $rdf);
+            $rdf = preg_replace('/<\/fax_number>[ \n\r]*<fax_number>/', "", $rdf);
+            $rdf = str_replace('<schema:email>', '<mbox><Description><email>', $rdf);
+            $rdf = str_replace('</schema:email>', '</email></Description></mbox>', $rdf);
+            $rdf = preg_replace('/<\/mbox>[ \n\r]*<mbox>/', "", $rdf);
+            $rdf = str_replace('<foaf:homepage>', '<homepage><Description><url>', $rdf);
+            $rdf = str_replace('</foaf:homepage>', '</url></Description></homepage>', $rdf);
+            $rdf = preg_replace('/<\/homepage>[ \n\r]*<homepage>/', "", $rdf);
+
+            $rdf = str_replace('<umb:lingua_parlata>', '<language><Description><lingua_parlata>', $rdf);
+            $rdf = str_replace('</umb:lingua_parlata>', '</lingua_parlata></Description></language>', $rdf);
+            $rdf = preg_replace('/<\/language>[ \n\r]*<language>/', "", $rdf);
+            $rdf = str_replace('<umb:specializzazione>', '<specializzazione><Description><spec>', $rdf);
+            $rdf = str_replace('</umb:specializzazione>', '</spec></Description></specializzazione>', $rdf);
+            $rdf = preg_replace('/<\/specializzazione>[ \n\r]*<specializzazione>/', "", $rdf);
+        }/* elseif ($entityType == 'tourism-iat') {
             $tagName = "iat";
         }*/
 
@@ -405,56 +515,6 @@ class CurlBuilder
         }
 
 
-        /*Attrattori,Eventi,Proposte*/
-        $rdf = str_replace('<umb:contenuto_relazionato>', null, $rdf);
-        $rdf = str_replace('</umb:contenuto_relazionato>', null, $rdf);
-        $rdf = str_replace('<umb:categoria>', '<categorie>', $rdf);
-        $rdf = str_replace('</umb:categoria>', '</categorie>', $rdf);
-        $rdf = preg_replace('/<\/categorie>[ \n\r]*<categorie>/', "", $rdf);
-        $rdf = str_replace('<umb:descrizione>', '<descrizioni>', $rdf);
-        $rdf = str_replace('</umb:descrizione>', '</descrizioni>', $rdf);
-        $rdf = preg_replace('/<\/descrizioni>[ \n\r]*<descrizioni>/', "", $rdf);
-        $rdf = str_replace('<umb:coordinate>', '<coordinate>', $rdf);
-        $rdf = str_replace('</umb:coordinate>', '</coordinate>', $rdf);
-        $rdf = preg_replace('/<\/coordinate>[ \n\r]*<coordinate>/', "", $rdf);
-
-        /*Attrattori, Proposte*/
-        $rdf = str_replace('<umb:tempo_di_viaggio>', '<tempi_di_viaggio>', $rdf);
-        $rdf = str_replace('</umb:tempo_di_viaggio>', '</tempi_di_viaggio>', $rdf);
-        $rdf = preg_replace('/<\/tempi_di_viaggio>[ \n\r]*<tempi_di_viaggio>/', "", $rdf);
-
-        /*Eventi*/
-        $rdf = str_replace('<umb:immagine>', '<immagini>', $rdf);
-        $rdf = str_replace('</umb:immagine>', '</immagini>', $rdf);
-        $rdf = preg_replace('/<\/immagini>[ \n\r]*<immagini>/', "", $rdf);
-
-        $rdf = str_replace('<umb:abstract>', '<umb_abstract>', $rdf);
-        $rdf = str_replace('</umb:abstract>', '</umb_abstract>', $rdf);
-
-        /*Proposte*/
-        $rdf = str_replace('<umb:informazione>', '<informazioni>', $rdf);
-        $rdf = str_replace('</umb:informazione>', '</informazioni>', $rdf);
-        $rdf = preg_replace('/<\/informazioni>[ \n\r]*<informazioni>/', "", $rdf);
-
-        /*Agenzie*/
-        $rdf = str_replace('<umb:indirizzo>', '<address>', $rdf);
-        $rdf = str_replace('</umb:indirizzo>', '</address>', $rdf);
-        $rdf = str_replace('<umb:telefoni>', '<phone>', $rdf);
-        $rdf = str_replace('</umb:telefoni>', '</phone>', $rdf);
-        $rdf = str_replace('<umb:fax>', '<fax_number>', $rdf);
-        $rdf = str_replace('</umb:fax>', '</fax_number>', $rdf);
-        $rdf = str_replace('<umb:email>', '<mbox>', $rdf);
-        $rdf = str_replace('</umb:email>', '</mbox>', $rdf);
-        $rdf = str_replace('<umb:homepage>', '<homepage>', $rdf);
-        $rdf = str_replace('</umb:homepage>', '</homepage>', $rdf);
-        $rdf = str_replace('<schema:telephone>', '<num_telefono>', $rdf);
-        $rdf = str_replace('</schema:telephone>', '</num_telefono>', $rdf);
-        $rdf = str_replace('<schema:faxNumber>', '<num_fax>', $rdf);
-        $rdf = str_replace('</schema:faxNumber>', '</num_fax>', $rdf);
-        $rdf = str_replace('<schema:email>', '<email>', $rdf);
-        $rdf = str_replace('</schema:email>', '</email>', $rdf);
-        $rdf = str_replace('<foaf:homepage>', '<homepage>', $rdf);
-        $rdf = str_replace('</foaf:homepage>', '</homepage>', $rdf);
 
 
         $rdf = str_replace('<umb:categoria>', null, $rdf);
