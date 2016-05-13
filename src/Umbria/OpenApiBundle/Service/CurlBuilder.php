@@ -504,9 +504,19 @@ class CurlBuilder
             $rdf = str_replace('<umb:specializzazione>', '<specializzazione><Description><spec>', $rdf);
             $rdf = str_replace('</umb:specializzazione>', '</spec></Description></specializzazione>', $rdf);
             $rdf = preg_replace('/<\/specializzazione>[ \n\r]*<specializzazione>/', "", $rdf);
-        }/* elseif ($entityType == 'tourism-iat') {
+        } elseif ($entityType == 'tourism-iat') {
             $tagName = "iat";
-        }*/
+            $rdf = str_replace('<schema:telephone>', '<phone><Description><num_telefono>', $rdf);
+            $rdf = str_replace('</schema:telephone>', '</num_telefono></Description></phone>', $rdf);
+            $rdf = preg_replace('/<\/phone>[ \n\r]*<phone>/', "", $rdf);
+            $rdf = str_replace('<schema:faxNumber>', '<fax_number><Description><num_fax>', $rdf);
+            $rdf = str_replace('</schema:faxNumber>', '</num_fax></Description></fax_number>', $rdf);
+            $rdf = preg_replace('/<\/fax_number>[ \n\r]*<fax_number>/', "", $rdf);
+            $rdf = str_replace('<schema:email>', '<mbox><Description><email>', $rdf);
+            $rdf = str_replace('</schema:email>', '</email></Description></mbox>', $rdf);
+            $rdf = preg_replace('/<\/mbox>[ \n\r]*<mbox>/', "", $rdf);
+
+        }
 
 
         if (isset($tagName)) {
@@ -514,25 +524,6 @@ class CurlBuilder
             $rdf = preg_replace('/<\/rdf:RDF?>/', "</$tagName> </rdf:RDF>", $rdf);
         }
 
-
-
-
-        $rdf = str_replace('<umb:categoria>', null, $rdf);
-        $rdf = str_replace('</umb:categoria>', null, $rdf);
-        $rdf = str_replace('<umb:informazione>', null, $rdf);
-        $rdf = str_replace('</umb:informazione>', null, $rdf);
-        $rdf = str_replace('<umb:telefono>', null, $rdf);
-        $rdf = str_replace('</umb:telefono>', null, $rdf);
-        $rdf = str_replace('<umb:fax>', null, $rdf);
-        $rdf = str_replace('</umb:fax>', null, $rdf);
-        $rdf = str_replace('<umb:mail>', null, $rdf);
-        $rdf = str_replace('</umb:mail>', null, $rdf);
-        $rdf = str_replace('<umb:homepage>', null, $rdf);
-        $rdf = str_replace('</umb:homepage>', null, $rdf);
-        $rdf = str_replace('<umb:language>', null, $rdf);
-        $rdf = str_replace('</umb:language>', null, $rdf);
-        $rdf = str_replace('<umb:specializzazione>', null, $rdf);
-        $rdf = str_replace('</umb:specializzazione>', null, $rdf);
 
         $rdf = str_replace('<rdf:', '<', $rdf);
         $rdf = str_replace('</rdf:', '</', $rdf);
@@ -552,9 +543,6 @@ class CurlBuilder
         $rdf = str_replace('</dbpedia-owl:', '</', $rdf);
         $rdf = str_replace('<bibo:', '<', $rdf);
         $rdf = str_replace('</bibo:', '</', $rdf);
-        $rdf = str_replace('<!--<group:', '<', $rdf);
-        $rdf = str_replace('<!--</group:', '</', $rdf);
-        $rdf = str_replace('>-->', '>', $rdf);
 
         $rdf = str_replace('rdf:about', 'rdf_about', $rdf);
         $rdf = str_replace('rdf:resource', 'rdf_resource', $rdf);
