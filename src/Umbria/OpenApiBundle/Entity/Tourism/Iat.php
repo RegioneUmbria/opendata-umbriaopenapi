@@ -21,6 +21,7 @@ class Iat
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
+     * @JMS\Exclude()
      */
     private $id;
 
@@ -30,6 +31,7 @@ class Iat
      * @JMS\Type("string")
      *
      * @JMS\Groups({"iat.*"})
+     * @JMS\SerializedName("label")
      */
     private $denominazione;
 
@@ -78,6 +80,7 @@ class Iat
      * @JMS\Type("string")
      *
      * @JMS\Groups({"iat.*"})
+     * @JMS\SerializedName("istat")
      */
     private $codiceIstatComune;
 

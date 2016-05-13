@@ -22,6 +22,7 @@ class Profession
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
+     * @JMS\Exclude()
      */
     private $id;
 
@@ -31,6 +32,7 @@ class Profession
      * @JMS\Type("integer")
      *
      * @JMS\Groups({"profession.*"})
+     * @JMS\SerializedName("id")
      */
     private $idContenuto;
 
@@ -79,7 +81,7 @@ class Profession
      *
      * @JMS\Type("ArrayCollection<Umbria\OpenApiBundle\Entity\Tourism\FaxNumber>")
      * @JMS\XmlList(entry="Description")
-     * @JMS\SerializedName("faxNumber")
+     * @JMS\SerializedName("fax_number")
      *
      * @JMS\Groups({"profession.*"})
      */

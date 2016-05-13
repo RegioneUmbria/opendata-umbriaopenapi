@@ -26,7 +26,7 @@ class FaxNumber
      * @ORM\Column(type="string", length=255)
      *
      * @JMS\Type("string")
-     * @JMS\SerializedName("num_fax")
+     *
      *
      * @JMS\Groups({"fax-number.*"})
      */

@@ -88,9 +88,10 @@ class Consortium
      *
      * @JMS\Type("ArrayCollection<Umbria\OpenApiBundle\Entity\Tourism\FaxNumber>")
      * @JMS\XmlList(entry="Description")
-     * @JMS\SerializedName("faxNumber")
      *
      * @JMS\Groups({"consortium.*"})
+     *
+     * @JMS\SerializedName("fax_number")
      */
     private $faxNumber;
 
