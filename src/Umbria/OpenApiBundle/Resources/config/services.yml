@@ -13,19 +13,19 @@ parameters:
     url_event_silk: null
     event_days_to_old: 0
 
-    url_travel_agency: http://odn.cloudapp.net/dataset/a87cee68-4682-4915-9309-d432f2546434/resource/7f7df02d-0ec3-4aa9-b41e-fb2729b9af46/download/agenzie-turisticheitIT.zipagenzie-turisticheitIT.rdf
+    url_travel_agency: http://dati.umbria.it/dataset/84d1bd8f-ec95-404c-93c8-81ce2e4705ab/resource/6b9bdb03-9c64-4120-9d2d-031391d2a378/download/agenzieturisticheitit.zipagenzieturisticheitit.rdf
     url_travel_agency_silk: null
     travel_agency_days_to_old: 0
 
-    url_consortium: http://odn.cloudapp.net/dataset/617e0893-9eea-4778-81cb-a18602928a6c/resource/f390fc3f-e648-404b-99ef-27ff1afc7881/download/consorziitIT.zipconsorziitIT.rdf
+    url_consortium: http://dati.umbria.it/dataset/826515b8-a19d-4496-99af-e3b9967db130/resource/71aa158f-68f1-4037-abe6-d49f5d7ed238/download/consorziitconsorziitit.rdf
     url_consortium_silk: null
     consortium_days_to_old: 0
 
-    url_profession: http://odn.cloudapp.net/dataset/f8d3ec7a-68a7-400f-9dfe-39b95984c2aa/resource/5ff6581c-6fd6-4f8b-acc0-40458f015956/download/professioni-turisticheitIT.zipprofessioni-turisticheitIT.rdf
+    url_profession: http://dati.umbria.it/dataset/6afb8a5c-6907-45ee-941c-881dc0ab95f6/resource/d72cecda-c23f-403f-8b57-20d21b499d6c/download/professionituristicheitit.zipprofessionituristicheitit.rdf
     url_profession_silk: null
     profession_days_to_old: 0
 
-    url_iat: http://odn.cloudapp.net/dataset/d2cc6cd2-0eac-4497-9dab-ce11a998bf9a/resource/feebf21b-74c4-4158-a3cc-33362f85708b/download/iatitIT.zipiatitIT.rdf
+    url_iat: http://dati.umbria.it/dataset/32cca8e8-4e6e-43ed-b7df-2f577de8ac4d/resource/f6735fc3-1008-4694-95be-79bbe3e74863/download/iatitit.zipiatitit.rdf
     url_iat_silk: null
     iat_days_to_old: 0
 
