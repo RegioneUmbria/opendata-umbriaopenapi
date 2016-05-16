@@ -108,6 +108,8 @@ class Proposal
      * @JMS\Type("string")
      *
      * @JMS\Groups({"proposal.*"})
+     *
+     * @JMS\SerializedName("comment")
      */
     private $abstract;
 

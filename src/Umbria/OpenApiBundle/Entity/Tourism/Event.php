@@ -77,6 +77,9 @@ class Event
      * @JMS\Type("string")
      *
      * @JMS\Groups({"event.*"})
+     *
+     * @JMS\SerializedName("comment")
+     *
      */
     private $eventDescription;
 

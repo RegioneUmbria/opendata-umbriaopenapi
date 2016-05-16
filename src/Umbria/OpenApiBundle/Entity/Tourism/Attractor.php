@@ -111,6 +111,8 @@ class Attractor
      *
      * @JMS\Groups({"attractor.*"})
      *
+     * @JMS\SerializedName("comment")
+     *
      */
     private $abstract;
 
