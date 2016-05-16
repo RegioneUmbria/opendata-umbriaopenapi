@@ -107,8 +107,8 @@ knp_paginator:
 
 # ShayganTelegramBotApiBundle Configuration
 shaygan_telegram_bot_api:
-    token: 219692651:AAF-tlf3Y5wnxM4SQ-RBMYdWxABwyqbXpsg
+    token: 225932750:AAEAD3Z5dGgQNEjA9DYzp898_NDUV3bhbWE
     webhook:
-        domain: disco-openapi.azurewebsites.net/web/app_dev.php
+        domain: umbriaopenapi.regione.umbria.it
         path_prefix: ~ # you can add prefix, if your web site is not on the root
         update_receiver: umbria_telegram_bot.my_update_receiver
