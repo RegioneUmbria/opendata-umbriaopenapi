@@ -37,44 +37,43 @@
         <div class="carousel-inner" role="listbox">
             <div class="item active">
                 <img class="first-slide"
-                     src="data:image/gif;base64,R0lGODlhAQABAIAAAHd3dwAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw=="
+                     src="{{ asset('img/Assisi-skyline.jpg') }}"
                      alt="First slide">
                 <div class="container">
                     <div class="carousel-caption">
-                        <h1>Example headline.</h1>
-                        <p>Note: If you're viewing this page via a <code>file://</code> URL, the "next" and "previous"
-                            Glyphicon buttons on the left and right might not load/display properly due to web browser
-                            security rules.</p>
-                        <p><a class="btn btn-lg btn-primary" href="#" role="button">Sign up today</a></p>
+                        <h1>Linked Open Data Umbria</h1>
+                        <p>Visita il <b>Portale Linked Open Data dell'Umbria</b></p>
+                        <p>I dati della Pubblica Amministrazione umbra a disposizione dei cittadini</p>
+                        <p><a class="btn btn-lg btn-primary" href="http://dati.umbria.it/" role="button">Visita</a></p>
                     </div>
                 </div>
             </div>
             <div class="item">
                 <img class="second-slide"
-                     src="data:image/gif;base64,R0lGODlhAQABAIAAAHd3dwAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw=="
+                     src="{{ asset('img/castelluccio.jpg') }}"
                      alt="Second slide">
                 <div class="container">
                     <div class="carousel-caption">
-                        <h1>Another example headline.</h1>
-                        <p>Cras justo odio, dapibus ac facilisis in, egestas eget quam. Donec id elit non mi porta
-                            gravida at eget metus. Nullam id dolor id nibh ultricies vehicula ut id elit.</p>
-                        <p><a class="btn btn-lg btn-primary" href="#" role="button">Learn more</a></p>
+                        <h1>LodView</h1>
+                        <p>Visualizza i Linked Open Data della regione Umbria nel browser LodView!</p>
+                        <p><a class="btn btn-lg btn-primary" href="http://dati.umbria.it/risorsa/attrattori-it/4435021"
+                              role="button">Visita</a></p>
                     </div>
                 </div>
             </div>
-            <div class="item">
-                <img class="third-slide"
-                     src="data:image/gif;base64,R0lGODlhAQABAIAAAHd3dwAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw=="
-                     alt="Third slide">
-                <div class="container">
-                    <div class="carousel-caption">
-                        <h1>One more for good measure.</h1>
-                        <p>Cras justo odio, dapibus ac facilisis in, egestas eget quam. Donec id elit non mi porta
-                            gravida at eget metus. Nullam id dolor id nibh ultricies vehicula ut id elit.</p>
-                        <p><a class="btn btn-lg btn-primary" href="#" role="button">Browse gallery</a></p>
-                    </div>
-                </div>
-            </div>
+            {# <div class="item">
+                 <img class="third-slide"
+                      src="data:image/gif;base64,R0lGODlhAQABAIAAAHd3dwAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw=="
+                      alt="Third slide">
+                 <div class="container">
+                     <div class="carousel-caption">
+                         <h1>One more for good measure.</h1>
+                         <p>Cras justo odio, dapibus ac facilisis in, egestas eget quam. Donec id elit non mi porta
+                             gravida at eget metus. Nullam id dolor id nibh ultricies vehicula ut id elit.</p>
+                         <p><a class="btn btn-lg btn-primary" href="#" role="button">Browse gallery</a></p>
+                     </div>
+                 </div>
+             </div>#}
         </div>
         <a class="left carousel-control" href="#myCarousel" role="button" data-slide="prev">
             <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
@@ -95,17 +94,16 @@
 
         <!-- Three columns of text below the carousel -->
         <div class="row">
+            <div class="col-lg-4"></div>
             <div class="col-lg-4">
                 <img class="img-circle"
-                     src="data:image/gif;base64,R0lGODlhAQABAIAAAHd3dwAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw=="
+                     src="{{ asset('img/logo_umbria_notxt.png') }}"
                      alt="Generic placeholder image" width="140" height="140">
                 <h2>Turismo</h2>
-                <p>Donec sed odio dui. Etiam porta sem malesuada magna mollis euismod. Nullam id dolor id nibh ultricies
-                    vehicula ut id elit. Morbi leo risus, porta ac consectetur ac, vestibulum at eros. Praesent commodo
-                    cursus magna.</p>
+                <p>Tutti i punti di interesse del portale <b>UmbriaTourism</b> in una sola mappa!</p>
                 <p><a class="btn btn-default" href="{{ path('umbria_pro_loco_homepage') }}" role="button">Apri</a></p>
             </div><!-- /.col-lg-4 -->
-            <div class="col-lg-4">
+            {#<div class="col-lg-4">
                 <img class="img-circle"
                      src="data:image/gif;base64,R0lGODlhAQABAIAAAHd3dwAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw=="
                      alt="Generic placeholder image" width="140" height="140">
@@ -124,7 +122,8 @@
                     porta felis euismod semper. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh,
                     ut fermentum massa justo sit amet risus.</p>
                 <p><a class="btn btn-default" href="#" role="button">View details &raquo;</a></p>
-            </div><!-- /.col-lg-4 -->
+            </div><!-- /.col-lg-4 -->#}
+            <div class="col-lg-4"></div>
         </div><!-- /.row -->
 
 
@@ -132,52 +131,55 @@
 
         <hr class="featurette-divider">
 
-        <div class="row featurette">
-            <div class="col-md-7">
-                <h2 class="featurette-heading">First featurette heading. <span
-                            class="text-muted">It'll blow your mind.</span></h2>
-                <p class="lead">Donec ullamcorper nulla non metus auctor fringilla. Vestibulum id ligula porta felis
-                    euismod semper. Praesent commodo cursus magna, vel scelerisque nisl consectetur. Fusce dapibus,
-                    tellus ac cursus commodo.</p>
+        <a href="{{ path('nelmio_api_doc_index') }}">
+            <div class="row featurette">
+                <div class="col-md-7">
+                    <h2 class="featurette-heading" style="margin-top:0px">Sei un developer?<br> <span
+                                class="text-muted"></span></h2>
+                    <p class="lead">I dati di UmbriaTourism disponibili in formato JSON</p>
+                    <p class="lead">Grazie alle nostre Open RESTful APIs puoi ottenere, in formato JSON, tutti i dati
+                        dei punti di interesse della Regione Umbria </p>
+                </div>
+                <div class="col-md-5">
+                    <img src="{{ asset('img/coding.jpg') }}"
+                         class="featurette-image img-responsive center-block" data-src="holder.js/500x500/auto"
+                         alt="Generic placeholder image">
+                </div>
             </div>
-            <div class="col-md-5">
-                <img class="featurette-image img-responsive center-block" data-src="holder.js/500x500/auto"
-                     alt="Generic placeholder image">
-            </div>
-        </div>
+        </a>
 
-        <hr class="featurette-divider">
+        {# <hr class="featurette-divider">
 
-        <div class="row featurette">
-            <div class="col-md-7 col-md-push-5">
-                <h2 class="featurette-heading">Oh yeah, it's that good. <span
-                            class="text-muted">See for yourself.</span></h2>
-                <p class="lead">Donec ullamcorper nulla non metus auctor fringilla. Vestibulum id ligula porta felis
-                    euismod semper. Praesent commodo cursus magna, vel scelerisque nisl consectetur. Fusce dapibus,
-                    tellus ac cursus commodo.</p>
-            </div>
-            <div class="col-md-5 col-md-pull-7">
-                <img class="featurette-image img-responsive center-block" data-src="holder.js/500x500/auto"
-                     alt="Generic placeholder image">
-            </div>
-        </div>
+         <div class="row featurette">
+             <div class="col-md-7 col-md-push-5">
+                 <h2 class="featurette-heading">Oh yeah, it's that good. <span
+                             class="text-muted">See for yourself.</span></h2>
+                 <p class="lead">Donec ullamcorper nulla non metus auctor fringilla. Vestibulum id ligula porta felis
+                     euismod semper. Praesent commodo cursus magna, vel scelerisque nisl consectetur. Fusce dapibus,
+                     tellus ac cursus commodo.</p>
+             </div>
+             <div class="col-md-5 col-md-pull-7">
+                 <img class="featurette-image img-responsive center-block" data-src="holder.js/500x500/auto"
+                      alt="Generic placeholder image">
+             </div>
+         </div>
 
-        <hr class="featurette-divider">
+         <hr class="featurette-divider">
 
-        <div class="row featurette">
-            <div class="col-md-7">
-                <h2 class="featurette-heading">And lastly, this one. <span class="text-muted">Checkmate.</span></h2>
-                <p class="lead">Donec ullamcorper nulla non metus auctor fringilla. Vestibulum id ligula porta felis
-                    euismod semper. Praesent commodo cursus magna, vel scelerisque nisl consectetur. Fusce dapibus,
-                    tellus ac cursus commodo.</p>
-            </div>
-            <div class="col-md-5">
-                <img class="featurette-image img-responsive center-block" data-src="holder.js/500x500/auto"
-                     alt="Generic placeholder image">
-            </div>
-        </div>
+         <div class="row featurette">
+             <div class="col-md-7">
+                 <h2 class="featurette-heading">And lastly, this one. <span class="text-muted">Checkmate.</span></h2>
+                 <p class="lead">Donec ullamcorper nulla non metus auctor fringilla. Vestibulum id ligula porta felis
+                     euismod semper. Praesent commodo cursus magna, vel scelerisque nisl consectetur. Fusce dapibus,
+                     tellus ac cursus commodo.</p>
+             </div>
+             <div class="col-md-5">
+                 <img class="featurette-image img-responsive center-block" data-src="holder.js/500x500/auto"
+                      alt="Generic placeholder image">
+             </div>
+         </div>
 
-        <hr class="featurette-divider">
+         <hr class="featurette-divider">#}
 
         <!-- /END THE FEATURETTES -->
 

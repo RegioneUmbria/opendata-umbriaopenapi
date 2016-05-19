@@ -135,3 +135,7 @@ body {
         margin-top: 120px;
     }
 }
+
+.item {
+    margin: 0 auto;
+}
