@@ -108,29 +108,34 @@ class CurlBuilder
                         }
                     }
 
-                    // DBpedia
-                    $dbpediaUrl = 'http://dbpedia.org/sparql?default-graph-uri=http%3A%2F%2Fdbpedia.org&query=select+distinct+*+where+%7B%3C' . $dbpediaResource . '%3E+%3Fp+%3Fo%7D+LIMIT+100&format=application%2Fsparql-results%2Bjson';
-                    $dbpediaResp = json_decode($this->getResource($dbpediaUrl), true);
-                    $bindings = $dbpediaResp['results']['bindings'];
+                    if ($dbpediaResource != null) {
+                        // DBpedia
+                        $dbpediaUrl = 'http://dbpedia.org/sparql?default-graph-uri=http%3A%2F%2Fdbpedia.org&query=select+distinct+*+where+%7B%3C' . $dbpediaResource . '%3E+%3Fp+%3Fo%7D+LIMIT+100&format=application%2Fsparql-results%2Bjson';
+                        $dbpediaResp = json_decode($this->getResource($dbpediaUrl), true);
+                        $bindings = $dbpediaResp['results']['bindings'];
 
-                    // Aggiunta risorsa DBpedia
-                    $attractor->setDbpediaResource($dbpediaResource);
+                        // Aggiunta risorsa DBpedia
+                        $attractor->setDbpediaResource($dbpediaResource);
 
-                    // Aggiunta abstract
-                    foreach ($bindings as $binding) {
-                        if ($binding['p']['value'] == 'http://dbpedia.org/ontology/abstract' and $binding['o']['xml:lang'] == 'it') {
-                            $attractor->setDbpediaAbstract($binding['o']['value']);
-                            $attractor->setDbpediaInfo(true);
+
+                        // Aggiunta abstract
+                        foreach ($bindings as $binding) {
+                            if ($binding['p']['value'] == 'http://dbpedia.org/ontology/abstract' and $binding['o']['xml:lang'] == 'it') {
+                                $attractor->setDbpediaAbstract($binding['o']['value']);
+                                $attractor->setDbpediaInfo(true);
+                            }
+                        }
+
+                        // Aggiunta link Wikipedia
+                        foreach ($bindings as $binding) {
+                            if ($binding['p']['value'] == 'http://xmlns.com/foaf/0.1/isPrimaryTopicOf') {
+                                $attractor->setWikipediaLink($binding['o']['value']);
+                                $attractor->setDbpediaInfo(true);
+                            }
                         }
                     }
 
-                    // Aggiunta link Wikipedia
-                    foreach ($bindings as $binding) {
-                        if ($binding['p']['value'] == 'http://xmlns.com/foaf/0.1/isPrimaryTopicOf') {
-                            $attractor->setWikipediaLink($binding['o']['value']);
-                            $attractor->setDbpediaInfo(true);
-                        }
-                    }
+
                 }
 
                 if ($locatedInEntities != null) {
@@ -372,8 +377,8 @@ class CurlBuilder
             return $content;
         } catch (Exception $e) {
             trigger_error(sprintf(
-                'Curl failed with error #%d: %s',
-                $e->getCode(), $e->getMessage()),
+                'Curl failed with error #%d: %s, URL: %s',
+                $e->getCode(), $e->getMessage(), $url),
                 E_USER_ERROR);
         }
 
