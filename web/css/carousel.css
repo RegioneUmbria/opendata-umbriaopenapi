@@ -140,8 +140,14 @@ body {
     margin: 0 auto;
 }
 
-.homepage_link div {
+.homepage_link {
     color: #5A5A5A;
+    text-decoration: none;
+}
+
+.homepage_link:hover {
+    color: #5A5A5A;
+    text-decoration: none;
 }
 
 #myCarousel {

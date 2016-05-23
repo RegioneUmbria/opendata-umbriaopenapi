@@ -12,7 +12,7 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a class="navbar-brand" href="#">Umbria - Open API</a>
+                <a class="navbar-brand" href="{{ path('umbria_open_api_homepage') }}">Umbria - Open API</a>
             </div>
             <div id="navbar" class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
@@ -63,18 +63,18 @@
                 </div>
             </div>
             <div class="item">
-                 <img class="third-slide"
-                      src="{{ asset('img/telegram.png') }}"
-                      alt="Telegram">
-                 <div class="container">
-                     <div class="carousel-caption">
-                         <h1>UmbriaTurismo Bot</h1>
-                         <p>Se utilizzi Telegram parla con il nostro nuovo Bot. Potrà darti interessanti informazioni
-                             anche in base alla tua posizione.</p>
-                         <p><a class="btn btn-lg btn-primary" href="https://telegram.org/" role="button"
-                               target="_blank">Telegram</a></p>
-                     </div>
-                 </div>
+                <img class="third-slide"
+                     src="{{ asset('img/telegram.png') }}"
+                     alt="Telegram">
+                <div class="container">
+                    <div class="carousel-caption">
+                        <h1>UmbriaTurismo Bot</h1>
+                        <p>Se utilizzi Telegram parla con il nostro nuovo Bot. Potrà darti interessanti informazioni
+                            anche in base alla tua posizione.</p>
+                        <p><a class="btn btn-lg btn-primary" href="https://telegram.org/" role="button"
+                              target="_blank">Telegram</a></p>
+                    </div>
+                </div>
             </div>
         </div>
         <a class="left carousel-control" href="#myCarousel" role="button" data-slide="prev">
@@ -129,83 +129,103 @@
         </div><!-- /.row -->#}
 
 
-        <!-- START THE FEATURETTES -->
+    <!-- START THE FEATURETTES -->
     {#<hr class="featurette-divider">#}
 
-    <a class="homepage_link" href="{{ path('umbria_pro_loco_homepage') }}">
-        <div class="row featurette">
-            <div class="col-md-7 col-md-push-5">
-                <h2 class="featurette-heading">Turismo<span
-                            class="text-muted"></span></h2>
-                <p class="lead">Tutti i punti di interesse del portale <b>UmbriaTourism</b> in una sola mappa!</p>
-            </div>
-            <div class="col-md-5 col-md-pull-7">
-                <img class="featurette-image img-responsive center-block" src="{{ asset('img/img-turismo.jpg') }}"
-                     alt="Generic placeholder image">
-            </div>
+
+    <div class="row featurette">
+        <div class="col-md-7 col-md-push-5">
+            <h2 class="featurette-heading"><a class="homepage_link" href="{{ path('umbria_pro_loco_homepage') }}">Turismo</a>
+            </h2>
+            <p class="lead">
+                <a class="homepage_link" href="{{ path('umbria_pro_loco_homepage') }}">
+                    Tutti i punti di interesse del portale <b>UmbriaTourism</b> in una sola mappa!
+                </a>
+            </p>
         </div>
-    </a>
+        <div class="col-md-5 col-md-pull-7">
+            <a class="homepage_link" href="{{ path('umbria_pro_loco_homepage') }}">
+                <img class="featurette-image img-responsive center-block" src="{{ asset('img/img-turismo.jpg') }}"
+                     alt="Generic placeholder image"/>
+            </a>
+        </div>
+    </div>
 
-        <hr class="featurette-divider">
 
-    <a class="homepage_link" href="{{ path('nelmio_api_doc_index') }}">
-            <div class="row featurette">
-                <div class="col-md-7">
-                    <h2 class="featurette-heading" style="margin-top:0">Sei un developer?<br> <span
-                                class="text-muted"></span></h2>
-                    <p class="lead">I dati di UmbriaTourism disponibili in formato JSON</p>
-                    <p class="lead">Grazie alle nostre Open RESTful APIs puoi ottenere, in formato JSON, tutti i dati
-                        dei punti di interesse della Regione Umbria </p>
-                </div>
-                <div class="col-md-5">
-                    <img src="{{ asset('img/coding.jpg') }}"
-                         class="featurette-image img-responsive center-block" data-src="holder.js/500x500/auto"
-                         alt="Generic placeholder image">
-                </div>
-            </div>
-        </a>
+    <hr class="featurette-divider">
 
-        {# <hr class="featurette-divider">
 
-         <div class="row featurette">
-             <div class="col-md-7 col-md-push-5">
-                 <h2 class="featurette-heading">Oh yeah, it's that good. <span
-                             class="text-muted">See for yourself.</span></h2>
-                 <p class="lead">Donec ullamcorper nulla non metus auctor fringilla. Vestibulum id ligula porta felis
-                     euismod semper. Praesent commodo cursus magna, vel scelerisque nisl consectetur. Fusce dapibus,
-                     tellus ac cursus commodo.</p>
-             </div>
-             <div class="col-md-5 col-md-pull-7">
-                 <img class="featurette-image img-responsive center-block" data-src="holder.js/500x500/auto"
-                      alt="Generic placeholder image">
-             </div>
+    <div class="row featurette">
+        <div class="col-md-1 "></div>
+        <div class="col-md-6 ">
+            <h2 class="featurette-heading" style="margin-top:0">
+                <a class="homepage_link" href="{{ path('nelmio_api_doc_index') }}">
+                    Sei un developer?
+                </a>
+            </h2>
+            <p class="lead">
+                <a class="homepage_link" href="{{ path('nelmio_api_doc_index') }}">
+                    I dati di UmbriaTourism disponibili in formato JSON
+                </a>
+            </p>
+            <p class="lead">
+                <a class="homepage_link" href="{{ path('nelmio_api_doc_index') }}">Grazie alle nostre Open RESTful APIs
+                    puoi ottenere, in formato JSON, tutti i dati
+                    dei punti di interesse della Regione Umbria
+                </a>
+            </p>
+        </div>
+        <div class="col-md-4">
+            <a class="homepage_link" href="{{ path('nelmio_api_doc_index') }}">
+                <img src="{{ asset('img/coding.jpg') }}"
+                     class="featurette-image img-responsive center-block"
+                     alt="Generic placeholder image"/>
+            </a>
+        </div>
+        <div class="col-md-1 "></div>
+    </div>
+
+    {# <hr class="featurette-divider">
+
+     <div class="row featurette">
+         <div class="col-md-7 col-md-push-5">
+             <h2 class="featurette-heading">Oh yeah, it's that good. <span
+                         class="text-muted">See for yourself.</span></h2>
+             <p class="lead">Donec ullamcorper nulla non metus auctor fringilla. Vestibulum id ligula porta felis
+                 euismod semper. Praesent commodo cursus magna, vel scelerisque nisl consectetur. Fusce dapibus,
+                 tellus ac cursus commodo.</p>
          </div>
-
-         <hr class="featurette-divider">
-
-         <div class="row featurette">
-             <div class="col-md-7">
-                 <h2 class="featurette-heading">And lastly, this one. <span class="text-muted">Checkmate.</span></h2>
-                 <p class="lead">Donec ullamcorper nulla non metus auctor fringilla. Vestibulum id ligula porta felis
-                     euismod semper. Praesent commodo cursus magna, vel scelerisque nisl consectetur. Fusce dapibus,
-                     tellus ac cursus commodo.</p>
-             </div>
-             <div class="col-md-5">
-                 <img class="featurette-image img-responsive center-block" data-src="holder.js/500x500/auto"
-                      alt="Generic placeholder image">
-             </div>
+         <div class="col-md-5 col-md-pull-7">
+             <img class="featurette-image img-responsive center-block" data-src="holder.js/500x500/auto"
+                  alt="Generic placeholder image">
          </div>
+     </div>
 
-         <hr class="featurette-divider">#}
+     <hr class="featurette-divider">
 
-        <!-- /END THE FEATURETTES -->
+     <div class="row featurette">
+         <div class="col-md-7">
+             <h2 class="featurette-heading">And lastly, this one. <span class="text-muted">Checkmate.</span></h2>
+             <p class="lead">Donec ullamcorper nulla non metus auctor fringilla. Vestibulum id ligula porta felis
+                 euismod semper. Praesent commodo cursus magna, vel scelerisque nisl consectetur. Fusce dapibus,
+                 tellus ac cursus commodo.</p>
+         </div>
+         <div class="col-md-5">
+             <img class="featurette-image img-responsive center-block" data-src="holder.js/500x500/auto"
+                  alt="Generic placeholder image">
+         </div>
+     </div>
+
+     <hr class="featurette-divider">#}
+
+    <!-- /END THE FEATURETTES -->
 
 
-        <!-- FOOTER -->
-        <footer>
-            <p class="pull-right"><a href="#">Back to top</a></p>
-            <p>&copy; 2015 Company, Inc. &middot; <a href="#">Privacy</a> &middot; <a href="#">Terms</a></p>
-        </footer>
+    <!-- FOOTER -->
+    <footer>
+        <p class="pull-right"><a href="#">Back to top</a></p>
+        <p>&copy; 2015 Company, Inc. &middot; <a href="#">Privacy</a> &middot; <a href="#">Terms</a></p>
+    </footer>
 
 
 {% endblock %}
