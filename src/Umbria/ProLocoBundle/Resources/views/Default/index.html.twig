@@ -71,7 +71,15 @@
             }
 
             // opzioni cluster
-            var mcOptions = {maxZoom: 15};
+            var clusterStyles = [
+                {
+                    textColor: 'white',
+                    url: '{{ asset('img/map/cluster_marker.png') }}',
+                    height: 52,
+                    width: 53
+                }
+            ];
+            var mcOptions = {maxZoom: 15, styles: clusterStyles};
 
             // creazione clusterer
             clusterer = new MarkerClusterer(map, [], mcOptions);
