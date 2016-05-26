@@ -34,16 +34,7 @@ class CurlBuilder
 
     public function updateEntities($url, $entityType, $urlSameAs = null, $urlLocatedIn = null)
     {
-        // rimozione vecchie entità
-        $rdfs = $this->em->getRepository('UmbriaOpenApiBundle:Tourism\RDF')->findAll();
 
-        /** @var RDF $rdf */
-        foreach ($rdfs as $rdf) {
-            if ($rdf->has($entityType)) {
-                $this->em->remove($rdf);
-            }
-        }
-        $this->em->flush();
 
         // recupero rdf elementi
         $rdf = $this->getResource($url);
@@ -88,118 +79,121 @@ class CurlBuilder
             /** @var Attractor $attractor */
             /* @noinspection PhpUndefinedVariableInspection */
             foreach ($entities as $attractor) {
-                if ($sameAsEntities != null) {
-                    // recupero sameAs DBpedia
-                    $dbpediaResource = null;
-                    /* @noinspection PhpUndefinedVariableInspection */
-                    foreach ($sameAsEntities as $dbpediaEntity) {
-                        /* @noinspection PhpUndefinedMethodInspection */
-                        $attributes = $dbpediaEntity[0]->attributes();
-                        foreach ($attributes as $attribute) {
-                            // se id dell'elemento è uguale
-                            $arrayURI = explode("/", (string)$attribute[0]);
-                            $idSameAs = end($arrayURI);
-                            if ($idSameAs == $attractor->getIdElemento()) {
-                                $dbpediaAttributes = $dbpediaEntity[0]->sameAs->attributes();
-                                foreach ($dbpediaAttributes as $dbpediaAttribute) {
-                                    $dbpediaResource = (string)$dbpediaAttribute[0];
+                try {
+                    if ($sameAsEntities != null) {
+                        // recupero sameAs DBpedia
+                        $dbpediaResource = null;
+                        /* @noinspection PhpUndefinedVariableInspection */
+                        foreach ($sameAsEntities as $dbpediaEntity) {
+                            /* @noinspection PhpUndefinedMethodInspection */
+                            $attributes = $dbpediaEntity[0]->attributes();
+                            foreach ($attributes as $attribute) {
+                                // se id dell'elemento è uguale
+                                $arrayURI = explode("/", (string)$attribute[0]);
+                                $idSameAs = end($arrayURI);
+                                if ($idSameAs == $attractor->getIdElemento()) {
+                                    $dbpediaAttributes = $dbpediaEntity[0]->sameAs->attributes();
+                                    foreach ($dbpediaAttributes as $dbpediaAttribute) {
+                                        $dbpediaResource = (string)$dbpediaAttribute[0];
+                                    };
                                 };
-                            };
+                            }
                         }
+
+                        if ($dbpediaResource != null) {
+
+                            // DBpedia
+                            $dbpediaUrl = 'http://dbpedia.org/sparql?default-graph-uri=http%3A%2F%2Fdbpedia.org&query=select+distinct+*+where+%7B%3C' . $dbpediaResource . '%3E+%3Fp+%3Fo%7D+LIMIT+100&format=application%2Fsparql-results%2Bjson';
+                            $dbpediaResp = json_decode($this->getResource($dbpediaUrl, false), true);
+                            $bindings = $dbpediaResp['results']['bindings'];
+
+                            // Aggiunta risorsa DBpedia
+                            $attractor->setDbpediaResource($dbpediaResource);
+
+
+                            // Aggiunta abstract
+                            foreach ($bindings as $binding) {
+                                if ($binding['p']['value'] == 'http://dbpedia.org/ontology/abstract' and $binding['o']['xml:lang'] == 'it') {
+                                    $attractor->setDbpediaAbstract($binding['o']['value']);
+                                    $attractor->setDbpediaInfo(true);
+                                }
+                            }
+
+                            // Aggiunta link Wikipedia
+                            foreach ($bindings as $binding) {
+                                if ($binding['p']['value'] == 'http://xmlns.com/foaf/0.1/isPrimaryTopicOf') {
+                                    $attractor->setWikipediaLink($binding['o']['value']);
+                                    $attractor->setDbpediaInfo(true);
+                                }
+                            }
+                        }
+
+
                     }
 
-                    /*if ($dbpediaResource != null) {
-
-                        // DBpedia
-                        $dbpediaUrl = 'http://dbpedia.org/sparql?default-graph-uri=http%3A%2F%2Fdbpedia.org&query=select+distinct+*+where+%7B%3C' . $dbpediaResource . '%3E+%3Fp+%3Fo%7D+LIMIT+100&format=application%2Fsparql-results%2Bjson';
-                        $dbpediaResp = json_decode($this->getResource($dbpediaUrl), true);
-                        $bindings = $dbpediaResp['results']['bindings'];
-
-                        // Aggiunta risorsa DBpedia
-                        $attractor->setDbpediaResource($dbpediaResource);
-
-
-                        // Aggiunta abstract
-                        foreach ($bindings as $binding) {
-                            if ($binding['p']['value'] == 'http://dbpedia.org/ontology/abstract' and $binding['o']['xml:lang'] == 'it') {
-                                $attractor->setDbpediaAbstract($binding['o']['value']);
-                                $attractor->setDbpediaInfo(true);
-                            }
-                        }
-
-                        // Aggiunta link Wikipedia
-                        foreach ($bindings as $binding) {
-                            if ($binding['p']['value'] == 'http://xmlns.com/foaf/0.1/isPrimaryTopicOf') {
-                                $attractor->setWikipediaLink($binding['o']['value']);
-                                $attractor->setDbpediaInfo(true);
-                            }
-                        }
-                    }*/
-
-
-                }
-
-                if ($locatedInEntities != null) {
-                    //recupero locatedIn DBpedia
-                    $dbpediaLocatedIn = null;
-                    /* @noinspection PhpUndefinedVariableInspection */
-                    foreach ($locatedInEntities as $dbpediaEntity) {
-                        /* @noinspection PhpUndefinedMethodInspection */
-                        $attributes = $dbpediaEntity[0]->attributes();
-                        foreach ($attributes as $attribute) {
-                            // se id dell'elemento è uguale
-                            $arrayURI = explode("/", (string)$attribute[0]);
-                            $idLocatedIn = end($arrayURI);
-                            if ($idLocatedIn == $attractor->getIdElemento()) {
-                                $dbpediaAttributes = $dbpediaEntity[0]->locatedIn->attributes();
-                                foreach ($dbpediaAttributes as $dbpediaAttribute) {
-                                    $dbpediaLocatedIn = (string)$dbpediaAttribute[0];
+                    if ($locatedInEntities != null) {
+                        //recupero locatedIn DBpedia
+                        $dbpediaLocatedIn = null;
+                        /* @noinspection PhpUndefinedVariableInspection */
+                        foreach ($locatedInEntities as $dbpediaEntity) {
+                            /* @noinspection PhpUndefinedMethodInspection */
+                            $attributes = $dbpediaEntity[0]->attributes();
+                            foreach ($attributes as $attribute) {
+                                // se id dell'elemento è uguale
+                                $arrayURI = explode("/", (string)$attribute[0]);
+                                $idLocatedIn = end($arrayURI);
+                                if ($idLocatedIn == $attractor->getIdElemento()) {
+                                    $dbpediaAttributes = $dbpediaEntity[0]->locatedIn->attributes();
+                                    foreach ($dbpediaAttributes as $dbpediaAttribute) {
+                                        $dbpediaLocatedIn = (string)$dbpediaAttribute[0];
+                                    };
                                 };
-                            };
+                            }
+                        }
+                        // Aggiunta risorsa DBpedia locatedIn
+                        $attractor->setLocatedIn($dbpediaLocatedIn);
+                    }
+
+                    // Arricchimento coordinate
+                    $coordinates = $attractor->getCoordinate();
+                    /** @var Coordinate $coordinate */
+                    foreach ($coordinates as $coordinate) {
+                        if ($coordinate->getLatitude() == ' ' | $coordinate->getLatitude() == '' | $coordinate->getLatitude() == null | $coordinate->getLongitude() == ' ' | $coordinate->getLongitude() == '' | $coordinate->getLongitude() == null) {
+                            foreach ($bindings as $binding) {
+                                if ($binding['p']['value'] == 'http://www.w3.org/2003/01/geo/wgs84_pos#lat') {
+                                    $coordinate->setDbpediaLatitude($binding['o']['value']);
+                                    $attractor->setDbpediaInfo(true);
+                                } elseif ($binding['p']['value'] == 'http://www.w3.org/2003/01/geo/wgs84_pos#long') {
+                                    $coordinate->setDbpediaLongitude($binding['o']['value']);
+                                    $attractor->setDbpediaInfo(true);
+                                }
+                            }
+
+                            // Google Maps Api --------------------------
+                            $comune = $attractor->getComune();
+                            $codiceIstat = $attractor->getCodiceIstatComune();
+
+                            $url = 'http://maps.google.com/maps/api/geocode/json?address=' . urlencode($comune) . '+' . $codiceIstat . '+Umbria+Italia';
+
+                            $resp = json_decode($this->getResource($url, false), true);
+
+                            // response status will be 'OK', if able to geocode given address
+                            if ($resp['status'] == 'OK') {
+
+                                // get the important data
+                                $lati = $resp['results'][0]['geometry']['location']['lat'];
+                                $longi = $resp['results'][0]['geometry']['location']['lng'];
+
+                                // verify if data is complete
+                                if ($lati && $longi) {
+                                    $coordinate->setGoogleLatitude($lati);
+                                    $coordinate->setGoogleLongitude($longi);
+                                }
+                            }
                         }
                     }
-                    // Aggiunta risorsa DBpedia locatedIn
-                    $attractor->setLocatedIn($dbpediaLocatedIn);
+                } catch (Exception $e) {
                 }
-
-                // Arricchimento coordinate
-                $coordinates = $attractor->getCoordinate();
-                /** @var Coordinate $coordinate */
-                /*foreach ($coordinates as $coordinate) {
-                    if ($coordinate->getLatitude() == ' ' | $coordinate->getLatitude() == '' | $coordinate->getLatitude() == null | $coordinate->getLongitude() == ' ' | $coordinate->getLongitude() == '' | $coordinate->getLongitude() == null) {
-                        foreach ($bindings as $binding) {
-                            if ($binding['p']['value'] == 'http://www.w3.org/2003/01/geo/wgs84_pos#lat') {
-                                $coordinate->setDbpediaLatitude($binding['o']['value']);
-                                $attractor->setDbpediaInfo(true);
-                            } elseif ($binding['p']['value'] == 'http://www.w3.org/2003/01/geo/wgs84_pos#long') {
-                                $coordinate->setDbpediaLongitude($binding['o']['value']);
-                                $attractor->setDbpediaInfo(true);
-                            }
-                        }
-
-                        // Google Maps Api --------------------------
-                        $comune = $attractor->getComune();
-                        $codiceIstat = $attractor->getCodiceIstatComune();
-
-                        $url = 'http://maps.google.com/maps/api/geocode/json?address='.urlencode($comune).'+'.$codiceIstat.'+Umbria+Italia';
-
-                        $resp = json_decode($this->getResource($url), true);
-
-                        // response status will be 'OK', if able to geocode given address
-                        if ($resp['status'] == 'OK') {
-
-                            // get the important data
-                            $lati = $resp['results'][0]['geometry']['location']['lat'];
-                            $longi = $resp['results'][0]['geometry']['location']['lng'];
-
-                            // verify if data is complete
-                            if ($lati && $longi) {
-                                $coordinate->setGoogleLatitude($lati);
-                                $coordinate->setGoogleLongitude($longi);
-                            }
-                        }
-                    }
-                }*/
             }
         } elseif ($entityType == 'tourism-travel-agency') {
             /* @noinspection PhpUndefinedVariableInspection */
@@ -214,23 +208,27 @@ class CurlBuilder
 
                     // TODO: aggiungere controllo completezza
 
-                    // Google Maps Api --------------------------
-                    $url = 'http://maps.google.com/maps/api/geocode/json?address='.urlencode($streetAddress).'+'.$postalCode.'+'.$addressLocality.'+'.$addressRegion.'+Umbria+Italia';
+                    try {
+                        // Google Maps Api --------------------------
+                        $url = 'http://maps.google.com/maps/api/geocode/json?address=' . urlencode($streetAddress) . '+' . $postalCode . '+' . $addressLocality . '+' . $addressRegion . '+Umbria+Italia';
 
-                    $resp = json_decode($this->getResource($url), true);
+                        $resp = json_decode($this->getResource($url, false), true);
 
-                    // response status will be 'OK', if able to geocode given address
-                    if ($resp['status'] == 'OK') {
+                        // response status will be 'OK', if able to geocode given address
+                        if ($resp['status'] == 'OK') {
 
-                        // get the important data
-                        $lati = $resp['results'][0]['geometry']['location']['lat'];
-                        $longi = $resp['results'][0]['geometry']['location']['lng'];
+                            // get the important data
+                            $lati = $resp['results'][0]['geometry']['location']['lat'];
+                            $longi = $resp['results'][0]['geometry']['location']['lng'];
 
-                        // verify if data is complete
-                        if ($lati && $longi) {
-                            $address->setLatitude($lati);
-                            $address->setLongitude($longi);
+                            // verify if data is complete
+                            if ($lati && $longi) {
+                                $address->setLatitude($lati);
+                                $address->setLongitude($longi);
+                            }
                         }
+                    } catch (Exception $e) {
+
                     }
                 }
             }
@@ -334,6 +332,17 @@ class CurlBuilder
             }
         }
 
+        // rimozione vecchie entità
+        $rdfs = $this->em->getRepository('UmbriaOpenApiBundle:Tourism\RDF')->findAll();
+
+        /** @var RDF $rdf */
+        foreach ($rdfs as $rdf) {
+            if ($rdf->has($entityType)) {
+                $this->em->remove($rdf);
+            }
+        }
+        $this->em->flush();
+
         // Salvattaggio nel DB
         $entity = $this->em->merge($data);
         $this->em->persist($entity);
@@ -354,11 +363,10 @@ class CurlBuilder
         }
     }
 
-    public function getResource($url = 'null')
+    public function getResource($url = 'null', $writeError = true)
     {
+        $ch = curl_init();
         try {
-            $ch = curl_init();
-
             if (false === $ch) {
                 throw new Exception('failed to initialize');
             }
@@ -377,10 +385,14 @@ class CurlBuilder
 
             return $content;
         } catch (Exception $e) {
-            trigger_error(sprintf(
-                'Curl failed with error #%d: %s, URL: %s',
-                $e->getCode(), $e->getMessage(), $url),
-                E_USER_ERROR);
+            if ($writeError == true) {
+                trigger_error(sprintf(
+                    'Curl failed with error #%d: %s, URL: %s',
+                    $e->getCode(), $e->getMessage(), $url),
+                    E_USER_ERROR);
+            } else {
+                throw new Exception(curl_error($ch), curl_errno($ch));
+            }
         }
 
         return;
