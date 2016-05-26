@@ -108,7 +108,8 @@ class CurlBuilder
                         }
                     }
 
-                    if ($dbpediaResource != null) {
+                    /*if ($dbpediaResource != null) {
+
                         // DBpedia
                         $dbpediaUrl = 'http://dbpedia.org/sparql?default-graph-uri=http%3A%2F%2Fdbpedia.org&query=select+distinct+*+where+%7B%3C' . $dbpediaResource . '%3E+%3Fp+%3Fo%7D+LIMIT+100&format=application%2Fsparql-results%2Bjson';
                         $dbpediaResp = json_decode($this->getResource($dbpediaUrl), true);
@@ -133,7 +134,7 @@ class CurlBuilder
                                 $attractor->setDbpediaInfo(true);
                             }
                         }
-                    }
+                    }*/
 
 
                 }
@@ -164,7 +165,7 @@ class CurlBuilder
                 // Arricchimento coordinate
                 $coordinates = $attractor->getCoordinate();
                 /** @var Coordinate $coordinate */
-                foreach ($coordinates as $coordinate) {
+                /*foreach ($coordinates as $coordinate) {
                     if ($coordinate->getLatitude() == ' ' | $coordinate->getLatitude() == '' | $coordinate->getLatitude() == null | $coordinate->getLongitude() == ' ' | $coordinate->getLongitude() == '' | $coordinate->getLongitude() == null) {
                         foreach ($bindings as $binding) {
                             if ($binding['p']['value'] == 'http://www.w3.org/2003/01/geo/wgs84_pos#lat') {
@@ -198,7 +199,7 @@ class CurlBuilder
                             }
                         }
                     }
-                }
+                }*/
             }
         } elseif ($entityType == 'tourism-travel-agency') {
             /* @noinspection PhpUndefinedVariableInspection */
