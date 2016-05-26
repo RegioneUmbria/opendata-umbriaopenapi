@@ -2,6 +2,8 @@
 
 {% block content %}
     <div id="map" class="map-large"></div>
+    <div id="legend">
+    </div>
 {% endblock %}
 
 {% block javascripts %}
@@ -10,7 +12,7 @@
     <script>
         var map;
         var clusterer = null;
-        var umbriaCenter = {lat: 42.9895317, lng: 12.0176207};
+        var umbriaCenter = {lat: 43.06, lng: 12.23};
 
         var markerGroups = {
             "tourism_attractor": [],
@@ -40,29 +42,114 @@
         function initMap() {
             // opzioni mappa
             var mapOptions = {
+                mapTypeId: google.maps.MapTypeId.HYBRID,
                 center: umbriaCenter,
                 zoom: 11
             };
 
             // creazione mappa
             map = new google.maps.Map(document.getElementById('map'), mapOptions);
+            //legend
+            map.controls[google.maps.ControlPosition.RIGHT_BOTTOM].push(
+                    document.getElementById('legend'));
+
+            var div = document.createElement('div');
+            div.innerHTML =
+                    '<div class="legendrow">' +
+                    '<div style="background-color:#DA4F49; width: 10px; height: 10px; display: inline-block"></div> ' +
+                    '<span class="legendlabel">Attrattori</span> ' +
+                    '<input class="legendcheckbox" type="checkbox" onclick="toggleGroup(\'tourism_attractor\', this)" checked="checked">' +
+                    '</div>';
+            legend.appendChild(div);
+
+            var div = document.createElement('div');
+            div.innerHTML =
+                    '<div class="legendrow">' +
+                    '<div style="background-color:#FAA732; width: 10px; height: 10px; display: inline-block"></div> ' +
+                    '<span class="legendlabel">Proposte</span>' +
+                    '<input class="legendcheckbox" type="checkbox" onclick="toggleGroup(\'tourism_proposal\', this)" >' +
+                    '</div>';
+            legend.appendChild(div);
+
+            var div = document.createElement('div');
+            div.innerHTML =
+                    '<div class="legendrow">' +
+                    '<div style="background-color:#5BB75B; width: 10px; height: 10px; display: inline-block"></div> ' +
+                    '<span class="legendlabel">Eventi</span>' +
+                    '<input class="legendcheckbox" type="checkbox" onclick="toggleGroup(\'tourism_event\', this)" checked="checked">' +
+                    '</div>';
+            legend.appendChild(div);
+
+            var div = document.createElement('div');
+            div.innerHTML =
+                    '<div class="legendrow">' +
+                    '<div style="background-color:#EFE926; width: 10px; height: 10px; display: inline-block"></div> ' +
+                    '<span class="legendlabel">Agenzie di viaggio</span>' +
+                    '<input class="legendcheckbox" type="checkbox" onclick="toggleGroup(\'tourism_travel_agency\', this)" >' +
+                    '</div>';
+            legend.appendChild(div);
+
+            var div = document.createElement('div');
+            div.innerHTML =
+                    '<div class="legendrow">' +
+                    '<div style="background-color:#8824B2; width: 10px; height: 10px; display: inline-block"></div> ' +
+                    '<span class="legendlabel">Consorzi</span>' +
+                    '<input class="legendcheckbox" type="checkbox" onclick="toggleGroup(\'tourism_consortium\', this)" >' +
+                    '</div>';
+            legend.appendChild(div);
+
+            var div = document.createElement('div');
+            div.innerHTML =
+                    '<div class="legendrow">' +
+                    '<div style="background-color:#3D94EA; width: 10px; height: 10px; display: inline-block"></div> ' +
+                    '<span class="legendlabel">Professioni turistiche</span>' +
+                    '<input class="legendcheckbox" type="checkbox" onclick="toggleGroup(\'tourism_profession\', this)" >' +
+                    '</div>';
+            legend.appendChild(div);
+
+            var div = document.createElement('div');
+            div.innerHTML =
+                    '<div class="legendrow">' +
+                    '<div style="background-color:#006DCC; width: 10px; height: 10px; display: inline-block"></div> ' +
+                    '<span class="legendlabel">Iat </span>' +
+                    '<input class="legendcheckbox" type="checkbox" onclick="toggleGroup(\'tourism_iat\', this)" >' +
+                    '</div>';
+            legend.appendChild(div);
+
             // GEOLOCATION
             geolocation();
 
+            google.maps.event.addDomListener(map, 'click', function (event) {
+                var myLatLng = event.latLng;
+                var lat = myLatLng.lat();
+                var lng = myLatLng.lng();
+                var zoom = mapObject.getZoom();
+                Cookies.set('lat2', lat);
+                Cookies.set('lng2', lng);
+                Cookies.set('zoom', lng);
+            });
+
             // riposizionamento mappa in relazione all'ultimo place visitato
             changeBounds = true;
-            latCenter = Cookies.get('lat');
-            lngCenter = Cookies.get('lng');
-
+            var latCenter = Cookies.get('lat2');
+            var lngCenter = Cookies.get('lng2');
+            var zoom = Cookies.get('zoom');
             if (latCenter != null && lngCenter != null) {
-                map.setCenter({lat: parseFloat(latCenter), lng: parseFloat(lngCenter)});
-                map.setZoom(15);
-
                 Cookies.remove('lat');
                 Cookies.remove('lng');
-
-                changeBounds = false;
+                Cookies.remove('zoom');
             }
+            else {
+                latCenter = umbriaCenter.lat;
+                lngCenter = umbriaCenter.lng;
+                zoom = 9;
+            }
+
+            map.setCenter({lat: parseFloat(latCenter), lng: parseFloat(lngCenter)});
+            map.setZoom(zoom);
+
+
+            changeBounds = false;
 
             // aggiunta maker
             var bounds = new google.maps.LatLngBounds();
@@ -97,13 +184,17 @@
             var latLng = place.latLng;
             var href = place.href;
 
+            var visible = false;
+
             var markerIcon;
             if (type == 'tourism_attractor') {
                 markerIcon = '{{ asset('img/map/marker_red.png') }}';
+                visible = true;
             } else if (type == 'tourism_proposal') {
                 markerIcon = '{{ asset('img/map/marker_orange.png') }}';
             } else if (type == 'tourism_event') {
                 markerIcon = '{{ asset('img/map/marker_green.png') }}';
+                visible = true;
             } else if (type == 'tourism_travel_agency') {
                 markerIcon = '{{ asset('img/map/marker_yellow.png') }}';
             } else if (type == 'tourism_consortium') {
@@ -133,7 +224,7 @@
                     '<h5>' +
                     name +
                     '</h5>' +
-                    '<a href="' +
+                    '<a onclick="setCenterCookie()" href="' +
                     href +
                     '">show</a>' +
                     '</div>';
@@ -149,6 +240,10 @@
             if(changeBounds){
                 bounds.extend(marker.position);
                 map.fitBounds(bounds);
+            }
+
+            if (visible == false) {
+                marker.setVisible(false);
             }
         }
 
@@ -189,15 +284,20 @@
             }
         }
 
-        function toggleGroup(type) {
+        function toggleGroup(type, element) {
             for (var i = 0; i < markerGroups[type].length; i++) {
                 var marker = markerGroups[type][i];
-                if (!marker.getVisible()) {
+                if (element.checked) {
                     marker.setVisible(true);
                 } else {
                     marker.setVisible(false);
                 }
             }
+        }
+
+        function setCenterCookie() {
+            var center = map.getCenter();
+            Cookies.set('center', center);
         }
 
     </script>

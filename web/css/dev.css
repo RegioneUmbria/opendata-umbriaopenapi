@@ -443,3 +443,22 @@ label {
   opacity: 0.3;
   display: none
 }
+
+#legend {
+  background: white;
+  padding: 10px;
+  right: 10px !important;
+}
+
+.legendrow {
+  clear: both;
+  overflow: hidden;
+}
+
+.legendcheckbox {
+  float: right;
+}
+
+.legendlabel {
+  font-size: 15px;
+}
