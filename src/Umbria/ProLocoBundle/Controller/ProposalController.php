@@ -47,8 +47,9 @@ class ProposalController extends Controller
      */
     public function showAction(Proposal $proposal)
     {
+        $baseUrlRisorsa = $this->container->getParameter('base_url_res_proposal');
         return $this->render('UmbriaProLocoBundle:Proposal:show.html.twig', array(
-            'proposal' => $proposal,
+            'proposal' => $proposal, 'baseUrlRisorsa' => $baseUrlRisorsa
         ));
     }
 }

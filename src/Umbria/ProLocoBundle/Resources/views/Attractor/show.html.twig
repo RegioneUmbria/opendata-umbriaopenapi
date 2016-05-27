@@ -51,6 +51,15 @@
                         </tr>
                         <tr>
                             <td>
+                                <small>id risorsa</small>
+                            </td>
+                            <td><a href="{{ baseUrlRisorsa }}/{{ attractor.idContenuto }}">
+                                    {{ baseUrlRisorsa }}/{{ attractor.idContenuto }}
+                                </a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
                                 <small>keywords</small>
                             </td>
                             <td>
@@ -170,7 +179,7 @@
                         </tr>
                         <tr>
                             <td>
-                                <small>Localizzazione dbpedia</small>
+                                <small>localizzazione dbpedia</small>
                             </td>
                             <td>
                                 {% if attractor.locatedIn != '' %}
@@ -223,8 +232,6 @@
         {% endif %}
         {% endfor %}
 
-        // settaggio del cookie
-        /*Cookies.set('lat', {{ latitude }});
-         Cookies.set('lng', {{ longitude }});*/
+
     </script>
 {% endblock %}

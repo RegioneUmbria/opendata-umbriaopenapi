@@ -70,6 +70,15 @@
                             </td>
                             <td>{{ profession.idContenuto }}</td>
                         </tr>
+                        <tr>
+                            <td>
+                                <small>id risorsa</small>
+                            </td>
+                            <td><a href="{{ baseUrlRisorsa }}/{{ profession.idContenuto }}">
+                                    {{ baseUrlRisorsa }}/{{ profession.idContenuto }}
+                                </a>
+                            </td>
+                        </tr>
                         {% for address in profession.address %}
                             <tr>
                                 <td>

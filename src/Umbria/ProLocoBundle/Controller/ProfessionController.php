@@ -47,8 +47,9 @@ class ProfessionController extends Controller
      */
     public function showAction(Profession $profession)
     {
+        $baseUrlRisorsa = $this->container->getParameter('base_url_res_profession');
         return $this->render('UmbriaProLocoBundle:Profession:show.html.twig', array(
-            'profession' => $profession,
+            'profession' => $profession, 'baseUrlRisorsa' => $baseUrlRisorsa
         ));
     }
 }

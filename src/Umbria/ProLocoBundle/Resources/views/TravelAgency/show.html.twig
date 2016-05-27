@@ -56,6 +56,15 @@
                             </td>
                             <td>{{ travelAgency.idContenuto }}</td>
                         </tr>
+                        <tr>
+                            <td>
+                                <small>id risorsa</small>
+                            </td>
+                            <td><a href="{{ baseUrlRisorsa }}/{{ travelAgency.idContenuto }}">
+                                    {{ baseUrlRisorsa }}/{{ travelAgency.idContenuto }}
+                                </a>
+                            </td>
+                        </tr>
                         {% for address in travelAgency.address %}
                             <tr>
                                 <td>

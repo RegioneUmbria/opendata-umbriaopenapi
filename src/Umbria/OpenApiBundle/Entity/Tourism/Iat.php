@@ -26,6 +26,16 @@ class Iat
     private $id;
 
     /**
+     * @ORM\Column(type="integer")
+     *
+     * @JMS\Type("integer")
+     * @JMS\SerializedName("id")
+     *
+     * @JMS\Groups({"iat.*"})
+     */
+    private $idContenuto;
+
+    /**
      * @ORM\Column(type="string", length=255)
      *
      * @JMS\Type("string")
@@ -518,5 +528,29 @@ class Iat
     public function getRdf()
     {
         return $this->rdf;
+    }
+
+    /**
+     * Set idContenuto.
+     *
+     * @param int $idContenuto
+     *
+     * @return Attractor
+     */
+    public function setIdContenuto($idContenuto)
+    {
+        $this->idContenuto = $idContenuto;
+
+        return $this;
+    }
+
+    /**
+     * Get idContenuto.
+     *
+     * @return int
+     */
+    public function getIdContenuto()
+    {
+        return $this->idContenuto;
     }
 }

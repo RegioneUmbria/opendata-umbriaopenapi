@@ -47,8 +47,9 @@ class AttractorController extends Controller
      */
     public function showAction(Attractor $attractor)
     {
+        $baseUrlRisorsa = $this->container->getParameter('base_url_res_attractor');
         return $this->render('UmbriaProLocoBundle:Attractor:show.html.twig', array(
-            'attractor' => $attractor,
+            'attractor' => $attractor, 'baseUrlRisorsa' => $baseUrlRisorsa
         ));
     }
 }

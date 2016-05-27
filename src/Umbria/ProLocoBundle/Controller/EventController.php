@@ -47,8 +47,9 @@ class EventController extends Controller
      */
     public function showAction(Event $event)
     {
+        $baseUrlRisorsa = $this->container->getParameter('base_url_res_event');
         return $this->render('UmbriaProLocoBundle:Event:show.html.twig', array(
-            'event' => $event,
+            'event' => $event, 'baseUrlRisorsa' => $baseUrlRisorsa
         ));
     }
 }

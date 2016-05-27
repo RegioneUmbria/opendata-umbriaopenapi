@@ -43,8 +43,9 @@ class ConsortiumController extends Controller
      */
     public function showAction(Consortium $consortium)
     {
+        $baseUrlRisorsa = $this->container->getParameter('base_url_res_consortium');
         return $this->render('UmbriaProLocoBundle:Consortium:show.html.twig', array(
-            'consortium' => $consortium,
+            'consortium' => $consortium, 'baseUrlRisorsa' => $baseUrlRisorsa
         ));
     }
 }

@@ -47,8 +47,9 @@ class TravelAgencyController extends Controller
      */
     public function showAction(TravelAgency $travelAgency)
     {
+        $baseUrlRisorsa = $this->container->getParameter('base_url_res_travel_agency');
         return $this->render('UmbriaProLocoBundle:TravelAgency:show.html.twig', array(
-            'travelAgency' => $travelAgency,
+            'travelAgency' => $travelAgency, 'baseUrlRisorsa' => $baseUrlRisorsa
         ));
     }
 }

@@ -56,6 +56,15 @@
                             </td>
                             <td>{{ consortium.idContenuto }}</td>
                         </tr>
+                        <tr>
+                            <td>
+                                <small>id risorsa</small>
+                            </td>
+                            <td><a href="{{ baseUrlRisorsa }}/{{ consortium.idContenuto }}">
+                                    {{ baseUrlRisorsa }}/{{ consortium.idContenuto }}
+                                </a>
+                            </td>
+                        </tr>
                         {% for address in consortium.address %}
                             <tr>
                                 <td>

@@ -14,40 +14,56 @@
                 <p>
                     {{ iat.listaComuni }}
                 </p>
-                <p>
                 <address>
-                    <strong>{{ iat.denominazione }}</strong><br>
-                    {% if iat.streetAddress != '' %}
-                        {{ iat.streetAddress }}
-                    {% endif %}
-                    <br>
-                    {% if iat.addressLocality != '' %}
-                        {{ iat.addressLocality }}
-                    {% endif %}
-                    {% if iat.addressRegion != '' %}
-                        , {{ iat.addressRegion }}
-                    {% endif %}
-                    {% if iat.postalCode != '' %}
-                        {{ iat.postalCode }}
-                    {% endif %}
-                </p>
-                <p>
-                    {% for phone in iat.phone %}
-                        <abbr title="Phone">P:</abbr> {{ phone.numTelefono }}<br>
-                    {% endfor %}
-                    {% for faxNumber in iat.faxNumber %}
-                        <abbr title="Fax number">F:</abbr> {{ faxNumber.numFax }}<br>
-                    {% endfor %}
-                    {% for mbox in iat.mbox %}
-                        <abbr title="Email">E:</abbr> {{ mbox.email }}<br>
-                    {% endfor %}
+                    <p>
+                        <strong>{{ iat.denominazione }}</strong><br>
+                        {% if iat.streetAddress != '' %}
+                            {{ iat.streetAddress }}
+                        {% endif %}
+                        <br>
+                        {% if iat.addressLocality != '' %}
+                            {{ iat.addressLocality }}
+                        {% endif %}
+                        {% if iat.addressRegion != '' %}
+                            , {{ iat.addressRegion }}
+                        {% endif %}
+                        {% if iat.postalCode != '' %}
+                            {{ iat.postalCode }}
+                        {% endif %}
+                    </p>
+                    <p>
+                        {% for phone in iat.phone %}
+                            <abbr title="Phone">P:</abbr> {{ phone.numTelefono }}<br>
+                        {% endfor %}
+                        {% for faxNumber in iat.faxNumber %}
+                            <abbr title="Fax number">F:</abbr> {{ faxNumber.numFax }}<br>
+                        {% endfor %}
+                        {% for mbox in iat.mbox %}
+                            <abbr title="Email">E:</abbr> {{ mbox.email }}<br>
+                        {% endfor %}
+                    </p>
                 </address>
-                </p>
+
             </div>
             <div class="col-md-5">
                 <div class="row">
                     <table class="table table-condensed">
                         <tbody>
+                            <tr>
+                                <td>
+                                    <small>id contenuto</small>
+                                </td>
+                                <td>{{ iat.idContenuto }}</td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <small>id risorsa</small>
+                                </td>
+                                <td><a href="{{ baseUrlRisorsa }}/{{ iat.idContenuto }}">
+                                        {{ baseUrlRisorsa }}/{{ iat.idContenuto }}
+                                    </a>
+                                </td>
+                            </tr>
                             <tr>
                                 <td>
                                     <small>coordinate</small>

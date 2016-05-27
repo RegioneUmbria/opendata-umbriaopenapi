@@ -47,8 +47,9 @@ class IatController extends Controller
      */
     public function showAction(Iat $iat)
     {
+        $baseUrlRisorsa = $this->container->getParameter('base_url_res_iat');
         return $this->render('UmbriaProLocoBundle:Iat:show.html.twig', array(
-            'iat' => $iat,
+            'iat' => $iat, 'baseUrlRisorsa' => $baseUrlRisorsa
         ));
     }
 }
