@@ -119,20 +119,20 @@
             // GEOLOCATION
             geolocation();
 
-            google.maps.event.addDomListener(map, 'click', function (event) {
-                var myLatLng = event.latLng;
-                var lat = myLatLng.lat();
-                var lng = myLatLng.lng();
-                var zoom = mapObject.getZoom();
-                Cookies.set('lat2', lat);
-                Cookies.set('lng2', lng);
-                Cookies.set('zoom', lng);
+            google.maps.event.addListener(map, 'center_changed', function (event) {
+                var center = map.getCenter();
+                var zoom = map.getZoom();
+                var lat = center.lat().toFixed(5);
+                var lng = center.lng().toFixed(5);
+                Cookies.set('lat', lat);
+                Cookies.set('lng', lng);
+                Cookies.set('zoom', zoom);
             });
 
             // riposizionamento mappa in relazione all'ultimo place visitato
             changeBounds = true;
-            var latCenter = Cookies.get('lat2');
-            var lngCenter = Cookies.get('lng2');
+            var latCenter = Cookies.get('lat');
+            var lngCenter = Cookies.get('lng');
             var zoom = Cookies.get('zoom');
             if (latCenter != null && lngCenter != null) {
                 Cookies.remove('lat');
@@ -224,7 +224,7 @@
                     '<h5>' +
                     name +
                     '</h5>' +
-                    '<a onclick="setCenterCookie()" href="' +
+                    '<a  href="' +
                     href +
                     '">show</a>' +
                     '</div>';
@@ -295,10 +295,6 @@
             }
         }
 
-        function setCenterCookie() {
-            var center = map.getCenter();
-            Cookies.set('center', center);
-        }
 
     </script>
     <script async defer src="https://maps.googleapis.com/maps/api/js?callback=initMap"></script>

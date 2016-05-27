@@ -86,7 +86,10 @@
                                 </td>
                                 <td>
                                     {% if address.latitude != '' %}
-                                        {{ address.latitude }},{{ address.longitude }}
+                                        <a href="{{ path('umbria_pro_loco_homepage') }}"
+                                           onclick="setCoordCookie({{ address.latitude }},{{ address.longitude }})">
+                                            {{ address.latitude }},{{ address.longitude }}
+                                        </a>
                                     {% else %}
                                         -
                                     {% endif %}
@@ -151,8 +154,5 @@
         {% endif %}
         {% endfor %}
 
-        // settaggio del cookie
-        Cookies.set('lat', {{ latitude }});
-        Cookies.set('lng', {{ longitude }});
     </script>
 {% endblock %}

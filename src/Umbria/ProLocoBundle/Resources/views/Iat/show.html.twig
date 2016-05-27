@@ -70,7 +70,10 @@
                                 </td>
                                 <td>
                                     {% if iat.latitude != '' %}
+                                        <a href="{{ path('umbria_pro_loco_homepage') }}"
+                                           onclick="setCoordCookie({{ iat.latitude }},{{ iat.longitude }})">
                                         {{ iat.latitude }},{{ iat.longitude }}
+                                        </a>
                                     {% else %}
                                         -
                                     {% endif %}
@@ -120,8 +123,5 @@
         {% set longitude = iat.longitude %}
         {% endif %}
 
-        // settaggio del cookie
-        Cookies.set('lat', {{ latitude }});
-        Cookies.set('lng', {{ longitude }});
     </script>
 {% endblock %}

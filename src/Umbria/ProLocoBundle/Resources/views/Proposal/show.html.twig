@@ -71,20 +71,25 @@
                                 {% for coordinate in proposal.coordinate %}
                                     {% if coordinate.latitude != '' %}
                                         <small>umbria:</small>
-                                        {{ coordinate.latitude }},{{ coordinate.longitude }}
-                                        {% set latitude = coordinate.latitude %}
-                                        {% set longitude = coordinate.longitude %}
+                                        <a href="{{ path('umbria_pro_loco_homepage') }}"
+                                           onclick="setCoordCookie({{ coordinate.latitude }},{{ coordinate.longitude }})">
+                                            {{ coordinate.latitude }},{{ coordinate.longitude }}
+                                        </a>
                                     {% elseif coordinate.dbpediaLatitude != '' %}
                                         <small>dbpedia:
-                                        </small> {{ coordinate.dbpediaLatitude }},{{ coordinate.dbpediaLongitude }}
-                                        {% set latitude = coordinate.dbpediaLatitude %}
-                                        {% set longitude = coordinate.dbpediaLongitude %}
+                                        </small>
+                                        <a href="{{ path('umbria_pro_loco_homepage') }}"
+                                           onclick="setCoordCookie({{ coordinate.dbpediaLatitude }},{{ coordinate.dbpediaLongitude }})">
+                                            {{ coordinate.dbpediaLatitude }},{{ coordinate.dbpediaLongitude }}
+                                        </a>
                                     {% elseif coordinate.googleLatitude != '' %}
                                         <small>google:
                                         </small>
-                                        <a href="https://www.google.it/maps/?q=loc:{{ coordinate.googleLatitude }},{{ coordinate.googleLongitude }}"
-                                           target="_blank">{{ coordinate.googleLatitude }}
-                                            ,{{ coordinate.googleLongitude }}</a>
+                                        <a href="{{ path('umbria_pro_loco_homepage') }}"
+                                           onclick="setCoordCookie({{ coordinate.googleLatitude }},{{ coordinate.googleLongitude }})">
+                                            {{ coordinate.googleLatitude }}
+                                            ,{{ coordinate.googleLongitude }}
+                                        </a>
                                         <span class="glyphicon glyphicon-info-sign pull-right" data-toggle="tooltip"
                                               data-placement="top"
                                               title="Posizione calcola. Non se ne garantisce l'affidabilità"></span>
@@ -164,8 +169,5 @@
         {% endif %}
         {% endfor %}
 
-        // settaggio del cookie
-        Cookies.set('lat', {{ latitude }});
-        Cookies.set('lng', {{ longitude }});
     </script>
 {% endblock %}
