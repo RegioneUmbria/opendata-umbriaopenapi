@@ -30,7 +30,15 @@ class DefaultController extends Controller
     {
         $rdfs = $this->em->getRepository('UmbriaOpenApiBundle:Tourism\RDF')->findAll();
 
-        $entities = array();
+
+        $attrattori = array();
+        $proposte = array();
+        $eventi = array();
+        $agenzieViaggio = array();
+        $consorzi = array();
+        $professioni = array();
+        $iats = array();
+
         /** @var RDF $rdf */
         foreach ($rdfs as $rdf) {
             /** @var Attractor $attractor */
@@ -65,7 +73,7 @@ class DefaultController extends Controller
 
                     // TODO: rivedere
                     if ($place->getLatitude() != '') {
-                        $entities[] = $place;
+                        $attrattori[] = $place;
                     }
                 }
             }
@@ -92,7 +100,7 @@ class DefaultController extends Controller
 
                     // TODO: rivedere
                     if ($place->getLatitude() != '') {
-                        $entities[] = $place;
+                        $proposte[] = $place;
                     }
                 }
             }
@@ -119,7 +127,7 @@ class DefaultController extends Controller
 
                     // TODO: rivedere
                     if ($place->getLatitude() != '') {
-                        $entities[] = $place;
+                        $eventi[] = $place;
                     }
                 }
             }
@@ -142,7 +150,7 @@ class DefaultController extends Controller
                             ), UrlGeneratorInterface::ABSOLUTE_URL);
                             $place->setHref($uri);
 
-                            $entities[] = $place;
+                            $agenzieViaggio[] = $place;
                         }
                     }
                 }
@@ -166,7 +174,7 @@ class DefaultController extends Controller
                             ), UrlGeneratorInterface::ABSOLUTE_URL);
                             $place->setHref($uri);
 
-                            $entities[] = $place;
+                            $consorzi[] = $place;
                         }
                     }
                 }
@@ -193,7 +201,7 @@ class DefaultController extends Controller
                             ), UrlGeneratorInterface::ABSOLUTE_URL);
                             $place->setHref($uri);
 
-                            $entities[] = $place;
+                            $professioni[] = $place;
                         } elseif ($address->getLatitude() != '' and $coordinates == '') {
                             $place = new PlaceDetails();
                             $place->setId($profession->getId());
@@ -207,7 +215,7 @@ class DefaultController extends Controller
                             ), UrlGeneratorInterface::ABSOLUTE_URL);
                             $place->setHref($uri);
 
-                            $entities[] = $place;
+                            $professioni[] = $place;
                         }
                     }
                 }
@@ -228,14 +236,16 @@ class DefaultController extends Controller
                         ), UrlGeneratorInterface::ABSOLUTE_URL);
                         $place->setHref($uri);
 
-                        $entities[] = $place;
+                        $iats[] = $place;
                     }
                 }
             }
         }
 
         return $this->render('UmbriaProLocoBundle:Default:index.html.twig', array(
-            'entities' => $entities,
+            'attrattori' => $attrattori, 'proposte' => $proposte, 'eventi' => $eventi,
+            'agenzieViaggio' => $agenzieViaggio, 'professioni' => $professioni, 'consorzi' => $consorzi,
+            'iat' => $iats
         ));
     }
 }

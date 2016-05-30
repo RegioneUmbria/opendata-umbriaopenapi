@@ -12,7 +12,7 @@
     <script>
         var map;
         var clusterer = null;
-        var umbriaCenter = {lat: 43.06, lng: 12.23};
+        var umbriaCenter = {lat: 42.96637, lng: 12.35635};
 
         var markerGroups = {
             "tourism_attractor": [],
@@ -25,8 +25,86 @@
         };
 
         // lista delle posizioni
-        var places = [
-            {% for entity in entities %}
+        var attrattori = [
+            {% for entity in attrattori %}
+            {
+                id: {{ entity.id }},
+                name: "{{ entity.name }}",
+                type: "{{ entity.type }}",
+                latitude: {{ entity.latitude }},
+                longitude: {{ entity.longitude }},
+                latLng: {lat: {{ entity.latitude }}, lng: {{ entity.longitude }}},
+                href: "{{ entity.href }}"
+            },
+            {% endfor %}
+        ];
+        var proposte = [
+            {% for entity in proposte %}
+            {
+                id: {{ entity.id }},
+                name: "{{ entity.name }}",
+                type: "{{ entity.type }}",
+                latitude: {{ entity.latitude }},
+                longitude: {{ entity.longitude }},
+                latLng: {lat: {{ entity.latitude }}, lng: {{ entity.longitude }}},
+                href: "{{ entity.href }}"
+            },
+            {% endfor %}
+        ];
+        var eventi = [
+            {% for entity in eventi %}
+            {
+                id: {{ entity.id }},
+                name: "{{ entity.name }}",
+                type: "{{ entity.type }}",
+                latitude: {{ entity.latitude }},
+                longitude: {{ entity.longitude }},
+                latLng: {lat: {{ entity.latitude }}, lng: {{ entity.longitude }}},
+                href: "{{ entity.href }}"
+            },
+            {% endfor %}
+        ];
+        var agenzieViaggio = [
+            {% for entity in agenzieViaggio %}
+            {
+                id: {{ entity.id }},
+                name: "{{ entity.name }}",
+                type: "{{ entity.type }}",
+                latitude: {{ entity.latitude }},
+                longitude: {{ entity.longitude }},
+                latLng: {lat: {{ entity.latitude }}, lng: {{ entity.longitude }}},
+                href: "{{ entity.href }}"
+            },
+            {% endfor %}
+        ];
+        var consorzi = [
+            {% for entity in consorzi %}
+            {
+                id: {{ entity.id }},
+                name: "{{ entity.name }}",
+                type: "{{ entity.type }}",
+                latitude: {{ entity.latitude }},
+                longitude: {{ entity.longitude }},
+                latLng: {lat: {{ entity.latitude }}, lng: {{ entity.longitude }}},
+                href: "{{ entity.href }}"
+            },
+            {% endfor %}
+        ];
+        var professioni = [
+            {% for entity in professioni %}
+            {
+                id: {{ entity.id }},
+                name: "{{ entity.name }}",
+                type: "{{ entity.type }}",
+                latitude: {{ entity.latitude }},
+                longitude: {{ entity.longitude }},
+                latLng: {lat: {{ entity.latitude }}, lng: {{ entity.longitude }}},
+                href: "{{ entity.href }}"
+            },
+            {% endfor %}
+        ];
+        var iat = [
+            {% for entity in iat %}
             {
                 id: {{ entity.id }},
                 name: "{{ entity.name }}",
@@ -39,6 +117,14 @@
             {% endfor %}
         ];
 
+        var mcAttrattori;
+        var mcProposte;
+        var mcEventi;
+        var mcAgenzieViaggio;
+        var mcConsorzi;
+        var mcProfessioni;
+        var mcIat;
+
         function initMap() {
             // opzioni mappa
             var mapOptions = {
@@ -49,76 +135,31 @@
 
             // creazione mappa
             map = new google.maps.Map(document.getElementById('map'), mapOptions);
-            //legend
-            map.controls[google.maps.ControlPosition.RIGHT_BOTTOM].push(
-                    document.getElementById('legend'));
 
-            var div = document.createElement('div');
-            div.innerHTML =
-                    '<div class="legendrow">' +
-                    '<div style="background-color:#DA4F49; width: 10px; height: 10px; display: inline-block"></div> ' +
-                    '<span class="legendlabel">Attrattori</span> ' +
-                    '<input class="legendcheckbox" type="checkbox" onclick="toggleGroup(\'tourism_attractor\', this)" checked="checked">' +
-                    '</div>';
-            legend.appendChild(div);
-
-            var div = document.createElement('div');
-            div.innerHTML =
-                    '<div class="legendrow">' +
-                    '<div style="background-color:#FAA732; width: 10px; height: 10px; display: inline-block"></div> ' +
-                    '<span class="legendlabel">Proposte</span>' +
-                    '<input class="legendcheckbox" type="checkbox" onclick="toggleGroup(\'tourism_proposal\', this)" >' +
-                    '</div>';
-            legend.appendChild(div);
-
-            var div = document.createElement('div');
-            div.innerHTML =
-                    '<div class="legendrow">' +
-                    '<div style="background-color:#5BB75B; width: 10px; height: 10px; display: inline-block"></div> ' +
-                    '<span class="legendlabel">Eventi</span>' +
-                    '<input class="legendcheckbox" type="checkbox" onclick="toggleGroup(\'tourism_event\', this)" checked="checked">' +
-                    '</div>';
-            legend.appendChild(div);
-
-            var div = document.createElement('div');
-            div.innerHTML =
-                    '<div class="legendrow">' +
-                    '<div style="background-color:#EFE926; width: 10px; height: 10px; display: inline-block"></div> ' +
-                    '<span class="legendlabel">Agenzie di viaggio</span>' +
-                    '<input class="legendcheckbox" type="checkbox" onclick="toggleGroup(\'tourism_travel_agency\', this)" >' +
-                    '</div>';
-            legend.appendChild(div);
-
-            var div = document.createElement('div');
-            div.innerHTML =
-                    '<div class="legendrow">' +
-                    '<div style="background-color:#8824B2; width: 10px; height: 10px; display: inline-block"></div> ' +
-                    '<span class="legendlabel">Consorzi</span>' +
-                    '<input class="legendcheckbox" type="checkbox" onclick="toggleGroup(\'tourism_consortium\', this)" >' +
-                    '</div>';
-            legend.appendChild(div);
-
-            var div = document.createElement('div');
-            div.innerHTML =
-                    '<div class="legendrow">' +
-                    '<div style="background-color:#3D94EA; width: 10px; height: 10px; display: inline-block"></div> ' +
-                    '<span class="legendlabel">Professioni turistiche</span>' +
-                    '<input class="legendcheckbox" type="checkbox" onclick="toggleGroup(\'tourism_profession\', this)" >' +
-                    '</div>';
-            legend.appendChild(div);
-
-            var div = document.createElement('div');
-            div.innerHTML =
-                    '<div class="legendrow">' +
-                    '<div style="background-color:#006DCC; width: 10px; height: 10px; display: inline-block"></div> ' +
-                    '<span class="legendlabel">Iat </span>' +
-                    '<input class="legendcheckbox" type="checkbox" onclick="toggleGroup(\'tourism_iat\', this)" >' +
-                    '</div>';
-            legend.appendChild(div);
-
+            initLegend();
+            setPositionFromCookies();
             // GEOLOCATION
             geolocation();
 
+            //Registra cambiamenti posizione su cookie
+            google.maps.event.addListener(map, 'click', function (event) {
+                var center = map.getCenter();
+                var zoom = map.getZoom();
+                var lat = center.lat().toFixed(5);
+                var lng = center.lng().toFixed(5);
+                Cookies.set('lat', lat);
+                Cookies.set('lng', lng);
+                Cookies.set('zoom', zoom);
+            });
+            google.maps.event.addListener(map, 'bounds_changed', function (event) {
+                var center = map.getCenter();
+                var zoom = map.getZoom();
+                var lat = center.lat().toFixed(5);
+                var lng = center.lng().toFixed(5);
+                Cookies.set('lat', lat);
+                Cookies.set('lng', lng);
+                Cookies.set('zoom', zoom);
+            });
             google.maps.event.addListener(map, 'center_changed', function (event) {
                 var center = map.getCenter();
                 var zoom = map.getZoom();
@@ -128,9 +169,179 @@
                 Cookies.set('lng', lng);
                 Cookies.set('zoom', zoom);
             });
+            google.maps.event.addListener(map, 'zoom_changed', function (event) {
+                var center = map.getCenter();
+                var zoom = map.getZoom();
+                var lat = center.lat().toFixed(5);
+                var lng = center.lng().toFixed(5);
+                Cookies.set('lat', lat);
+                Cookies.set('lng', lng);
+                Cookies.set('zoom', zoom);
+            });
 
+            initMarkerClusterers();
+            updateMarkersAll();
+
+
+        }
+
+        function initMarkerClusterers() {
+            var clusterStyles = [
+                {
+                    textColor: '#DA4F49',
+                    url: '{{ asset('img/map/cluster_marker.png') }}',
+                    height: 52,
+                    width: 53
+                }
+            ];
+            var mcOptions = {maxZoom: 15, styles: clusterStyles};
+            mcAttrattori = new MarkerClusterer(map, [], mcOptions);
+
+            var clusterStyles2 = [
+                {
+                    textColor: '#FAA732',
+                    url: '{{ asset('img/map/cluster_marker.png') }}',
+                    height: 52,
+                    width: 53
+                }
+            ];
+            var mcOptions2 = {maxZoom: 15, styles: clusterStyles2};
+            mcProposte = new MarkerClusterer(map, [], mcOptions2);
+
+            var clusterStyles3 = [
+                {
+                    textColor: '#5BB75B',
+                    url: '{{ asset('img/map/cluster_marker.png') }}',
+                    height: 52,
+                    width: 53
+                }
+            ];
+            var mcOptions3 = {maxZoom: 15, styles: clusterStyles3};
+            mcEventi = new MarkerClusterer(map, [], mcOptions3);
+
+            var clusterStyles4 = [
+                {
+                    textColor: '#EFE926',
+                    url: '{{ asset('img/map/cluster_marker.png') }}',
+                    height: 52,
+                    width: 53
+                }
+            ];
+            var mcOptions4 = {maxZoom: 15, styles: clusterStyles4};
+            mcAgenzieViaggio = new MarkerClusterer(map, [], mcOptions4);
+
+            var clusterStyles5 = [
+                {
+                    textColor: '#8824B2',
+                    url: '{{ asset('img/map/cluster_marker.png') }}',
+                    height: 52,
+                    width: 53
+                }
+            ];
+            var mcOptions5 = {maxZoom: 15, styles: clusterStyles5};
+            mcConsorzi = new MarkerClusterer(map, [], mcOptions5);
+
+            var clusterStyles6 = [
+                {
+                    textColor: '#90C3F4',
+                    url: '{{ asset('img/map/cluster_marker.png') }}',
+                    height: 52,
+                    width: 53
+                }
+            ];
+            var mcOptions6 = {maxZoom: 15, styles: clusterStyles6};
+            mcProfessioni = new MarkerClusterer(map, [], mcOptions6);
+
+            var clusterStyles7 = [
+                {
+                    textColor: '#011E3B',
+                    url: '{{ asset('img/map/cluster_marker.png') }}',
+                    height: 52,
+                    width: 53
+                }
+            ];
+            var mcOptions7 = {maxZoom: 15, styles: clusterStyles7};
+            mcIat = new MarkerClusterer(map, [], mcOptions7);
+
+        }
+        function initLegend() {
+            //legend
+            map.controls[google.maps.ControlPosition.RIGHT_BOTTOM].push(
+                    document.getElementById('legend'));
+
+            var div = document.createElement('div');
+            div.innerHTML =
+                    '<div class="legendrow">' +
+                    '<div style="background-color:#DA4F49; width: 10px; height: 10px; display: inline-block"></div> ' +
+                    '<span class="legendlabel">Attrattori</span> ' +
+                    '<input id="tourism_attractor_cb" class="legendcheckbox" type="checkbox" ' +
+                    'onchange="updateMarkers(\'tourism_attractor\')" checked="checked">' +
+                    '</div>';
+            legend.appendChild(div);
+
+            var div = document.createElement('div');
+            div.innerHTML =
+                    '<div class="legendrow">' +
+                    '<div style="background-color:#FAA732; width: 10px; height: 10px; display: inline-block"></div> ' +
+                    '<span class="legendlabel">Proposte</span>' +
+                    '<input id="tourism_proposal_cb" class="legendcheckbox" type="checkbox" ' +
+                    'onchange="updateMarkers(\'tourism_proposal\')" >' +
+                    '</div>';
+            legend.appendChild(div);
+
+            var div = document.createElement('div');
+            div.innerHTML =
+                    '<div class="legendrow">' +
+                    '<div style="background-color:#5BB75B; width: 10px; height: 10px; display: inline-block"></div> ' +
+                    '<span class="legendlabel">Eventi</span>' +
+                    '<input id="tourism_event_cb" class="legendcheckbox" type="checkbox" ' +
+                    'onchange="updateMarkers(\'tourism_event\')" checked="checked">' +
+                    '</div>';
+            legend.appendChild(div);
+
+            var div = document.createElement('div');
+            div.innerHTML =
+                    '<div class="legendrow">' +
+                    '<div style="background-color:#EFE926; width: 10px; height: 10px; display: inline-block"></div> ' +
+                    '<span class="legendlabel">Agenzie di viaggio</span>' +
+                    '<input id="tourism_travel_agency_cb" class="legendcheckbox" type="checkbox" ' +
+                    'onchange="updateMarkers(\'tourism_travel_agency\')" >' +
+                    '</div>';
+            legend.appendChild(div);
+
+            var div = document.createElement('div');
+            div.innerHTML =
+                    '<div class="legendrow">' +
+                    '<div style="background-color:#8824B2; width: 10px; height: 10px; display: inline-block"></div> ' +
+                    '<span class="legendlabel">Consorzi</span>' +
+                    '<input id="tourism_consortium_cb" class="legendcheckbox" type="checkbox" ' +
+                    'onchange="updateMarkers(\'tourism_consortium\')" >' +
+                    '</div>';
+            legend.appendChild(div);
+
+            var div = document.createElement('div');
+            div.innerHTML =
+                    '<div class="legendrow">' +
+                    '<div style="background-color:#3D94EA; width: 10px; height: 10px; display: inline-block"></div> ' +
+                    '<span class="legendlabel">Professioni turistiche</span>' +
+                    '<input id="tourism_profession_cb" class="legendcheckbox" type="checkbox" ' +
+                    'onchange="updateMarkers(\'tourism_profession\')" >' +
+                    '</div>';
+            legend.appendChild(div);
+
+            var div = document.createElement('div');
+            div.innerHTML =
+                    '<div class="legendrow">' +
+                    '<div style="background-color:#006DCC; width: 10px; height: 10px; display: inline-block"></div> ' +
+                    '<span class="legendlabel">Iat </span>' +
+                    '<input id="tourism_iat_cb" class="legendcheckbox" type="checkbox"' +
+                    'onchange="updateMarkers(\'tourism_iat\')">' +
+                    '</div>';
+            legend.appendChild(div);
+
+        }
+        function setPositionFromCookies() {
             // riposizionamento mappa in relazione all'ultimo place visitato
-            changeBounds = true;
             var latCenter = Cookies.get('lat');
             var lngCenter = Cookies.get('lng');
             var zoom = Cookies.get('zoom');
@@ -146,64 +357,22 @@
             }
 
             map.setCenter({lat: parseFloat(latCenter), lng: parseFloat(lngCenter)});
-            map.setZoom(zoom);
+            map.setZoom(parseInt(zoom));
 
 
-            changeBounds = false;
-
-            // aggiunta maker
-            var bounds = new google.maps.LatLngBounds();
-            for (var i = 0; i < places.length; i++) {
-                addMarkerCall(places[i], bounds, i * 10, changeBounds);
-            }
-
-            // opzioni cluster
-            var clusterStyles = [
-                {
-                    textColor: 'white',
-                    url: '{{ asset('img/map/cluster_marker.png') }}',
-                    height: 52,
-                    width: 53
-                }
-            ];
-            var mcOptions = {maxZoom: 15, styles: clusterStyles};
-
-            // creazione clusterer
-            clusterer = new MarkerClusterer(map, [], mcOptions);
         }
 
-        function addMarkerCall(place, bounds, interval, changeBounds) {
+        function addMarkerCall(place, bounds, interval, mc, markerIcon) {
             setTimeout(function () {
-                addMarker(place, bounds, changeBounds)
+                addMarker(place, bounds, mc, markerIcon)
             }, interval);
         }
 
-        function addMarker(place, bounds, changeBounds) {
+        function addMarker(place, bounds, mc, markerIcon) {
             var name = place.name;
             var type = place.type;
             var latLng = place.latLng;
             var href = place.href;
-
-            var visible = false;
-
-            var markerIcon;
-            if (type == 'tourism_attractor') {
-                markerIcon = '{{ asset('img/map/marker_red.png') }}';
-                visible = true;
-            } else if (type == 'tourism_proposal') {
-                markerIcon = '{{ asset('img/map/marker_orange.png') }}';
-            } else if (type == 'tourism_event') {
-                markerIcon = '{{ asset('img/map/marker_green.png') }}';
-                visible = true;
-            } else if (type == 'tourism_travel_agency') {
-                markerIcon = '{{ asset('img/map/marker_yellow.png') }}';
-            } else if (type == 'tourism_consortium') {
-                markerIcon = '{{ asset('img/map/marker_purple.png') }}';
-            } else if (type == 'tourism_profession') {
-                markerIcon = '{{ asset('img/map/marker_blue.png') }}';
-            } else if (type == 'tourism_iat') {
-                markerIcon = '{{ asset('img/map/marker_blue_dark.png') }}';
-            }
 
             var marker = new google.maps.Marker({
                 position: latLng,
@@ -218,7 +387,7 @@
             if (!markerGroups[type]) markerGroups[type] = [];
             markerGroups[type].push(marker);
 
-            clusterer.addMarker(marker);
+            mc.addMarker(marker);
 
             var contentString = '<div id="content">' +
                     '<h5>' +
@@ -237,14 +406,7 @@
                 infowindow.open(map, marker);
             });
 
-            if(changeBounds){
-                bounds.extend(marker.position);
-                map.fitBounds(bounds);
-            }
 
-            if (visible == false) {
-                marker.setVisible(false);
-            }
         }
 
         //_______________________________________________ GEOLOCATION
@@ -284,16 +446,232 @@
             }
         }
 
-        function toggleGroup(type, element) {
-            for (var i = 0; i < markerGroups[type].length; i++) {
-                var marker = markerGroups[type][i];
-                if (element.checked) {
-                    marker.setVisible(true);
-                } else {
-                    marker.setVisible(false);
+
+        function getSelectedPOI() {
+            var selectedPOI = {
+                tourism_attractor: 0,
+                tourism_proposal: 0,
+                tourism_event: 0,
+                tourism_travel_agency: 0,
+                tourism_consortium: 0,
+                tourism_profession: 0,
+                tourism_iat: 0
+            };
+
+            if (document.getElementById("tourism_attractor_cb").checked) {
+                selectedPOI.tourism_attractor = 1;
+            }
+            if (document.getElementById("tourism_proposal_cb").checked) {
+                selectedPOI.tourism_proposal = 1;
+            }
+            if (document.getElementById("tourism_event_cb").checked) {
+                selectedPOI.tourism_event = 1;
+            }
+            if (document.getElementById("tourism_travel_agency_cb").checked) {
+                selectedPOI.tourism_travel_agency = 1;
+            }
+            if (document.getElementById("tourism_consortium_cb").checked) {
+                selectedPOI.tourism_consortium = 1;
+            }
+            if (document.getElementById("tourism_profession_cb").checked) {
+                selectedPOI.tourism_profession = 1;
+            }
+            if (document.getElementById("tourism_iat_cb").checked) {
+                selectedPOI.tourism_iat = 1;
+            }
+            return selectedPOI;
+        }
+
+        function getSelectedPOI2() {
+            var selectedPOI = [];
+            var cnt = 0;
+            if (document.getElementById("tourism_attractor_cb").checked) {
+                selectedPOI[cnt] = "tourism_attractor";
+                cnt++;
+            }
+            if (document.getElementById("tourism_proposal_cb").checked) {
+                selectedPOI[cnt] = "tourism_proposal";
+                cnt++;
+            }
+            if (document.getElementById("tourism_event_cb").checked) {
+                selectedPOI[cnt] = "tourism_event";
+                cnt++;
+            }
+            if (document.getElementById("tourism_travel_agency_cb").checked) {
+                selectedPOI[cnt] = "tourism_travel_agency";
+                cnt++;
+            }
+            if (document.getElementById("tourism_consortium_cb").checked) {
+                selectedPOI[cnt] = "tourism_consortium";
+                cnt++;
+            }
+            if (document.getElementById("tourism_profession_cb").checked) {
+                selectedPOI[cnt] = "tourism_profession";
+                cnt++;
+            }
+            if (document.getElementById("tourism_iat_cb").checked) {
+                selectedPOI[cnt] = "tourism_iat";
+                cnt++;
+            }
+            return selectedPOI;
+        }
+
+        function updateMarkers(type) {
+            if (isCheckedType(type)) {
+                //deleteMarkersByType(type);
+                var places = getPlacesByType(type);
+                var mc = getClustererByType(type);
+                var icon = getMarkerIconByType(type);
+                var bounds = new google.maps.LatLngBounds();
+                for (var i = 0; i < places.length; i++) {
+                    addMarkerCall(places[i], bounds, 0, mc, icon);
                 }
             }
+            else {
+                deleteMarkersByType(type);
+            }
+
         }
+
+
+        function updateMarkersAll() {
+            var selectedPOI = getSelectedPOI2();
+            for (var type in selectedPOI) {
+                updateMarkers(selectedPOI[type]);
+            }
+        }
+
+        function getPlacesByType(type) {
+            if (type == 'tourism_attractor') {
+                return attrattori;
+            } else if (type == 'tourism_proposal') {
+                return proposte;
+            } else if (type == 'tourism_event') {
+                return eventi;
+            } else if (type == 'tourism_travel_agency') {
+                return agenzieViaggio;
+            } else if (type == 'tourism_consortium') {
+                return consorzi;
+            } else if (type == 'tourism_profession') {
+                return professioni;
+            } else if (type == 'tourism_iat') {
+                return iat;
+            }
+            return [];
+        }
+
+        function getClustererByType(type) {
+            if (type == 'tourism_attractor') {
+                return mcAttrattori;
+            } else if (type == 'tourism_proposal') {
+                return mcProposte;
+            } else if (type == 'tourism_event') {
+                return mcEventi;
+            } else if (type == 'tourism_travel_agency') {
+                return mcAgenzieViaggio;
+            } else if (type == 'tourism_consortium') {
+                return mcConsorzi;
+            } else if (type == 'tourism_profession') {
+                return mcProfessioni;
+            } else if (type == 'tourism_iat') {
+                return mcIat;
+            }
+            return [];
+        }
+
+        function getMarkerIconByType(type) {
+            var markerIcon;
+            if (type == 'tourism_attractor') {
+                markerIcon = '{{ asset('img/map/marker_red.png') }}';
+            } else if (type == 'tourism_proposal') {
+                markerIcon = '{{ asset('img/map/marker_orange.png') }}';
+            } else if (type == 'tourism_event') {
+                markerIcon = '{{ asset('img/map/marker_green.png') }}';
+            } else if (type == 'tourism_travel_agency') {
+                markerIcon = '{{ asset('img/map/marker_yellow.png') }}';
+            } else if (type == 'tourism_consortium') {
+                markerIcon = '{{ asset('img/map/marker_purple.png') }}';
+            } else if (type == 'tourism_profession') {
+                markerIcon = '{{ asset('img/map/marker_blue.png') }}';
+            } else if (type == 'tourism_iat') {
+                markerIcon = '{{ asset('img/map/marker_blue_dark.png') }}';
+            }
+            return markerIcon;
+        }
+
+        function getMarkersGroupByType(type) {
+            if (type == 'tourism_attractor') {
+                return markerGroups.tourism_attractor;
+            } else if (type == 'tourism_proposal') {
+                return markerGroups.tourism_proposal;
+            } else if (type == 'tourism_event') {
+                return markerGroups.tourism_event;
+            } else if (type == 'tourism_travel_agency') {
+                return markerGroups.tourism_travel_agency;
+            } else if (type == 'tourism_consortium') {
+                return markerGroups.tourism_consortium;
+            } else if (type == 'tourism_profession') {
+                return markerGroups.tourism_profession;
+            } else if (type == 'tourism_iat') {
+                return markerGroups.tourism_iat;
+            }
+            return [];
+        }
+
+        function deleteMarkersByType(type) {
+            var places = getMarkersGroupByType(type);
+            for (var i = 0; i < places.length; i++) {
+                places[i].setMap(null);
+            }
+            getClustererByType(type).removeMarkers(getMarkersGroupByType(type));
+        }
+
+        function isCheckedType(type) {
+            if (type == 'tourism_attractor') {
+                if (document.getElementById("tourism_attractor_cb").checked)
+                    return true;
+            } else if (type == 'tourism_proposal') {
+                if (document.getElementById("tourism_proposal_cb").checked)
+                    return true;
+            } else if (type == 'tourism_event') {
+                if (document.getElementById("tourism_event_cb").checked)
+                    return true;
+            } else if (type == 'tourism_travel_agency') {
+                if (document.getElementById("tourism_travel_agency_cb").checked)
+                    return true;
+            } else if (type == 'tourism_consortium') {
+                if (document.getElementById("tourism_consortium_cb").checked)
+                    return true;
+            } else if (type == 'tourism_profession') {
+                if (document.getElementById("tourism_profession_cb").checked)
+                    return true;
+            } else if (type == 'tourism_iat') {
+                if (document.getElementById("tourism_iat_cb").checked)
+                    return true;
+            }
+            return false;
+        }
+
+        /*function deleteMarkersAll() {
+         clearMarkersAll();
+         for(var i = 0; i < markerGroups.length; i++) {
+         var markerGroup = markerGroups[i];
+         for(var j = 0; j < markerGroup.length; j++) {
+         markerGroup[j]=[];
+         }
+         }
+         }
+         function clearMarkersAll() {
+         setMapOnAll(null);
+         }
+         function setMapOnAll(map) {
+         for(var i = 0; i < markerGroups.length; i++) {
+         var markerGroup = markerGroups[i];
+         for(var j = 0; j < markerGroup.length; j++) {
+         markerGroup[j].setMap(map);
+                }
+            }
+         }*/
 
 
     </script>
