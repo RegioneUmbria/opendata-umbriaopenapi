@@ -9,6 +9,7 @@ use Doctrine\ORM\Query\Parameter;
 use JMS\DiExtraBundle\Annotation as DI;
 use Shaygan\TelegramBotApiBundle\TelegramBotApi;
 use Shaygan\TelegramBotApiBundle\Type\Update;
+use Symfony\Component\Config\Definition\Exception\Exception;
 use TelegramBot\Api\Types\ReplyKeyboardMarkup;
 use Umbria\OpenApiBundle\Entity\Tourism\Attractor;
 use Umbria\OpenApiBundle\Entity\Tourism\Coordinate;
@@ -147,25 +148,30 @@ class UpdateReceiver implements UpdateReceiverInterface
             }
         }
 
-        if ($rand) {
-            $key = array_rand($pois);
-            /** @var Attractor $poi */
-            $poi = $pois[$key];
-            $stringResult[0] = $poi->getDenominazione();
-            $stringResult[1] = $poi->getDescrizioneSintetica();
-            $stringResult[2] = $poi->getUrlRisorsa();
-            return $stringResult;
-        } else {
-            $den = $this->retrieveDenominazione($pois);
-            $desc = $this->retrieveDescrizione($pois);
-            $resource = $this->retrieveUrlRisorsa($pois);
-            $max = sizeof($pois);
-            for($i=0; $i<$max; $i++){
-                $stringResult[$i] = strtoupper($den[$i]) .  "\n" . strip_tags($desc[$i]) . "\n" . $resource[$i] . "\n";
+        if (sizeof($pois) > 0) {
+            if ($rand) {
+                $key = array_rand($pois);
+                /** @var Attractor $poi */
+                $poi = $pois[$key];
+                $stringResult[0] = $poi->getDenominazione();
+                $stringResult[1] = $poi->getDescrizioneSintetica();
+                $stringResult[2] = $poi->getUrlRisorsa();
+                return $stringResult;
+            } else {
+                $den = $this->retrieveDenominazione($pois);
+                $desc = $this->retrieveDescrizione($pois);
+                $resource = $this->retrieveUrlRisorsa($pois);
+                $max = sizeof($pois);
+                for ($i = 0; $i < $max; $i++) {
+                    $stringResult[$i] = strtoupper($den[$i]) . "\n" . strip_tags($desc[$i]) . "\n" . $resource[$i] . "\n";
+                }
+                return $stringResult;
+                //return implode("\n", $stringResult);
             }
-            return $stringResult;
-            //return implode("\n", $stringResult);
+        } else {
+            throw new Exception();
         }
+
     }
 
     public function retrieveDenominazione($pois){
