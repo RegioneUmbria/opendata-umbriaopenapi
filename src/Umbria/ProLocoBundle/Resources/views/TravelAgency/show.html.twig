@@ -52,18 +52,20 @@
                         <tbody>
                         <tr>
                             <td>
-                                <small>id contenuto</small>
+                                <small><b>Risorsa RDF</b></small>
                             </td>
-                            <td>{{ travelAgency.idContenuto }}</td>
+                            <td><b>
+                                    <a href="{{ baseUrlRisorsa }}/{{ travelAgency.idContenuto }}">
+                                        {{ baseUrlRisorsa }}/{{ travelAgency.idContenuto }}
+                                    </a>
+                                </b>
+                            </td>
                         </tr>
                         <tr>
                             <td>
-                                <small>id risorsa</small>
+                                <small>id contenuto</small>
                             </td>
-                            <td><a href="{{ baseUrlRisorsa }}/{{ travelAgency.idContenuto }}">
-                                    {{ baseUrlRisorsa }}/{{ travelAgency.idContenuto }}
-                                </a>
-                            </td>
+                            <td>{{ travelAgency.idContenuto }}</td>
                         </tr>
                         {% for address in travelAgency.address %}
                             <tr>

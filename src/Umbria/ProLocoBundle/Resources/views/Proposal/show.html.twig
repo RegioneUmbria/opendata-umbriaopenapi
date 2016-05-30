@@ -38,18 +38,20 @@
                         <tbody>
                         <tr>
                             <td>
-                                <small>id contenuto</small>
+                                <small><b>Risorsa RDF</b></small>
                             </td>
-                            <td>{{ proposal.idContenuto }}</td>
+                            <td><b>
+                                    <a href="{{ baseUrlRisorsa }}/{{ proposal.idContenuto }}">
+                                        {{ baseUrlRisorsa }}/{{ proposal.idContenuto }}
+                                    </a>
+                                </b>
+                            </td>
                         </tr>
                         <tr>
                             <td>
-                                <small>id risorsa</small>
+                                <small>id contenuto</small>
                             </td>
-                            <td><a href="{{ baseUrlRisorsa }}/{{ proposal.idContenuto }}">
-                                    {{ baseUrlRisorsa }}/{{ proposal.idContenuto }}
-                                </a>
-                            </td>
+                            <td>{{ proposal.idContenuto }}</td>
                         </tr>
                         <tr>
                             <td>
