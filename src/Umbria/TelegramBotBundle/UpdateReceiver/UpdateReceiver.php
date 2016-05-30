@@ -154,7 +154,7 @@ class UpdateReceiver implements UpdateReceiverInterface
                 /** @var Attractor $poi */
                 $poi = $pois[$key];
                 $stringResult[0] = $poi->getDenominazione();
-                $stringResult[1] = $poi->getDescrizioneSintetica();
+                $stringResult[1] = strip_tags($poi->getDescrizioneSintetica());
                 $stringResult[2] = $poi->getUrlRisorsa();
                 return $stringResult;
             } else {
