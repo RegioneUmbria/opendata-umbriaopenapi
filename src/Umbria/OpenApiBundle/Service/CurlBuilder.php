@@ -158,7 +158,7 @@ class CurlBuilder
                     $coordinates = $attractor->getCoordinate();
                     /** @var Coordinate $coordinate */
                     foreach ($coordinates as $coordinate) {
-                        if ($coordinate->getLatitude() == ' ' | $coordinate->getLatitude() == '' | $coordinate->getLatitude() == null | $coordinate->getLongitude() == ' ' | $coordinate->getLongitude() == '' | $coordinate->getLongitude() == null) {
+                        if ($coordinate->getLatitude() == 0 | $coordinate->getLatitude() == null | $coordinate->getLongitude() == 0 | $coordinate->getLongitude() == null) {
                             foreach ($bindings as $binding) {
                                 if ($binding['p']['value'] == 'http://www.w3.org/2003/01/geo/wgs84_pos#lat') {
                                     $coordinate->setDbpediaLatitude($binding['o']['value']);
