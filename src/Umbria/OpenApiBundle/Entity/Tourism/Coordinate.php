@@ -23,7 +23,7 @@ class Coordinate
     private $id;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="float", length=255)
      *
      * @JMS\Type("string")
      *
@@ -32,7 +32,7 @@ class Coordinate
     private $latitude;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="float", length=255)
      *
      * @JMS\Type("string")
      *
