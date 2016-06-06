@@ -95,7 +95,7 @@ class AttractorController extends FOSRestController
      *
      *  },
      *  statusCodes={
-     *      200="Returned when successful"
+     *      200="Restituito in caso di successo"
      *  }
      * )
      */
@@ -110,7 +110,7 @@ class AttractorController extends FOSRestController
         $offset = $filters->has('start') ? $filters->get('start') : 0;
         $limit = $filters->has('limit') ? $filters->get('limit') : self::DEFAULT_PAGE_SIZE;
         $labelLike = $filters->has('label_like') ? $filters->get('label_like') : null;
-        $descriptionLike = $filters->has('description_like') ? $filters->get('description_like') : null;
+        $descriptionLike = $filters->has('descriptions_like') ? $filters->get('descriptions_like') : null;
         $categoryLike = $filters->has('category_like') ? $filters->get('category_like') : null;
         $latMax = $filters->has('lat_max') && $filters->get('lat_max') ? floatval($filters->get('lat_max')) : null;
         $latMin = $filters->has('lat_min') && $filters->get('lat_min') ? floatval($filters->get('lat_min')) : null;
