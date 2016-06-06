@@ -20,7 +20,7 @@ use Umbria\OpenApiBundle\Service\FilterBag;
 
 class AttractorController extends FOSRestController
 {
-    const DEFAULT_PAGE_SIZE = 400;
+    const DEFAULT_PAGE_SIZE = 100;
     const DATASET_TOURISM_ATTRACTOR = 'tourism-attractor';
 
     /**
