@@ -1,7 +1,7 @@
 attractor_index:
     path:     /
     defaults: { _controller: "UmbriaProLocoBundle:Attractor:index" }
-    methods:  GET
+    methods:  [GET,POST]
 
 attractor_show:
     path:     /{id}/show

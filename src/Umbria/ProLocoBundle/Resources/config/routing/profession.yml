@@ -1,7 +1,7 @@
 profession_index:
     path:     /
     defaults: { _controller: "UmbriaProLocoBundle:Profession:index" }
-    methods:  GET
+    methods:  [GET,POST]
 
 profession_show:
     path:     /{id}/show
