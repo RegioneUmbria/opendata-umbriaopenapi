@@ -1,0 +1,172 @@
+{% extends "UmbriaOpenApiBundle::base.html.twig" %}
+
+{% block body %}
+
+    <nav class="navbar navbar-default navbar-fixed-top navbar-inverse">
+        <div class="container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar"
+                        aria-expanded="false" aria-controls="navbar">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="{{ path('umbria_open_api_homepage') }}">Umbria - Open API</a>
+            </div>
+            <div id="navbar" class="navbar-collapse collapse">
+                <ul class="nav navbar-nav">
+                    <li class="active"><a href="{{ path('umbria_open_api_homepage') }}">Home</a></li>
+                    <li><a href="{{ path('umbria_pro_loco_homepage') }}">Turismo</a></li>
+                    <li><a href="{{ path('nelmio_api_doc_index') }}">API docs</a></li>
+                    <li><a href="{{ path('umbria_open_api_sparql_manual') }}">SPARQL Manual</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+
+
+    <div style="margin-top:130px; ">
+        <div>
+            <p>Il formato proposto dal W3C per gli "open and linked data" è RDF.<br>
+                Ogni dato del mondo reale viene detto risorsa e viene memorizzato ed esposto sotto forma di tripla:
+                soggetto-predicato-oggetto<br>
+                Il soggetto identifica la risorsa in modo univoco ed è generalmente un URI.<br>
+                Il predicato è un URI che identifica una proprietà definita in un vocabolario (o ontologia).<br>
+                L'oggetto può essere un valore "literal" (stringa, intero...) oppure nuovamente un URI che identifica
+                un'altra risorsa.
+            </p>
+
+            <p>In questo modo risorse presenti su dataset di origini diverse possono essere collegati tra di loro.<br>
+                Questi collegamenti costituiscono quindi un grande grafo mondiale che contiene tutti i dati pubblicati
+                secondo gli standard dei linked open data.<br>
+                Le varie risorse costituiscono i nodi del grafo e le proprietà gli archi.<br>
+                Una tripla rappresenta: un nodo del grafo (soggetto) collegato tramite un arco orientato (predicato) ad
+                un'altra risorsa (oggetto).<br>
+                Ogni organizzazione che pubblica dei dati secondo questo approccio, può definire sotto-grafi di
+                appartenenza dei dati e offrire un endpoint grazie al quale effettuare query.
+            </p>
+
+            <p>Il linguaggio utilizzato per effettuare le query è SPARQL.<br>
+                I risultati delle query sono degli insiemi di triple, solitamente disponibili in vari formati (RDF,
+                JSON, HTML...).
+            </p>
+
+            <p>Vediamo di seguito uno dei possibili approcci per consultare un dataset RDF attraverso uno SPARQL
+                Endpoint.</p>
+
+            <p>Puoi trovare lo SPARQL endpoint della Regione Umbria all'indirizzo: http://dati.umbria.it/sparql</p>
+
+
+        </div>
+
+
+        <div class="form_row">
+            Come prima cosa chiediamo quali sono tutti i grafi disponibili
+            <form name="graphs_query">
+                <textarea id="graphsFormCode"
+                          name="graphsFormCode"
+                          disabled="disabled"
+                          required="required"
+                          title="SPARQL query, restituisce l'insieme di tutti i grafi del portale OpenData della regione Umbria"
+                >
+SELECT DISTINCT ?g
+WHERE{
+    GRAPH ?g {?s a ?t}
+}
+                </textarea>
+                <textarea
+                        id="graphsFormResult"
+                        name="form[result]"
+                        title="Risultato SPARQL query, contiene l'insieme di tutti i grafi del portale OpenData della regione Umbria in formato JSON"
+                >
+                </textarea>
+                <button type="button" id="graphsFormSubmit" name="form[submit]">Cerca grafi</button>
+            </form>
+        </div>
+        <div id="graphs_list" class="list-group">
+        </div>
+        <nav aria-label="Page navigation">
+            <ul class="pagination" id="graphs_pages">
+            </ul>
+        </nav>
+
+
+        <div class="form_row">
+            Selezioniamo un grafo dalla lista e chiediamo quali tipi di dato sono presenti nel grafo.
+            <input type="text" id="sparqlQueryTypeGraph"
+                   title="Grafo in cui viene eseguita la query"
+            />
+            <br>
+                <textarea id="sparqlTypeQuery"
+                          title="SPARQL query, restituisce l'insieme di tutti i tipi di dato presenti nel grafo"
+                >
+SELECT DISTINCT ?o
+WHERE{
+    ?s <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> ?o
+}
+                </textarea>
+                <textarea
+                        id="sparqlQueryTypeResult"
+                        title="Risultato SPARQL query, contiene l'insieme di tutti i tipi di dato presenti nel grafo in formato JSON"
+                >
+                </textarea>
+            <button type="button" id="sparqlQueryTypeSubmit">Esegui query</button>
+        </div>
+
+
+        <div class="form_row">
+            Selezioniamo un tipo di dato dalla lista e cerchiamo tutte le risorse del grafo che hanno questo tipo.
+            <input type="text" id="sparqlQueryGraph"
+                   title="Grafo in cui viene eseguita la query"
+            />
+            <br>
+                <textarea id="sparqlQuery"
+                          title="SPARQL query, restituisce l'insieme di tutte le triple del tipo e appartenenti al grafo selezionati"
+                >
+SELECT DISTINCT ?o
+WHERE{
+    ?s <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> ?o
+}
+                </textarea>
+                <textarea
+                        id="sparqlQueryResult"
+                        title="Risultato SPARQL query, contiene l'insieme di tutte le triple del tipo e appartenenti al grafo selezionati in formato JSON"
+                >
+                </textarea>
+            <button type="button" id="sparqlQuerySubmit">Esegui query</button>
+        </div>
+
+
+    </div>
+
+    <form name="query">
+
+    </form>
+
+    <!-- FOOTER -->
+    <footer style="margin-top:150px; border-top: 20px solid #eee ">
+        <p class="pull-right"><a href="#">Back to top</a></p>
+        <div class="col-md-1"></div>
+        <div class="col-md-4">
+
+
+            <address style="margin: 30px">
+                <strong><a href="http://www.regione.umbria.it" target="_blank">Regione Umbria</a></strong><br>
+                Corso Vannucci, 96<br>
+                06121 Perugia<br>
+                <a href="mailto:opendata@regione.umbria.it">opendata@regione.umbria.it</a><br>
+                <a href="mailto:regione.giunta@postacert.umbria.it">regione.giunta@postacert.umbria.it</a><br>
+                P.IVA 01212820540<br>
+            </address>
+
+
+        </div>
+    </footer>
+    {% block javascripts %}
+        <script src="{{ asset('js/sparql_manual.js') }}"></script>
+
+    {% endblock %}
+
+{% endblock %}
