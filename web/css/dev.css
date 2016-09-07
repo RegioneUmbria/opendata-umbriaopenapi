@@ -462,3 +462,8 @@ label {
 .legendlabel {
   font-size: 15px;
 }
+
+.json_result {
+  max-height: 200px;
+  overflow-y: scroll;
+}

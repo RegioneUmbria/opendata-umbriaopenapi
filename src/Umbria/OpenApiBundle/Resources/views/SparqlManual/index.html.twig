@@ -3,7 +3,7 @@
 {% block body %}
 
     <nav class="navbar navbar-default navbar-fixed-top navbar-inverse">
-        <div class="container">
+        <div class="container-fluid">
             <div class="navbar-header">
                 <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar"
                         aria-expanded="false" aria-controls="navbar">
@@ -27,123 +27,206 @@
 
 
 
-    <div style="margin-top:130px; ">
-        <div>
-            <p>Il formato proposto dal W3C per gli "open and linked data" è RDF.<br>
-                Ogni dato del mondo reale viene detto risorsa e viene memorizzato ed esposto sotto forma di tripla:
-                soggetto-predicato-oggetto<br>
-                Il soggetto identifica la risorsa in modo univoco ed è generalmente un URI.<br>
-                Il predicato è un URI che identifica una proprietà definita in un vocabolario (o ontologia).<br>
-                L'oggetto può essere un valore "literal" (stringa, intero...) oppure nuovamente un URI che identifica
-                un'altra risorsa.
-            </p>
+    <div class="container">
+        <div class="row">
+            <div class="page-header"><h2>Guida SPARQL Endpoint</h2></div>
+            <div class="col-md-12">
+                <p>Il formato proposto dal W3C per gli "open and linked data" è RDF.<br>
+                    Ogni dato del mondo reale viene detto risorsa e viene memorizzato ed esposto sotto forma di tripla:
+                    soggetto-predicato-oggetto<br>
+                    Il soggetto identifica la risorsa in modo univoco ed è generalmente un URI.<br>
+                    Il predicato è un URI che identifica una proprietà definita in un vocabolario (o ontologia).<br>
+                    L'oggetto può essere un valore "literal" (stringa, intero...) oppure nuovamente un URI che
+                    identifica
+                    un'altra risorsa.
+                </p>
 
-            <p>In questo modo risorse presenti su dataset di origini diverse possono essere collegati tra di loro.<br>
-                Questi collegamenti costituiscono quindi un grande grafo mondiale che contiene tutti i dati pubblicati
-                secondo gli standard dei linked open data.<br>
-                Le varie risorse costituiscono i nodi del grafo e le proprietà gli archi.<br>
-                Una tripla rappresenta: un nodo del grafo (soggetto) collegato tramite un arco orientato (predicato) ad
-                un'altra risorsa (oggetto).<br>
-                Ogni organizzazione che pubblica dei dati secondo questo approccio, può definire sotto-grafi di
-                appartenenza dei dati e offrire un endpoint grazie al quale effettuare query.
-            </p>
+                <p>In questo modo risorse presenti su dataset di origini diverse possono essere collegati tra di
+                    loro.<br>
+                    Questi collegamenti costituiscono quindi un grande grafo mondiale che contiene tutti i dati
+                    pubblicati
+                    secondo gli standard dei linked open data.<br>
+                    Le varie risorse costituiscono i nodi del grafo e le proprietà gli archi.<br>
+                    Una tripla rappresenta: un nodo del grafo (soggetto) collegato tramite un arco orientato (predicato)
+                    ad
+                    un'altra risorsa (oggetto).<br>
+                    Ogni organizzazione che pubblica dei dati secondo questo approccio, può definire sotto-grafi di
+                    appartenenza dei dati e offrire un endpoint grazie al quale effettuare query.
+                </p>
 
-            <p>Il linguaggio utilizzato per effettuare le query è SPARQL.<br>
-                I risultati delle query sono degli insiemi di triple, solitamente disponibili in vari formati (RDF,
-                JSON, HTML...).
-            </p>
+                <p>Il linguaggio utilizzato per effettuare le query è SPARQL.<br>
+                    I risultati delle query sono degli insiemi di triple, solitamente disponibili in vari formati (RDF,
+                    JSON, HTML...).
+                </p>
 
-            <p>Vediamo di seguito uno dei possibili approcci per consultare un dataset RDF attraverso uno SPARQL
-                Endpoint.</p>
+                <p>Vediamo di seguito uno dei possibili approcci per consultare un dataset RDF attraverso uno SPARQL
+                    Endpoint.</p>
 
-            <p>Puoi trovare lo SPARQL endpoint della Regione Umbria all'indirizzo: http://dati.umbria.it/sparql</p>
+                <p>Puoi trovare lo SPARQL endpoint della Regione Umbria all'indirizzo: http://dati.umbria.it/sparql</p>
 
 
+            </div>
         </div>
 
+        <hr>
+        <!--
+        -----------------------------------------------------------------------------------------------------------------
+        -----------------------------------------------------------------------------------------------------------------
+                                                    GRAFI
+        -----------------------------------------------------------------------------------------------------------------
+        -----------------------------------------------------------------------------------------------------------------
+        -->
+        <div class="row">
+            <div class="col-md-8">
+                    <pre><code id="graphsFormCode"
+                               title="SPARQL query, restituisce l'insieme di tutti i grafi del portale OpenData della regione Umbria"
+                               class="img-responsive img-rounded"
+                        >
+                            SELECT DISTINCT ?graph <br>
+                            WHERE{<br>
+                            GRAPH ?g {?s a ?t}<br>
+                            }<br>
+                        </code></pre>
+            </div>
+            <div class="col-md-4">
+                <h2>Ricerca Grafi</h2>
+                <p>Come prima cosa chiediamo quali sono tutti i grafi disponibili</p>
+            </div>
+            <div class="col-md-12">
+                <div class="text-center">
+                    <button type="button" id="graphsFormSubmit" class="align-center">Cerca grafi</button>
+                </div>
+            </div>
+            <div class="col-md-12">
+                <div id="graphsFormResult"
+                     title="Risultato SPARQL query, contiene l'insieme di tutti i grafi del portale OpenData della regione Umbria in formato JSON"
+                     class="well json_result"
+                >
+                </div>
+            </div>
 
-        <div class="form_row">
-            Come prima cosa chiediamo quali sono tutti i grafi disponibili
-            <form name="graphs_query">
-                <textarea id="graphsFormCode"
-                          name="graphsFormCode"
-                          disabled="disabled"
-                          required="required"
-                          title="SPARQL query, restituisce l'insieme di tutti i grafi del portale OpenData della regione Umbria"
-                >
-SELECT DISTINCT ?g
-WHERE{
-    GRAPH ?g {?s a ?t}
-}
-                </textarea>
-                <textarea
-                        id="graphsFormResult"
-                        name="form[result]"
-                        title="Risultato SPARQL query, contiene l'insieme di tutti i grafi del portale OpenData della regione Umbria in formato JSON"
-                >
-                </textarea>
-                <button type="button" id="graphsFormSubmit" name="form[submit]">Cerca grafi</button>
-            </form>
+
+            <div id="graphs_list" class="list-group">
+            </div>
+            <div class="text-center">
+                <nav aria-label="Page navigation">
+                    <ul class="pagination" id="graphs_pages">
+                    </ul>
+                </nav>
+            </div>
+
         </div>
-        <div id="graphs_list" class="list-group">
+        <hr>
+        <!--
+        -----------------------------------------------------------------------------------------------------------------
+        -----------------------------------------------------------------------------------------------------------------
+                                                    TIPI
+        -----------------------------------------------------------------------------------------------------------------
+        -----------------------------------------------------------------------------------------------------------------
+        -->
+        <div class="row">
+            <div class="col-md-4">
+                <h2>Ricerca Tipi</h2>
+                <p>Selezioniamo un grafo dalla lista e chiediamo quali tipi di dato sono presenti nel grafo.</p>
+            </div>
+            <div class="col-md-8">
+                <input type="text" id="sparqlQueryTypeGraph"
+                       title="Grafo in cui viene eseguita la query"
+                />
+                <br>
+                    <pre><code id="sparqlTypeQuery"
+                               title="SPARQL query, restituisce l'insieme di tutti i tipi di dato presenti nel grafo"
+                               class="img-responsive img-rounded"
+                        >
+                            SELECT DISTINCT ?o
+                            WHERE{
+                            ?s &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#type&gt; ?o
+                            }
+                        </code></pre>
+            </div>
+            <div class="col-md-12">
+                <div class="text-center">
+                    <button type="button" id="sparqlQueryTypeSubmit">Esegui query</button>
+                </div>
+            </div>
+            <div class="col-md-12">
+                <div id="sparqlQueryTypeResult"
+                     title="Risultato SPARQL query, contiene l'insieme di tutti i tipi di dato presenti nel grafo in formato JSON"
+                     class="well json_result"
+                >
+                </div>
+            </div>
+
+            <div id="types_list" class="list-group">
+            </div>
+            <div class="text-center">
+                <nav aria-label="Page navigation">
+                    <ul class="pagination" id="types_pages">
+                    </ul>
+                </nav>
+            </div>
         </div>
-        <nav aria-label="Page navigation">
-            <ul class="pagination" id="graphs_pages">
-            </ul>
-        </nav>
+        <hr>
+
+        <!--
+        -----------------------------------------------------------------------------------------------------------------
+        -----------------------------------------------------------------------------------------------------------------
+                                                    RISORSE
+        -----------------------------------------------------------------------------------------------------------------
+        -----------------------------------------------------------------------------------------------------------------
+        -->
+
+        <div class="row">
+            <div class="col-md-8">
+                <input type="text" id="sparqlQueryGraph"
+                       title="Grafo in cui viene eseguita la query"
+                />
+                    <pre><code id="sparqlQuery"
+                               title="SPARQL query, restituisce l'insieme di tutte le triple del tipo e appartenenti al grafo selezionati"
+                               class="img-responsive img-rounded"
+                        >
+                            SELECT DISTINCT ?s ?p ?o
+                            WHERE{
+                            ?s ?p ?o .
+                            ?s &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#type&gt; &lt;&gt;
+                            }LIMIT 200
+                        </code></pre>
+            </div>
+            <div class="col-md-4">
+                <h2>Ricerca Risorse</h2>
+                <p>Selezioniamo un tipo di dato dalla lista e cerchiamo tutte le triple che hanno come soggetto una
+                    risorsa di tale tipo.
+                </p>
+            </div>
+            <div class="col-md-12">
+                <div class="text-center">
+                    <input id="sparqlQueryTypeHidden" type="hidden" value="">
+                    <button type="button" id="sparqlQuerySubmit">Esegui query</button>
+                </div>
+            </div>
+            <div class="col-md-12">
+                <div id="sparqlQueryResult"
+                     title="Risultato SPARQL query, contiene l'insieme di tutte le triple del tipo e appartenenti al grafo selezionati in formato JSON"
+                     class="well json_result"
+                >
+                </div>
+            </div>
 
 
-        <div class="form_row">
-            Selezioniamo un grafo dalla lista e chiediamo quali tipi di dato sono presenti nel grafo.
-            <input type="text" id="sparqlQueryTypeGraph"
-                   title="Grafo in cui viene eseguita la query"
-            />
-            <br>
-                <textarea id="sparqlTypeQuery"
-                          title="SPARQL query, restituisce l'insieme di tutti i tipi di dato presenti nel grafo"
-                >
-SELECT DISTINCT ?o
-WHERE{
-    ?s <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> ?o
-}
-                </textarea>
-                <textarea
-                        id="sparqlQueryTypeResult"
-                        title="Risultato SPARQL query, contiene l'insieme di tutti i tipi di dato presenti nel grafo in formato JSON"
-                >
-                </textarea>
-            <button type="button" id="sparqlQueryTypeSubmit">Esegui query</button>
+            <div id="resources_list" class="list-group">
+            </div>
+            <div class="text-center">
+                <nav aria-label="Page navigation">
+                    <ul class="pagination" id="resources_pages">
+                    </ul>
+                </nav>
+            </div>
+
         </div>
-
-
-        <div class="form_row">
-            Selezioniamo un tipo di dato dalla lista e cerchiamo tutte le risorse del grafo che hanno questo tipo.
-            <input type="text" id="sparqlQueryGraph"
-                   title="Grafo in cui viene eseguita la query"
-            />
-            <br>
-                <textarea id="sparqlQuery"
-                          title="SPARQL query, restituisce l'insieme di tutte le triple del tipo e appartenenti al grafo selezionati"
-                >
-SELECT DISTINCT ?o
-WHERE{
-    ?s <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> ?o
-}
-                </textarea>
-                <textarea
-                        id="sparqlQueryResult"
-                        title="Risultato SPARQL query, contiene l'insieme di tutte le triple del tipo e appartenenti al grafo selezionati in formato JSON"
-                >
-                </textarea>
-            <button type="button" id="sparqlQuerySubmit">Esegui query</button>
-        </div>
-
+        <hr>
 
     </div>
 
-    <form name="query">
-
-    </form>
 
     <!-- FOOTER -->
     <footer style="margin-top:150px; border-top: 20px solid #eee ">
