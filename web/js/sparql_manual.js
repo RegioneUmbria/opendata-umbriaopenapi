@@ -15,7 +15,8 @@ function executeGraphsQuery() {
         document.getElementById("graphsFormResult").innerHTML = JSON.stringify(JSON.parse(xhr.responseText), null, "\t");
         setGraphsList(1, true);
         document.getElementById("graphsFormSubmit").className = "btn btn-success";
-        /*$("#graphs_list").animate({height: "300px"});*/
+        document.getElementById("show_json_graphs").style.display = "initial";
+        document.getElementById("show_result_graphs").style.display = "initial";
     };
     xhr.send();
 
@@ -33,6 +34,8 @@ function executeTypeQuery() {
         document.getElementById("sparqlQueryTypeResult").innerHTML = JSON.stringify(JSON.parse(xhr.responseText), null, "\t");
         setTypesList(1, true);
         document.getElementById("sparqlQueryTypeSubmit").className = "btn btn-success";
+        document.getElementById("show_json_types").style.display = "initial";
+        document.getElementById("show_result_types").style.display = "initial";
     };
     xhr.send();
 }
@@ -48,6 +51,8 @@ function executeQuery() {
         document.getElementById("sparqlQueryResult").innerHTML = JSON.stringify(JSON.parse(xhr.responseText), null, "\t");
         setResourcesList(1, true);
         document.getElementById("sparqlQuerySubmit").className = "btn btn-success";
+        document.getElementById("show_json_resources").style.display = "initial";
+        document.getElementById("show_result_resources").style.display = "initial";
     };
     xhr.send();
 }
@@ -271,11 +276,13 @@ var $root = $('html, body');
 function setQueryGraph(button) {
 
     document.getElementById("sparqlQueryGraph").value = button.innerHTML;
+    document.getElementById("sparqlQueryGraph").style.color = "#5cb85c";
     document.getElementById("sparqlQueryTypeGraph").value = button.innerHTML;
+    document.getElementById("sparqlQueryTypeGraph").style.color = "#5cb85c";
 
 
     $root.animate({
-        scrollTop: $('#graphsFormSubmit').offset().top
+        scrollTop: $('#graphs_pagination').offset().top
     }, 900);
 
     setTimeout(function () {
@@ -285,19 +292,20 @@ function setQueryGraph(button) {
 }
 
 function setQueryType(button) {
-    var query = "SELECT DISTINCT ?s ?p ?o \nWHERE{\n    ?s ?p ?o . \n    ?s  &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#type&gt; ";
-    query = query.concat("&lt;", button.innerHTML, "&gt;\n}\nLIMIT 200");
+    var query = "\n\n\nSELECT DISTINCT ?s ?p ?o \nWHERE{\n    ?s ?p ?o . \n    ?s  &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#type&gt; ";
+    query = query.concat("<b style='color:#5cb85c'>&lt;", button.innerHTML, "&gt;</b>\n}\nLIMIT 200\n\n");
     document.getElementById("sparqlQuery").innerHTML = query;
     document.getElementById("sparqlQueryTypeHidden").value = button.innerHTML;
 
     $root.animate({
-        scrollTop: $('#sparqlQueryTypeSubmit').offset().top
+        scrollTop: $('#types_pagination').offset().top
     }, 900);
 
 
     setTimeout(function () {
         document.getElementById("sparqlQuerySubmit").className = "btn btn-primary";
     }, 1000);
+    document.getElementById("sparqlQuerySubmit").disabled = false;
 }
 
 function createCORSRequest(method, url) {
