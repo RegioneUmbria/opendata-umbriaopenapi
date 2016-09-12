@@ -302,9 +302,98 @@
                     che hanno come soggetto una risorsa che possiede il predicato <i>http://www.w3.org/1999/02/22-rdf-syntax-ns#type</i>
                 </p>
             </div>
-        </div>
+            <!--
+        -----------------------------------------------------------------------------------------------------------------
+        -----------------------------------------------------------------------------------------------------------------
+                                                   ATTRATTORI PERUGIA
+        -----------------------------------------------------------------------------------------------------------------
+        -----------------------------------------------------------------------------------------------------------------
+        -->
+            <div class="row">
+                <div class="col-md-8">
+                    <pre><code
+                                title="SPARQL query, restituisce i nomi di tutti gli attrattori appartenenti all'area Perugina"
+                                class="img-responsive img-rounded"
+                        >
 
+
+                            PREFIX geo: &lt;http://www.w3.org/2003/01/geo/wgs84_pos#&gt;
+
+                            SELECT ?resource_uri ?label
+                            WHERE {
+                            ?resource_uri geo:lat ?lat.
+                            ?resource_uri geo:long ?long.
+                            ?resource_uri rdfs:label ?label.
+                            FILTER(xsd:double(?lat) <= xsd:double(43.137743) &&
+                            xsd:double(?lat) >= xsd:double(43.064482) &&
+                            xsd:double(?long) <= xsd:double(12.419962) &&
+                            xsd:double(?long) >= xsd:double(12.329279)
+                            )
+                            }
+
+
+                        </code>
+<a href="http://dati.umbria.it/sparql?default-graph-uri=http://dati.umbria.it/graph/attrattori&qtxt=PREFIX+geo%3A+%3Chttp%3A%2F%2Fwww.w3.org%2F2003%2F01%2Fgeo%2Fwgs84_pos%23%3E%0D%0A%0D%0ASELECT+%3Fresource_uri+%3Flabel%0D%0AWHERE+%7B%0D%0A%09%3Fresource_uri+geo%3Alat+%3Flat.%0D%0A%09%3Fresource_uri+geo%3Along+%3Flong.%0D%0A%09%3Fresource_uri+rdfs%3Alabel+%3Flabel.%0D%0A%09FILTER%28xsd%3Adouble%28%3Flat%29++%3C%3D+xsd%3Adouble%2843.137743%29+%26%26%0D%0A%09%09xsd%3Adouble%28%3Flat%29+%3E%3D+xsd%3Adouble%2843.064482%29+%26%26%0D%0A%09%09xsd%3Adouble%28%3Flong%29++%3C%3D+xsd%3Adouble%2812.419962%29+%26%26%0D%0A%09%09xsd%3Adouble%28%3Flong%29++%3E%3D+xsd%3Adouble%2812.329279%29%0D%0A%09%29%0D%0A%7D%0D%0A"
+   target="_blank">
+    <button type="button" class="btn btn-primary">Vai a SPARQL Endpoint</button>
+</a></pre>
+
+                </div>
+                <div class="col-md-4">
+                    <h3>Attrattori di Perugia</h3>
+                    <p>Vediamo come estrarre i nomi di tutti gli attrattori appartenenti all'area Perugina</p>
+                    <p>Le risorse sono filtrate in base alla longitudine e latitudine,
+                        prova a variare i valori per ottenere gli attrattori di tutta la regione Umbria.</p>
+                </div>
+
+
+            </div>
+            <hr>
+
+
+            <!-----------------------------------------------------------------------------------------------------------------
+            -----------------------------------------------------------------------------------------------------------------
+                                                        EVENTI TERNI
+            -----------------------------------------------------------------------------------------------------------------
+            -----------------------------------------------------------------------------------------------------------------
+            -->
+            <div class="col-md-4">
+                <h3>Eventi di Terni</h3>
+                <p>Vediamo come estrarre gli eventi organizzati a Terni</p>
+                <p>Le risorse sono filtrate in base al nome del comune di appartenenza.</p>
+            </div>
+            <div class="col-md-8">
+
+                    <pre><code
+                                title="SPARQL query, restituisce i nomi di tutti gli eventi organizzati a Terni"
+                                class="img-responsive img-rounded"
+                        >
+
+
+                            PREFIX dbpedia-owl: &lt;http://dbpedia.org/ontology/&gt;
+                            PREFIX dc: &lt;http://purl.org/dc/elements/1.1/&gt;
+                            PREFIX schema: &lt;http://schema.org/&gt;
+
+                            SELECT ?resource_uri ?nome_evento
+                            WHERE{
+                            ?resource_uri dc:title ?nome_evento.
+                            ?resource_uri rdf:type schema:Event.
+                            ?resource_uri dbpedia-owl:municipality ?municipality.
+                            FILTER regex(?municipality, "Terni", "i")
+                            }
+
+
+                        </code>
+<a href="http://dati.umbria.it/sparql?default-graph-uri=http://dati.umbria.it/graph/eventi&qtxt=PREFIX+dbpedia-owl%3A+%3Chttp%3A%2F%2Fdbpedia.org%2Fontology%2F%3E%0D%0APREFIX+dc%3A+%3Chttp%3A%2F%2Fpurl.org%2Fdc%2Felements%2F1.1%2F%3E%0D%0A%0D%0ASELECT+%3Fresource_uri+%3Fnome_evento%0D%0AWHERE%7B%0D%0A%09%3Fresource_uri+dc%3Atitle+%3Fnome_evento.%0D%0A%09%3Fresource_uri++%3Chttp%3A%2F%2Fwww.w3.org%2F1999%2F02%2F22-rdf-syntax-ns%23type%3E+%3Chttp%3A%2F%2Fschema.org%2FEvent%3E.%0D%0A%09%3Fresource_uri+dbpedia-owl%3Amunicipality+%3Fmunicipality.%0D%0A%09FILTER+regex%28%3Fmunicipality%2C+%22Terni%22%2C+%22i%22%29%0D%0A%7D"
+   target="_blank">
+    <button type="button" class="btn btn-primary">Vai a SPARQL Endpoint</button>
+</a></pre>
+
+            </div>
+        </div>
+        <hr>
     </div>
+
 
 
 

@@ -13,15 +13,15 @@ function executeGraphsQuery() {
     }
     xhr.onload = function () {
         document.getElementById("graphsFormResult").innerHTML = JSON.stringify(JSON.parse(xhr.responseText), null, "\t");
-        setGraphsList(1, true);
+        setGraphsResults(1, true);
         document.getElementById("graphsFormSubmit").className = "btn btn-success";
         document.getElementById("show_json_graphs").style.display = "initial";
         document.getElementById("show_result_graphs").style.display = "initial";
+
     };
     xhr.send();
 
 }
-
 
 function executeTypeQuery() {
     var graph = encodeURI(document.getElementById("sparqlQueryTypeGraph").value);
@@ -32,13 +32,14 @@ function executeTypeQuery() {
     }
     xhr.onload = function () {
         document.getElementById("sparqlQueryTypeResult").innerHTML = JSON.stringify(JSON.parse(xhr.responseText), null, "\t");
-        setTypesList(1, true);
+        setTypesResults(1, true);
         document.getElementById("sparqlQueryTypeSubmit").className = "btn btn-success";
         document.getElementById("show_json_types").style.display = "initial";
         document.getElementById("show_result_types").style.display = "initial";
     };
     xhr.send();
 }
+
 function executeQuery() {
     var graph = encodeURI(document.getElementById("sparqlQueryGraph").value);
     var type = encodeURI(document.getElementById("sparqlQueryTypeHidden").value);
@@ -49,7 +50,7 @@ function executeQuery() {
     }
     xhr.onload = function () {
         document.getElementById("sparqlQueryResult").innerHTML = JSON.stringify(JSON.parse(xhr.responseText), null, "\t");
-        setResourcesList(1, true);
+        setResourcesResults(1, true);
         document.getElementById("sparqlQuerySubmit").className = "btn btn-success";
         document.getElementById("show_json_resources").style.display = "initial";
         document.getElementById("show_result_resources").style.display = "initial";
@@ -57,7 +58,7 @@ function executeQuery() {
     xhr.send();
 }
 
-function setGraphsList(page, resetPages) {
+function setGraphsResults(page, resetPages) {
     var responseObj = JSON.parse(document.getElementById("graphsFormResult").innerHTML);
     var bindings = responseObj.results.bindings;
     var countGraphs = bindings.length;
@@ -103,7 +104,7 @@ function setGraphsList(page, resetPages) {
                 var pageElementA = document.createElement("a");
                 pageElementA.href = "javascript:void(0);";
                 pageElementA.innerHTML = j;
-                pageElementA.setAttribute("onclick", "setGraphsList(".concat(j.toString(), ",false)"));
+                pageElementA.setAttribute("onclick", "setGraphsResults(".concat(j.toString(), ",false)"));
                 pageElementLi.appendChild(pageElementA);
                 graphsPages.appendChild(pageElementLi);
             }
@@ -112,7 +113,7 @@ function setGraphsList(page, resetPages) {
 
 }
 
-function setTypesList(page, resetPages) {
+function setTypesResults(page, resetPages) {
     var responseObj = JSON.parse(document.getElementById("sparqlQueryTypeResult").innerHTML);
     var bindings = responseObj.results.bindings;
     var countTypes = bindings.length;
@@ -129,10 +130,8 @@ function setTypesList(page, resetPages) {
 
         var typesList = document.getElementById("types_list");
         var typesPages = document.getElementById("types_pages");
-        /*clear graphs list*/
-        while (typesList.firstChild) {
-            typesList.removeChild(typesList.firstChild);
-        }
+        /*clear types list*/
+        clearTypesResults();
         /*set types list*/
         for (var i = startElementIdx; i < endElementIdx;) {
             var typeURI = bindings[i].o.value;
@@ -147,17 +146,15 @@ function setTypesList(page, resetPages) {
         }
 
         if (resetPages) {
-            /*clear graphs pages*/
-            while (typesPages.firstChild) {
-                typesPages.removeChild(typesPages.firstChild);
-            }
+            /*clear types pages*/
+            clearTypesPages();
             /*set pagination buttons*/
             for (var j = 1; j <= pageCount; j++) {
                 var pageElementLi = document.createElement("li");
                 var pageElementA = document.createElement("a");
                 pageElementA.href = "javascript:void(0);";
                 pageElementA.innerHTML = j;
-                pageElementA.setAttribute("onclick", "setTypesList(".concat(j.toString(), ",false)"));
+                pageElementA.setAttribute("onclick", "setTypesResults(".concat(j.toString(), ",false)"));
                 pageElementLi.appendChild(pageElementA);
                 typesPages.appendChild(pageElementLi);
             }
@@ -166,7 +163,7 @@ function setTypesList(page, resetPages) {
 
 }
 
-function setResourcesList(page, resetPages) {
+function setResourcesResults(page, resetPages) {
     var responseObj = JSON.parse(document.getElementById("sparqlQueryResult").innerHTML);
     var bindings = responseObj.results.bindings;
     var countResources = bindings.length;
@@ -185,85 +182,86 @@ function setResourcesList(page, resetPages) {
         var resourcesListP = document.getElementById("resources_list_p");
         var resourcesListO = document.getElementById("resources_list_o");
         var resourcesPages = document.getElementById("resources_pages");
-        /*clear graphs list*/
-        while (resourcesListS.firstChild) {
-            resourcesListS.removeChild(resourcesListS.firstChild);
-        }
-        while (resourcesListP.firstChild) {
-            resourcesListP.removeChild(resourcesListP.firstChild);
-        }
-        while (resourcesListO.firstChild) {
-            resourcesListO.removeChild(resourcesListO.firstChild);
-        }
 
+        clearResourcesResults();
         /*set resources list*/
         for (var i = startElementIdx; i < endElementIdx;) {
-            var resourceUriS = bindings[i].s.value;
-            var resourceButtonNodeS = document.createElement("button");
-            resourceButtonNodeS.type = "button";
-            resourceButtonNodeS.className = "list-group-item btn btn-default";
-            resourceButtonNodeS.innerHTML = resourceUriS;
+            var resourceDivValueS = bindings[i].s.value;
             var resourceTypeS = bindings[i].s.type;
-            var resourceANodeS = document.createElement("a");
             if (resourceTypeS == 'uri') {
-                resourceANodeS.href = resourceUriS;
+                var resourceButtonNodeS = document.createElement("button");
+                resourceButtonNodeS.type = "button";
+                resourceButtonNodeS.className = "list-group-item btn btn-default resource_uri";
+                resourceButtonNodeS.innerHTML = resourceDivValueS;
+                var resourceANodeS = document.createElement("a");
+                resourceANodeS.href = resourceDivValueS;
+                resourceANodeS.className = "resource_uri";
                 resourceANodeS.target = "_blank";
+                resourcesListS.appendChild(resourceANodeS);
+                resourceANodeS.appendChild(resourceButtonNodeS);
             }
             else {
-                resourceANodeS.href = "javascript:void(0);";
+                var resourceDivNodeS = document.createElement("div");
+                resourceDivNodeS.className = "list-group-item";
+                resourceDivNodeS.innerHTML = resourceDivValueS;
+                resourcesListS.appendChild(resourceDivNodeS);
             }
-            resourcesListS.appendChild(resourceANodeS);
-            resourceANodeS.appendChild(resourceButtonNodeS);
 
-            var resourceUriP = bindings[i].p.value;
-            var resourceButtonNodeP = document.createElement("button");
-            resourceButtonNodeP.type = "button";
-            resourceButtonNodeP.className = "list-group-item btn btn-default";
-            resourceButtonNodeP.innerHTML = resourceUriP;
+
+            var resourceDivValueP = bindings[i].p.value;
             var resourceTypeP = bindings[i].p.type;
-            var resourceANodeP = document.createElement("a");
             if (resourceTypeP == 'uri') {
-                resourceANodeP.href = resourceUriP;
+                var resourceButtonNodeP = document.createElement("button");
+                resourceButtonNodeP.type = "button";
+                resourceButtonNodeP.className = "list-group-item btn btn-default resource_uri";
+                resourceButtonNodeP.innerHTML = resourceDivValueP;
+                var resourceANodeP = document.createElement("a");
+                resourceANodeP.href = resourceDivValueP;
+                resourceANodeP.className = "resource_uri";
                 resourceANodeP.target = "_blank";
+                resourcesListP.appendChild(resourceANodeP);
+                resourceANodeP.appendChild(resourceButtonNodeP);
             }
             else {
-                resourceANodeP.href = "javascript:void(0);";
+                var resourceDivNodeP = document.createElement("div");
+                resourceDivNodeP.className = "list-group-item";
+                resourceDivNodeP.innerHTML = resourceDivValueP;
+                resourcesListP.appendChild(resourceDivNodeP);
             }
-            resourcesListP.appendChild(resourceANodeP);
-            resourceANodeP.appendChild(resourceButtonNodeP);
 
-            var resourceUriO = bindings[i].o.value;
-            var resourceButtonNodeO = document.createElement("button");
-            resourceButtonNodeO.type = "button";
-            resourceButtonNodeO.className = "list-group-item btn btn-default";
-            resourceButtonNodeO.innerHTML = resourceUriO;
+            var resourceDivValueO = bindings[i].o.value;
             var resourceTypeO = bindings[i].o.type;
-            var resourceANodeO = document.createElement("a");
             if (resourceTypeO == 'uri') {
-                resourceANodeO.href = resourceUriO;
+                var resourceButtonNodeO = document.createElement("button");
+                resourceButtonNodeO.type = "button";
+                resourceButtonNodeO.className = "list-group-item btn btn-default resource_uri";
+                resourceButtonNodeO.innerHTML = resourceDivValueO;
+                var resourceANodeO = document.createElement("a");
+                resourceANodeO.href = resourceDivValueO;
+                resourceANodeO.className = "resource_uri";
                 resourceANodeO.target = "_blank";
+                resourcesListO.appendChild(resourceANodeO);
+                resourceANodeO.appendChild(resourceButtonNodeO);
             }
             else {
-                resourceANodeO.href = "javascript:void(0);";
+                var resourceDivNodeO = document.createElement("div");
+                resourceDivNodeO.className = "list-group-item";
+                resourceDivNodeO.innerHTML = resourceDivValueO;
+                resourcesListO.appendChild(resourceDivNodeO);
             }
-            resourcesListO.appendChild(resourceANodeO);
-            resourceANodeO.appendChild(resourceButtonNodeO);
+
             i++;
-            //}
         }
 
         if (resetPages) {
-            /*clear graphs pages*/
-            while (resourcesPages.firstChild) {
-                resourcesPages.removeChild(resourcesPages.firstChild);
-            }
+            clearResourcesPages();
             /*set pagination buttons*/
             for (var j = 1; j <= pageCount; j++) {
                 var pageElementLi = document.createElement("li");
                 var pageElementA = document.createElement("a");
                 pageElementA.href = "javascript:void(0);";
                 pageElementA.innerHTML = j;
-                pageElementA.setAttribute("onclick", "setResourcesList(".concat(j.toString(), ",false)"));
+                pageElementA.setAttribute("onclick", "setResourcesResults(".concat(j.toString(), ",false)"));
                 pageElementLi.appendChild(pageElementA);
                 resourcesPages.appendChild(pageElementLi);
             }
@@ -272,9 +270,64 @@ function setResourcesList(page, resetPages) {
 
 }
 
+function clearTypesAndResources() {
+    clearTypesPages();
+    clearTypesResults();
+    document.getElementById("sparqlQueryTypeSubmit").className = "btn";
+    document.getElementById("show_json_types").style.display = "none";
+    document.getElementById("show_result_types").style.display = "none";
+    clearResources();
+}
+
+function clearResources() {
+    clearResourcesPages();
+    clearResourcesResults();
+    document.getElementById("sparqlQuerySubmit").className = "btn";
+    document.getElementById("show_json_resources").style.display = "none";
+    document.getElementById("show_result_resources").style.display = "none";
+    document.getElementById("sparqlQuerySubmit").disabled = true;
+    document.getElementById("sparqlQuery").innerHTML = "\n\n\nSELECT DISTINCT ?s ?p ?o \nWHERE{\n    ?s ?p ?o . \n    ?s  &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#type&gt; &lt;&gt;\n}\nLIMIT 200\n\n";
+}
+
+function clearResourcesResults() {
+    var resourcesListS = document.getElementById("resources_list_s");
+    var resourcesListP = document.getElementById("resources_list_p");
+    var resourcesListO = document.getElementById("resources_list_o");
+    while (resourcesListS.firstChild) {
+        resourcesListS.removeChild(resourcesListS.firstChild);
+    }
+    while (resourcesListP.firstChild) {
+        resourcesListP.removeChild(resourcesListP.firstChild);
+    }
+    while (resourcesListO.firstChild) {
+        resourcesListO.removeChild(resourcesListO.firstChild);
+    }
+}
+
+function clearResourcesPages() {
+    var resourcesPages = document.getElementById("resources_pages");
+    while (resourcesPages.firstChild) {
+        resourcesPages.removeChild(resourcesPages.firstChild);
+    }
+}
+
+function clearTypesResults() {
+    var typesList = document.getElementById("types_list");
+    while (typesList.firstChild) {
+        typesList.removeChild(typesList.firstChild);
+    }
+}
+
+function clearTypesPages() {
+    var typesPages = document.getElementById("types_pages");
+    while (typesPages.firstChild) {
+        typesPages.removeChild(typesPages.firstChild);
+    }
+}
+
 var $root = $('html, body');
 function setQueryGraph(button) {
-
+    clearTypesAndResources();
     document.getElementById("sparqlQueryGraph").value = button.innerHTML;
     document.getElementById("sparqlQueryGraph").style.color = "#5cb85c";
     document.getElementById("sparqlQueryTypeGraph").value = button.innerHTML;
@@ -292,6 +345,7 @@ function setQueryGraph(button) {
 }
 
 function setQueryType(button) {
+    clearResources();
     var query = "\n\n\nSELECT DISTINCT ?s ?p ?o \nWHERE{\n    ?s ?p ?o . \n    ?s  &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#type&gt; ";
     query = query.concat("<b style='color:#5cb85c'>&lt;", button.innerHTML, "&gt;</b>\n}\nLIMIT 200\n\n");
     document.getElementById("sparqlQuery").innerHTML = query;
