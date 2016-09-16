@@ -75,6 +75,7 @@ class CurlBuilder
             $entities = $data->getIat();
         }
 
+        
         if ($entityType == 'tourism-attractor') {
             /** @var Attractor $attractor */
             /* @noinspection PhpUndefinedVariableInspection */
