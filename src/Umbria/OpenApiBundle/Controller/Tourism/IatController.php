@@ -16,7 +16,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Serializer\Serializer;
 use Umbria\OpenApiBundle\Entity\Tourism\Setting;
 use Umbria\OpenApiBundle\Serializer\View\EntityResponse;
-use Umbria\OpenApiBundle\Service\CurlBuilder;
+use Umbria\OpenApiBundle\Service\TourismEntityUpdater;
 use Umbria\OpenApiBundle\Service\FilterBag;
 
 class IatController extends FOSRestController
@@ -31,10 +31,10 @@ class IatController extends FOSRestController
     public $em;
 
     /**
-     * @var CurlBuilder
-     * @DI\Inject("umbria_open_api.curl_builder")
+     * @var TourismEntityUpdater
+     * @DI\Inject("umbria_open_api.tourism_entity_updater")
      */
-    public $curlBuilder;
+    public $tourismEntityUpdater;
 
     /**
      * @var FilterBag
@@ -122,7 +122,7 @@ class IatController extends FOSRestController
                 $this->em->persist($setting);
                 $this->em->flush();
 
-                $this->curlBuilder->updateEntities($url, self::DATASET_TOURISM_IAT, $urlSilkSameAs);
+                $this->tourismEntityUpdater->updateEntities($url, self::DATASET_TOURISM_IAT, $urlSilkSameAs);
             }
         } else {
             $setting = new Setting();
@@ -131,7 +131,7 @@ class IatController extends FOSRestController
             $this->em->persist($setting);
             $this->em->flush();
 
-            $this->curlBuilder->updateEntities($url, self::DATASET_TOURISM_IAT, $urlSilkSameAs);
+            $this->tourismEntityUpdater->updateEntities($url, self::DATASET_TOURISM_IAT, $urlSilkSameAs);
         }
 
         $builder = $this->em->createQueryBuilder()

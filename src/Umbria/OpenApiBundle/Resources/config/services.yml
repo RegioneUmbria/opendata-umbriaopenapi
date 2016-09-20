@@ -1,6 +1,7 @@
 parameters:
 
 
+    sparql_endpoint_uri: http://odnt-srv01/sparql
 
     url_proposal: http://dati.umbria.it/dataset/8b4f4b4b-7abc-4103-9082-96ba7023021d/resource/c46f350d-c2da-4204-aad9-c5d32ca3283c/download/proposteitit.zipproposteitit.rdf
     url_proposal_silk: null
@@ -10,7 +11,7 @@ parameters:
     url_attractor: http://dati.umbria.it/dataset/ab39e23d-540f-4aa1-b27f-3fb244837545/resource/59822c9d-c9d6-4bcd-87c6-cd35a9f3d41d/download/attrattoriitit.zipattrattoriitit.rdf
     url_attractor_silk: http://dati.umbria.it/dataset/ab39e23d-540f-4aa1-b27f-3fb244837545/resource/2d9c13bf-d48c-4df2-b272-8f183c06c4c0/download/sameasdbpediaresource.rdf
     url_attractor_silk_located_in: http://dati.umbria.it/dataset/ab39e23d-540f-4aa1-b27f-3fb244837545/resource/138b1d6c-3f01-407d-9b5d-36841442d44b/download/locatedindbpediaresource.rdf
-    attractor_days_to_old: 1
+    attractor_days_to_old: 0
     base_url_res_attractor: http://dati.umbria.it/risorsa/attrattori-it
 
     url_event: http://dati.umbria.it/dataset/410faa97-546b-4362-a6d7-f8794d18ed19/resource/795338cb-d5b6-40c2-98ad-05fcad7f194c/download/eventiitit.zipeventiitit.rdf
@@ -41,8 +42,8 @@ parameters:
 
 
 services:
-    umbria_open_api.curl_builder:
-        class: Umbria\OpenApiBundle\Service\CurlBuilder
-        arguments: [@doctrine.orm.entity_manager, @jms_serializer]
+    umbria_open_api.tourism_entity_updater:
+        class: Umbria\OpenApiBundle\Service\TourismEntityUpdater
+        arguments: [@doctrine.orm.entity_manager, @jms_serializer, '%sparql_endpoint_uri%']
     umbria_open_api.filter_bag:
         class: Umbria\OpenApiBundle\Service\FilterBag

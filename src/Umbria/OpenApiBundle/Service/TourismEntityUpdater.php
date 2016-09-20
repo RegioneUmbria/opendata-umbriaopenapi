@@ -3,6 +3,7 @@
 namespace Umbria\OpenApiBundle\Service;
 
 use Doctrine\ORM\EntityManager;
+use EasyRdf_Graph;
 use Exception;
 use JMS\Serializer\Serializer;
 use Umbria\OpenApiBundle\Entity\Tourism\Address;
@@ -13,8 +14,10 @@ use Umbria\OpenApiBundle\Entity\Tourism\Iat;
 use Umbria\OpenApiBundle\Entity\Tourism\Profession;
 use Umbria\OpenApiBundle\Entity\Tourism\RDF;
 use Umbria\OpenApiBundle\Entity\Tourism\TravelAgency;
+use EasyRdf_Sparql_Client;
+use EasyRdf_Sparql_Result;
 
-class CurlBuilder
+class TourismEntityUpdater
 {
     /**
      * @var EntityManager
@@ -26,11 +29,40 @@ class CurlBuilder
      */
     public $serializer;
 
-    public function __construct(EntityManager $em, Serializer $serializer)
+    /**
+     * @var EasyRdf_Sparql_Client
+     */
+    public $sparqlClient;
+
+
+
+    public function __construct(EntityManager $em, Serializer $serializer, $sparqlEndpointUri)
     {
         $this->em = $em;
         $this->serializer = $serializer;
+        $this->sparqlClient=new EasyRdf_Sparql_Client($sparqlEndpointUri,null);
     }
+
+    public function executeSparqlQuery($query){
+
+
+        //$namedGraphsList=$this->sparqlClient->listNamedGraphs();
+        $sparqlResult=$this->sparqlClient->query($query);
+        $graph=$this->getGraph("http://odnt-srv01/dataset/54480509-bf69-47e1-b735-de5ddac001a2/resource/e27179f1-4020-4d8b-90cb-6ec4f47471f3/download/attrattoriitIT.zipattrattoriitIT.rdf");
+
+        $sparqlResult->rewind();
+        while($sparqlResult->valid()) {
+            $current = $sparqlResult->current();
+
+            $sparqlResult->next();
+        }
+    }
+
+    private function getGraph($uri){
+        $graph= EasyRdf_Graph::newAndLoad($uri);
+        return $graph;
+    }
+
 
     public function updateEntities($url, $entityType, $urlSameAs = null, $urlLocatedIn = null)
     {

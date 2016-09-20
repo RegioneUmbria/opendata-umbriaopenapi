@@ -1,5 +1,6 @@
 <?php
 
+
 namespace Umbria\OpenApiBundle\Controller\Tourism;
 
 use DateTime;
@@ -15,7 +16,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Umbria\OpenApiBundle\Entity\Tourism\Setting;
 use Umbria\OpenApiBundle\Serializer\View\EntityResponse;
-use Umbria\OpenApiBundle\Service\CurlBuilder;
+use Umbria\OpenApiBundle\Service\TourismEntityUpdater;
 use Umbria\OpenApiBundle\Service\FilterBag;
 
 class AttractorController extends FOSRestController
@@ -30,10 +31,10 @@ class AttractorController extends FOSRestController
     public $em;
 
     /**
-     * @var CurlBuilder
-     * @DI\Inject("umbria_open_api.curl_builder")
+     * @var TourismEntityUpdater
+     * @DI\Inject("umbria_open_api.tourism_entity_updater")
      */
-    public $curlBuilder;
+    public $tourismEntityUpdater;
 
     /**
      * @var FilterBag
@@ -132,7 +133,9 @@ class AttractorController extends FOSRestController
                 $this->em->persist($setting);
                 $this->em->flush();
 
-                $this->curlBuilder->updateEntities($url, self::DATASET_TOURISM_ATTRACTOR, $urlSilkSameAs, $urlSilkLocatedIn);
+                $query="select * from <http://dati.umbria.it/graph/attrattori>  where {?s ?p ?o} limit 1000";
+                $this->tourismEntityUpdater->executeSparqlQuery($query);
+                //$this->tourismEntityUpdater->updateEntities($url, self::DATASET_TOURISM_ATTRACTOR, $urlSilkSameAs, $urlSilkLocatedIn);
             }
         } else {
             $setting = new Setting();
@@ -141,7 +144,7 @@ class AttractorController extends FOSRestController
             $this->em->persist($setting);
             $this->em->flush();
 
-            $this->curlBuilder->updateEntities($url, self::DATASET_TOURISM_ATTRACTOR, $urlSilkSameAs, $urlSilkLocatedIn);
+            $this->tourismEntityUpdater->updateEntities($url, self::DATASET_TOURISM_ATTRACTOR, $urlSilkSameAs, $urlSilkLocatedIn);
         }
         $qb = $this->em->createQueryBuilder();
         $builder = $qb
