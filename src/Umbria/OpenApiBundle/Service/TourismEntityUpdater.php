@@ -48,8 +48,18 @@ class TourismEntityUpdater
 
         //$namedGraphsList=$this->sparqlClient->listNamedGraphs();
         $sparqlResult=$this->sparqlClient->query($query);
+        /**
+         * @var EasyRdf_Graph
+         */
         $graph=$this->getGraph("http://odnt-srv01/dataset/54480509-bf69-47e1-b735-de5ddac001a2/resource/e27179f1-4020-4d8b-90cb-6ec4f47471f3/download/attrattoriitIT.zipattrattoriitIT.rdf");
-
+        $resources = $graph->toRdfPhp();
+        foreach ($resources as $key => $resource) {
+            $resourceObject = $graph->resource($key);
+            $resourceType = $resourceObject->get("rdf:type")->toRdfPhp()['value'];
+            if (trim($resourceType) == "http://linkedgeodata.org/ontology/Attraction") {//is attractor
+                echo "is attractor";
+            }
+        }
         $sparqlResult->rewind();
         while($sparqlResult->valid()) {
             $current = $sparqlResult->current();
@@ -58,7 +68,8 @@ class TourismEntityUpdater
         }
     }
 
-    private function getGraph($uri){
+    private function getGraph($uri)
+    {
         $graph= EasyRdf_Graph::newAndLoad($uri);
         return $graph;
     }
