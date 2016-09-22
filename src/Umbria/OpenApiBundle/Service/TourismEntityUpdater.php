@@ -52,12 +52,13 @@ class TourismEntityUpdater
          * @var EasyRdf_Graph
          */
         $graph=$this->getGraph("http://odnt-srv01/dataset/54480509-bf69-47e1-b735-de5ddac001a2/resource/e27179f1-4020-4d8b-90cb-6ec4f47471f3/download/attrattoriitIT.zipattrattoriitIT.rdf");
-        $resources = $graph->toRdfPhp();
-        foreach ($resources as $key => $resource) {
-            $resourceObject = $graph->resource($key);
-            $resourceType = $resourceObject->get("rdf:type")->toRdfPhp()['value'];
+        $resources = $graph->resources();
+        foreach ($resources as $resource) {
+            $propertyUris = $graph->propertyUris($resource);
+            $resourceType = $resource->get("rdf:type")->toRdfPhp()['value'];
             if (trim($resourceType) == "http://linkedgeodata.org/ontology/Attraction") {//is attractor
                 echo "is attractor";
+                // $resourceTempiDiViaggio = $resourceObject->get("umb:tempiDiViaggio")->toRdfPhp()['value'];
             }
         }
         $sparqlResult->rewind();

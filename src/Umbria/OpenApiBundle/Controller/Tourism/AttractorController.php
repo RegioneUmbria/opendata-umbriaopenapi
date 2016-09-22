@@ -5,6 +5,7 @@ namespace Umbria\OpenApiBundle\Controller\Tourism;
 
 use DateTime;
 use Doctrine\ORM\EntityManager;
+use EasyRdf_Graph;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\View\View;
@@ -14,6 +15,7 @@ use Knp\Component\Pager\Paginator;
 use Nelmio\ApiDocBundle\Annotation as ApiDoc;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Umbria\OpenApiBundle\Entity\Tourism\GraphsEntities\Attractor;
 use Umbria\OpenApiBundle\Entity\Tourism\Setting;
 use Umbria\OpenApiBundle\Serializer\View\EntityResponse;
 use Umbria\OpenApiBundle\Service\TourismEntityUpdater;
@@ -23,12 +25,20 @@ class AttractorController extends FOSRestController
 {
     const DEFAULT_PAGE_SIZE = 100;
     const DATASET_TOURISM_ATTRACTOR = 'tourism-attractor';
+    private $graph;
+
+    public function _construct()
+    {
+        $this->graph = EasyRdf_Graph::newAndLoad("http://odnt-srv01/dataset/54480509-bf69-47e1-b735-de5ddac001a2/resource/e27179f1-4020-4d8b-90cb-6ec4f47471f3/download/attrattoriitIT.zipattrattoriitIT.rdf");
+    }
+
 
     /**
      * @var EntityManager
      * @DI\Inject("doctrine.orm.entity_manager")
      */
     public $em;
+
 
     /**
      * @var TourismEntityUpdater
@@ -102,6 +112,7 @@ class AttractorController extends FOSRestController
      */
     public function getTourismAttractorListAction(Request $request)
     {
+        $this->updateEntities();
         $daysToOld = $this->container->getParameter('attractor_days_to_old');
         $url = $this->container->getParameter('url_attractor');
         $urlSilkSameAs = $this->container->getParameter('url_attractor_silk');
@@ -134,7 +145,7 @@ class AttractorController extends FOSRestController
                 $this->em->flush();
 
                 $query="select * from <http://dati.umbria.it/graph/attrattori>  where {?s ?p ?o} limit 1000";
-                $this->tourismEntityUpdater->executeSparqlQuery($query);
+                $this->updateEntities();
                 //$this->tourismEntityUpdater->updateEntities($url, self::DATASET_TOURISM_ATTRACTOR, $urlSilkSameAs, $urlSilkLocatedIn);
             }
         } else {
@@ -144,7 +155,7 @@ class AttractorController extends FOSRestController
             $this->em->persist($setting);
             $this->em->flush();
 
-            $this->tourismEntityUpdater->updateEntities($url, self::DATASET_TOURISM_ATTRACTOR, $urlSilkSameAs, $urlSilkLocatedIn);
+            $this->updateEntities();
         }
         $qb = $this->em->createQueryBuilder();
         $builder = $qb
@@ -246,5 +257,23 @@ class AttractorController extends FOSRestController
         $view->getSerializationContext()->setGroups($viewGroups);
 
         return $view;
+    }
+
+    public function updateEntities()
+    {
+        $this->graph = EasyRdf_Graph::newAndLoad("http://odnt-srv01/dataset/54480509-bf69-47e1-b735-de5ddac001a2/resource/e27179f1-4020-4d8b-90cb-6ec4f47471f3/download/attrattoriitIT.zipattrattoriitIT.rdf");
+        $resources = $this->graph->resources();
+        foreach ($resources as $resource) {
+            //$propertyUris=$this->graph->propertyUris($resource);
+            $resourceType = $resource->get("rdf:type")->toRdfPhp()['value'];
+            if (trim($resourceType) == "http://linkedgeodata.org/ontology/Attraction") {//is attractor
+                $this->createOrUpdateEntity($resource);
+            }
+        }
+    }
+
+    public function createOrUpdateEntity($easyRdfResource)
+    {
+        $attractor = new Attractor($easyRdfResource);
     }
 }
