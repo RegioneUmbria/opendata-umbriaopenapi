@@ -21,15 +21,20 @@ use Umbria\OpenApiBundle\Serializer\View\EntityResponse;
 use Umbria\OpenApiBundle\Service\TourismEntityUpdater;
 use Umbria\OpenApiBundle\Service\FilterBag;
 
+/*
+ *  @author Lorenzo Franco Ranucci
+ * */
 class AttractorController extends FOSRestController
 {
     const DEFAULT_PAGE_SIZE = 100;
     const DATASET_TOURISM_ATTRACTOR = 'tourism-attractor';
     private $graph;
+    private $sameAsGraph;
 
     public function _construct()
     {
         $this->graph = EasyRdf_Graph::newAndLoad("http://odnt-srv01/dataset/54480509-bf69-47e1-b735-de5ddac001a2/resource/e27179f1-4020-4d8b-90cb-6ec4f47471f3/download/attrattoriitIT.zipattrattoriitIT.rdf");
+        $this->sameAsGraph = EasyRdf_Graph::newAndLoad("http://odnt-srv01/dataset/54480509-bf69-47e1-b735-de5ddac001a2/resource/75826811-f908-4c19-854d-3dbcb12c5242/download/sameAsdbpediaresource.rdf");
     }
 
 
@@ -262,18 +267,42 @@ class AttractorController extends FOSRestController
     public function updateEntities()
     {
         $this->graph = EasyRdf_Graph::newAndLoad("http://odnt-srv01/dataset/54480509-bf69-47e1-b735-de5ddac001a2/resource/e27179f1-4020-4d8b-90cb-6ec4f47471f3/download/attrattoriitIT.zipattrattoriitIT.rdf");
+        $this->sameAsGraph = EasyRdf_Graph::newAndLoad("http://odnt-srv01/dataset/54480509-bf69-47e1-b735-de5ddac001a2/resource/75826811-f908-4c19-854d-3dbcb12c5242/download/sameAsdbpediaresource.rdf");
         $resources = $this->graph->resources();
         foreach ($resources as $resource) {
             //$propertyUris=$this->graph->propertyUris($resource);
-            $resourceType = $resource->get("rdf:type")->toRdfPhp()['value'];
-            if (trim($resourceType) == "http://linkedgeodata.org/ontology/Attraction") {//is attractor
-                $this->createOrUpdateEntity($resource);
+            $resourceTypeArray = $resource->all("rdf:type");
+            if ($resourceTypeArray != null) {
+                foreach ($resourceTypeArray as $resourceType) {
+                    if (trim($resourceType) == "http://linkedgeodata.org/ontology/Attraction") {//is attractor
+                        $sameAsResource = null;
+                        if ($this->sameAsGraph != null) {
+                            $sameAsResource = $this->sameAsGraph->resource($resource->getUri());
+                        }
+                        $this->createOrUpdateEntity($resource, $sameAsResource);
+                        break;
+                    }
+                }
             }
+
         }
     }
 
-    public function createOrUpdateEntity($easyRdfResource)
+    /**
+     * @param \EasyRdf_Resource $attrattoriResource
+     * @param \EasyRdf_Resource null $sameAsResource
+     */
+    public function createOrUpdateEntity($attrattoriResource, $sameAsResource = null)
     {
-        $attractor = new Attractor($easyRdfResource);
+        $newAttractor = Attractor::load($attrattoriResource, $sameAsResource);
+        if ($newAttractor != null) {
+            $oldAttractor = $this->em->getRepository('UmbriaOpenApiBundle:Tourism\GraphsEntities\Attractor')->find($newAttractor->getUri());
+            if ($oldAttractor != null) {
+                $oldAttractor = $newAttractor;
+            } else {
+                $this->em->persist($newAttractor);
+            }
+            $this->em->flush();
+        }
     }
 }
