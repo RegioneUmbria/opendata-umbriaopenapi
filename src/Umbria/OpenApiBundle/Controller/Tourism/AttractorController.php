@@ -117,7 +117,6 @@ class AttractorController extends FOSRestController
      */
     public function getTourismAttractorListAction(Request $request)
     {
-        $this->updateEntities();
         $daysToOld = $this->container->getParameter('attractor_days_to_old');
         $url = $this->container->getParameter('url_attractor');
         $urlSilkSameAs = $this->container->getParameter('url_attractor_silk');
@@ -148,10 +147,7 @@ class AttractorController extends FOSRestController
                 $setting->setUpdatedAtValue();
                 $this->em->persist($setting);
                 $this->em->flush();
-
-                $query="select * from <http://dati.umbria.it/graph/attrattori>  where {?s ?p ?o} limit 1000";
                 $this->updateEntities();
-                //$this->tourismEntityUpdater->updateEntities($url, self::DATASET_TOURISM_ATTRACTOR, $urlSilkSameAs, $urlSilkLocatedIn);
             }
         } else {
             $setting = new Setting();
@@ -159,18 +155,17 @@ class AttractorController extends FOSRestController
             $setting->setUpdatedAtValue();
             $this->em->persist($setting);
             $this->em->flush();
-
             $this->updateEntities();
         }
         $qb = $this->em->createQueryBuilder();
         $builder = $qb
             ->select('a')
-            ->from('UmbriaOpenApiBundle:Tourism\Attractor', 'a');
+            ->from('UmbriaOpenApiBundle:Tourism\GraphsEntities\Attractor', 'a');
 
 
         if ($labelLike != null) {
             $builder = $qb
-                ->andWhere($qb->expr()->like('a.denominazione', '?2'))
+                ->andWhere($qb->expr()->like('a.name', '?2'))
                 ->setParameter(2, $labelLike);
         }
 
@@ -179,17 +174,18 @@ class AttractorController extends FOSRestController
                 ->innerJoin('a.descrizioni', 'd')
                 ->andWhere(
                     $qb->expr()->orX(
-                        $qb->expr()->like('d.testo', '?1'),
-                        $qb->expr()->like('a.descrizioneSintetica', '?1'),
+                        $qb->expr()->like('d.shortDescription', '?1'),
+                        $qb->expr()->like('a.description', '?1')/*,
                         $qb->expr()->like('a.abstract', '?1'),
-                        $qb->expr()->like('a.dbpediaAbstract', '?1')
+                        $qb->expr()->like('a.dbpediaAbstract', '?1')*/
                     )
                 )
                 ->setParameter(1, $descriptionLike);
 
         }
 
-        if ($categoryLike != null) {
+        /*TODO categories*/
+        /*if ($categoryLike != null) {
             $builder = $qb
                 ->leftJoin('a.categorie', 'cat')
                 ->andWhere(
@@ -197,21 +193,21 @@ class AttractorController extends FOSRestController
                 )
                 ->setParameter("categoryLike", $categoryLike);
 
-        }
+        }*/
 
         if ($latMax != null ||
             $latMin != null ||
             $lngMax != null ||
             $lngMin != null
         ) {
-            $builder = $qb
-                ->innerJoin('a.coordinate', 'c');
+            /* $builder = $qb
+                 ->innerJoin('a.coordinate', 'c');*/
             if ($latMax != null) {
                 $builder =
                     $qb->andWhere(
-                        $qb->expr()->lte("c.latitude", ':latMax'),
-                        $qb->expr()->isNotNull("c.latitude"),
-                        $qb->expr()->gt("c.latitude", ':empty')
+                        $qb->expr()->lte("a.lat", ':latMax'),
+                        $qb->expr()->isNotNull("a.lat"),
+                        $qb->expr()->gt("a.lat", ':empty')
                     )
                         ->setParameter('latMax', $latMax)
                         ->setParameter('empty', '0');
@@ -219,9 +215,9 @@ class AttractorController extends FOSRestController
             if ($latMin != null) {
                 $builder =
                     $qb->andWhere(
-                        $qb->expr()->gte("c.latitude", ':latMin'),
-                        $qb->expr()->isNotNull("c.latitude"),
-                        $qb->expr()->gt("c.latitude", ":empty")
+                        $qb->expr()->gte("a.lat", ':latMin'),
+                        $qb->expr()->isNotNull("a.lat"),
+                        $qb->expr()->gt("a.lat", ":empty")
                     )
                         ->setParameter('latMin', $latMin)
                         ->setParameter('empty', '0');
@@ -229,9 +225,9 @@ class AttractorController extends FOSRestController
             if ($lngMax != null) {
                 $builder =
                     $qb->andWhere(
-                        $qb->expr()->lte("c.longitude", ':lngMax'),
-                        $qb->expr()->isNotNull("c.longitude"),
-                        $qb->expr()->gt("c.longitude", ":empty")
+                        $qb->expr()->lte("a.lng", ':lngMax'),
+                        $qb->expr()->isNotNull("a.lng"),
+                        $qb->expr()->gt("a.longitude", ":empty")
                     )
                         ->setParameter('lngMax', $lngMax)
                         ->setParameter('empty', '0');
@@ -239,9 +235,9 @@ class AttractorController extends FOSRestController
             if ($lngMin != null) {
                 $builder =
                     $qb->andWhere(
-                        $qb->expr()->gte("c.longitude", ':lngMin'),
-                        $qb->expr()->isNotNull("c.longitude"),
-                        $qb->expr()->gt("c.longitude", ":empty")
+                        $qb->expr()->gte("a.lng", ':lngMin'),
+                        $qb->expr()->isNotNull("a.lng"),
+                        $qb->expr()->gt("a.lng", ":empty")
                     )
                         ->setParameter('lngMin', $lngMin)
                         ->setParameter('empty', '0');
@@ -253,23 +249,23 @@ class AttractorController extends FOSRestController
         /** @var AbstractPagination $countPagination */
         $countPagination = $this->paginator->paginate($builder, 1, 1);
 
-        $viewGroups = array(
-            'response',
-            'rdf.*', 'attractor.*', 'description.*', 'category.*', 'info.*', 'travel-time.*', 'coordinate.*', 'download.*',
-        );
 
         $view = new View(new EntityResponse($resultsPagination->getItems(), count($resultsPagination), $countPagination->getTotalItemCount()));
-        $view->getSerializationContext()->setGroups($viewGroups);
+        //$view->getSerializationContext()->setGroups($viewGroups);
 
         return $view;
     }
 
-    public function updateEntities()
+    private function updateEntities()
     {
+        $cnt = 0;
+
         $this->graph = EasyRdf_Graph::newAndLoad("http://odnt-srv01/dataset/54480509-bf69-47e1-b735-de5ddac001a2/resource/e27179f1-4020-4d8b-90cb-6ec4f47471f3/download/attrattoriitIT.zipattrattoriitIT.rdf");
         $this->sameAsGraph = EasyRdf_Graph::newAndLoad("http://odnt-srv01/dataset/54480509-bf69-47e1-b735-de5ddac001a2/resource/75826811-f908-4c19-854d-3dbcb12c5242/download/sameAsdbpediaresource.rdf");
         $resources = $this->graph->resources();
+        $now = new \DateTime();
         foreach ($resources as $resource) {
+            if ($cnt > 10) break;
             //$propertyUris=$this->graph->propertyUris($resource);
             $resourceTypeArray = $resource->all("rdf:type");
             if ($resourceTypeArray != null) {
@@ -279,22 +275,26 @@ class AttractorController extends FOSRestController
                         if ($this->sameAsGraph != null) {
                             $sameAsResource = $this->sameAsGraph->resource($resource->getUri());
                         }
-                        $this->createOrUpdateEntity($resource, $sameAsResource);
+
+                        $this->createOrUpdateEntity($resource, $now, $sameAsResource);
+                        $cnt++;
                         break;
                     }
                 }
             }
 
         }
+        $this->deleteOldEntities($now);
     }
 
     /**
      * @param \EasyRdf_Resource $attrattoriResource
+     * @param $createdAt \DateTime creation time
      * @param \EasyRdf_Resource null $sameAsResource
      */
-    public function createOrUpdateEntity($attrattoriResource, $sameAsResource = null)
+    private function createOrUpdateEntity($attrattoriResource, $createdAt, $sameAsResource = null)
     {
-        $newAttractor = Attractor::load($attrattoriResource, $sameAsResource);
+        $newAttractor = Attractor::load($attrattoriResource, $createdAt, $sameAsResource);
         if ($newAttractor != null) {
             $oldAttractor = $this->em->getRepository('UmbriaOpenApiBundle:Tourism\GraphsEntities\Attractor')->find($newAttractor->getUri());
             if ($oldAttractor != null) {
@@ -304,5 +304,11 @@ class AttractorController extends FOSRestController
             }
             $this->em->flush();
         }
+    }
+
+    public function deleteOldEntities($olderThan)
+    {
+        $oldAttractors = $this->em->getRepository('UmbriaOpenApiBundle:Tourism\GraphsEntities\Attractor')
+            ->findByLastUpdateAtBefore($olderThan);
     }
 }

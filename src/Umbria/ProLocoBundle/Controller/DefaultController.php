@@ -5,18 +5,14 @@ namespace Umbria\ProLocoBundle\Controller;
 use Doctrine\ORM\EntityManager;
 use JMS\DiExtraBundle\Annotation as DI;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
-use Umbria\OpenApiBundle\Entity\Tourism\Address;
-use Umbria\OpenApiBundle\Entity\Tourism\Attractor;
-use Umbria\OpenApiBundle\Entity\Tourism\Consortium;
-use Umbria\OpenApiBundle\Entity\Tourism\Coordinate;
-use Umbria\OpenApiBundle\Entity\Tourism\Event;
-use Umbria\OpenApiBundle\Entity\Tourism\Iat;
+use Umbria\OpenApiBundle\Entity\Tourism\GraphsEntities\Attractor;
+use Umbria\OpenApiBundle\Entity\Tourism\GraphsEntities\Consortium;
+use Umbria\OpenApiBundle\Entity\Tourism\GraphsEntities\Event;
+use Umbria\OpenApiBundle\Entity\Tourism\GraphsEntities\Iat;
 use Umbria\OpenApiBundle\Entity\Tourism\PlaceItem\PlaceDetails;
-use Umbria\OpenApiBundle\Entity\Tourism\Profession;
-use Umbria\OpenApiBundle\Entity\Tourism\Proposal;
-use Umbria\OpenApiBundle\Entity\Tourism\RDF;
-use Umbria\OpenApiBundle\Entity\Tourism\TravelAgency;
+use Umbria\OpenApiBundle\Entity\Tourism\GraphsEntities\Profession;
+use Umbria\OpenApiBundle\Entity\Tourism\GraphsEntities\Proposal;
+use Umbria\OpenApiBundle\Entity\Tourism\GraphsEntities\TravelAgency;
 
 class DefaultController extends Controller
 {

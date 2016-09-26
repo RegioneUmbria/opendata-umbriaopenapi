@@ -4,6 +4,8 @@ namespace Umbria\OpenApiBundle\Entity\Tourism\GraphsEntities;
 
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Config\Definition\Exception\Exception;
+use Umbria\OpenApiBundle\Entity\ExternalResource;
+use \EasyRdf_Sparql_Client as EasyRdf_Sparql_Client;
 
 /**
  * Attractor entity
@@ -117,9 +119,12 @@ class Attractor
     private $shortDescription;
 
     /**
-     * @var array
-     *
-     * @ORM\Column(name="sameAs", type="array", nullable=true)
+     * @var ExternalResource
+     * @ORM\ManyToMany(targetEntity="\Umbria\OpenApiBundle\Entity\ExternalResource", orphanRemoval=true, cascade={"persist", "merge"})
+     * @ORM\JoinTable(name="same_as",
+     *      joinColumns={@ORM\JoinColumn(name="ru_resource_uri", referencedColumnName="uri")},
+     *      inverseJoinColumns={@ORM\JoinColumn(name="external_resource_uri", referencedColumnName="uri")}
+     *      )
      */
     private $sameAs;
 
@@ -145,15 +150,23 @@ class Attractor
     private $travelTime;
 
     /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="last_update_at", type="date")
+     */
+    private $lastUpdateAt;
+
+    /**
      * Attractor public constructor.
      * @param \EasyRdf_Resource $resource
+     * @param $lastUpdateAt \DateTime creation date
      * @param \EasyRdf_Resource null $sameAsResource
      * @return Attractor
      */
-    public static function load($resource, $sameAsResource = null)
+    public static function load($resource, $lastUpdateAt, $sameAsResource = null)
     {
         try {
-            return new Attractor($resource, $sameAsResource);
+            return new Attractor($resource, $lastUpdateAt, $sameAsResource);
         } catch (Exception $e) {
             return null;
         }
@@ -163,14 +176,16 @@ class Attractor
     /**
      * Attractor constructor.
      * @param \EasyRdf_Resource $resource
+     * @param $lastUpdateAt \DateTime creation date
      * @param \EasyRdf_Resource null $sameAsResource
      * @throws \Exception when uri is null
      */
-    private function __construct($resource, $sameAsResource = null)
+    private function __construct($resource, $lastUpdateAt, $sameAsResource = null)
     {
         $uri = $resource->getUri();
         if ($uri != null) {
             $this->setUri($uri);
+            $this->lastUpdateAt = $lastUpdateAt;
             $this->setName(($p = $resource->get("rdfs:label")) != null ? $p->getValue() : null);
 
             $typesarray = $resource->all("rdf:type");
@@ -208,7 +223,30 @@ class Attractor
                     $this->sameAs = array();
                     $cnt = 0;
                     foreach ($sameAsArray as $sameAs) {
-                        $this->sameAs[$cnt] = $sameAs->toRdfPhp()['value'];
+                        $externalResource = new ExternalResource();
+                        $externalResourceUri = $sameAs->toRdfPhp()['value'];
+                        $externalResource->setUri($externalResourceUri);
+                        $sparqlClient = new EasyRdf_Sparql_Client("http://dbpedia.org/sparql");
+
+                        $queryLabel = "SELECT ?o WHERE {<" . $externalResourceUri . "> <http://www.w3.org/2000/01/rdf-schema#label> ?o. FILTER ( lang(?o) = \"it\" )}";
+                        $sparqlResultLabel = $sparqlClient->query($queryLabel);
+                        $sparqlResultLabel->rewind();
+                        while ($sparqlResultLabel->valid()) {
+                            $current = $sparqlResultLabel->current();
+                            $externalResource->setName($current->o);
+                            $sparqlResultLabel->next();
+                        }
+
+                        $queryAbstract = "SELECT ?o WHERE {<" . $externalResourceUri . "> <http://dbpedia.org/ontology/abstract> ?o. FILTER ( lang(?o) = \"it\" )}";
+                        $sparqlResultAbstract = $sparqlClient->query($queryAbstract);
+                        $sparqlResultAbstract->rewind();
+                        while ($sparqlResultAbstract->valid()) {
+                            $current = $sparqlResultAbstract->current();
+                            $externalResource->setDescription($current->o);
+                            $sparqlResultAbstract->next();
+                        }
+
+                        $this->sameAs[$cnt] = $externalResource;
                         $cnt++;
                     }
                 }
@@ -649,6 +687,30 @@ class Attractor
     public function getTravelTime()
     {
         return $this->travelTime;
+    }
+
+    /**
+     * Set lastUpdateAt
+     *
+     * @param \DateTime $lastUpdateAt
+     *
+     * @return Attractor
+     */
+    public function setLastUpdateAt($lastUpdateAt)
+    {
+        $this->lastUpdateAt = $lastUpdateAt;
+
+        return $this;
+    }
+
+    /**
+     * Get lastUpdateAt
+     *
+     * @return \DateTime
+     */
+    public function getLastUpdateAt()
+    {
+        return $this->lastUpdateAt;
     }
 }
 
