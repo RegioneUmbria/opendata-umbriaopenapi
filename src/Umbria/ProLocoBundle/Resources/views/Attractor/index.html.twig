@@ -25,7 +25,7 @@
                 <tr>
                     <th></th>
                     <th>Denominazione</th>
-                    <th>{{ knp_pagination_sortable(pagination, 'Comune', 'a.comune') }}</th>
+                    <th>{{ knp_pagination_sortable(pagination, 'Comune', 'a.municipality') }}</th>
                     <th>{{ knp_pagination_sortable(pagination, 'DBpedia', 'a.dbpediaInfo') }}</th>
                     <th><span class="badge pull-right">{{ pagination.getTotalItemCount }}</span></th>
                 </tr>
@@ -36,8 +36,8 @@
                         <td class="text-muted">
                             <small>{{ loop.index }}</small>
                         </td>
-                        <td>{{ attractor.denominazione }}</td>
-                        <td>{{ attractor.comune }}</td>
+                        <td>{{ attractor.name }}</td>
+                        <td>{{ attractor.municipality }}</td>
                         <td>
                             {% if attractor.dbpediaInfo %}
                                 <span class="badge"><span class="glyphicon glyphicon-ok"></span> </span>

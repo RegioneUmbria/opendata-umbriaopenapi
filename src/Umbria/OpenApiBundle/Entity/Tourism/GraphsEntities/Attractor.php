@@ -6,6 +6,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Config\Definition\Exception\Exception;
 use Umbria\OpenApiBundle\Entity\ExternalResource;
 use \EasyRdf_Sparql_Client as EasyRdf_Sparql_Client;
+use Umbria\OpenApiBundle\Entity\Tourism\GraphsEntitiesInnerObjects\AttractorDescription;
 
 /**
  * Attractor entity
@@ -138,9 +139,9 @@ class Attractor
     /**
      * @var string
      *
-     * @ORM\Column(name="description", type="string", length=255, nullable=true)
+     * @ORM\Column(name="comment", type="string", length=255, nullable=true)
      */
-    private $description;
+    private $comment;
 
     /**
      * @var array
@@ -148,6 +149,13 @@ class Attractor
      * @ORM\Column(name="travelTime", type="array", nullable=true)
      */
     private $travelTime;
+
+    /**
+     * @var AttractorDescription
+     * @ORM\OneToMany(targetEntity="\Umbria\OpenApiBundle\Entity\Tourism\GraphsEntitiesInnerObjects\AttractorDescription", mappedBy="attractor", cascade={"persist", "merge", "remove"})
+     */
+    private $descriptions;
+
 
     /**
      * @var \DateTime
@@ -159,14 +167,13 @@ class Attractor
     /**
      * Attractor public constructor.
      * @param \EasyRdf_Resource $resource
-     * @param $lastUpdateAt \DateTime creation date
      * @param \EasyRdf_Resource null $sameAsResource
      * @return Attractor
      */
-    public static function load($resource, $lastUpdateAt, $sameAsResource = null)
+    public static function load($resource, $sameAsResource = null)
     {
         try {
-            return new Attractor($resource, $lastUpdateAt, $sameAsResource);
+            return new Attractor($resource, $sameAsResource);
         } catch (Exception $e) {
             return null;
         }
@@ -176,16 +183,15 @@ class Attractor
     /**
      * Attractor constructor.
      * @param \EasyRdf_Resource $resource
-     * @param $lastUpdateAt \DateTime creation date
      * @param \EasyRdf_Resource null $sameAsResource
      * @throws \Exception when uri is null
      */
-    private function __construct($resource, $lastUpdateAt, $sameAsResource = null)
+    private function __construct($resource, $sameAsResource = null)
     {
         $uri = $resource->getUri();
         if ($uri != null) {
             $this->setUri($uri);
-            $this->lastUpdateAt = $lastUpdateAt;
+            $this->lastUpdateAt = new \DateTime('now');
             $this->setName(($p = $resource->get("rdfs:label")) != null ? $p->getValue() : null);
 
             $typesarray = $resource->all("rdf:type");
@@ -198,6 +204,7 @@ class Attractor
                 }
             }
 
+            $this->setComment(($p = $resource->get("<http://www.w3.org/2000/01/rdf-schema#comment>")) != null ? $p->getValue() : null);
             $this->setProvenance(($p = $resource->get("<http://purl.org/dc/elements/1.1/provenance>")) != null ? $p->getValue() : null);
             $this->setMunicipality(($p = $resource->get("<http://dbpedia.org/ontology/municipality>")) != null ? $p->getValue() : null);
             $this->setIstat(($p = $resource->get("<http://dbpedia.org/ontology/istat>")) != null ? $p->getValue() : null);
@@ -211,9 +218,20 @@ class Attractor
             $this->setShortDescription(($p = $resource->get("<http://dati.umbria.it/tourism/ontology/descrizione_sintetica>")) != null ? $p->getValue() : null);
             $this->setLanguage(($p = $resource->get("<http://purl.org/dc/elements/1.1/language>")) != null ? $p->getUri() : null);
 
-            $descriptionResource = $resource->get("<http://dati.umbria.it/tourism/ontology/descrizione>");
-            $descriptionText = $descriptionResource->get("<http://dati.umbria.it/tourism/ontology/testo>")->getValue();
-            $this->setDescription($descriptionText);
+            $descriptionArray = $resource->all("<http://dati.umbria.it/tourism/ontology/descrizione>");
+            if ($descriptionArray != null) {
+                $this->descriptions = array();
+                $cnt = 0;
+                foreach ($descriptionArray as $descriptionResource) {
+                    $descriptionTitle = $descriptionResource->get("<http://dati.umbria.it/tourism/ontology/titolo>")->getValue();
+                    $descriptionText = $descriptionResource->get("<http://dati.umbria.it/tourism/ontology/testo>")->getValue();
+                    $descriptionObject = new AttractorDescription();
+                    $descriptionObject->setTitle($descriptionTitle);
+                    $descriptionObject->setText($descriptionText);
+                    $this->descriptions[$cnt] = $descriptionObject;
+                    $cnt++;
+                }
+            }
 
             /*TODO travel time*/
 
@@ -642,27 +660,27 @@ class Attractor
     }
 
     /**
-     * Set description
+     * Set comment
      *
-     * @param string $description
+     * @param string $comment
      *
      * @return Attractor
      */
-    public function setDescription($description)
+    public function setComment($comment)
     {
-        $this->description = $description;
+        $this->comment = $comment;
 
         return $this;
     }
 
     /**
-     * Get description
+     * Get comment
      *
      * @return string
      */
-    public function getDescription()
+    public function getComment()
     {
-        return $this->description;
+        return $this->comment;
     }
 
     /**
@@ -690,6 +708,22 @@ class Attractor
     }
 
     /**
+     * @return AttractorDescription
+     */
+    public function getDescriptions()
+    {
+        return $this->descriptions;
+    }
+
+    /**
+     * @param AttractorDescription $descriptions
+     */
+    public function setDescriptions($descriptions)
+    {
+        $this->descriptions = $descriptions;
+    }
+
+    /**
      * Set lastUpdateAt
      *
      * @param \DateTime $lastUpdateAt
@@ -711,6 +745,17 @@ class Attractor
     public function getLastUpdateAt()
     {
         return $this->lastUpdateAt;
+    }
+
+    public function getDbpediaInfo()
+    {
+        return ($this->sameAs != null && count($this->sameAs->getValues()) > 0);
+    }
+
+    public function getId()
+    {
+        $uriarray = explode("/", $this->uri);
+        return $uriarray[count($uriarray) - 1];
     }
 }
 

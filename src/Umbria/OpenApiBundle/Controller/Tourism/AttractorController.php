@@ -175,7 +175,7 @@ class AttractorController extends FOSRestController
                 ->andWhere(
                     $qb->expr()->orX(
                         $qb->expr()->like('d.shortDescription', '?1'),
-                        $qb->expr()->like('a.description', '?1')/*,
+                        $qb->expr()->like('a.comment', '?1')/*,
                         $qb->expr()->like('a.abstract', '?1'),
                         $qb->expr()->like('a.dbpediaAbstract', '?1')*/
                     )
@@ -263,7 +263,6 @@ class AttractorController extends FOSRestController
         $this->graph = EasyRdf_Graph::newAndLoad("http://odnt-srv01/dataset/54480509-bf69-47e1-b735-de5ddac001a2/resource/e27179f1-4020-4d8b-90cb-6ec4f47471f3/download/attrattoriitIT.zipattrattoriitIT.rdf");
         $this->sameAsGraph = EasyRdf_Graph::newAndLoad("http://odnt-srv01/dataset/54480509-bf69-47e1-b735-de5ddac001a2/resource/75826811-f908-4c19-854d-3dbcb12c5242/download/sameAsdbpediaresource.rdf");
         $resources = $this->graph->resources();
-        $now = new \DateTime();
         foreach ($resources as $resource) {
             if ($cnt > 10) break;
             //$propertyUris=$this->graph->propertyUris($resource);
@@ -276,7 +275,7 @@ class AttractorController extends FOSRestController
                             $sameAsResource = $this->sameAsGraph->resource($resource->getUri());
                         }
 
-                        $this->createOrUpdateEntity($resource, $now, $sameAsResource);
+                        $this->createOrUpdateEntity($resource, $sameAsResource);
                         $cnt++;
                         break;
                     }
@@ -284,17 +283,17 @@ class AttractorController extends FOSRestController
             }
 
         }
+        $now = new \DateTime();
         $this->deleteOldEntities($now);
     }
 
     /**
      * @param \EasyRdf_Resource $attrattoriResource
-     * @param $createdAt \DateTime creation time
      * @param \EasyRdf_Resource null $sameAsResource
      */
-    private function createOrUpdateEntity($attrattoriResource, $createdAt, $sameAsResource = null)
+    private function createOrUpdateEntity($attrattoriResource, $sameAsResource = null)
     {
-        $newAttractor = Attractor::load($attrattoriResource, $createdAt, $sameAsResource);
+        $newAttractor = Attractor::load($attrattoriResource, $sameAsResource);
         if ($newAttractor != null) {
             $oldAttractor = $this->em->getRepository('UmbriaOpenApiBundle:Tourism\GraphsEntities\Attractor')->find($newAttractor->getUri());
             if ($oldAttractor != null) {
@@ -309,6 +308,6 @@ class AttractorController extends FOSRestController
     public function deleteOldEntities($olderThan)
     {
         $oldAttractors = $this->em->getRepository('UmbriaOpenApiBundle:Tourism\GraphsEntities\Attractor')
-            ->findByLastUpdateAtBefore($olderThan);
+            ->removeLastUpdatedBefore($olderThan);
     }
 }

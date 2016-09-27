@@ -5,11 +5,11 @@
         <div class="row">
             <div class="page-header">
                 <h2>
-                    {{ attractor.denominazione }}
+                    {{ attractor.name }}
                     <small>
-                        {{ attractor.descrizioneSintetica|raw }}
+                        {{ attractor.shortDescription|raw }}
                     </small>
-                    <a href="{{ attractor.urlRisorsa }}" target="_blank">
+                    <a href="{{ attractor.uri }}" target="_blank">
                         <span class="glyphicon glyphicon-link pull-right" aria-hidden="true"></span>
                     </a>
                 </h2>
@@ -17,25 +17,27 @@
         </div>
         <div class="row">
             <div class="col-md-7">
-                <h4>{{ attractor.titoloTesto }}</h4>
+                <h4>{{ attractor.textTitle }}</h4>
                 <p>
                     <small>
-                        {{ attractor.abstract|raw }}
+                        {{ attractor.comment|raw }}
                     </small>
                     <br/>
                     <br/>
-                    {% for descrizione in attractor.descrizioni %}
-                        {{ descrizione.titolo|raw }}
+                    {% for description in attractor.descriptions %}
+                        {{ description.title|raw }}
                         <br/>
-                        {{ descrizione.testo|raw }}
+                        {{ description.text|raw }}
                     {% endfor %}
                 </p>
                 <hr>
-                {% if attractor.dbpediaAbstract != '' %}
-                <h4>Informazioni DBpedia</h4>
-                <p>
-                    {{ attractor.dbpediaAbstract }}
-                </p>
+                {% if attractor.dbpediaInfo %}
+                    <h4>Informazioni DBpedia</h4>
+                    {% for externalResource in attractor.sameAs %}
+                        <p>
+                            {{ externalResource.description }}
+                        </p>
+                    {% endfor %}
                 {% endif %}
             </div>
             <div class="col-md-5">
@@ -48,25 +50,25 @@
                                 <small><b>Risorsa RDF</b></small>
                             </td>
                             <td><b>
-                                    <a href="{{ baseUrlRisorsa }}/{{ attractor.idContenuto }}">
-                                        {{ baseUrlRisorsa }}/{{ attractor.idContenuto }}
+                                    <a href="{{ attractor.uri }}">
+                                        {{ attractor.uri }}
                                     </a>
                                 </b>
                             </td>
                         </tr>
-                        <tr>
+                        {#<tr>
                             <td>
                                 <small>id contenuto</small>
                             </td>
-                            <td>{{ attractor.idContenuto }}</td>
-                        </tr>
+                            <td>{{ attractor.id}}</td>
+                        </tr>#}
                         <tr>
                             <td>
                                 <small>keywords</small>
                             </td>
                             <td>
-                                {% if attractor.keywords != '' %}
-                                    {{ attractor.keywords }}
+                                {% if attractor.subject != '' %}
+                                    {{ attractor.subject }}
                                 {% else %}
                                     -
                                 {% endif %}
@@ -77,14 +79,13 @@
                                 <small>coordinate</small>
                             </td>
                             <td>
-                                {% for coordinate in attractor.coordinate %}
-                                    {% if coordinate.latitude != '' %}
-                                        <small>umbria:</small>
-                                        <a href="{{ path('umbria_pro_loco_homepage') }}"
-                                           onclick="setCoordCookie({{ coordinate.latitude }},{{ coordinate.longitude }})">
-                                            {{ coordinate.latitude }},{{ coordinate.longitude }}
-                                        </a>
-                                    {% elseif coordinate.dbpediaLatitude != '' %}
+                                {% if attractor.lat != '' %}
+                                    <small>umbria:</small>
+                                    <a href="{{ path('umbria_pro_loco_homepage') }}"
+                                       onclick="setCoordCookie({{ attractor.lat }},{{ attractor.lng }})">
+                                        {{ attractor.lat }},{{ attractor.lng }}
+                                    </a>
+                                    {#{% elseif coordinate.dbpediaLatitude != '' %}
                                         <small>dbpedia:
                                         </small>
                                         <a href="{{ path('umbria_pro_loco_homepage') }}"
@@ -101,11 +102,10 @@
                                         </a>
                                         <span class="glyphicon glyphicon-info-sign pull-right" data-toggle="tooltip"
                                               data-placement="top"
-                                              title="Posizione calcola. Non se ne garantisce l'affidabilità"></span>
-                                    {% else %}
-                                        -
-                                    {% endif %}
-                                {% endfor %}
+                                              title="Posizione calcola. Non se ne garantisce l'affidabilità"></span>#}
+                                {% else %}
+                                    -
+                                {% endif %}
                             </td>
                         </tr>
                         <tr>
@@ -113,8 +113,8 @@
                                 <small>comune</small>
                             </td>
                             <td>
-                                {% if attractor.comune != '' %}
-                                {{ attractor.comune }}
+                                {% if attractor.municipality != '' %}
+                                    {{ attractor.municipality }}
                                 {% else %}
                                     -
                                 {% endif %}
@@ -125,14 +125,14 @@
                                 <small>codice ISTAT</small>
                             </td>
                             <td>
-                                {% if attractor.codiceIstatComune != '' %}
-                                    {{ attractor.codiceIstatComune }}
+                                {% if attractor.istat != '' %}
+                                    {{ attractor.istat }}
                                 {% else %}
                                     -
                                 {% endif %}
                             </td>
                         </tr>
-                        <tr>
+                        {#<tr>
                             <td>
                                 <small>categorie</small>
                             </td>
@@ -144,7 +144,7 @@
                                     {% endif %}
                                 {% endfor %}
                             </td>
-                        </tr>
+                        </tr>#}
                         </tbody>
                     </table>
                 </div>
@@ -161,7 +161,7 @@
                                 </a>
                             </td>
                         </tr>
-                        <tr>
+                        {#<tr>
                             <td>
                                 <small>pagina dbpedia</small>
                             </td>
@@ -174,8 +174,8 @@
                                     -
                                 {% endif %}
                             </td>
-                        </tr>
-                        <tr>
+                        </tr>#}
+                        {#<tr>
                             <td>
                                 <small>pagina wikipedia</small>
                             </td>
@@ -187,8 +187,8 @@
                                     -
                                 {% endif %}
                             </td>
-                        </tr>
-                        <tr>
+                        </tr>#}
+                        {#<tr>
                             <td>
                                 <small>localizzazione dbpedia</small>
                             </td>
@@ -201,20 +201,20 @@
                                     -
                                 {% endif %}
                             </td>
-                        </tr>
+                        </tr>#}
                         </tbody>
                     </table>
                 </div>
-                <div class="row">
+                {#<div class="row">
                     <img src="{{ attractor.immagineSpallaDestra }}" height="150">
-                </div>
+                </div>#}
             </div>
         </div>
         <div class="row">
             <br/>
             <ol class="breadcrumb">
                 <li><a href="{{ path('attractor_index') }}">Lista Attrattori</a></li>
-                <li class="active">{{ attractor.denominazione }}</li>
+                <li class="active">{{ attractor.name }}</li>
             </ol>
         </div>
     </div>
@@ -230,18 +230,16 @@
 
         {% set latitude = '' %}
         {% set longitude = '' %}
-        {% for coordinate in attractor.coordinate %}
-        {% if coordinate.latitude != '' %}
-        {% set latitude = coordinate.latitude %}
-        {% set longitude = coordinate.longitude %}
-        {% elseif coordinate.dbpediaLatitude != '' %}
+        {% if attractor.lat != '' %}
+        {% set latitude = attractor.lat %}
+        {% set longitude = attractor.lng %}
+        {#{% elseif coordinate.dbpediaLatitude != '' %}
         {% set latitude = coordinate.dbpediaLatitude %}
         {% set longitude = coordinate.dbpediaLongitude %}
         {% elseif coordinate.googleLatitude != '' %}
         {% set latitude = coordinate.googleLatitude %}
-        {% set longitude = coordinate.googleLongitude %}
+        {% set longitude = coordinate.googleLongitude %}#}
         {% endif %}
-        {% endfor %}
 
 
     </script>

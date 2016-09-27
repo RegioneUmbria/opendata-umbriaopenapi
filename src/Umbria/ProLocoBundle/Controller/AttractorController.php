@@ -68,15 +68,18 @@ class AttractorController extends Controller
     /**
      * Finds and displays a Attractor entity.
      *
-     * @param Attractor $attractor
+     * @param int $id
      *
      * @return \Symfony\Component\HttpFoundation\Response
      */
-    public function showAction(Attractor $attractor)
+    public function showAction($id)
     {
+        $repository = $this->getDoctrine()
+            ->getRepository('UmbriaOpenApiBundle:Tourism\GraphsEntities\Attractor');
+        $attractor = $repository->findById($id);
         $baseUrlRisorsa = $this->container->getParameter('base_url_res_attractor');
         return $this->render('UmbriaProLocoBundle:Attractor:show.html.twig', array(
-            'attractor' => $attractor, 'baseUrlRisorsa' => $baseUrlRisorsa
+            'attractor' => $attractor[0], 'baseUrlRisorsa' => $baseUrlRisorsa
         ));
     }
 }

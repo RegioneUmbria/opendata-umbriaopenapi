@@ -4,6 +4,7 @@ namespace Umbria\OpenApiBundle\Repository\Tourism\GraphsEntities;
 
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\EntityRepository;
+use Umbria\OpenApiBundle\Entity\Tourism\GraphsEntities\Attractor;
 
 /**
  * AttractorRepository
@@ -15,12 +16,22 @@ class AttractorRepository extends EntityRepository
 {
     /**
      * @param $date \DateTime
-     * @return \Doctrine\Common\Collections\Collection
      */
-    public function findByLastUpdateAtBefore($date)
+    public function removeLastUpdatedBefore($date)
     {
         $criteria = new Criteria();
         $criteria->where($criteria->expr()->lt('lastUpdateAt', $date));
-        return $this->matching($criteria);
+        foreach ($this->matching($criteria) as $attractor) {
+            $this->getEntityManager()->remove($attractor);
+        }
+        $this->getEntityManager()->flush();
+    }
+
+    public function findById($id)
+    {
+        $qb = $this->createQueryBuilder("o");
+        $qb->where($qb->expr()->like("o.uri", "?1"));
+        $qb->setParameter(1, "%/" . $id);
+        return $qb->getQuery()->getResult();
     }
 }
