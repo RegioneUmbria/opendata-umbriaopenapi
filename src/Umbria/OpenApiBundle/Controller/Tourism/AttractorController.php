@@ -34,7 +34,7 @@ class AttractorController extends FOSRestController
 {
     const DEFAULT_PAGE_SIZE = 100;
     const DATASET_TOURISM_ATTRACTOR = 'tourism-attractor';
-    public $em;
+    private $em;
     private $filterBag;
     private $paginator;
 
