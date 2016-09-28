@@ -3,10 +3,9 @@
 namespace Umbria\OpenApiBundle\Entity\Tourism\GraphsEntities;
 
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Config\Definition\Exception\Exception;
 use Umbria\OpenApiBundle\Entity\ExternalResource;
-use \EasyRdf_Sparql_Client as EasyRdf_Sparql_Client;
 use Umbria\OpenApiBundle\Entity\Tourism\GraphsEntitiesInnerObjects\AttractorDescription;
+use JMS\Serializer\Annotation as JMS;
 
 /**
  * Attractor entity
@@ -53,6 +52,7 @@ class Attractor
      * @var string
      *
      * @ORM\Column(name="municipality", type="string", length=255, nullable=true)
+     *
      */
     private $municipality;
 
@@ -161,118 +161,10 @@ class Attractor
      * @var \DateTime
      *
      * @ORM\Column(name="last_update_at", type="date")
+     *
+     * @JMS\Exclude()
      */
     private $lastUpdateAt;
-
-    /**
-     * Attractor public constructor.
-     * @param \EasyRdf_Resource $resource
-     * @param \EasyRdf_Resource null $sameAsResource
-     * @return Attractor
-     */
-    public static function load($resource, $sameAsResource = null)
-    {
-        try {
-            return new Attractor($resource, $sameAsResource);
-        } catch (Exception $e) {
-            return null;
-        }
-    }
-
-
-    /**
-     * Attractor constructor.
-     * @param \EasyRdf_Resource $resource
-     * @param \EasyRdf_Resource null $sameAsResource
-     * @throws \Exception when uri is null
-     */
-    private function __construct($resource, $sameAsResource = null)
-    {
-        $uri = $resource->getUri();
-        if ($uri != null) {
-            $this->setUri($uri);
-            $this->lastUpdateAt = new \DateTime('now');
-            $this->setName(($p = $resource->get("rdfs:label")) != null ? $p->getValue() : null);
-
-            $typesarray = $resource->all("rdf:type");
-            if ($typesarray != null) {
-                $this->types = array();
-                $cnt = 0;
-                foreach ($typesarray as $type) {
-                    $this->types[$cnt] = $type->toRdfPhp()['value'];
-                    $cnt++;
-                }
-            }
-
-            $this->setComment(($p = $resource->get("<http://www.w3.org/2000/01/rdf-schema#comment>")) != null ? $p->getValue() : null);
-            $this->setProvenance(($p = $resource->get("<http://purl.org/dc/elements/1.1/provenance>")) != null ? $p->getValue() : null);
-            $this->setMunicipality(($p = $resource->get("<http://dbpedia.org/ontology/municipality>")) != null ? $p->getValue() : null);
-            $this->setIstat(($p = $resource->get("<http://dbpedia.org/ontology/istat>")) != null ? $p->getValue() : null);
-            $this->setSubject(($p = $resource->get("<http://purl.org/dc/elements/1.1/subject>")) != null ? $p->getValue() : null);
-            $this->setLat(($p = $resource->get("<http://www.w3.org/2003/01/geo/wgs84_pos#lat>")) != null ? (float)$p->getValue() : null);
-            $this->setLng(($p = $resource->get("<http://www.w3.org/2003/01/geo/wgs84_pos#long>")) != null ? (float)$p->getValue() : null);
-            /*TODO images*/
-            $this->setTextTitle(($p = $resource->get("<http://dati.umbria.it/tourism/ontology/titolo_testo>")) != null ? $p->getValue() : null);
-            /*TODO link esterni associati*/
-            $this->setResourceOriginUrl(($p = $resource->get("<http://dati.umbria.it/tourism/ontology/url_risorsa>")) != null ? $p->getValue() : null);
-            $this->setShortDescription(($p = $resource->get("<http://dati.umbria.it/tourism/ontology/descrizione_sintetica>")) != null ? $p->getValue() : null);
-            $this->setLanguage(($p = $resource->get("<http://purl.org/dc/elements/1.1/language>")) != null ? $p->getUri() : null);
-
-            $descriptionArray = $resource->all("<http://dati.umbria.it/tourism/ontology/descrizione>");
-            if ($descriptionArray != null) {
-                $this->descriptions = array();
-                $cnt = 0;
-                foreach ($descriptionArray as $descriptionResource) {
-                    $descriptionTitle = $descriptionResource->get("<http://dati.umbria.it/tourism/ontology/titolo>")->getValue();
-                    $descriptionText = $descriptionResource->get("<http://dati.umbria.it/tourism/ontology/testo>")->getValue();
-                    $descriptionObject = new AttractorDescription();
-                    $descriptionObject->setTitle($descriptionTitle);
-                    $descriptionObject->setText($descriptionText);
-                    $this->descriptions[$cnt] = $descriptionObject;
-                    $cnt++;
-                }
-            }
-
-            /*TODO travel time*/
-
-            if ($sameAsResource != null) {
-                $sameAsArray = $sameAsResource->all("<http://www.w3.org/2002/07/owl#sameAs>");
-                if ($sameAsArray != null) {
-                    $this->sameAs = array();
-                    $cnt = 0;
-                    foreach ($sameAsArray as $sameAs) {
-                        $externalResource = new ExternalResource();
-                        $externalResourceUri = $sameAs->toRdfPhp()['value'];
-                        $externalResource->setUri($externalResourceUri);
-                        $sparqlClient = new EasyRdf_Sparql_Client("http://dbpedia.org/sparql");
-
-                        $queryLabel = "SELECT ?o WHERE {<" . $externalResourceUri . "> <http://www.w3.org/2000/01/rdf-schema#label> ?o. FILTER ( lang(?o) = \"it\" )}";
-                        $sparqlResultLabel = $sparqlClient->query($queryLabel);
-                        $sparqlResultLabel->rewind();
-                        while ($sparqlResultLabel->valid()) {
-                            $current = $sparqlResultLabel->current();
-                            $externalResource->setName($current->o);
-                            $sparqlResultLabel->next();
-                        }
-
-                        $queryAbstract = "SELECT ?o WHERE {<" . $externalResourceUri . "> <http://dbpedia.org/ontology/abstract> ?o. FILTER ( lang(?o) = \"it\" )}";
-                        $sparqlResultAbstract = $sparqlClient->query($queryAbstract);
-                        $sparqlResultAbstract->rewind();
-                        while ($sparqlResultAbstract->valid()) {
-                            $current = $sparqlResultAbstract->current();
-                            $externalResource->setDescription($current->o);
-                            $sparqlResultAbstract->next();
-                        }
-
-                        $this->sameAs[$cnt] = $externalResource;
-                        $cnt++;
-                    }
-                }
-            }
-        } else {
-            throw new \Exception();
-        }
-    }
 
 
     /**
@@ -716,7 +608,7 @@ class Attractor
     }
 
     /**
-     * @param AttractorDescription $descriptions
+     * @param array $descriptions
      */
     public function setDescriptions($descriptions)
     {

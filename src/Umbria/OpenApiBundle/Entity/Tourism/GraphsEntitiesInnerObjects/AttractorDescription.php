@@ -4,6 +4,7 @@ namespace Umbria\OpenApiBundle\Entity\Tourism\GraphsEntitiesInnerObjects;
 
 use Doctrine\ORM\Mapping as ORM;
 use Umbria\OpenApiBundle\Entity\Tourism\GraphsEntities\Attractor;
+use JMS\Serializer\Annotation as JMS;
 
 /**
  * Created by PhpStorm.
@@ -23,6 +24,8 @@ class AttractorDescription
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
+     *
+     * @JMS\Exclude()
      **/
     private $id;
 

@@ -6,6 +6,7 @@ namespace Umbria\OpenApiBundle\Controller\Tourism;
 use DateTime;
 use Doctrine\ORM\EntityManager;
 use EasyRdf_Graph;
+use EasyRdf_Sparql_Client;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\View\View;
@@ -15,53 +16,55 @@ use Knp\Component\Pager\Paginator;
 use Nelmio\ApiDocBundle\Annotation as ApiDoc;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Umbria\OpenApiBundle\Entity\ExternalResource;
 use Umbria\OpenApiBundle\Entity\Tourism\GraphsEntities\Attractor;
+use Umbria\OpenApiBundle\Entity\Tourism\GraphsEntitiesInnerObjects\AttractorDescription;
 use Umbria\OpenApiBundle\Entity\Tourism\Setting;
 use Umbria\OpenApiBundle\Serializer\View\EntityResponse;
-use Umbria\OpenApiBundle\Service\TourismEntityUpdater;
 use Umbria\OpenApiBundle\Service\FilterBag;
 
-/*
- *  @author Lorenzo Franco Ranucci
- * */
+
+/**
+ * Class AttractorController
+ * @package Umbria\OpenApiBundle\Controller\Tourism
+ *
+ * @author Lorenzo Franco Ranucci <loryzizu@gmail.com>
+ */
 class AttractorController extends FOSRestController
 {
     const DEFAULT_PAGE_SIZE = 100;
     const DATASET_TOURISM_ATTRACTOR = 'tourism-attractor';
+    public $em;
+    private $filterBag;
+    private $paginator;
+
+    /*@var AttractorRepository*/
+    private $attractorRepo;
+    /*@var ExternalResourceRepository*/
+    private $externalResourceRepo;
+
     private $graph;
     private $sameAsGraph;
 
-    public function _construct()
+    /**
+     * @DI\InjectParams({
+     *      "em" = @DI\Inject("doctrine.orm.entity_manager"),
+     *      "tourismEntityUpdater" = @DI\Inject("umbria_open_api.tourism_entity_updater"),
+     *      "filterBag" = @DI\Inject("umbria_open_api.filter_bag"),
+     *      "paginator" = @DI\Inject("knp_paginator")
+     * })
+     * @param $em EntityManager
+     * @param $filterBag FilterBag
+     * @param $paginator Paginator
+     */
+    public function __construct($em, $filterBag, $paginator)
     {
-        $this->graph = EasyRdf_Graph::newAndLoad("http://odnt-srv01/dataset/54480509-bf69-47e1-b735-de5ddac001a2/resource/e27179f1-4020-4d8b-90cb-6ec4f47471f3/download/attrattoriitIT.zipattrattoriitIT.rdf");
-        $this->sameAsGraph = EasyRdf_Graph::newAndLoad("http://odnt-srv01/dataset/54480509-bf69-47e1-b735-de5ddac001a2/resource/75826811-f908-4c19-854d-3dbcb12c5242/download/sameAsdbpediaresource.rdf");
+        $this->em = $em;
+        $this->filterBag = $filterBag;
+        $this->paginator = $paginator;
+        $this->attractorRepo = $this->em->getRepository('UmbriaOpenApiBundle:Tourism\GraphsEntities\Attractor');
+        $this->externalResourceRepo = $this->em->getRepository('UmbriaOpenApiBundle:ExternalResource');
     }
-
-
-    /**
-     * @var EntityManager
-     * @DI\Inject("doctrine.orm.entity_manager")
-     */
-    public $em;
-
-
-    /**
-     * @var TourismEntityUpdater
-     * @DI\Inject("umbria_open_api.tourism_entity_updater")
-     */
-    public $tourismEntityUpdater;
-
-    /**
-     * @var FilterBag
-     * @DI\Inject("umbria_open_api.filter_bag")
-     */
-    private $filterBag;
-
-    /**
-     * @var Paginator
-     * @DI\Inject("knp_paginator")
-     */
-    private $paginator;
 
     /**
      * @Rest\Options(pattern="/open-api/tourism-attractor")
@@ -265,7 +268,6 @@ class AttractorController extends FOSRestController
         $resources = $this->graph->resources();
         foreach ($resources as $resource) {
             if ($cnt > 10) break;
-            //$propertyUris=$this->graph->propertyUris($resource);
             $resourceTypeArray = $resource->all("rdf:type");
             if ($resourceTypeArray != null) {
                 foreach ($resourceTypeArray as $resourceType) {
@@ -288,26 +290,133 @@ class AttractorController extends FOSRestController
     }
 
     /**
-     * @param \EasyRdf_Resource $attrattoriResource
+     * @param \EasyRdf_Resource $attractorResource
      * @param \EasyRdf_Resource null $sameAsResource
      */
-    private function createOrUpdateEntity($attrattoriResource, $sameAsResource = null)
+    private function createOrUpdateEntity($attractorResource, $sameAsResource = null)
     {
-        $newAttractor = Attractor::load($attrattoriResource, $sameAsResource);
-        if ($newAttractor != null) {
-            $oldAttractor = $this->em->getRepository('UmbriaOpenApiBundle:Tourism\GraphsEntities\Attractor')->find($newAttractor->getUri());
-            if ($oldAttractor != null) {
-                $oldAttractor = $newAttractor;
+        $newAttractor = null;
+        $uri = $attractorResource->getUri();
+        if ($uri != null) {
+            $oldAttractor = $this->attractorRepo->find($uri);
+            $isAlreadyPersisted = $oldAttractor != null;
+            if ($isAlreadyPersisted) {
+                $newAttractor = $oldAttractor;
             } else {
+                $newAttractor = new Attractor();
+            }
+            $newAttractor->setUri($uri);
+            $newAttractor->setLastUpdateAt(new \DateTime('now'));
+            $newAttractor->setName(($p = $attractorResource->get("rdfs:label")) != null ? $p->getValue() : null);
+
+            $typesarray = $attractorResource->all("rdf:type");
+            if ($typesarray != null) {
+                $newAttractor->setTypes(array());
+                $cnt = 0;
+                foreach ($typesarray as $type) {
+                    $newAttractor->getTypes()[$cnt] = $type->toRdfPhp()['value'];
+                    $cnt++;
+                }
+            }
+
+            $newAttractor->setComment(($p = $attractorResource->get("<http://www.w3.org/2000/01/rdf-schema#comment>")) != null ? $p->getValue() : null);
+            $newAttractor->setProvenance(($p = $attractorResource->get("<http://purl.org/dc/elements/1.1/provenance>")) != null ? $p->getValue() : null);
+            $newAttractor->setMunicipality(($p = $attractorResource->get("<http://dbpedia.org/ontology/municipality>")) != null ? $p->getValue() : null);
+            $newAttractor->setIstat(($p = $attractorResource->get("<http://dbpedia.org/ontology/istat>")) != null ? $p->getValue() : null);
+            $newAttractor->setSubject(($p = $attractorResource->get("<http://purl.org/dc/elements/1.1/subject>")) != null ? $p->getValue() : null);
+            $newAttractor->setLat(($p = $attractorResource->get("<http://www.w3.org/2003/01/geo/wgs84_pos#lat>")) != null ? (float)$p->getValue() : null);
+            $newAttractor->setLng(($p = $attractorResource->get("<http://www.w3.org/2003/01/geo/wgs84_pos#long>")) != null ? (float)$p->getValue() : null);
+            /*TODO images*/
+            $newAttractor->setTextTitle(($p = $attractorResource->get("<http://dati.umbria.it/tourism/ontology/titolo_testo>")) != null ? $p->getValue() : null);
+            /*TODO link esterni associati*/
+            $newAttractor->setResourceOriginUrl(($p = $attractorResource->get("<http://dati.umbria.it/tourism/ontology/url_risorsa>")) != null ? $p->getValue() : null);
+            $newAttractor->setShortDescription(($p = $attractorResource->get("<http://dati.umbria.it/tourism/ontology/descrizione_sintetica>")) != null ? $p->getValue() : null);
+            $newAttractor->setLanguage(($p = $attractorResource->get("<http://purl.org/dc/elements/1.1/language>")) != null ? $p->getUri() : null);
+
+            if ($isAlreadyPersisted && ($oldDescriptions = $newAttractor->getDescriptions()) != null) {
+                foreach ($oldDescriptions as $oldDescription) {
+                    $this->em->remove($oldDescription);
+                }
+                $newAttractor->setDescriptions(null);
+            }
+            $descriptionArray = $attractorResource->all("<http://dati.umbria.it/tourism/ontology/descrizione>");
+            if ($descriptionArray != null) {
+                $tempDescriptions = array();
+                $cnt = 0;
+                foreach ($descriptionArray as $descriptionResource) {
+                    $descriptionTitle = $descriptionResource->get("<http://dati.umbria.it/tourism/ontology/titolo>")->getValue();
+                    $descriptionText = $descriptionResource->get("<http://dati.umbria.it/tourism/ontology/testo>")->getValue();
+                    $descriptionObject = new AttractorDescription();
+                    $descriptionObject->setTitle($descriptionTitle);
+                    $descriptionObject->setText($descriptionText);
+                    $descriptionObject->setAttractor($newAttractor);
+                    $tempDescriptions[$cnt] = $descriptionObject;
+                    $cnt++;
+                }
+                if (count($tempDescriptions) > 0) {
+                    $newAttractor->setDescriptions($tempDescriptions);
+                }
+            }
+
+            /*TODO travel time*/
+
+            if ($sameAsResource != null) {
+                $sameAsArray = $sameAsResource->all("<http://www.w3.org/2002/07/owl#sameAs>");
+                if ($sameAsArray != null) {
+                    $tempSameAs = array();
+                    $cnt = 0;
+                    foreach ($sameAsArray as $sameAs) {
+                        $externalResource = null;
+                        $externalResourceUri = $sameAs->toRdfPhp()['value'];
+                        $oldExternalResource = $this->externalResourceRepo->find($externalResourceUri);
+                        if ($oldExternalResource != null) {//check if external resource is already persisted
+                            $externalResource = $oldExternalResource;
+                        } else {
+                            $externalResource = new ExternalResource();
+                            $externalResource->setUri($externalResourceUri);
+                            $sparqlClient = new EasyRdf_Sparql_Client("http://dbpedia.org/sparql");
+
+                            $queryLabel = "SELECT ?o WHERE {<" . $externalResourceUri . "> <http://www.w3.org/2000/01/rdf-schema#label> ?o. FILTER ( lang(?o) = \"it\" )}";
+                            $sparqlResultLabel = $sparqlClient->query($queryLabel);
+                            $sparqlResultLabel->rewind();
+                            while ($sparqlResultLabel->valid()) {
+                                $current = $sparqlResultLabel->current();
+                                $externalResource->setName($current->o);
+                                $sparqlResultLabel->next();
+                            }
+
+                            $queryAbstract = "SELECT ?o WHERE {<" . $externalResourceUri . "> <http://dbpedia.org/ontology/abstract> ?o. FILTER ( lang(?o) = \"it\" )}";
+                            $sparqlResultAbstract = $sparqlClient->query($queryAbstract);
+                            $sparqlResultAbstract->rewind();
+                            while ($sparqlResultAbstract->valid()) {
+                                $current = $sparqlResultAbstract->current();
+                                $externalResource->setDescription($current->o);
+                                $sparqlResultAbstract->next();
+                            }
+                        }
+                        $tempSameAs[$cnt] = $externalResource;
+                        $cnt++;
+                    }
+                    if (count($tempSameAs) > 0) {
+                        $newAttractor->setSameAs($tempSameAs);
+                    } else {
+                        $newAttractor->setSameAs(null);
+                    }
+                }
+            }
+
+            if (!$isAlreadyPersisted) {
                 $this->em->persist($newAttractor);
             }
+
             $this->em->flush();
         }
     }
 
     public function deleteOldEntities($olderThan)
     {
-        $oldAttractors = $this->em->getRepository('UmbriaOpenApiBundle:Tourism\GraphsEntities\Attractor')
-            ->removeLastUpdatedBefore($olderThan);
+        $oldAttractors = $this->attractorRepo->removeLastUpdatedBefore($olderThan);
+
+
     }
 }
