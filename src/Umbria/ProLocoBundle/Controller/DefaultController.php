@@ -28,7 +28,7 @@ class DefaultController extends Controller
 
     /**
      * @DI\InjectParams({
-     *      "em" = @DI\Inject("doctrine.orm.entity_manager"),
+     *      "em" = @DI\Inject("doctrine.orm.entity_manager")
      * })
      * @param $em EntityManager
      */
@@ -57,7 +57,7 @@ class DefaultController extends Controller
 
             /** @var Attractor $attractor */
         foreach ($this->attractorRepo->findAll() as $attractor) {
-                if (isset($attractor)) {
+            if (isset($attractor) && $attractor->getLat() != null) {
                     $place = new PlaceDetails();
                     $place->setId($attractor->getId());
                     $place->setName($attractor->getName());
@@ -155,30 +155,23 @@ class DefaultController extends Controller
 //                    }
 //                }
 //            }
-//            /** @var Consortium $consortium */
-//            foreach ($this->consortiumRepo->findAll() as $consortium) {
-//                if (isset($consortium)) {
-//                    // Creazione di un numero di place pari al numero di indirizzi
-//                    /** @var Address $address */
-//                    foreach ($consortium->getAddress() as $address) {
-//                        if ($address->getLatitude() != '') {
-//                            $place = new PlaceDetails();
-//                            $place->setId($consortium->getId());
-//                            $place->setName($consortium->getDenominazione());
-//                            $place->setType($consortium->getType());
-//                            $place->setLatitude($address->getLatitude());
-//                            $place->setLongitude($address->getLongitude());
-//
-//                            $uri = $this->get('router')->generate('consortium_show', array(
-//                                'id' => $consortium->getId(),
-//                            ), UrlGeneratorInterface::ABSOLUTE_URL);
-//                            $place->setHref($uri);
-//
-//                            $consorzi[] = $place;
-//                        }
-//                    }
-//                }
-//            }
+        /** @var Consortium $consortium */
+        foreach ($this->consortiumRepo->findAll() as $consortium) {
+            if (isset($consortium) && $consortium->getLat() != null) {
+                $place = new PlaceDetails();
+                $place->setId($consortium->getId());
+                $place->setName($consortium->getName());
+                $place->setType("tourism_consortium");
+                $place->setLatitude($consortium->getLat());
+                $place->setLongitude($consortium->getLng());
+
+                $uri = $this->get('router')->generate('consortium_show', array(
+                    'id' => $consortium->getId(),
+                ), UrlGeneratorInterface::ABSOLUTE_URL);
+                $place->setHref($uri);
+                $consorzi[] = $place;
+            }
+        }
 //            /** @var Profession $profession */
 //            foreach ($this->professionRepo->findAll() as $profession) {
 //                if (isset($profession)) {

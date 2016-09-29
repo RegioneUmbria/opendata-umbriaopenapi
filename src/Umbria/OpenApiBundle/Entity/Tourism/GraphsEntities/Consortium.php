@@ -3,6 +3,8 @@
 namespace Umbria\OpenApiBundle\Entity\Tourism\GraphsEntities;
 
 use Doctrine\ORM\Mapping as ORM;
+use Umbria\OpenApiBundle\Entity\Address;
+use JMS\Serializer\Annotation as JMS;
 
 /**
  * Consortium
@@ -14,19 +16,13 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class Consortium
 {
-    /**
-     * @var int
-     *
-     * @ORM\Column(name="id", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
-     */
-    private $id;
 
     /**
      * @var string
      *
      * @ORM\Column(name="uri", type="string", length=255, unique=true)
+     *
+     * * @ORM\Id
      */
     private $uri;
 
@@ -34,6 +30,7 @@ class Consortium
      * @var string
      *
      * @ORM\Column(name="name", type="string", length=255, nullable=true)
+     *
      */
     private $name;
 
@@ -87,22 +84,35 @@ class Consortium
     private $language;
 
     /**
-     * @var \stdClass
-     *
-     * @ORM\Column(name="address", type="object", nullable=true)
+     * @var Address
+     * @ORM\OneToOne(targetEntity="\Umbria\OpenApiBundle\Entity\Address", cascade={"persist", "merge", "remove"} )
+     * @ORM\JoinColumn(name="address_id", referencedColumnName="id")
      */
     private $address;
 
+    /**
+     * @var float
+     *
+     * @ORM\Column(name="lat", type="float", nullable=true)
+     */
+    private $lat;
 
     /**
-     * Get id
+     * @var float
      *
-     * @return int
+     * @ORM\Column(name="lng", type="float", nullable=true)
      */
-    public function getId()
-    {
-        return $this->id;
-    }
+    private $lng;
+
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="last_update_at", type="date")
+     *
+     * @JMS\Exclude()
+     */
+    private $lastUpdateAt;
+
 
     /**
      * Set uri
@@ -323,7 +333,7 @@ class Consortium
     /**
      * Set address
      *
-     * @param \stdClass $address
+     * @param Address $address
      *
      * @return Consortium
      */
@@ -337,10 +347,90 @@ class Consortium
     /**
      * Get address
      *
-     * @return \stdClass
+     * @return Address
      */
     public function getAddress()
     {
         return $this->address;
+    }
+
+    /**
+     * Set lat
+     *
+     * @param float $lat
+     *
+     * @return Consortium
+     */
+    public function setLat($lat)
+    {
+        $this->lat = $lat;
+
+        return $this;
+    }
+
+    /**
+     * Get lat
+     *
+     * @return float
+     */
+    public function getLat()
+    {
+        return $this->lat;
+    }
+
+    /**
+     * Set lng
+     *
+     * @param float $lng
+     *
+     * @return Consortium
+     */
+    public function setLng($lng)
+    {
+        $this->lng = $lng;
+
+        return $this;
+    }
+
+    /**
+     * Get lng
+     *
+     * @return float
+     */
+    public function getLng()
+    {
+        return $this->lng;
+    }
+
+
+    /**
+     * Set lastUpdateAt
+     *
+     * @param \DateTime $lastUpdateAt
+     *
+     * @return Consortium
+     */
+    public function setLastUpdateAt($lastUpdateAt)
+    {
+        $this->lastUpdateAt = $lastUpdateAt;
+
+        return $this;
+    }
+
+    /**
+     * Get lastUpdateAt
+     *
+     * @return \DateTime
+     */
+    public function getLastUpdateAt()
+    {
+        return $this->lastUpdateAt;
+    }
+
+
+    public function getId()
+    {
+        $uriarray = explode("/", $this->uri);
+        return $uriarray[count($uriarray) - 1];
     }
 }

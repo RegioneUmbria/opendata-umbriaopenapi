@@ -77,9 +77,8 @@ class AttractorController extends Controller
         $repository = $this->getDoctrine()
             ->getRepository('UmbriaOpenApiBundle:Tourism\GraphsEntities\Attractor');
         $attractor = $repository->findById($id);
-        $baseUrlRisorsa = $this->container->getParameter('base_url_res_attractor');
         return $this->render('UmbriaProLocoBundle:Attractor:show.html.twig', array(
-            'attractor' => $attractor[0], 'baseUrlRisorsa' => $baseUrlRisorsa
+            'attractor' => $attractor[0]
         ));
     }
 }

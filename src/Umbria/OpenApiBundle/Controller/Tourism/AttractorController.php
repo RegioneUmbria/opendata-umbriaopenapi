@@ -34,14 +34,13 @@ class AttractorController extends FOSRestController
 {
     const DEFAULT_PAGE_SIZE = 100;
     const DATASET_TOURISM_ATTRACTOR = 'tourism-attractor';
-    private $em;
     private $filterBag;
     private $paginator;
 
-    /*@var AttractorRepository*/
+    private $em;
     private $attractorRepo;
-    /*@var ExternalResourceRepository*/
     private $externalResourceRepo;
+    private $settingsRepo;
 
     private $graph;
     private $sameAsGraph;
@@ -49,7 +48,6 @@ class AttractorController extends FOSRestController
     /**
      * @DI\InjectParams({
      *      "em" = @DI\Inject("doctrine.orm.entity_manager"),
-     *      "tourismEntityUpdater" = @DI\Inject("umbria_open_api.tourism_entity_updater"),
      *      "filterBag" = @DI\Inject("umbria_open_api.filter_bag"),
      *      "paginator" = @DI\Inject("knp_paginator")
      * })
@@ -59,11 +57,12 @@ class AttractorController extends FOSRestController
      */
     public function __construct($em, $filterBag, $paginator)
     {
-        $this->em = $em;
         $this->filterBag = $filterBag;
         $this->paginator = $paginator;
-        $this->attractorRepo = $this->em->getRepository('UmbriaOpenApiBundle:Tourism\GraphsEntities\Attractor');
-        $this->externalResourceRepo = $this->em->getRepository('UmbriaOpenApiBundle:ExternalResource');
+        $this->attractorRepo = $em->getRepository('UmbriaOpenApiBundle:Tourism\GraphsEntities\Attractor');
+        $this->externalResourceRepo = $em->getRepository('UmbriaOpenApiBundle:ExternalResource');
+        $this->settingsRepo = $em->getRepository('UmbriaOpenApiBundle:Tourism\Setting');
+        $this->em = $em;
     }
 
     /**
@@ -141,7 +140,7 @@ class AttractorController extends FOSRestController
         $page = floor($offset / $limit) + 1;
 
         /** @var Setting $setting */
-        $setting = $this->em->getRepository('UmbriaOpenApiBundle:Tourism\Setting')->findOneBy(array('datasetName' => self::DATASET_TOURISM_ATTRACTOR));
+        $setting = $this->settingsRepo->findOneBy(array('datasetName' => self::DATASET_TOURISM_ATTRACTOR));
         if ($setting != null) {
             $diff = $setting->getUpdatedAt()->diff(new DateTime('now'));
             // controllo intervallo di tempo da ultima estrazione
@@ -263,8 +262,8 @@ class AttractorController extends FOSRestController
     {
         $cnt = 0;
 
-        $this->graph = EasyRdf_Graph::newAndLoad("http://odnt-srv01/dataset/54480509-bf69-47e1-b735-de5ddac001a2/resource/e27179f1-4020-4d8b-90cb-6ec4f47471f3/download/attrattoriitIT.zipattrattoriitIT.rdf");
-        $this->sameAsGraph = EasyRdf_Graph::newAndLoad("http://odnt-srv01/dataset/54480509-bf69-47e1-b735-de5ddac001a2/resource/75826811-f908-4c19-854d-3dbcb12c5242/download/sameAsdbpediaresource.rdf");
+        $this->graph = EasyRdf_Graph::newAndLoad($this->container->getParameter('attractors_graph_url'));
+        $this->sameAsGraph = EasyRdf_Graph::newAndLoad($this->container->getParameter('attractors_sameas_graph_url'));
         $resources = $this->graph->resources();
         foreach ($resources as $resource) {
             if ($cnt > 10) break;
@@ -311,12 +310,14 @@ class AttractorController extends FOSRestController
 
             $typesarray = $attractorResource->all("rdf:type");
             if ($typesarray != null) {
-                $newAttractor->setTypes(array());
+                $tempTypes = array();
+
                 $cnt = 0;
                 foreach ($typesarray as $type) {
-                    $newAttractor->getTypes()[$cnt] = $type->toRdfPhp()['value'];
+                    $tempTypes[$cnt] = $type->toRdfPhp()['value'];
                     $cnt++;
                 }
+                count($tempTypes) > 0 ? $newAttractor->setTypes($tempTypes) : $newAttractor->setTypes(null);
             }
 
             $newAttractor->setComment(($p = $attractorResource->get("<http://www.w3.org/2000/01/rdf-schema#comment>")) != null ? $p->getValue() : null);
@@ -413,7 +414,7 @@ class AttractorController extends FOSRestController
         }
     }
 
-    public function deleteOldEntities($olderThan)
+    private function deleteOldEntities($olderThan)
     {
         $oldAttractors = $this->attractorRepo->removeLastUpdatedBefore($olderThan);
 
