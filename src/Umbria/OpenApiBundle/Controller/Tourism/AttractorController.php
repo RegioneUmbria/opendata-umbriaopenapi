@@ -123,7 +123,7 @@ class AttractorController extends FOSRestController
         $url = $this->container->getParameter('url_attractor');
         $urlSilkSameAs = $this->container->getParameter('url_attractor_silk');
         $urlSilkLocatedIn = $this->container->getParameter('url_attractor_silk_located_in');
-
+        /*TODO check filters attractor*/
         $filters = $this->filterBag->getFilterBag($request);
         $offset = $filters->has('start') ? $filters->get('start') : 0;
         $limit = $filters->has('limit') ? $filters->get('limit') : self::DEFAULT_PAGE_SIZE;
@@ -173,13 +173,12 @@ class AttractorController extends FOSRestController
 
         if ($descriptionLike != null) {
             $builder = $qb
-                ->innerJoin('a.descrizioni', 'd')
+                ->innerJoin('a.descriptions', 'd')
                 ->andWhere(
                     $qb->expr()->orX(
-                        $qb->expr()->like('d.shortDescription', '?1'),
-                        $qb->expr()->like('a.comment', '?1')/*,
-                        $qb->expr()->like('a.abstract', '?1'),
-                        $qb->expr()->like('a.dbpediaAbstract', '?1')*/
+                        $qb->expr()->like('d.title', '?1'),
+                        $qb->expr()->like('d.text', '?1'),
+                        $qb->expr()->like('a.comment', '?1')
                     )
                 )
                 ->setParameter(1, $descriptionLike);
@@ -294,6 +293,7 @@ class AttractorController extends FOSRestController
      */
     private function createOrUpdateEntity($attractorResource, $sameAsResource = null)
     {
+        /** @var Attractor $newAttractor */
         $newAttractor = null;
         $uri = $attractorResource->getUri();
         if ($uri != null) {
@@ -318,6 +318,18 @@ class AttractorController extends FOSRestController
                     $cnt++;
                 }
                 count($tempTypes) > 0 ? $newAttractor->setTypes($tempTypes) : $newAttractor->setTypes(null);
+            }
+
+            $categoriesarray = $attractorResource->all("<http://dati.umbria.it/turismo/ontology/categoria>");
+            if ($categoriesarray != null) {
+                $tempCategories = array();
+
+                $cnt = 0;
+                foreach ($categoriesarray as $category) {
+                    $tempCategories[$cnt] = $category->toRdfPhp()['value'];
+                    $cnt++;
+                }
+                count($tempCategories) > 0 ? $newAttractor->setCategories($tempCategories) : $newAttractor->setCategories(null);
             }
 
             $newAttractor->setComment(($p = $attractorResource->get("<http://www.w3.org/2000/01/rdf-schema#comment>")) != null ? $p->getValue() : null);

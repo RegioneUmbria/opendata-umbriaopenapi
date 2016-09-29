@@ -166,6 +166,13 @@ class Attractor
      */
     private $lastUpdateAt;
 
+    /**
+     * @var array
+     *
+     * @ORM\Column(name="categories", type="array", nullable=true)
+     */
+    private $categories;
+
 
     /**
      * Set uri
@@ -648,6 +655,30 @@ class Attractor
     {
         $uriarray = explode("/", $this->uri);
         return $uriarray[count($uriarray) - 1];
+    }
+
+    /**
+     * Set categories
+     *
+     * @param array $categories
+     *
+     * @return Attractor
+     */
+    public function setCategories($categories)
+    {
+        $this->categories = $categories;
+
+        return $this;
+    }
+
+    /**
+     * Get categories
+     *
+     * @return array
+     */
+    public function getCategories()
+    {
+        return $this->categories;
     }
 }
 

@@ -3,38 +3,28 @@ parameters:
 
     sparql_endpoint_uri: http://odnt-srv01/sparql
 
-    url_proposal: http://dati.umbria.it/dataset/8b4f4b4b-7abc-4103-9082-96ba7023021d/resource/c46f350d-c2da-4204-aad9-c5d32ca3283c/download/proposteitit.zipproposteitit.rdf
-    url_proposal_silk: null
+    proposal_graph_url: http://dati.umbria.it/dataset/8b4f4b4b-7abc-4103-9082-96ba7023021d/resource/c46f350d-c2da-4204-aad9-c5d32ca3283c/download/proposteitit.zipproposteitit.rdf
     proposal_days_to_old: 1
-    base_url_res_proposal: http://dati.umbria.it/risorsa/proposte-it
 
     attractors_graph_url : http://odnt-srv01/dataset/54480509-bf69-47e1-b735-de5ddac001a2/resource/e27179f1-4020-4d8b-90cb-6ec4f47471f3/download/attrattoriitIT.zipattrattoriitIT.rdf
     attractors_sameas_graph_url : http://odnt-srv01/dataset/54480509-bf69-47e1-b735-de5ddac001a2/resource/75826811-f908-4c19-854d-3dbcb12c5242/download/sameAsdbpediaresource.rdf
     attractors_locatedin_graph_url : http://dati.umbria.it/dataset/ab39e23d-540f-4aa1-b27f-3fb244837545/resource/138b1d6c-3f01-407d-9b5d-36841442d44b/download/locatedindbpediaresource.rdf
     attractor_days_to_old: 0
 
-    url_event: http://dati.umbria.it/dataset/410faa97-546b-4362-a6d7-f8794d18ed19/resource/795338cb-d5b6-40c2-98ad-05fcad7f194c/download/eventiitit.zipeventiitit.rdf
-    url_event_silk: null
+    event_graph_url: http://dati.umbria.it/dataset/410faa97-546b-4362-a6d7-f8794d18ed19/resource/795338cb-d5b6-40c2-98ad-05fcad7f194c/download/eventiitit.zipeventiitit.rdf
     event_days_to_old: 1
-    base_url_res_event: http://dati.umbria.it/risorsa/eventi-it
 
-    url_travel_agency: http://dati.umbria.it/dataset/84d1bd8f-ec95-404c-93c8-81ce2e4705ab/resource/6b9bdb03-9c64-4120-9d2d-031391d2a378/download/agenzieturisticheitit.zipagenzieturisticheitit.rdf
-    url_travel_agency_silk: null
-    travel_agency_days_to_old: 1
+    travel_agency_graph_url: http://dati.umbria.it/dataset/84d1bd8f-ec95-404c-93c8-81ce2e4705ab/resource/6b9bdb03-9c64-4120-9d2d-031391d2a378/download/agenzieturisticheitit.zipagenzieturisticheitit.rdf
     base_url_res_travel_agency: http://dati.umbria.it/risorsa/agenzie-turistiche-it
 
     consortium_graph_url: http://dati.umbria.it/dataset/826515b8-a19d-4496-99af-e3b9967db130/resource/71aa158f-68f1-4037-abe6-d49f5d7ed238/download/consorziitconsorziitit.rdf
     consortium_days_to_old: 0
 
-    url_profession: http://dati.umbria.it/dataset/6afb8a5c-6907-45ee-941c-881dc0ab95f6/resource/d72cecda-c23f-403f-8b57-20d21b499d6c/download/professionituristicheitit.zipprofessionituristicheitit.rdf
-    url_profession_silk: null
+    profession_graph_url: http://dati.umbria.it/dataset/6afb8a5c-6907-45ee-941c-881dc0ab95f6/resource/d72cecda-c23f-403f-8b57-20d21b499d6c/download/professionituristicheitit.zipprofessionituristicheitit.rdf
     profession_days_to_old: 1
-    base_url_res_profession: http://dati.umbria.it/risorsa/professioni-turistiche-it
 
-    url_iat: http://dati.umbria.it/dataset/32cca8e8-4e6e-43ed-b7df-2f577de8ac4d/resource/f6735fc3-1008-4694-95be-79bbe3e74863/download/iatitit.zipiatitit.rdf
-    url_iat_silk: null
+    iat_graph_url: http://dati.umbria.it/dataset/32cca8e8-4e6e-43ed-b7df-2f577de8ac4d/resource/f6735fc3-1008-4694-95be-79bbe3e74863/download/iatitit.zipiatitit.rdf
     iat_days_to_old: 1
-    base_url_res_iat: http://dati.umbria.it/risorsa/iat-it
 
 
 

@@ -3,6 +3,7 @@
 namespace Umbria\OpenApiBundle\Entity\Tourism\GraphsEntities;
 
 use Doctrine\ORM\Mapping as ORM;
+use Umbria\OpenApiBundle\Entity\Tourism\GraphsEntitiesInnerObjects\EventDescription;
 
 /**
  * Event
@@ -14,19 +15,13 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class Event
 {
-    /**
-     * @var int
-     *
-     * @ORM\Column(name="id", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
-     */
-    private $id;
 
     /**
      * @var string
      *
      * @ORM\Column(name="uri", type="string", length=255, unique=true)
+     *
+     * @ORM\Id
      */
     private $uri;
 
@@ -128,12 +123,6 @@ class Event
      */
     private $categories;
 
-    /**
-     * @var array
-     *
-     * @ORM\Column(name="sameAs", type="array", nullable=true)
-     */
-    private $sameAs;
 
     /**
      * @var string
@@ -143,22 +132,27 @@ class Event
     private $language;
 
     /**
-     * @var string
-     *
-     * @ORM\Column(name="description", type="string", length=255, nullable=true)
+     * @var EventDescription
+     * @ORM\OneToMany(targetEntity="\Umbria\OpenApiBundle\Entity\Tourism\GraphsEntitiesInnerObjects\EventDescription", mappedBy="event", cascade={"persist", "merge", "remove"})
      */
-    private $description;
-
+    private $descriptions;
 
     /**
-     * Get id
+     * @var string
      *
-     * @return int
+     * @ORM\Column(name="comment", type="string", length=255, nullable=true)
      */
-    public function getId()
-    {
-        return $this->id;
-    }
+    private $comment;
+
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="last_update_at", type="date")
+     *
+     * @JMS\Exclude()
+     */
+    private $lastUpdateAt;
+
 
     /**
      * Set uri
@@ -521,30 +515,6 @@ class Event
     }
 
     /**
-     * Set sameAs
-     *
-     * @param array $sameAs
-     *
-     * @return Event
-     */
-    public function setSameAs($sameAs)
-    {
-        $this->sameAs = $sameAs;
-
-        return $this;
-    }
-
-    /**
-     * Get sameAs
-     *
-     * @return array
-     */
-    public function getSameAs()
-    {
-        return $this->sameAs;
-    }
-
-    /**
      * Set language
      *
      * @param string $language
@@ -590,6 +560,66 @@ class Event
     public function getDescription()
     {
         return $this->description;
+    }
+
+    /**
+     * Set comment
+     *
+     * @param string $comment
+     *
+     * @return Attractor
+     */
+    public function setComment($comment)
+    {
+        $this->comment = $comment;
+
+        return $this;
+    }
+
+    /**
+     * Set lastUpdateAt
+     *
+     * @param \DateTime $lastUpdateAt
+     *
+     * @return Attractor
+     */
+    public function setLastUpdateAt($lastUpdateAt)
+    {
+        $this->lastUpdateAt = $lastUpdateAt;
+
+        return $this;
+    }
+
+    /**
+     * Get lastUpdateAt
+     *
+     * @return \DateTime
+     */
+    public function getLastUpdateAt()
+    {
+        return $this->lastUpdateAt;
+    }
+
+    public function getId()
+    {
+        $uriarray = explode("/", $this->uri);
+        return $uriarray[count($uriarray) - 1];
+    }
+
+    /**
+     * @return EventDescription
+     */
+    public function getDescriptions()
+    {
+        return $this->descriptions;
+    }
+
+    /**
+     * @param array $descriptions
+     */
+    public function setDescriptions($descriptions)
+    {
+        $this->descriptions = $descriptions;
     }
 }
 

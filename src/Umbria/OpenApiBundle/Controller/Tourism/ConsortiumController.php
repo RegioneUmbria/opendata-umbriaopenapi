@@ -120,7 +120,7 @@ class ConsortiumController extends FOSRestController
         $page = floor($offset / $limit) + 1;
 
         /** @var Setting $setting */
-        $setting = $this->em->getRepository('UmbriaOpenApiBundle:Tourism\Setting')->findOneBy(array('datasetName' => self::DATASET_TOURISM_CONSORTIUM));
+        $setting = $this->settingsRepo->findOneBy(array('datasetName' => self::DATASET_TOURISM_CONSORTIUM));
         if ($setting != null) {
             $diff = $setting->getUpdatedAt()->diff(new DateTime('now'));
             if ($diff->days >= $daysToOld) {

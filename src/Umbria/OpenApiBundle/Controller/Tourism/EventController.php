@@ -13,39 +13,52 @@ use Knp\Component\Pager\Paginator;
 use Nelmio\ApiDocBundle\Annotation as ApiDoc;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Umbria\OpenApiBundle\Entity\Tourism\GraphsEntities\Event;
 use Umbria\OpenApiBundle\Entity\Tourism\Setting;
 use Umbria\OpenApiBundle\Serializer\View\EntityResponse;
 use Umbria\OpenApiBundle\Service\TourismEntityUpdater;
 use Umbria\OpenApiBundle\Service\FilterBag;
+use Exception;
 
+/**
+ * Class EventController
+ * @package Umbria\OpenApiBundle\Controller\Tourism
+ *
+ * @author Lorenzo Franco Ranucci <loryzizu@gmail.com>
+ */
 class EventController extends FOSRestController
 {
     const DEFAULT_PAGE_SIZE = 100;
     const DATASET_TOURISM_EVENT = 'tourism-event';
 
-    /**
-     * @var EntityManager
-     * @DI\Inject("doctrine.orm.entity_manager")
-     */
-    public $em;
-
-    /**
-     * @var TourismEntityUpdater
-     * @DI\Inject("umbria_open_api.tourism_entity_updater")
-     */
-    public $tourismEntityUpdater;
-
-    /**
-     * @var FilterBag
-     * @DI\Inject("umbria_open_api.filter_bag")
-     */
     private $filterBag;
+    private $paginator;
+
+    private $em;
+    private $eventRepo;
+    private $settingsRepo;
+
+    private $graph;
+    private $sameAsGraph;
 
     /**
-     * @var Paginator
-     * @DI\Inject("knp_paginator")
+     * @DI\InjectParams({
+     *      "em" = @DI\Inject("doctrine.orm.entity_manager"),
+     *      "filterBag" = @DI\Inject("umbria_open_api.filter_bag"),
+     *      "paginator" = @DI\Inject("knp_paginator")
+     * })
+     * @param $em EntityManager
+     * @param $filterBag FilterBag
+     * @param $paginator Paginator
      */
-    private $paginator;
+    public function __construct($em, $filterBag, $paginator)
+    {
+        $this->filterBag = $filterBag;
+        $this->paginator = $paginator;
+        $this->eventRepo = $em->getRepository('UmbriaOpenApiBundle:Tourism\GraphsEntities\Event');
+        $this->settingsRepo = $em->getRepository('UmbriaOpenApiBundle:Tourism\Setting');
+        $this->em = $em;
+    }
 
     /**
      * @Rest\Options(pattern="/open-api/tourism-event")
@@ -100,8 +113,6 @@ class EventController extends FOSRestController
     public function getTourismEventListAction(Request $request)
     {
         $daysToOld = $this->container->getParameter('event_days_to_old');
-        $url = $this->container->getParameter('url_event');
-        $urlSilkSameAs = $this->container->getParameter('url_event_silk');
 
         $filters = $this->filterBag->getFilterBag($request);
         $offset = $filters->has('start') ? $filters->get('start') : 0;
@@ -119,7 +130,7 @@ class EventController extends FOSRestController
         $page = floor($offset / $limit) + 1;
 
         /** @var Setting $setting */
-        $setting = $this->em->getRepository('UmbriaOpenApiBundle:Tourism\Setting')->findOneBy(array('datasetName' => self::DATASET_TOURISM_EVENT));
+        $setting = $this->settingsRepo->findOneBy(array('datasetName' => self::DATASET_TOURISM_EVENT));
         if ($setting != null) {
             $diff = $setting->getUpdatedAt()->diff(new DateTime('now'));
             // controllo intervallo di tempo da ultima estrazione
@@ -129,7 +140,7 @@ class EventController extends FOSRestController
                 $this->em->persist($setting);
                 $this->em->flush();
 
-                $this->tourismEntityUpdater->updateEntities($url, self::DATASET_TOURISM_EVENT, $urlSilkSameAs);
+                $this->updateEntities();
             }
         } else {
             $setting = new Setting();
@@ -138,28 +149,28 @@ class EventController extends FOSRestController
             $this->em->persist($setting);
             $this->em->flush();
 
-            $this->tourismEntityUpdater->updateEntities($url, self::DATASET_TOURISM_EVENT, $urlSilkSameAs);
+            $this->updateEntities();
         }
 
         $qb = $this->em->createQueryBuilder();
         $builder = $qb
             ->select('a')
-            ->from('UmbriaOpenApiBundle:Tourism\Event', 'a');
+            ->from('UmbriaOpenApiBundle:Tourism\GraphsEntities\Event', 'a');
 
         if ($labelLike != null) {
             $builder = $qb
-                ->andWhere($qb->expr()->like('a.title', '?2'))
+                ->andWhere($qb->expr()->like('a.name', '?2'))
                 ->setParameter(2, $labelLike);
         }
 
         if ($descriptionLike != null) {
             $builder = $qb
-                ->innerJoin('a.descrizioni', 'd')
+                ->innerJoin('a.descriptions', 'd')
                 ->andWhere(
                     $qb->expr()->orX(
-                        $qb->expr()->like('d.testo', '?1'),
-                        $qb->expr()->like('d.titolo', '?1'),
-                        $qb->expr()->like('a.eventDescription', '?1')
+                        $qb->expr()->like('d.text', '?1'),
+                        $qb->expr()->like('d.title', '?1'),
+                        $qb->expr()->like('a.comment', '?1')
                     )
                 )
                 ->setParameter(1, $descriptionLike);
@@ -168,9 +179,8 @@ class EventController extends FOSRestController
 
         if ($categoryLike != null) {
             $builder = $qb
-                ->leftJoin('a.categorie', 'cat')
                 ->andWhere(
-                    $qb->expr()->like('cat.cat', ':categoryLike')
+                    $qb->expr()->like('a.categories', ':categoryLike')
                 )
                 ->setParameter("categoryLike", $categoryLike);
 
@@ -181,14 +191,14 @@ class EventController extends FOSRestController
             $lngMax != null ||
             $lngMin != null
         ) {
-            $builder = $qb
-                ->innerJoin('a.coordinate', 'c');
+            /* $builder = $qb
+                 ->innerJoin('a.coordinate', 'c');*/
             if ($latMax != null) {
                 $builder =
                     $qb->andWhere(
-                        $qb->expr()->lte("c.latitude", ':latMax'),
-                        $qb->expr()->isNotNull("c.latitude"),
-                        $qb->expr()->gt("c.latitude", ':empty')
+                        $qb->expr()->lte("a.lat", ':latMax'),
+                        $qb->expr()->isNotNull("a.lat"),
+                        $qb->expr()->gt("a.lat", ':empty')
                     )
                         ->setParameter('latMax', $latMax)
                         ->setParameter('empty', '0');
@@ -196,9 +206,9 @@ class EventController extends FOSRestController
             if ($latMin != null) {
                 $builder =
                     $qb->andWhere(
-                        $qb->expr()->gte("c.latitude", ':latMin'),
-                        $qb->expr()->isNotNull("c.latitude"),
-                        $qb->expr()->gt("c.latitude", ":empty")
+                        $qb->expr()->gte("a.lat", ':latMin'),
+                        $qb->expr()->isNotNull("a.lat"),
+                        $qb->expr()->gt("a.lat", ":empty")
                     )
                         ->setParameter('latMin', $latMin)
                         ->setParameter('empty', '0');
@@ -206,9 +216,9 @@ class EventController extends FOSRestController
             if ($lngMax != null) {
                 $builder =
                     $qb->andWhere(
-                        $qb->expr()->lte("c.longitude", ':lngMax'),
-                        $qb->expr()->isNotNull("c.longitude"),
-                        $qb->expr()->gt("c.longitude", ":empty")
+                        $qb->expr()->lte("a.lng", ':lngMax'),
+                        $qb->expr()->isNotNull("a.lng"),
+                        $qb->expr()->gt("a.longitude", ":empty")
                     )
                         ->setParameter('lngMax', $lngMax)
                         ->setParameter('empty', '0');
@@ -216,9 +226,9 @@ class EventController extends FOSRestController
             if ($lngMin != null) {
                 $builder =
                     $qb->andWhere(
-                        $qb->expr()->gte("c.longitude", ':lngMin'),
-                        $qb->expr()->isNotNull("c.longitude"),
-                        $qb->expr()->gt("c.longitude", ":empty")
+                        $qb->expr()->gte("a.lng", ':lngMin'),
+                        $qb->expr()->isNotNull("a.lng"),
+                        $qb->expr()->gt("a.lng", ":empty")
                     )
                         ->setParameter('lngMin', $lngMin)
                         ->setParameter('empty', '0');
@@ -231,14 +241,131 @@ class EventController extends FOSRestController
         /** @var AbstractPagination $countPagination */
         $countPagination = $this->paginator->paginate($builder, 1, 1);
 
-        $viewGroups = array(
-            'response',
-            'rdf.*', 'event.*', 'description.*', 'category.*', 'info.*', 'travel-time.*', 'coordinate.*', 'download.*', 'image.*',
-        );
 
         $view = new View(new EntityResponse($resultsPagination->getItems(), count($resultsPagination), $countPagination->getTotalItemCount()));
-        $view->getSerializationContext()->setGroups($viewGroups);
 
         return $view;
     }
+
+    private function updateEntities()
+    {
+        $cnt = 0;
+
+        $this->graph = EasyRdf_Graph::newAndLoad($this->container->getParameter('event_graph_url'));
+        $resources = $this->graph->resources();
+        foreach ($resources as $resource) {
+            if ($cnt > 10) break;
+            $resourceTypeArray = $resource->all("rdf:type");
+            if ($resourceTypeArray != null) {
+                foreach ($resourceTypeArray as $resourceType) {
+                    if (trim($resourceType) == "http://dati.umbria.it/tourism/ontology/turismo_consorzi") {
+                        $this->createOrUpdateEntity($resource);
+                        $cnt++;
+                        break;
+                    }
+                }
+            }
+
+        }
+        $now = new \DateTime();
+        $this->deleteOldEntities($now);
+    }
+
+    /**
+     * @param \EasyRdf_Resource $eventResource
+     */
+    private function createOrUpdateEntity($eventResource)
+    {
+        /** @var Event $newEvent */
+        $newEvent = null;
+        $uri = $eventResource->getUri();
+        if ($uri != null) {
+            $oldEvent = $this->eventRepo->find($uri);
+            $isAlreadyPersisted = $oldEvent != null;
+            if ($isAlreadyPersisted) {
+                $newEvent = $oldEvent;
+            } else {
+                $newEvent = new Event();
+            }
+            $newEvent->setUri($uri);
+            $newEvent->setLastUpdateAt(new \DateTime('now'));
+            $newEvent->setName(($p = $eventResource->get("rdfs:label")) != null ? $p->getValue() : null);
+            $newEvent->setComment(($p = $eventResource->get("<http://www.w3.org/2000/01/rdf-schema#comment>")) != null ? $p->getValue() : null);
+            $newEvent->setLat(($p = $eventResource->get("<http://www.w3.org/2003/01/geo/wgs84_pos#lat>")) != null ? (float)$p->getValue() : null);
+            $newEvent->setLng(($p = $eventResource->get("<http://www.w3.org/2003/01/geo/wgs84_pos#long>")) != null ? (float)$p->getValue() : null);
+            $startDate = $eventResource->get("<http://schema.org/start_date>");
+            if ($startDate != null) {
+                $startDateObj = new DateTime(date_format(date_create("$startDate"), "Y-m-d"));
+                $newEvent->setStartDate($startDateObj);
+            }
+            $endDate = $eventResource->get("<http://schema.org/end_date>");
+            if ($endDate != null) {
+                $endDateObj = new DateTime(date_format(date_create("$endDate"), "Y-m-d"));
+                $newEvent->setEndDate($endDateObj);
+            }
+
+            $categoriesarray = $eventResource->all("<http://dati.umbria.it/turismo/ontology/categoria>");
+            if ($categoriesarray != null) {
+                $tempCategories = array();
+
+                $cnt = 0;
+                foreach ($categoriesarray as $category) {
+                    $tempCategories[$cnt] = $category->toRdfPhp()['value'];
+                    $cnt++;
+                }
+                count($tempCategories) > 0 ? $newEvent->setCategories($tempCategories) : $newEvent->setCategories(null);
+            }
+
+            $typesarray = $eventResource->all("rdf:type");
+            if ($typesarray != null) {
+                $tempTypes = array();
+
+                $cnt = 0;
+                foreach ($typesarray as $type) {
+                    $tempTypes[$cnt] = $type->toRdfPhp()['value'];
+                    $cnt++;
+                }
+                count($tempTypes) > 0 ? $newEvent->setTypes($tempTypes) : $newEvent->setTypes(null);
+            }
+
+            $newEvent->setProvenance(($p = $eventResource->get("<http://purl.org/dc/elements/1.1/provenance>")) != null ? $p->getValue() : null);
+            $newEvent->setLanguage(($p = $eventResource->get("<http://purl.org/dc/elements/1.1/language>")) != null ? $p->getUri() : null);
+
+            $imagearray1 = $eventResource->all("<http://dati.umbria.it/turismo/ontology/immagine_copertina>");
+            $imagearray2 = $eventResource->all("<http://dati.umbria.it/turismo/ontology/immagine_spalla_destra>");
+            $imagearray = array_merge($imagearray1, $imagearray2);
+            if ($imagearray != null) {
+                $tempImage = array();
+                $newEvent->setImages(array());
+                $cnt = 0;
+                foreach ($imagearray as $image) {
+                    $tempImage[$cnt] = $image->toRdfPhp()['value'];
+                    $cnt++;
+                }
+                count($tempImage) > 0 ? $newEvent->setImages($tempImage) : $newEvent->setImages(null);
+            }
+
+
+            $newEvent->setResourceOriginUrl(($p = $eventResource->get("<http://xmlns.com/foaf/0.1/homepage>")) != null ? $p->getValue() : null);
+
+            if ($isAlreadyPersisted && ($oldAddress = $newEvent->getAddress()) != null) {
+                $this->em->remove($oldAddress);
+                $newEvent->setAddress(null);
+            }
+
+            if (!$isAlreadyPersisted) {
+                $this->em->persist($newEvent);
+            }
+
+            $this->em->flush();
+        }
+    }
+
+    private function deleteOldEntities($olderThan)
+    {
+        $oldEvents = $this->eventRepo->removeLastUpdatedBefore($olderThan);
+
+
+    }
+
 }
