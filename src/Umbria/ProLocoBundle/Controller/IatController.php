@@ -4,13 +4,17 @@ namespace Umbria\ProLocoBundle\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
-use Umbria\OpenApiBundle\Entity\Tourism\Iat;
+use Umbria\OpenApiBundle\Entity\Tourism\GraphsEntities\Iat;
+use Umbria\OpenApiBundle\Repository\Tourism\GraphsEntities\IatRepository;
 use Umbria\ProLocoBundle\Entity\SearchFilter;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 
 /**
- * Iat controller.
+ * Class IatController
+ * @package Umbria\ProLocoBundle\Controller
+ *
+ * @author Lorenzo Franco Ranucci <loryzizu@gmail.com>
  */
 class IatController extends Controller
 {
@@ -45,18 +49,19 @@ class IatController extends Controller
                 ->getForm();
         }
 
+        /**@var IatRepository $repository */
         $repository = $this->getDoctrine()
-            ->getRepository('UmbriaOpenApiBundle:Tourism\Iat');
+            ->getRepository('UmbriaOpenApiBundle:Tourism\GraphsEntities\Iat');
         $qb = $repository->createQueryBuilder('a');
         $query = $qb
-            ->where($qb->expr()->like('a.denominazione', '?1'))
+            ->where($qb->expr()->like('a.name', '?1'))
             ->setParameter(1, '%' . $text . '%');
 
         $paginator = $this->get('knp_paginator');
         $pagination = $paginator->paginate(
-            $query, /* query NOT result */
-            $request->query->getInt('page', 1)/*page number*/,
-            $itemsOnPage/*limit per page*/
+            $query,
+            $request->query->getInt('page', 1),
+            $itemsOnPage
         );
 
         return $this->render('UmbriaProLocoBundle:Iat:index.html.twig', array(
@@ -66,17 +71,20 @@ class IatController extends Controller
     }
 
     /**
-     * Finds and displays a Iat entity.
+     * Finds and displays a Consortium entity.
      *
-     * @param Iat $iat
+     * @param int $id
      *
      * @return \Symfony\Component\HttpFoundation\Response
      */
-    public function showAction(Iat $iat)
+    public function showAction($id)
     {
-        $baseUrlRisorsa = $this->container->getParameter('base_url_res_iat');
+        /**@var IatRepository $repository */
+        $repository = $this->getDoctrine()
+            ->getRepository('UmbriaOpenApiBundle:Tourism\GraphsEntities\Iat');
+        $iat = $repository->findById($id);
         return $this->render('UmbriaProLocoBundle:Iat:show.html.twig', array(
-            'iat' => $iat, 'baseUrlRisorsa' => $baseUrlRisorsa
+            'iat' => $iat[0]
         ));
     }
 }

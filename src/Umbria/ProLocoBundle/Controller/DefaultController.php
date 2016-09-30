@@ -15,6 +15,12 @@ use Umbria\OpenApiBundle\Entity\Tourism\GraphsEntities\Proposal;
 use Umbria\OpenApiBundle\Entity\Tourism\GraphsEntities\TravelAgency;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
+/**
+ * Class DefaultController
+ * @package Umbria\ProLocoBundle\Controller
+ *
+ * @author Lorenzo Franco Ranucci <loryzizu@gmail.com>
+ */
 class DefaultController extends Controller
 {
     private $attractorRepo;
@@ -207,26 +213,26 @@ class DefaultController extends Controller
 //                    }
 //                }
 //            }
-//            /** @var Iat $iat */
-//            foreach ($this->iatRepo->findAll() as $iat) {
-//                if (isset($iat)) {
-//                    if ($iat->getLatitude() != '') {
-//                        $place = new PlaceDetails();
-//                        $place->setId($iat->getId());
-//                        $place->setName($iat->getDenominazione());
-//                        $place->setType($iat->getType());
-//                        $place->setLatitude($iat->getLatitude());
-//                        $place->setLongitude($iat->getLongitude());
-//
-//                        $uri = $this->get('router')->generate('iat_show', array(
-//                            'id' => $iat->getId(),
-//                        ), UrlGeneratorInterface::ABSOLUTE_URL);
-//                        $place->setHref($uri);
-//
-//                        $iats[] = $place;
-//                    }
-//                }
-//            }
+        /** @var Iat $iat */
+        foreach ($this->iatRepo->findAll() as $iat) {
+            if (isset($iat)) {
+                if ($iat->getLat() != null) {
+                    $place = new PlaceDetails();
+                    $place->setId($iat->getId());
+                    $place->setName($iat->getName());
+                    $place->setType("tourism_iat");
+                    $place->setLatitude($iat->getLat());
+                    $place->setLongitude($iat->getLng());
+
+                    $uri = $this->get('router')->generate('iat_show', array(
+                        'id' => $iat->getId(),
+                    ), UrlGeneratorInterface::ABSOLUTE_URL);
+                    $place->setHref($uri);
+
+                    $iats[] = $place;
+                }
+            }
+        }
 
         return $this->render('UmbriaProLocoBundle:Default:index.html.twig', array(
             'attrattori' => $attrattori, 'proposte' => $proposte, 'eventi' => $eventi,

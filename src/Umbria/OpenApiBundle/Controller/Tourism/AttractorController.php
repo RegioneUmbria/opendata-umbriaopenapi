@@ -6,6 +6,7 @@ namespace Umbria\OpenApiBundle\Controller\Tourism;
 use DateTime;
 use Doctrine\ORM\EntityManager;
 use EasyRdf_Graph;
+use EasyRdf_Resource;
 use EasyRdf_Sparql_Client;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Controller\FOSRestController;
@@ -20,6 +21,7 @@ use Umbria\OpenApiBundle\Entity\ExternalResource;
 use Umbria\OpenApiBundle\Entity\Tourism\GraphsEntities\Attractor;
 use Umbria\OpenApiBundle\Entity\Tourism\GraphsEntitiesInnerObjects\AttractorDescription;
 use Umbria\OpenApiBundle\Entity\Tourism\Setting;
+use Umbria\OpenApiBundle\Repository\Tourism\GraphsEntities\AttractorRepository;
 use Umbria\OpenApiBundle\Serializer\View\EntityResponse;
 use Umbria\OpenApiBundle\Service\FilterBag;
 
@@ -38,6 +40,7 @@ class AttractorController extends FOSRestController
     private $paginator;
 
     private $em;
+    /**@var AttractorRepository attractorRepo */
     private $attractorRepo;
     private $externalResourceRepo;
     private $settingsRepo;
@@ -120,9 +123,6 @@ class AttractorController extends FOSRestController
     public function getTourismAttractorListAction(Request $request)
     {
         $daysToOld = $this->container->getParameter('attractor_days_to_old');
-        $url = $this->container->getParameter('url_attractor');
-        $urlSilkSameAs = $this->container->getParameter('url_attractor_silk');
-        $urlSilkLocatedIn = $this->container->getParameter('url_attractor_silk_located_in');
         /*TODO check filters attractor*/
         $filters = $this->filterBag->getFilterBag($request);
         $offset = $filters->has('start') ? $filters->get('start') : 0;
@@ -263,6 +263,7 @@ class AttractorController extends FOSRestController
 
         $this->graph = EasyRdf_Graph::newAndLoad($this->container->getParameter('attractors_graph_url'));
         $this->sameAsGraph = EasyRdf_Graph::newAndLoad($this->container->getParameter('attractors_sameas_graph_url'));
+        /**@var EasyRdf_Resource[] $resources */
         $resources = $this->graph->resources();
         foreach ($resources as $resource) {
             if ($cnt > 10) break;
@@ -288,8 +289,8 @@ class AttractorController extends FOSRestController
     }
 
     /**
-     * @param \EasyRdf_Resource $attractorResource
-     * @param \EasyRdf_Resource null $sameAsResource
+     * @param EasyRdf_Resource $attractorResource
+     * @param EasyRdf_Resource null $sameAsResource
      */
     private function createOrUpdateEntity($attractorResource, $sameAsResource = null)
     {
@@ -352,6 +353,7 @@ class AttractorController extends FOSRestController
                 }
                 $newAttractor->setDescriptions(null);
             }
+            /**@var EasyRdf_Resource[] $descriptionArray */
             $descriptionArray = $attractorResource->all("<http://dati.umbria.it/tourism/ontology/descrizione>");
             if ($descriptionArray != null) {
                 $tempDescriptions = array();
@@ -373,7 +375,9 @@ class AttractorController extends FOSRestController
 
             /*TODO travel time*/
 
+
             if ($sameAsResource != null) {
+                /**@var EasyRdf_Resource $sameAsResource */
                 $sameAsArray = $sameAsResource->all("<http://www.w3.org/2002/07/owl#sameAs>");
                 if ($sameAsArray != null) {
                     $tempSameAs = array();
@@ -428,7 +432,7 @@ class AttractorController extends FOSRestController
 
     private function deleteOldEntities($olderThan)
     {
-        $oldAttractors = $this->attractorRepo->removeLastUpdatedBefore($olderThan);
+        $this->attractorRepo->removeLastUpdatedBefore($olderThan);
 
 
     }

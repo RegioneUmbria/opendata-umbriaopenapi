@@ -10,7 +10,10 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 
 /**
- * Attractor controller.
+ * Class AttractorController
+ * @package Umbria\ProLocoBundle\Controller
+ *
+ * @author Lorenzo Franco Ranucci <loryzizu@gmail.com>
  */
 class AttractorController extends Controller
 {

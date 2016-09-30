@@ -10,9 +10,10 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 
 /**
- * Consortium controller.
+ * Class ConsortiumController
+ * @package Umbria\ProLocoBundle\Controller
  *
- * @author Lorenzo Franco Ranucci
+ * @author Lorenzo Franco Ranucci <loryzizu@gmail.com>
  */
 class ConsortiumController extends Controller
 {

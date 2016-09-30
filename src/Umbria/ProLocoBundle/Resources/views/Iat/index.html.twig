@@ -24,7 +24,7 @@
                 <thead>
                 <tr>
                     <th></th>
-                    <th>{{ knp_pagination_sortable(pagination, 'Denominazione', 'i.denominazione') }}</th>
+                    <th>{{ knp_pagination_sortable(pagination, 'Denominazione', 'i.name') }}</th>
                     <th><span class="badge pull-right">{{ pagination.getTotalItemCount }}</span></th>
                 </tr>
                 </thead>
@@ -34,7 +34,7 @@
                         <td class="text-muted">
                             <small>{{ loop.index }}</small>
                         </td>
-                        <td>{{ iat.denominazione }}</td>
+                        <td>{{ iat.name }}</td>
                         <td>
                             <a class="btn btn-info btn-xs" href="{{ path('iat_show', { 'id': iat.id }) }}">show</a>
                         </td>

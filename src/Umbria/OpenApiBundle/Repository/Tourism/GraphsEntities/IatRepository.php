@@ -2,6 +2,8 @@
 
 namespace Umbria\OpenApiBundle\Repository\Tourism\GraphsEntities;
 
+use Doctrine\Common\Collections\Criteria;
+
 /**
  * IatRepository
  *
@@ -10,4 +12,25 @@ namespace Umbria\OpenApiBundle\Repository\Tourism\GraphsEntities;
  */
 class IatRepository extends \Doctrine\ORM\EntityRepository
 {
+
+    /**
+     * @param $date \DateTime
+     */
+    public function removeLastUpdatedBefore($date)
+    {
+        $criteria = new Criteria();
+        $criteria->where($criteria->expr()->lt('lastUpdateAt', $date));
+        foreach ($this->matching($criteria) as $iat) {
+            $this->getEntityManager()->remove($iat);
+        }
+        $this->getEntityManager()->flush();
+    }
+
+    public function findById($id)
+    {
+        $qb = $this->createQueryBuilder("o");
+        $qb->where($qb->expr()->like("o.uri", "?1"));
+        $qb->setParameter(1, "%/" . $id);
+        return $qb->getQuery()->getResult();
+    }
 }

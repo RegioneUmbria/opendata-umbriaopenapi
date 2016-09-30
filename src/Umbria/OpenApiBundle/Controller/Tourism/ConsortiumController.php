@@ -17,6 +17,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Umbria\OpenApiBundle\Entity\Address;
 use Umbria\OpenApiBundle\Entity\Tourism\GraphsEntities\Consortium;
 use Umbria\OpenApiBundle\Entity\Tourism\Setting;
+use Umbria\OpenApiBundle\Repository\Tourism\GraphsEntities\ConsortiumRepository;
 use Umbria\OpenApiBundle\Serializer\View\EntityResponse;
 use Umbria\OpenApiBundle\Service\FilterBag;
 use Exception;
@@ -36,6 +37,7 @@ class ConsortiumController extends FOSRestController
     private $paginator;
 
     private $em;
+    /**@var ConsortiumRepository consortiumRepo */
     private $consortiumRepo;
     private $settingsRepo;
 
@@ -182,6 +184,7 @@ class ConsortiumController extends FOSRestController
      */
     private function createOrUpdateEntity($consortiumResource)
     {
+        /** @var Consortium $newConsortium */
         $newConsortium = null;
         $uri = $consortiumResource->getUri();
         if ($uri != null) {
@@ -234,7 +237,7 @@ class ConsortiumController extends FOSRestController
                 count($tempTelephone) > 0 ? $newConsortium->setTelephone($tempTelephone) : $newConsortium->setTelephone(null);
             }
 
-            $faxarray = $consortiumResource->all("<http://schema.org/fax>");
+            $faxarray = $consortiumResource->all("<http://schema.org/faxNumber>");
             if ($faxarray != null) {
                 $tempFax = array();
                 $newConsortium->setFax(array());
@@ -296,7 +299,7 @@ class ConsortiumController extends FOSRestController
 
     private function deleteOldEntities($olderThan)
     {
-        $oldConsortiums = $this->consortiumRepo->removeLastUpdatedBefore($olderThan);
+        $this->consortiumRepo->removeLastUpdatedBefore($olderThan);
 
 
     }
