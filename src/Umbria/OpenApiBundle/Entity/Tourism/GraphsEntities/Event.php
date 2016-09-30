@@ -4,6 +4,7 @@ namespace Umbria\OpenApiBundle\Entity\Tourism\GraphsEntities;
 
 use Doctrine\ORM\Mapping as ORM;
 use Umbria\OpenApiBundle\Entity\Tourism\GraphsEntitiesInnerObjects\EventDescription;
+use JMS\Serializer\Annotation as JMS;
 
 /**
  * Event
@@ -620,6 +621,14 @@ class Event
     public function setDescriptions($descriptions)
     {
         $this->descriptions = $descriptions;
+    }
+
+    /**
+     * @return string
+     */
+    public function getComment()
+    {
+        return $this->comment;
     }
 }
 

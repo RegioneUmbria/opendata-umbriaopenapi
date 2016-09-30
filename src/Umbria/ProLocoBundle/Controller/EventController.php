@@ -46,15 +46,15 @@ class EventController extends Controller
         }
 
         $repository = $this->getDoctrine()
-            ->getRepository('UmbriaOpenApiBundle:Tourism\Event');
+            ->getRepository('UmbriaOpenApiBundle:Tourism\GraphsEntities\Event');
         $qb = $repository->createQueryBuilder('a');
         $query = $qb
-            ->where($qb->expr()->like('a.title', '?1'))
+            ->where($qb->expr()->like('a.name', '?1'))
             ->setParameter(1, '%' . $text . '%');
 
         $paginator = $this->get('knp_paginator');
         $pagination = $paginator->paginate(
-            $query, /* query NOT result */
+            $query,
             $request->query->getInt('page', 1)/*page number*/,
             $itemsOnPage/*limit per page*/
         );
@@ -68,15 +68,17 @@ class EventController extends Controller
     /**
      * Finds and displays a Event entity.
      *
-     * @param Event $event
+     * @param int $id
      *
      * @return \Symfony\Component\HttpFoundation\Response
      */
-    public function showAction(Event $event)
+    public function showAction($id)
     {
-        $baseUrlRisorsa = $this->container->getParameter('base_url_res_event');
+        $repository = $this->getDoctrine()
+            ->getRepository('UmbriaOpenApiBundle:Tourism\GraphsEntities\Event');
+        $event = $repository->findById($id);
         return $this->render('UmbriaProLocoBundle:Event:show.html.twig', array(
-            'event' => $event, 'baseUrlRisorsa' => $baseUrlRisorsa
+            'event' => $event[0]
         ));
     }
 }

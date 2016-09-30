@@ -14,12 +14,11 @@ use Nelmio\ApiDocBundle\Annotation as ApiDoc;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Umbria\OpenApiBundle\Entity\Tourism\GraphsEntities\Event;
+use Umbria\OpenApiBundle\Entity\Tourism\GraphsEntitiesInnerObjects\EventDescription;
 use Umbria\OpenApiBundle\Entity\Tourism\Setting;
 use Umbria\OpenApiBundle\Serializer\View\EntityResponse;
-use Umbria\OpenApiBundle\Service\TourismEntityUpdater;
 use Umbria\OpenApiBundle\Service\FilterBag;
-use Exception;
-
+use EasyRdf_Graph;
 /**
  * Class EventController
  * @package Umbria\OpenApiBundle\Controller\Tourism
@@ -39,7 +38,6 @@ class EventController extends FOSRestController
     private $settingsRepo;
 
     private $graph;
-    private $sameAsGraph;
 
     /**
      * @DI\InjectParams({
@@ -258,7 +256,7 @@ class EventController extends FOSRestController
             $resourceTypeArray = $resource->all("rdf:type");
             if ($resourceTypeArray != null) {
                 foreach ($resourceTypeArray as $resourceType) {
-                    if (trim($resourceType) == "http://dati.umbria.it/tourism/ontology/turismo_consorzi") {
+                    if (trim($resourceType) == "http://schema.org/Event") {
                         $this->createOrUpdateEntity($resource);
                         $cnt++;
                         break;
@@ -289,22 +287,22 @@ class EventController extends FOSRestController
             }
             $newEvent->setUri($uri);
             $newEvent->setLastUpdateAt(new \DateTime('now'));
-            $newEvent->setName(($p = $eventResource->get("rdfs:label")) != null ? $p->getValue() : null);
+            $newEvent->setName(($p = $eventResource->get("<http://purl.org/dc/elements/1.1/title>")) != null ? $p->getValue() : null);
             $newEvent->setComment(($p = $eventResource->get("<http://www.w3.org/2000/01/rdf-schema#comment>")) != null ? $p->getValue() : null);
             $newEvent->setLat(($p = $eventResource->get("<http://www.w3.org/2003/01/geo/wgs84_pos#lat>")) != null ? (float)$p->getValue() : null);
             $newEvent->setLng(($p = $eventResource->get("<http://www.w3.org/2003/01/geo/wgs84_pos#long>")) != null ? (float)$p->getValue() : null);
             $startDate = $eventResource->get("<http://schema.org/start_date>");
             if ($startDate != null) {
-                $startDateObj = new DateTime(date_format(date_create("$startDate"), "Y-m-d"));
+                $startDateObj = DateTime::createFromFormat('d/m/Y', $startDate);
                 $newEvent->setStartDate($startDateObj);
             }
             $endDate = $eventResource->get("<http://schema.org/end_date>");
             if ($endDate != null) {
-                $endDateObj = new DateTime(date_format(date_create("$endDate"), "Y-m-d"));
+                $endDateObj = DateTime::createFromFormat('d/m/Y', $endDate);
                 $newEvent->setEndDate($endDateObj);
             }
 
-            $categoriesarray = $eventResource->all("<http://dati.umbria.it/turismo/ontology/categoria>");
+            $categoriesarray = $eventResource->all("<http://dati.umbria.it/tourism/ontology/categoria>");
             if ($categoriesarray != null) {
                 $tempCategories = array();
 
@@ -331,8 +329,8 @@ class EventController extends FOSRestController
             $newEvent->setProvenance(($p = $eventResource->get("<http://purl.org/dc/elements/1.1/provenance>")) != null ? $p->getValue() : null);
             $newEvent->setLanguage(($p = $eventResource->get("<http://purl.org/dc/elements/1.1/language>")) != null ? $p->getUri() : null);
 
-            $imagearray1 = $eventResource->all("<http://dati.umbria.it/turismo/ontology/immagine_copertina>");
-            $imagearray2 = $eventResource->all("<http://dati.umbria.it/turismo/ontology/immagine_spalla_destra>");
+            $imagearray1 = $eventResource->all("<http://dati.umbria.it/tourism/ontology/immagine_copertina>");
+            $imagearray2 = $eventResource->all("<http://dati.umbria.it/tourism/ontology/immagine_spalla_destra>");
             $imagearray = array_merge($imagearray1, $imagearray2);
             if ($imagearray != null) {
                 $tempImage = array();
@@ -348,9 +346,29 @@ class EventController extends FOSRestController
 
             $newEvent->setResourceOriginUrl(($p = $eventResource->get("<http://xmlns.com/foaf/0.1/homepage>")) != null ? $p->getValue() : null);
 
-            if ($isAlreadyPersisted && ($oldAddress = $newEvent->getAddress()) != null) {
-                $this->em->remove($oldAddress);
-                $newEvent->setAddress(null);
+            if ($isAlreadyPersisted && ($oldDescriptions = $newEvent->getDescriptions()) != null) {
+                foreach ($oldDescriptions as $oldDescription) {
+                    $this->em->remove($oldDescription);
+                }
+                $newEvent->setDescriptions(null);
+            }
+            $descriptionArray = $eventResource->all("<http://dati.umbria.it/tourism/ontology/descrizione>");
+            if ($descriptionArray != null) {
+                $tempDescriptions = array();
+                $cnt = 0;
+                foreach ($descriptionArray as $descriptionResource) {
+                    $descriptionTitle = $descriptionResource->get("<http://dati.umbria.it/tourism/ontology/titolo>")->getValue();
+                    $descriptionText = $descriptionResource->get("<http://dati.umbria.it/tourism/ontology/testo>")->getValue();
+                    $descriptionObject = new EventDescription();
+                    $descriptionObject->setTitle($descriptionTitle);
+                    $descriptionObject->setText($descriptionText);
+                    $descriptionObject->setEvent($newEvent);
+                    $tempDescriptions[$cnt] = $descriptionObject;
+                    $cnt++;
+                }
+                if (count($tempDescriptions) > 0) {
+                    $newEvent->setDescriptions($tempDescriptions);
+                }
             }
 
             if (!$isAlreadyPersisted) {
@@ -363,9 +381,7 @@ class EventController extends FOSRestController
 
     private function deleteOldEntities($olderThan)
     {
-        $oldEvents = $this->eventRepo->removeLastUpdatedBefore($olderThan);
-
-
+        $this->eventRepo->removeLastUpdatedBefore($olderThan);
     }
 
 }

@@ -52,7 +52,7 @@
                             </td>
                             <td>
                                 {% for categoria in event.categories %}
-                                    <span class="label label-default">{{ categoria.label }}</span>
+                                    <span class="label label-default">{{ categoria }}</span>
                                     <br/>
                                 {% endfor %}
                             </td>
@@ -61,7 +61,7 @@
                             <td>
                                 <small>periodo</small>
                             </td>
-                            <td>{{ event.startDate }} - {{ event.endDate }}</td>
+                            <td>{{ event.startDate.format("d/m/Y") }} - {{ event.endDate.format("d/m/Y") }}</td>
                         </tr>
                         </tbody>
                     </table>

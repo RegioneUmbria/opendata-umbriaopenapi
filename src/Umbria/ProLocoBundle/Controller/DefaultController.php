@@ -104,33 +104,27 @@ class DefaultController extends Controller
 //                    }
 //                }
 //            }
-//            /** @var Event $event */
-//            foreach ($this->eventRepo->findAll() as $event) {
-//                if (isset($event)) {
-//                    $place = new PlaceDetails();
-//                    $place->setId($event->getId());
-//                    $place->setName($event->getTitle());
-//                    $place->setType($event->getType());
-//
-//                    $coordinates = $event->getCoordinate();
-//                    foreach ($coordinates as $coordinate) {
-//                        if ($coordinate->getLatitude() != '') {
-//                            $place->setLatitude($coordinate->getLatitude());
-//                            $place->setLongitude($coordinate->getLongitude());
-//                        }
-//                    }
-//
-//                    $uri = $this->get('router')->generate('event_show', array(
-//                        'id' => $event->getId(),
-//                    ), UrlGeneratorInterface::ABSOLUTE_URL);
-//                    $place->setHref($uri);
-//
-//                    // TODO: rivedere
-//                    if ($place->getLatitude() != '') {
-//                        $eventi[] = $place;
-//                    }
-//                }
-//            }
+        /** @var Event $event */
+        foreach ($this->eventRepo->findAll() as $event) {
+            if (isset($event)) {
+                $place = new PlaceDetails();
+                $place->setId($event->getId());
+                $place->setName($event->getName());
+                $place->setType('tourism_event');
+
+                if ($event->getLat() != null) {
+                    $place->setLatitude($event->getLat());
+                    $place->setLongitude($event->getLng());
+                    $eventi[] = $place;
+                }
+
+                $uri = $this->get('router')->generate('event_show', array(
+                    'id' => $event->getId(),
+                ), UrlGeneratorInterface::ABSOLUTE_URL);
+                $place->setHref($uri);
+
+            }
+        }
 //            /** @var TravelAgency $travelAgency */
 //            foreach ($this->travelAgencyRepo->findAll() as $travelAgency) {
 //                if (isset($travelAgency)) {

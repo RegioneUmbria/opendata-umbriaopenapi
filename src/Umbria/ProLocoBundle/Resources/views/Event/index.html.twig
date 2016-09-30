@@ -37,8 +37,8 @@
                             <small>{{ loop.index }}</small>
                         </td>
                         <td>{{ event.name }}</td>
-                        <td>{{ event.startDate }}</td>
-                        <td>{{ event.endDate }}</td>
+                        <td>{{ event.startDate.format("d/m/Y") }}</td>
+                        <td>{{ event.endDate.format("d/m/Y") }}</td>
                         <td>
                             <a class="btn btn-info btn-xs" href="{{ path('event_show', { 'id': event.id }) }}">show</a>
                         </td>
