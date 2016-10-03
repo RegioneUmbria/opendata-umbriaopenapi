@@ -4,13 +4,16 @@ namespace Umbria\ProLocoBundle\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
-use Umbria\OpenApiBundle\Entity\Tourism\Profession;
+use Umbria\OpenApiBundle\Repository\Tourism\GraphsEntities\ProfessionRepository;
 use Umbria\ProLocoBundle\Entity\SearchFilter;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 
 /**
- * Profession controller.
+ * Class ProfessionController
+ * @package Umbria\ProLocoBundle\Controller
+ *
+ * @author Lorenzo Franco Ranucci <loryzizu@gmail.com>
  */
 class ProfessionController extends Controller
 {
@@ -45,8 +48,9 @@ class ProfessionController extends Controller
                 ->getForm();
         }
 
+        /**@var ProfessionRepository $repository */
         $repository = $this->getDoctrine()
-            ->getRepository('UmbriaOpenApiBundle:Tourism\Profession');
+            ->getRepository('UmbriaOpenApiBundle:Tourism\GraphsEntities\Profession');
         $qb = $repository->createQueryBuilder('a');
         $query = $qb
             ->where($qb->expr()->orX(
@@ -72,15 +76,18 @@ class ProfessionController extends Controller
     /**
      * Finds and displays a Profession entity.
      *
-     * @param Profession $profession
+     * @param int $id
      *
      * @return \Symfony\Component\HttpFoundation\Response
      */
-    public function showAction(Profession $profession)
+    public function showAction($id)
     {
-        $baseUrlRisorsa = $this->container->getParameter('base_url_res_profession');
+        /**@var ProfessionRepository $repository */
+        $repository = $this->getDoctrine()
+            ->getRepository('UmbriaOpenApiBundle:Tourism\GraphsEntities\Profession');
+        $profession = $repository->findById($id);
         return $this->render('UmbriaProLocoBundle:Profession:show.html.twig', array(
-            'profession' => $profession, 'baseUrlRisorsa' => $baseUrlRisorsa
+            'profession' => $profession[0]
         ));
     }
 }

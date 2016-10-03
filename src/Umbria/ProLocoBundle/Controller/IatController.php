@@ -4,7 +4,6 @@ namespace Umbria\ProLocoBundle\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
-use Umbria\OpenApiBundle\Entity\Tourism\GraphsEntities\Iat;
 use Umbria\OpenApiBundle\Repository\Tourism\GraphsEntities\IatRepository;
 use Umbria\ProLocoBundle\Entity\SearchFilter;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -71,7 +70,7 @@ class IatController extends Controller
     }
 
     /**
-     * Finds and displays a Consortium entity.
+     * Finds and displays a Iat entity.
      *
      * @param int $id
      *

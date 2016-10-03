@@ -5,6 +5,7 @@ namespace Umbria\ProLocoBundle\Controller;
 use Doctrine\ORM\EntityManager;
 use JMS\DiExtraBundle\Annotation as DI;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Umbria\OpenApiBundle\Entity\Address;
 use Umbria\OpenApiBundle\Entity\Tourism\GraphsEntities\Attractor;
 use Umbria\OpenApiBundle\Entity\Tourism\GraphsEntities\Consortium;
 use Umbria\OpenApiBundle\Entity\Tourism\GraphsEntities\Event;
@@ -172,47 +173,30 @@ class DefaultController extends Controller
                 $consorzi[] = $place;
             }
         }
-//            /** @var Profession $profession */
-//            foreach ($this->professionRepo->findAll() as $profession) {
-//                if (isset($profession)) {
-//                    // Creazione di un numero di place pari al numero di indirizzi
-//                    /** @var Address $address */
-//                    foreach ($profession->getAddress() as $address) {
-//                        $coordinates = $address->getCoordinateGeografiche();
-//                        if ($coordinates != '') {
-//                            $coordinates = explode(';', $coordinates);
-//
-//                            $place = new PlaceDetails();
-//                            $place->setId($profession->getId());
-//                            $place->setName($profession->getFirstName().' '.$profession->getLastName());
-//                            $place->setType($profession->getType());
-//                            $place->setLatitude($coordinates[0]);
-//                            $place->setLongitude($coordinates[1]);
-//
-//                            $uri = $this->get('router')->generate('profession_show', array(
-//                                'id' => $profession->getId(),
-//                            ), UrlGeneratorInterface::ABSOLUTE_URL);
-//                            $place->setHref($uri);
-//
-//                            $professioni[] = $place;
-//                        } elseif ($address->getLatitude() != '' and $coordinates == '') {
-//                            $place = new PlaceDetails();
-//                            $place->setId($profession->getId());
-//                            $place->setName($profession->getFirstName().' '.$profession->getLastName());
-//                            $place->setType($profession->getType());
-//                            $place->setLatitude($address->getLatitude());
-//                            $place->setLongitude($address->getLongitude());
-//
-//                            $uri = $this->get('router')->generate('profession_show', array(
-//                                'id' => $profession->getId(),
-//                            ), UrlGeneratorInterface::ABSOLUTE_URL);
-//                            $place->setHref($uri);
-//
-//                            $professioni[] = $place;
-//                        }
-//                    }
-//                }
-//            }
+        /** @var Profession $profession */
+        foreach ($this->professionRepo->findAll() as $profession) {
+            if (isset($profession)) {
+                /** @var Address $address */
+                if (($address = $profession->getAddress()) != null) {
+                    if ($profession->getLat() != null && $profession->getLat() != '') {
+
+                        $place = new PlaceDetails();
+                        $place->setId($profession->getId());
+                        $place->setName($profession->getFirstName() . ' ' . $profession->getLastName());
+                        $place->setType('tourism_profession');
+                        $place->setLatitude($profession->getLat());
+                        $place->setLongitude($profession->getLng());
+
+                        $uri = $this->get('router')->generate('profession_show', array(
+                            'id' => $profession->getId(),
+                        ), UrlGeneratorInterface::ABSOLUTE_URL);
+                        $place->setHref($uri);
+
+                        $professioni[] = $place;
+                    }
+                }
+            }
+        }
         /** @var Iat $iat */
         foreach ($this->iatRepo->findAll() as $iat) {
             if (isset($iat)) {
