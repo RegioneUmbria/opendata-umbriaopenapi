@@ -128,30 +128,26 @@ class DefaultController extends Controller
 
             }
         }
-//            /** @var TravelAgency $travelAgency */
-//            foreach ($this->travelAgencyRepo->findAll() as $travelAgency) {
-//                if (isset($travelAgency)) {
-//                    // Creazione di un numero di place pari al numero di indirizzi
-//                    /** @var Address $address */
-//                    foreach ($travelAgency->getAddress() as $address) {
-//                        if ($address->getLatitude() != '') {
-//                            $place = new PlaceDetails();
-//                            $place->setId($travelAgency->getId());
-//                            $place->setName($travelAgency->getDenominazione());
-//                            $place->setType($travelAgency->getType());
-//                            $place->setLatitude($address->getLatitude());
-//                            $place->setLongitude($address->getLongitude());
-//
-//                            $uri = $this->get('router')->generate('travelagency_show', array(
-//                                'id' => $travelAgency->getId(),
-//                            ), UrlGeneratorInterface::ABSOLUTE_URL);
-//                            $place->setHref($uri);
-//
-//                            $agenzieViaggio[] = $place;
-//                        }
-//                    }
-//                }
-//            }
+        /** @var TravelAgency $travelAgency */
+        foreach ($this->travelAgencyRepo->findAll() as $travelAgency) {
+            if (isset($travelAgency)) {
+                if ($travelAgency->getLat() != null) {
+                    $place = new PlaceDetails();
+                    $place->setId($travelAgency->getId());
+                    $place->setName($travelAgency->getName());
+                    $place->setType('tourism_travel_agency');
+                    $place->setLatitude($travelAgency->getLat());
+                    $place->setLongitude($travelAgency->getLng());
+
+                    $uri = $this->get('router')->generate('travelagency_show', array(
+                        'id' => $travelAgency->getId(),
+                    ), UrlGeneratorInterface::ABSOLUTE_URL);
+                    $place->setHref($uri);
+
+                    $agenzieViaggio[] = $place;
+                }
+            }
+        }
         /** @var Consortium $consortium */
         foreach ($this->consortiumRepo->findAll() as $consortium) {
             if (isset($consortium) && $consortium->getLat() != null) {
