@@ -205,9 +205,12 @@
                         </tbody>
                     </table>
                 </div>
-                {#<div class="row">
-                    <img src="{{ attractor.immagineSpallaDestra }}" height="150">
-                </div>#}
+                <div class="row">
+                    {% for image in attractor.images %}
+                        <img src="{{ image }}" height="150">
+                        <br/>
+                    {% endfor %}
+                </div>
             </div>
         </div>
         <div class="row">

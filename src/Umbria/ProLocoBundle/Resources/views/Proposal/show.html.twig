@@ -5,11 +5,11 @@
         <div class="row">
             <div class="page-header">
                 <h2>
-                    {{ proposal.nomeProposta }}
+                    {{ proposal.name }}
                     <small>
-                        {{ proposal.descrizioneSintetica|raw }}
+                        {{ proposal.shortDescription|raw }}
                     </small>
-                    <a href="{{ proposal.urlRisorsa }}" target="_blank">
+                    <a href="{{ proposal.uri }}" target="_blank">
                         <span class="glyphicon glyphicon-link pull-right" aria-hidden="true"></span>
                     </a>
                 </h2>
@@ -17,17 +17,17 @@
         </div>
         <div class="row">
             <div class="col-md-7">
-                <h4>{{ proposal.titoloTesto }}</h4>
+                <h4>{{ proposal.textTitle }}</h4>
                 <p>
                     <small>
-                        {{ proposal.abstract|raw }}
+                        {{ proposal.comment|raw }}
                     </small>
                     <br/>
                     <br/>
-                    {% for descrizione in proposal.descrizioni %}
-                        {{ descrizione.titolo|raw }}
+                    {% for description in proposal.descriptions %}
+                        {{ description.title|raw }}
                         <br/>
-                        {{ descrizione.testo|raw }}
+                        {{ description.text|raw }}
                     {% endfor %}
                 </p>
             </div>
@@ -41,25 +41,19 @@
                                 <small><b>Risorsa RDF</b></small>
                             </td>
                             <td><b>
-                                    <a href="{{ baseUrlRisorsa }}/{{ proposal.idContenuto }}">
-                                        {{ baseUrlRisorsa }}/{{ proposal.idContenuto }}
+                                    <a href="{{ proposal.uri }}">
+                                        {{ proposal.uri }}
                                     </a>
                                 </b>
                             </td>
                         </tr>
                         <tr>
                             <td>
-                                <small>id contenuto</small>
-                            </td>
-                            <td>{{ proposal.idContenuto }}</td>
-                        </tr>
-                        <tr>
-                            <td>
                                 <small>keywords</small>
                             </td>
                             <td>
-                                {% if proposal.keywords != '' %}
-                                    {{ proposal.keywords }}
+                                {% if proposal.subject != '' %}
+                                    {{ proposal.subject }}
                                 {% else %}
                                     -
                                 {% endif %}
@@ -70,37 +64,15 @@
                                 <small>coordinate</small>
                             </td>
                             <td>
-                                {% for coordinate in proposal.coordinate %}
-                                    {% if coordinate.latitude != '' %}
-                                        <small>umbria:</small>
-                                        <a href="{{ path('umbria_pro_loco_homepage') }}"
-                                           onclick="setCoordCookie({{ coordinate.latitude }},{{ coordinate.longitude }})">
-                                            {{ coordinate.latitude }},{{ coordinate.longitude }}
-                                        </a>
-                                    {% elseif coordinate.dbpediaLatitude != '' %}
-                                        <small>dbpedia:
-                                        </small>
-                                        <a href="{{ path('umbria_pro_loco_homepage') }}"
-                                           onclick="setCoordCookie({{ coordinate.dbpediaLatitude }},{{ coordinate.dbpediaLongitude }})">
-                                            {{ coordinate.dbpediaLatitude }},{{ coordinate.dbpediaLongitude }}
-                                        </a>
-                                    {% elseif coordinate.googleLatitude != '' %}
-                                        <small>google:
-                                        </small>
-                                        <a href="{{ path('umbria_pro_loco_homepage') }}"
-                                           onclick="setCoordCookie({{ coordinate.googleLatitude }},{{ coordinate.googleLongitude }})">
-                                            {{ coordinate.googleLatitude }}
-                                            ,{{ coordinate.googleLongitude }}
-                                        </a>
-                                        <span class="glyphicon glyphicon-info-sign pull-right" data-toggle="tooltip"
-                                              data-placement="top"
-                                              title="Posizione calcola. Non se ne garantisce l'affidabilità"></span>
-                                        {% set latitude = coordinate.googleLatitude %}
-                                        {% set longitude = coordinate.googleLongitude %}
-                                    {% else %}
-                                        -
-                                    {% endif %}
-                                {% endfor %}
+                                {% if proposal.lat != null and proposal.lat != '' %}
+                                    <small>umbria:</small>
+                                    <a href="{{ path('umbria_pro_loco_homepage') }}"
+                                       onclick="setCoordCookie({{ proposal.lat }},{{ proposal.lng }})">
+                                        {{ proposal.lat }},{{ proposal.lng }}
+                                    </a>
+                                {% else %}
+                                    -
+                                {% endif %}
                             </td>
                         </tr>
                         <tr>
@@ -108,9 +80,9 @@
                                 <small>categorie</small>
                             </td>
                             <td>
-                                {% for categoria in proposal.categorie %}
-                                    {% if categoria.categoriaAssociata is not null %}
-                                        <span class="label label-default">{{ categoria.categoriaAssociata }}</span>
+                                {% for category in proposal.categories %}
+                                    {% if cat != null %}
+                                        <span class="label label-default">{{ category }}</span>
                                         <br/>
                                     {% endif %}
                                 {% endfor %}
@@ -134,7 +106,10 @@
                     </table>
                 </div>
                 <div class="row">
-                    <img src="{{ proposal.immagineSpallaDestra }}" height="150">
+                    {% for image in proposal.images %}
+                        <img src="{{ image }}" height="150">
+                        <br/>
+                    {% endfor %}
                 </div>
             </div>
         </div>
@@ -142,7 +117,7 @@
             <br/>
             <ol class="breadcrumb">
                 <li><a href="{{ path('proposal_index') }}">Lista Proposte</a></li>
-                <li class="active">{{ proposal.nomeProposta }}</li>
+                <li class="active">{{ proposal.name }}</li>
             </ol>
         </div>
     </div>
@@ -158,18 +133,10 @@
 
         {% set latitude = '' %}
         {% set longitude = '' %}
-        {% for coordinate in proposal.coordinate %}
-        {% if coordinate.latitude != '' %}
-        {% set latitude = coordinate.latitude %}
-        {% set longitude = coordinate.longitude %}
-        {% elseif coordinate.dbpediaLatitude != '' %}
-        {% set latitude = coordinate.dbpediaLatitude %}
-        {% set longitude = coordinate.dbpediaLongitude %}
-        {% elseif coordinate.googleLatitude != '' %}
-        {% set latitude = coordinate.googleLatitude %}
-        {% set longitude = coordinate.googleLongitude %}
+        {% if proposal.lat != null and proposal.lat != '' %}
+        {% set latitude = proposal.lat %}
+        {% set longitude = proposal.lng %}
         {% endif %}
-        {% endfor %}
 
     </script>
 {% endblock %}

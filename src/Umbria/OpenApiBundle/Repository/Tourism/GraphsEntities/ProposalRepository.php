@@ -1,6 +1,7 @@
 <?php
 
 namespace Umbria\OpenApiBundle\Repository\Tourism\GraphsEntities;
+use Doctrine\Common\Collections\Criteria;
 
 /**
  * ProposalRepository
@@ -10,4 +11,25 @@ namespace Umbria\OpenApiBundle\Repository\Tourism\GraphsEntities;
  */
 class ProposalRepository extends \Doctrine\ORM\EntityRepository
 {
+
+    /**
+     * @param $date \DateTime
+     */
+    public function removeLastUpdatedBefore($date)
+    {
+        $criteria = new Criteria();
+        $criteria->where($criteria->expr()->lt('lastUpdateAt', $date));
+        foreach ($this->matching($criteria) as $proposal) {
+            $this->getEntityManager()->remove($proposal);
+        }
+        $this->getEntityManager()->flush();
+    }
+
+    public function findById($id)
+    {
+        $qb = $this->createQueryBuilder("o");
+        $qb->where($qb->expr()->like("o.uri", "?1"));
+        $qb->setParameter(1, "%/" . $id);
+        return $qb->getQuery()->getResult();
+    }
 }

@@ -340,7 +340,21 @@ class AttractorController extends FOSRestController
             $newAttractor->setSubject(($p = $attractorResource->get("<http://purl.org/dc/elements/1.1/subject>")) != null ? $p->getValue() : null);
             $newAttractor->setLat(($p = $attractorResource->get("<http://www.w3.org/2003/01/geo/wgs84_pos#lat>")) != null ? (float)$p->getValue() : null);
             $newAttractor->setLng(($p = $attractorResource->get("<http://www.w3.org/2003/01/geo/wgs84_pos#long>")) != null ? (float)$p->getValue() : null);
-            /*TODO images*/
+
+            $imagearray1 = $attractorResource->all("<http://dati.umbria.it/tourism/ontology/immagine_copertina>");
+            $imagearray2 = $attractorResource->all("<http://dati.umbria.it/tourism/ontology/immagine_spalla_destra>");
+            $imagearray = array_merge($imagearray1, $imagearray2);
+            if ($imagearray != null) {
+                $tempImage = array();
+                $newAttractor->setImages(array());
+                $cnt = 0;
+                foreach ($imagearray as $image) {
+                    $tempImage[$cnt] = $image->toRdfPhp()['value'];
+                    $cnt++;
+                }
+                count($tempImage) > 0 ? $newAttractor->setImages($tempImage) : $newAttractor->setImages(null);
+            }
+
             $newAttractor->setTextTitle(($p = $attractorResource->get("<http://dati.umbria.it/tourism/ontology/titolo_testo>")) != null ? $p->getValue() : null);
             /*TODO link esterni associati*/
             $newAttractor->setResourceOriginUrl(($p = $attractorResource->get("<http://dati.umbria.it/tourism/ontology/url_risorsa>")) != null ? $p->getValue() : null);

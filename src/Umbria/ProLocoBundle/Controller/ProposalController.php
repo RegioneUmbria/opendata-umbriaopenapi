@@ -4,13 +4,15 @@ namespace Umbria\ProLocoBundle\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
-use Umbria\OpenApiBundle\Entity\Tourism\Proposal;
 use Umbria\ProLocoBundle\Entity\SearchFilter;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 
 /**
- * Proposal controller.
+ * Class ProposalController
+ * @package Umbria\ProLocoBundle\Controller
+ *
+ * @author Lorenzo Franco Ranucci <loryzizu@gmail.com>
  */
 class ProposalController extends Controller
 {
@@ -46,10 +48,10 @@ class ProposalController extends Controller
         }
 
         $repository = $this->getDoctrine()
-            ->getRepository('UmbriaOpenApiBundle:Tourism\Proposal');
+            ->getRepository('UmbriaOpenApiBundle:Tourism\GraphsEntities\Proposal');
         $qb = $repository->createQueryBuilder('a');
         $query = $qb
-            ->where($qb->expr()->like('a.nomeProposta', '?1'))
+            ->where($qb->expr()->like('a.name', '?1'))
             ->setParameter(1, '%' . $text . '%');
 
         $paginator = $this->get('knp_paginator');
@@ -68,15 +70,17 @@ class ProposalController extends Controller
     /**
      * Finds and displays a Proposal entity.
      *
-     * @param Proposal $proposal
+     * @param int $id
      *
      * @return \Symfony\Component\HttpFoundation\Response
      */
-    public function showAction(Proposal $proposal)
+    public function showAction($id)
     {
-        $baseUrlRisorsa = $this->container->getParameter('base_url_res_proposal');
+        $repository = $this->getDoctrine()
+            ->getRepository('UmbriaOpenApiBundle:Tourism\GraphsEntities\Proposal');
+        $proposal = $repository->findById($id);
         return $this->render('UmbriaProLocoBundle:Proposal:show.html.twig', array(
-            'proposal' => $proposal, 'baseUrlRisorsa' => $baseUrlRisorsa
+            'proposal' => $proposal[0]
         ));
     }
 }

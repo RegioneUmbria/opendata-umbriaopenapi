@@ -3,6 +3,8 @@
 namespace Umbria\OpenApiBundle\Entity\Tourism\GraphsEntities;
 
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation as JMS;
+use Umbria\OpenApiBundle\Entity\Tourism\GraphsEntitiesInnerObjects\ProposalDescription;
 
 /**
  * Proposal
@@ -14,19 +16,13 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class Proposal
 {
-    /**
-     * @var int
-     *
-     * @ORM\Column(name="id", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
-     */
-    private $id;
 
     /**
      * @var string
      *
      * @ORM\Column(name="uri", type="string", length=255, unique=true)
+     *
+     * @ORM\Id
      */
     private $uri;
 
@@ -51,12 +47,6 @@ class Proposal
      */
     private $subject;
 
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="abstract", type="string", length=255, nullable=true)
-     */
-    private $abstract;
 
     /**
      * @var array
@@ -115,6 +105,20 @@ class Proposal
     private $language;
 
     /**
+     * @var string
+     *
+     * @ORM\Column(name="placeFrom", type="string", length=255, nullable=true)
+     */
+    private $placeFrom;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="placeTo", type="string", length=255, nullable=true)
+     */
+    private $placeTo;
+
+    /**
      * @var float
      *
      * @ORM\Column(name="lat", type="float", nullable=true)
@@ -135,16 +139,28 @@ class Proposal
      */
     private $travelTime;
 
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="comment", type="string", length=255, nullable=true)
+     */
+    private $comment;
 
     /**
-     * Get id
-     *
-     * @return int
+     * @var ProposalDescription
+     * @ORM\OneToMany(targetEntity="\Umbria\OpenApiBundle\Entity\Tourism\GraphsEntitiesInnerObjects\ProposalDescription", mappedBy="proposal", cascade={"persist", "merge", "remove"})
      */
-    public function getId()
-    {
-        return $this->id;
-    }
+    private $descriptions;
+
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="last_update_at", type="date")
+     *
+     * @JMS\Exclude()
+     */
+    private $lastUpdateAt;
+
 
     /**
      * Set uri
@@ -242,29 +258,6 @@ class Proposal
         return $this->subject;
     }
 
-    /**
-     * Set abstract
-     *
-     * @param string $abstract
-     *
-     * @return Proposal
-     */
-    public function setAbstract($abstract)
-    {
-        $this->abstract = $abstract;
-
-        return $this;
-    }
-
-    /**
-     * Get abstract
-     *
-     * @return string
-     */
-    public function getAbstract()
-    {
-        return $this->abstract;
-    }
 
     /**
      * Set images
@@ -529,5 +522,106 @@ class Proposal
     {
         return $this->travelTime;
     }
+
+    /**
+     * @return ProposalDescription
+     */
+    public function getDescriptions()
+    {
+        return $this->descriptions;
+    }
+
+    /**
+     * @param array $descriptions
+     */
+    public function setDescriptions($descriptions)
+    {
+        $this->descriptions = $descriptions;
+    }
+
+    /**
+     * Set lastUpdateAt
+     *
+     * @param \DateTime $lastUpdateAt
+     *
+     * @return Proposal
+     */
+    public function setLastUpdateAt($lastUpdateAt)
+    {
+        $this->lastUpdateAt = $lastUpdateAt;
+
+        return $this;
+    }
+
+    /**
+     * Get lastUpdateAt
+     *
+     * @return \DateTime
+     */
+    public function getLastUpdateAt()
+    {
+        return $this->lastUpdateAt;
+    }
+
+
+    public function getId()
+    {
+        $uriarray = explode("/", $this->uri);
+        return $uriarray[count($uriarray) - 1];
+    }
+
+    /**
+     * @return string
+     */
+    public function getPlaceFrom()
+    {
+        return $this->placeFrom;
+    }
+
+    /**
+     * @param string $placeFrom
+     */
+    public function setPlaceFrom($placeFrom)
+    {
+        $this->placeFrom = $placeFrom;
+    }
+
+    /**
+     * @return string
+     */
+    public function getPlaceTo()
+    {
+        return $this->placeTo;
+    }
+
+    /**
+     * @param string $placeTo
+     */
+    public function setPlaceTo($placeTo)
+    {
+        $this->placeTo = $placeTo;
+    }
+
+    /**
+     * @return string
+     */
+    public function getComment()
+    {
+        return $this->comment;
+    }
+
+    /**
+     * @param string $comment
+     */
+    public function setComment($comment)
+    {
+        $this->comment = $comment;
+    }
+
+
+
+
+
+
 }
 

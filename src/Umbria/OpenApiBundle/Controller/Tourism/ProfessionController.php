@@ -123,7 +123,6 @@ class ProfessionController extends FOSRestController
         $setting = $this->settingsRepo->findOneBy(array('datasetName' => self::DATASET_TOURISM_PROFESSION));
         if ($setting != null) {
             $diff = $setting->getUpdatedAt()->diff(new DateTime('now'));
-            // controllo intervallo di tempo da ultima estrazione
             if ($diff->days >= $daysToOld) {
                 $setting->setDatasetName(self::DATASET_TOURISM_PROFESSION);
                 $setting->setUpdatedAtValue();

@@ -84,33 +84,29 @@ class DefaultController extends Controller
                     }
                 }
             }
-//            /** @var Proposal $proposal */
-//            foreach ($this->proposalRepo->findAll() as $proposal) {
-//                if (isset($proposal)) {
-//                    $place = new PlaceDetails();
-//                    $place->setId($proposal->getId());
-//                    $place->setName($proposal->getNomeProposta());
-//                    $place->setType($proposal->getType());
-//
-//                    $coordinates = $proposal->getCoordinate();
-//                    foreach ($coordinates as $coordinate) {
-//                        if ($coordinate->getLatitude() != '') {
-//                            $place->setLatitude($coordinate->getLatitude());
-//                            $place->setLongitude($coordinate->getLongitude());
-//                        }
-//                    }
-//
-//                    $uri = $this->get('router')->generate('proposal_show', array(
-//                        'id' => $proposal->getId(),
-//                    ), UrlGeneratorInterface::ABSOLUTE_URL);
-//                    $place->setHref($uri);
-//
-//                    // TODO: rivedere
-//                    if ($place->getLatitude() != '') {
-//                        $proposte[] = $place;
-//                    }
-//                }
-//            }
+        /** @var Proposal $proposal */
+        foreach ($this->proposalRepo->findAll() as $proposal) {
+            if (isset($proposal)) {
+                $place = new PlaceDetails();
+                $place->setId($proposal->getId());
+                $place->setName($proposal->getName());
+                $place->setType('tourism_proposal');
+
+                if ($proposal->getLat() != null && $proposal->getLat() != 0) {
+                    $place->setLatitude($proposal->getLat());
+                    $place->setLongitude($proposal->getLng());
+                }
+
+                $uri = $this->get('router')->generate('proposal_show', array(
+                    'id' => $proposal->getId(),
+                ), UrlGeneratorInterface::ABSOLUTE_URL);
+                $place->setHref($uri);
+
+                if ($place->getLatitude() != '') {
+                    $proposte[] = $place;
+                }
+            }
+        }
         /** @var Event $event */
         foreach ($this->eventRepo->findAll() as $event) {
             if (isset($event)) {
