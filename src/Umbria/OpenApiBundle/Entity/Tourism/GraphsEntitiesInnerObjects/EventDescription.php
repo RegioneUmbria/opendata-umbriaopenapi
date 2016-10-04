@@ -32,13 +32,13 @@ class EventDescription
     /**
      * @var string
      *
-     * @ORM\Column(name="title", type="string", length=255, nullable=true)
+     * @ORM\Column(name="title", type="text", nullable=true)
      */
     private $title;
     /**
      * @var string
      *
-     * @ORM\Column(name="text", type="string", length=255, nullable=true)
+     * @ORM\Column(name="text", type="text", nullable=true)
      */
     private $text;
     /**

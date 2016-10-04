@@ -9,7 +9,9 @@
 namespace Umbria\OpenApiBundle\Repository;
 
 
-class AddressRepository extends \Doctrine\ORM\EntityRepository
+use Doctrine\ORM\EntityRepository;
+
+class AddressRepository extends EntityRepository
 {
 
 }

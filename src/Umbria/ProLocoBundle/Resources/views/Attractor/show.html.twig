@@ -31,7 +31,7 @@
                     {% endfor %}
                 </p>
                 <hr>
-                {% if attractor.dbpediaInfo %}
+                {% if attractor.hasDbpediaInfo %}
                     <h4>Informazioni DBpedia</h4>
                     {% for externalResource in attractor.sameAs %}
                         <p>
@@ -56,12 +56,6 @@
                                 </b>
                             </td>
                         </tr>
-                        {#<tr>
-                            <td>
-                                <small>id contenuto</small>
-                            </td>
-                            <td>{{ attractor.id}}</td>
-                        </tr>#}
                         <tr>
                             <td>
                                 <small>keywords</small>
@@ -132,19 +126,19 @@
                                 {% endif %}
                             </td>
                         </tr>
-                        {#<tr>
+                        <tr>
                             <td>
                                 <small>categorie</small>
                             </td>
                             <td>
-                                {% for categoria in attractor.categorie %}
-                                    {% if categoria.cat is not null %}
-                                        <span class="label label-default">{{ categoria.cat }}</span>
+                                {% for category in attractor.categories %}
+                                    {% if category.name is not null %}
+                                        <span class="label label-default">{{ category.name }}</span>
                                         <br/>
                                     {% endif %}
                                 {% endfor %}
                             </td>
-                        </tr>#}
+                        </tr>
                         </tbody>
                     </table>
                 </div>
@@ -153,12 +147,20 @@
                         <tbody>
                         <tr>
                             <td>
-                                <small>tipo</small>
+                                <small>tipi</small>
                             </td>
                             <td>
-                                <a href="http://linkedgeodata.org/ontology/Attraction" target="_blank">
-                                    http://linkedgeodata.org/ontology/Attraction
-                                </a>
+                                {% for type in attractor.types %}
+
+                                    <a href="{{ type.uri }}">
+                                        {% if type.name is not null %}{{ type.name }}
+                                        {% else %}
+                                            {{ type.uri }}
+                                        {% endif %}
+                                    </a>
+                                    <br/>
+
+                                {% endfor %}
                             </td>
                         </tr>
                         {#<tr>

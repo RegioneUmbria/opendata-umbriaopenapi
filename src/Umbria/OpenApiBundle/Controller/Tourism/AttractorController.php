@@ -17,10 +17,12 @@ use Knp\Component\Pager\Paginator;
 use Nelmio\ApiDocBundle\Annotation as ApiDoc;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Umbria\OpenApiBundle\Entity\Category;
 use Umbria\OpenApiBundle\Entity\ExternalResource;
 use Umbria\OpenApiBundle\Entity\Tourism\GraphsEntities\Attractor;
 use Umbria\OpenApiBundle\Entity\Tourism\GraphsEntitiesInnerObjects\AttractorDescription;
 use Umbria\OpenApiBundle\Entity\Tourism\Setting;
+use Umbria\OpenApiBundle\Entity\Type;
 use Umbria\OpenApiBundle\Repository\Tourism\GraphsEntities\AttractorRepository;
 use Umbria\OpenApiBundle\Serializer\View\EntityResponse;
 use Umbria\OpenApiBundle\Service\FilterBag;
@@ -44,6 +46,8 @@ class AttractorController extends FOSRestController
     private $attractorRepo;
     private $externalResourceRepo;
     private $settingsRepo;
+    private $categoryRepo;
+    private $typeRepo;
 
     private $graph;
     private $sameAsGraph;
@@ -65,6 +69,8 @@ class AttractorController extends FOSRestController
         $this->attractorRepo = $em->getRepository('UmbriaOpenApiBundle:Tourism\GraphsEntities\Attractor');
         $this->externalResourceRepo = $em->getRepository('UmbriaOpenApiBundle:ExternalResource');
         $this->settingsRepo = $em->getRepository('UmbriaOpenApiBundle:Tourism\Setting');
+        $this->categoryRepo = $em->getRepository('UmbriaOpenApiBundle:Category');
+        $this->typeRepo = $em->getRepository('UmbriaOpenApiBundle:Type');
         $this->em = $em;
     }
 
@@ -123,7 +129,6 @@ class AttractorController extends FOSRestController
     public function getTourismAttractorListAction(Request $request)
     {
         $daysToOld = $this->container->getParameter('attractor_days_to_old');
-        /*TODO check filters attractor*/
         $filters = $this->filterBag->getFilterBag($request);
         $offset = $filters->has('start') ? $filters->get('start') : 0;
         $limit = $filters->has('limit') ? $filters->get('limit') : self::DEFAULT_PAGE_SIZE;
@@ -143,7 +148,6 @@ class AttractorController extends FOSRestController
         $setting = $this->settingsRepo->findOneBy(array('datasetName' => self::DATASET_TOURISM_ATTRACTOR));
         if ($setting != null) {
             $diff = $setting->getUpdatedAt()->diff(new DateTime('now'));
-            // controllo intervallo di tempo da ultima estrazione
             if ($diff->days >= $daysToOld) {
                 $setting->setDatasetName(self::DATASET_TOURISM_ATTRACTOR);
                 $setting->setUpdatedAtValue();
@@ -185,24 +189,21 @@ class AttractorController extends FOSRestController
 
         }
 
-        /*TODO categories*/
-        /*if ($categoryLike != null) {
+        if ($categoryLike != null) {
             $builder = $qb
-                ->leftJoin('a.categorie', 'cat')
+                ->leftJoin('a.categories', 'cat')
                 ->andWhere(
-                    $qb->expr()->like('cat.cat', ':categoryLike')
+                    $qb->expr()->like('cat.name', ':categoryLike')
                 )
                 ->setParameter("categoryLike", $categoryLike);
 
-        }*/
+        }
 
         if ($latMax != null ||
             $latMin != null ||
             $lngMax != null ||
             $lngMin != null
         ) {
-            /* $builder = $qb
-                 ->innerJoin('a.coordinate', 'c');*/
             if ($latMax != null) {
                 $builder =
                     $qb->andWhere(
@@ -252,7 +253,6 @@ class AttractorController extends FOSRestController
 
 
         $view = new View(new EntityResponse($resultsPagination->getItems(), count($resultsPagination), $countPagination->getTotalItemCount()));
-        //$view->getSerializationContext()->setGroups($viewGroups);
 
         return $view;
     }
@@ -309,28 +309,25 @@ class AttractorController extends FOSRestController
             $newAttractor->setLastUpdateAt(new \DateTime('now'));
             $newAttractor->setName(($p = $attractorResource->get("rdfs:label")) != null ? $p->getValue() : null);
 
+            /**@var EasyRdf_Resource[] $typesarray */
             $typesarray = $attractorResource->all("rdf:type");
             if ($typesarray != null) {
+                /**@var Type[] $tempTypes */
                 $tempTypes = array();
-
                 $cnt = 0;
                 foreach ($typesarray as $type) {
-                    $tempTypes[$cnt] = $type->toRdfPhp()['value'];
+                    $oldType = $this->typeRepo->find($type->getUri());
+                    if ($oldType != null) {
+                        $tempTypes[$cnt] = $oldType;
+                    } else {
+                        $tempTypes[$cnt] = new Type();
+                        $tempTypes[$cnt]->setUri($type->getUri());
+                        $tempTypes[$cnt]->setName(($p = $type->get("rdfs:label")) != null ? $p->getValue() : null);
+                        $tempTypes[$cnt]->setComment(($p = $type->get("<http://www.w3.org/2000/01/rdf-schema#comment>")) != null ? $p->getValue() : null);
+                    }
                     $cnt++;
                 }
                 count($tempTypes) > 0 ? $newAttractor->setTypes($tempTypes) : $newAttractor->setTypes(null);
-            }
-
-            $categoriesarray = $attractorResource->all("<http://dati.umbria.it/turismo/ontology/categoria>");
-            if ($categoriesarray != null) {
-                $tempCategories = array();
-
-                $cnt = 0;
-                foreach ($categoriesarray as $category) {
-                    $tempCategories[$cnt] = $category->toRdfPhp()['value'];
-                    $cnt++;
-                }
-                count($tempCategories) > 0 ? $newAttractor->setCategories($tempCategories) : $newAttractor->setCategories(null);
             }
 
             $newAttractor->setComment(($p = $attractorResource->get("<http://www.w3.org/2000/01/rdf-schema#comment>")) != null ? $p->getValue() : null);
@@ -400,7 +397,7 @@ class AttractorController extends FOSRestController
                         $externalResource = null;
                         $externalResourceUri = $sameAs->toRdfPhp()['value'];
                         $oldExternalResource = $this->externalResourceRepo->find($externalResourceUri);
-                        if ($oldExternalResource != null) {//check if external resource is already persisted
+                        if ($oldExternalResource != null) {
                             $externalResource = $oldExternalResource;
                         } else {
                             $externalResource = new ExternalResource();
@@ -424,6 +421,15 @@ class AttractorController extends FOSRestController
                                 $externalResource->setDescription($current->o);
                                 $sparqlResultAbstract->next();
                             }
+
+                            $queryResourceOrigin = "SELECT ?o WHERE {<" . $externalResourceUri . "> <http://www.w3.org/ns/prov#wasDerivedFrom> ?o}";
+                            $sparqlResultResourceOrigin = $sparqlClient->query($queryResourceOrigin);
+                            $sparqlResultResourceOrigin->rewind();
+                            while ($sparqlResultResourceOrigin->valid()) {
+                                $current = $sparqlResultResourceOrigin->current();
+                                $externalResource->setResourceOriginUrl($current->o);
+                                $sparqlResultResourceOrigin->next();
+                            }
                         }
                         $tempSameAs[$cnt] = $externalResource;
                         $cnt++;
@@ -434,6 +440,27 @@ class AttractorController extends FOSRestController
                         $newAttractor->setSameAs(null);
                     }
                 }
+            }
+
+            /**@var EasyRdf_Resource[] $categoriesarray */
+            $categoriesarray = $attractorResource->all("<http://dati.umbria.it/tourism/ontology/categoria>");
+            if ($categoriesarray != null) {
+                /**@var Category[] $tempCategories */
+                $tempCategories = array();
+                $cnt = 0;
+                foreach ($categoriesarray as $category) {
+                    $oldCategory = $this->categoryRepo->find($category->getUri());
+                    if ($oldCategory != null) {
+                        $tempCategories[$cnt] = $oldCategory;
+                    } else {
+                        $tempCategories[$cnt] = new Category();
+                        $tempCategories[$cnt]->setUri($category->getUri());
+                        $tempCategories[$cnt]->setName(($p = $category->get("rdfs:label")) != null ? $p->getValue() : null);
+                        $tempCategories[$cnt]->setComment(($p = $category->get("<http://www.w3.org/2000/01/rdf-schema#comment>")) != null ? $p->getValue() : null);
+                    }
+                    $cnt++;
+                }
+                count($tempCategories) > 0 ? $newAttractor->setCategories($tempCategories) : $newAttractor->setCategories(null);
             }
 
             if (!$isAlreadyPersisted) {
@@ -447,7 +474,5 @@ class AttractorController extends FOSRestController
     private function deleteOldEntities($olderThan)
     {
         $this->attractorRepo->removeLastUpdatedBefore($olderThan);
-
-
     }
 }

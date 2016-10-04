@@ -3,9 +3,11 @@
 namespace Umbria\OpenApiBundle\Entity\Tourism\GraphsEntities;
 
 use Doctrine\ORM\Mapping as ORM;
+use Umbria\OpenApiBundle\Entity\Category;
 use Umbria\OpenApiBundle\Entity\ExternalResource;
 use Umbria\OpenApiBundle\Entity\Tourism\GraphsEntitiesInnerObjects\AttractorDescription;
 use JMS\Serializer\Annotation as JMS;
+use Umbria\OpenApiBundle\Entity\Type;
 
 /**
  * Attractor entity
@@ -35,9 +37,12 @@ class Attractor
     private $name;
 
     /**
-     * @var array
-     *
-     * @ORM\Column(name="types", type="array", nullable=true)
+     * @var Type[]
+     * @ORM\ManyToMany(targetEntity="\Umbria\OpenApiBundle\Entity\Type", orphanRemoval=true, cascade={"persist", "merge"})
+     * @ORM\JoinTable(name="AttractorType",
+     *      joinColumns={@ORM\JoinColumn(name="attractor_uri", referencedColumnName="uri")},
+     *      inverseJoinColumns={@ORM\JoinColumn(name="type_uri", referencedColumnName="uri")}
+     *      )
      */
     private $types;
 
@@ -115,12 +120,12 @@ class Attractor
     /**
      * @var string
      *
-     * @ORM\Column(name="shortDescription", type="string", length=255, nullable=true)
+     * @ORM\Column(name="shortDescription", type="text" , nullable=true)
      */
     private $shortDescription;
 
     /**
-     * @var ExternalResource
+     * @var ExternalResource[]
      * @ORM\ManyToMany(targetEntity="\Umbria\OpenApiBundle\Entity\ExternalResource", orphanRemoval=true, cascade={"persist", "merge"})
      * @ORM\JoinTable(name="same_as",
      *      joinColumns={@ORM\JoinColumn(name="ru_resource_uri", referencedColumnName="uri")},
@@ -139,7 +144,7 @@ class Attractor
     /**
      * @var string
      *
-     * @ORM\Column(name="comment", type="string", length=255, nullable=true)
+     * @ORM\Column(name="comment", type="text", nullable=true)
      */
     private $comment;
 
@@ -167,9 +172,12 @@ class Attractor
     private $lastUpdateAt;
 
     /**
-     * @var array
-     *
-     * @ORM\Column(name="categories", type="array", nullable=true)
+     * @var Category[]
+     * @ORM\ManyToMany(targetEntity="\Umbria\OpenApiBundle\Entity\Category", orphanRemoval=true, cascade={"persist", "merge"})
+     * @ORM\JoinTable(name="AttractorCategory",
+     *      joinColumns={@ORM\JoinColumn(name="attractor_uri", referencedColumnName="uri")},
+     *      inverseJoinColumns={@ORM\JoinColumn(name="category_uri", referencedColumnName="uri")}
+     *      )
      */
     private $categories;
 
@@ -225,7 +233,7 @@ class Attractor
     /**
      * Set types
      *
-     * @param array $types
+     * @param Type[] $types
      *
      * @return Attractor
      */
@@ -239,7 +247,7 @@ class Attractor
     /**
      * Get types
      *
-     * @return array
+     * @return Type[]
      */
     public function getTypes()
     {
@@ -646,7 +654,7 @@ class Attractor
         return $this->lastUpdateAt;
     }
 
-    public function getDbpediaInfo()
+    public function hasDbpediaInfo()
     {
         return ($this->sameAs != null && count($this->sameAs->getValues()) > 0);
     }
@@ -660,7 +668,7 @@ class Attractor
     /**
      * Set categories
      *
-     * @param array $categories
+     * @param Category[] $categories
      *
      * @return Attractor
      */
@@ -674,7 +682,7 @@ class Attractor
     /**
      * Get categories
      *
-     * @return array
+     * @return Category[]
      */
     public function getCategories()
     {

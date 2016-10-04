@@ -43,6 +43,13 @@ class ExternalResource
      */
     private $description;
 
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="resourceOriginUrl", type="string", length=255, nullable=true)
+     */
+    private $resourceOriginUrl;
+
 
     /**
      * Set uri
@@ -73,7 +80,7 @@ class ExternalResource
      *
      * @param string $name
      *
-     * @return Attractor
+     * @return ExternalResource
      */
     public function setName($name)
     {
@@ -138,6 +145,30 @@ class ExternalResource
     public function getDescription()
     {
         return $this->description;
+    }
+
+    /**
+     * Set resourceOriginUrl
+     *
+     * @param string $resourceOriginUrl
+     *
+     * @return ExternalResource
+     */
+    public function setResourceOriginUrl($resourceOriginUrl)
+    {
+        $this->resourceOriginUrl = $resourceOriginUrl;
+
+        return $this;
+    }
+
+    /**
+     * Get resourceOriginUrl
+     *
+     * @return string
+     */
+    public function getResourceOriginUrl()
+    {
+        return $this->resourceOriginUrl;
     }
 }
 
