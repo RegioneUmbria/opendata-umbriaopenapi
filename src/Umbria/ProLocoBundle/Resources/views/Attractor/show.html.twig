@@ -163,47 +163,48 @@
                                 {% endfor %}
                             </td>
                         </tr>
-                        {#<tr>
+                        <tr>
                             <td>
                                 <small>pagina dbpedia</small>
                             </td>
                             <td>
-                                {% if attractor.dbpediaResource != '' %}
-                                    <a href="{{ attractor.dbpediaResource }}" target="_blank">
-                                        {{ attractor.dbpediaResource }}
+                                {% if attractor.hasDbpediaInfo %}
+                                    <a href="{{ attractor.sameAs[0].uri }}" target="_blank">
+                                        {{ attractor.sameAs[0].uri }}
                                     </a>
                                 {% else %}
                                     -
                                 {% endif %}
                             </td>
-                        </tr>#}
-                        {#<tr>
+                        </tr>
+                        <tr>
                             <td>
                                 <small>pagina wikipedia</small>
                             </td>
                             <td>
-                                {% if attractor.wikipediaLink != '' %}
-                                    <a href="{{ attractor.wikipediaLink }}"
-                                       target="_blank">{{ attractor.wikipediaLink }}</a>
-                                {% else %}
-                                    -
-                                {% endif %}
-                            </td>
-                        </tr>#}
-                        {#<tr>
-                            <td>
-                                <small>localizzazione dbpedia</small>
-                            </td>
-                            <td>
-                                {% if attractor.locatedIn != '' %}
-                                    <a href="{{ attractor.locatedIn }}" target="_blank">
-                                        {{ attractor.locatedIn }}
+                                {% if attractor.hasDbpediaInfo and attractor.sameAs[0].resourceOriginUrl is not null %}
+                                    <a href="{{ attractor.sameAs[0].resourceOriginUrl }}" target="_blank">
+                                        {{ attractor.sameAs[0].name }}
                                     </a>
                                 {% else %}
                                     -
                                 {% endif %}
                             </td>
-                        </tr>#}
+                        </tr>
+                        <tr>
+                            <td>
+                                <small>localizzazione dbpedia</small>
+                            </td>
+                            <td>
+                                {% if attractor.hasDbpediaLocalization() %}
+                                    <a href="{{ attractor.locatedIn[0].uri }}" target="_blank">
+                                        {{ attractor.locatedIn[0].name }}
+                                    </a>
+                                {% else %}
+                                    -
+                                {% endif %}
+                            </td>
+                        </tr>
                         </tbody>
                     </table>
                 </div>

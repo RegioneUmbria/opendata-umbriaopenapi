@@ -7,9 +7,7 @@ use DateTime;
 use Doctrine\ORM\EntityManager;
 use EasyRdf_Graph;
 use EasyRdf_Resource;
-use EasyRdf_Sparql_Client;
 use FOS\RestBundle\Controller\Annotations as Rest;
-use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\View\View;
 use JMS\DiExtraBundle\Annotation as DI;
 use Knp\Component\Pager\Pagination\AbstractPagination;
@@ -18,7 +16,6 @@ use Nelmio\ApiDocBundle\Annotation as ApiDoc;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Umbria\OpenApiBundle\Entity\Category;
-use Umbria\OpenApiBundle\Entity\ExternalResource;
 use Umbria\OpenApiBundle\Entity\Tourism\GraphsEntities\Attractor;
 use Umbria\OpenApiBundle\Entity\Tourism\GraphsEntitiesInnerObjects\AttractorDescription;
 use Umbria\OpenApiBundle\Entity\Tourism\Setting;
@@ -34,7 +31,7 @@ use Umbria\OpenApiBundle\Service\FilterBag;
  *
  * @author Lorenzo Franco Ranucci <loryzizu@gmail.com>
  */
-class AttractorController extends FOSRestController
+class AttractorController extends BaseController
 {
     const DEFAULT_PAGE_SIZE = 100;
     const DATASET_TOURISM_ATTRACTOR = 'tourism-attractor';
@@ -44,13 +41,14 @@ class AttractorController extends FOSRestController
     private $em;
     /**@var AttractorRepository attractorRepo */
     private $attractorRepo;
-    private $externalResourceRepo;
+
     private $settingsRepo;
     private $categoryRepo;
     private $typeRepo;
 
     private $graph;
     private $sameAsGraph;
+    private $locatedInGraph;
 
     /**
      * @DI\InjectParams({
@@ -64,10 +62,10 @@ class AttractorController extends FOSRestController
      */
     public function __construct($em, $filterBag, $paginator)
     {
+        parent::__construct($em);
         $this->filterBag = $filterBag;
         $this->paginator = $paginator;
         $this->attractorRepo = $em->getRepository('UmbriaOpenApiBundle:Tourism\GraphsEntities\Attractor');
-        $this->externalResourceRepo = $em->getRepository('UmbriaOpenApiBundle:ExternalResource');
         $this->settingsRepo = $em->getRepository('UmbriaOpenApiBundle:Tourism\Setting');
         $this->categoryRepo = $em->getRepository('UmbriaOpenApiBundle:Category');
         $this->typeRepo = $em->getRepository('UmbriaOpenApiBundle:Type');
@@ -263,6 +261,7 @@ class AttractorController extends FOSRestController
 
         $this->graph = EasyRdf_Graph::newAndLoad($this->container->getParameter('attractors_graph_url'));
         $this->sameAsGraph = EasyRdf_Graph::newAndLoad($this->container->getParameter('attractors_sameas_graph_url'));
+        $this->locatedInGraph = EasyRdf_Graph::newAndLoad($this->container->getParameter('attractors_locatedin_graph_url'));
         /**@var EasyRdf_Resource[] $resources */
         $resources = $this->graph->resources();
         foreach ($resources as $resource) {
@@ -272,11 +271,15 @@ class AttractorController extends FOSRestController
                 foreach ($resourceTypeArray as $resourceType) {
                     if (trim($resourceType) == "http://linkedgeodata.org/ontology/Attraction") {//is attractor
                         $sameAsResource = null;
+                        $locatedInResource = null;
                         if ($this->sameAsGraph != null) {
                             $sameAsResource = $this->sameAsGraph->resource($resource->getUri());
                         }
+                        if ($this->locatedInGraph != null) {
+                            $locatedInResource = $this->locatedInGraph->resource($resource->getUri());
+                        }
 
-                        $this->createOrUpdateEntity($resource, $sameAsResource);
+                        $this->createOrUpdateEntity($resource, $sameAsResource, $locatedInResource);
                         $cnt++;
                         break;
                     }
@@ -291,8 +294,9 @@ class AttractorController extends FOSRestController
     /**
      * @param EasyRdf_Resource $attractorResource
      * @param EasyRdf_Resource null $sameAsResource
+     * @param EasyRdf_Resource null $locatedInResource
      */
-    private function createOrUpdateEntity($attractorResource, $sameAsResource = null)
+    private function createOrUpdateEntity($attractorResource, $sameAsResource = null, $locatedInResource = null)
     {
         /** @var Attractor $newAttractor */
         $newAttractor = null;
@@ -390,56 +394,14 @@ class AttractorController extends FOSRestController
             if ($sameAsResource != null) {
                 /**@var EasyRdf_Resource $sameAsResource */
                 $sameAsArray = $sameAsResource->all("<http://www.w3.org/2002/07/owl#sameAs>");
-                if ($sameAsArray != null) {
-                    $tempSameAs = array();
-                    $cnt = 0;
-                    foreach ($sameAsArray as $sameAs) {
-                        $externalResource = null;
-                        $externalResourceUri = $sameAs->toRdfPhp()['value'];
-                        $oldExternalResource = $this->externalResourceRepo->find($externalResourceUri);
-                        if ($oldExternalResource != null) {
-                            $externalResource = $oldExternalResource;
-                        } else {
-                            $externalResource = new ExternalResource();
-                            $externalResource->setUri($externalResourceUri);
-                            $sparqlClient = new EasyRdf_Sparql_Client("http://dbpedia.org/sparql");
-
-                            $queryLabel = "SELECT ?o WHERE {<" . $externalResourceUri . "> <http://www.w3.org/2000/01/rdf-schema#label> ?o. FILTER ( lang(?o) = \"it\" )}";
-                            $sparqlResultLabel = $sparqlClient->query($queryLabel);
-                            $sparqlResultLabel->rewind();
-                            while ($sparqlResultLabel->valid()) {
-                                $current = $sparqlResultLabel->current();
-                                $externalResource->setName($current->o);
-                                $sparqlResultLabel->next();
-                            }
-
-                            $queryAbstract = "SELECT ?o WHERE {<" . $externalResourceUri . "> <http://dbpedia.org/ontology/abstract> ?o. FILTER ( lang(?o) = \"it\" )}";
-                            $sparqlResultAbstract = $sparqlClient->query($queryAbstract);
-                            $sparqlResultAbstract->rewind();
-                            while ($sparqlResultAbstract->valid()) {
-                                $current = $sparqlResultAbstract->current();
-                                $externalResource->setDescription($current->o);
-                                $sparqlResultAbstract->next();
-                            }
-
-                            $queryResourceOrigin = "SELECT ?o WHERE {<" . $externalResourceUri . "> <http://www.w3.org/ns/prov#wasDerivedFrom> ?o}";
-                            $sparqlResultResourceOrigin = $sparqlClient->query($queryResourceOrigin);
-                            $sparqlResultResourceOrigin->rewind();
-                            while ($sparqlResultResourceOrigin->valid()) {
-                                $current = $sparqlResultResourceOrigin->current();
-                                $externalResource->setResourceOriginUrl($current->o);
-                                $sparqlResultResourceOrigin->next();
-                            }
-                        }
-                        $tempSameAs[$cnt] = $externalResource;
-                        $cnt++;
-                    }
-                    if (count($tempSameAs) > 0) {
-                        $newAttractor->setSameAs($tempSameAs);
-                    } else {
-                        $newAttractor->setSameAs(null);
-                    }
-                }
+                $newAttractor->setSameAs($this->getExternalResources($sameAsArray, "http://dbpedia.org/sparql",
+                    "http://www.w3.org/2000/01/rdf-schema#label", "http://dbpedia.org/ontology/abstract", "http://www.w3.org/ns/prov#wasDerivedFrom"));
+            }
+            if ($locatedInResource != null) {
+                /**@var EasyRdf_Resource $locatedInResource */
+                $locatedInArray = $locatedInResource->all("<http://www.w3.org/2002/07/owl#sameAs>");
+                $newAttractor->setlocatedIn($this->getExternalResources($locatedInArray, "http://dbpedia.org/sparql",
+                    "http://www.w3.org/2000/01/rdf-schema#label", "http://dbpedia.org/ontology/abstract", "http://www.w3.org/ns/prov#wasDerivedFrom"));
             }
 
             /**@var EasyRdf_Resource[] $categoriesarray */

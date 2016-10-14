@@ -25,7 +25,7 @@ use EasyRdf_Graph;
  *
  * @author Lorenzo Franco Ranucci <loryzizu@gmail.com>
  */
-class EventController extends FOSRestController
+class EventController extends BaseController
 {
     const DEFAULT_PAGE_SIZE = 100;
     const DATASET_TOURISM_EVENT = 'tourism-event';

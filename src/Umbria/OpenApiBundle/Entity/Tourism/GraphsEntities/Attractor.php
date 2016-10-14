@@ -135,6 +135,16 @@ class Attractor
     private $sameAs;
 
     /**
+     * @var ExternalResource[]
+     * @ORM\ManyToMany(targetEntity="\Umbria\OpenApiBundle\Entity\ExternalResource", orphanRemoval=true, cascade={"persist", "merge"})
+     * @ORM\JoinTable(name="located_in",
+     *      joinColumns={@ORM\JoinColumn(name="ru_resource_uri", referencedColumnName="uri")},
+     *      inverseJoinColumns={@ORM\JoinColumn(name="external_resource_uri", referencedColumnName="uri")}
+     *      )
+     */
+    private $locatedIn;
+
+    /**
      * @var string
      *
      * @ORM\Column(name="language", type="string", length=255, nullable=true)
@@ -543,6 +553,23 @@ class Attractor
     }
 
     /**
+     * @return \Umbria\OpenApiBundle\Entity\ExternalResource[]
+     */
+    public function getLocatedIn()
+    {
+        return $this->locatedIn;
+    }
+
+    /**
+     * @param \Umbria\OpenApiBundle\Entity\ExternalResource[] $locatedIn
+     */
+    public function setLocatedIn($locatedIn)
+    {
+        $this->locatedIn = $locatedIn;
+    }
+
+
+    /**
      * Set language
      *
      * @param string $language
@@ -657,6 +684,11 @@ class Attractor
     public function hasDbpediaInfo()
     {
         return ($this->sameAs != null && count($this->sameAs->getValues()) > 0);
+    }
+
+    public function hasDbpediaLocalization()
+    {
+        return ($this->locatedIn != null && count($this->locatedIn->getValues()) > 0);
     }
 
     public function getId()

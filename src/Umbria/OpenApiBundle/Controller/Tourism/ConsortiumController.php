@@ -28,7 +28,7 @@ use Exception;
  *
  * @author Lorenzo Franco Ranucci <loryzizu@gmail.com>
  */
-class ConsortiumController extends FOSRestController
+class ConsortiumController extends BaseController
 {
     const DEFAULT_PAGE_SIZE = 100;
     const DATASET_TOURISM_CONSORTIUM = 'tourism-consortium';
@@ -304,38 +304,5 @@ class ConsortiumController extends FOSRestController
 
     }
 
-    public function getWebResource($url = 'null', $writeError = true)
-    {
-        $ch = curl_init();
-        try {
-            if (false === $ch) {
-                throw new Exception('failed to initialize');
-            }
 
-            curl_setopt($ch, CURLOPT_URL, $url);
-            curl_setopt($ch, CURLOPT_HEADER, 0);
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-            curl_setopt($ch, CURLOPT_TIMEOUT, 10);
-            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-            $content = curl_exec($ch);
-            curl_close($ch);
-
-            if (false === $content) {
-                throw new Exception(curl_error($ch), curl_errno($ch));
-            }
-
-            return $content;
-        } catch (Exception $e) {
-            if ($writeError == true) {
-                trigger_error(sprintf(
-                    'Curl failed with error #%d: %s, URL: %s',
-                    $e->getCode(), $e->getMessage(), $url),
-                    E_USER_ERROR);
-            } else {
-                throw new Exception(curl_error($ch), curl_errno($ch));
-            }
-        }
-
-        return;
-    }
 }

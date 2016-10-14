@@ -29,7 +29,7 @@ use Umbria\OpenApiBundle\Service\FilterBag;
  *
  * @author Lorenzo Franco Ranucci <loryzizu@gmail.com>
  */
-class ProposalController extends FOSRestController
+class ProposalController extends BaseController
 {
     const DEFAULT_PAGE_SIZE = 100;
     const DATASET_TOURISM_PROPOSAL = 'tourism-proposal';
