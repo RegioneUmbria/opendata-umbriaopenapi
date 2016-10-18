@@ -158,18 +158,15 @@ class ConsortiumController extends BaseController
 
     private function updateEntities()
     {
-        $cnt = 0;
 
         $this->graph = EasyRdf_Graph::newAndLoad($this->container->getParameter('consortium_graph_url'));
         $resources = $this->graph->resources();
         foreach ($resources as $resource) {
-            if ($cnt > 10) break;
             $resourceTypeArray = $resource->all("rdf:type");
             if ($resourceTypeArray != null) {
                 foreach ($resourceTypeArray as $resourceType) {
                     if (trim($resourceType) == "http://dati.umbria.it/tourism/ontology/turismo_consorzi") {
                         $this->createOrUpdateEntity($resource);
-                        $cnt++;
                         break;
                     }
                 }

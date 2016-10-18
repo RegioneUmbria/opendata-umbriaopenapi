@@ -257,7 +257,6 @@ class AttractorController extends BaseController
 
     private function updateEntities()
     {
-        $cnt = 0;
 
         $this->graph = EasyRdf_Graph::newAndLoad($this->container->getParameter('attractors_graph_url'));
         $this->sameAsGraph = EasyRdf_Graph::newAndLoad($this->container->getParameter('attractors_sameas_graph_url'));
@@ -265,7 +264,6 @@ class AttractorController extends BaseController
         /**@var EasyRdf_Resource[] $resources */
         $resources = $this->graph->resources();
         foreach ($resources as $resource) {
-            if ($cnt > 30) break;
             $resourceTypeArray = $resource->all("rdf:type");
             if ($resourceTypeArray != null) {
                 foreach ($resourceTypeArray as $resourceType) {
@@ -280,7 +278,6 @@ class AttractorController extends BaseController
                         }
 
                         $this->createOrUpdateEntity($resource, $sameAsResource, $locatedInResource);
-                        $cnt++;
                         break;
                     }
                 }
