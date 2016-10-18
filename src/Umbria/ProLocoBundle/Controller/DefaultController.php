@@ -10,6 +10,7 @@ use Umbria\OpenApiBundle\Entity\Tourism\GraphsEntities\Attractor;
 use Umbria\OpenApiBundle\Entity\Tourism\GraphsEntities\Consortium;
 use Umbria\OpenApiBundle\Entity\Tourism\GraphsEntities\Event;
 use Umbria\OpenApiBundle\Entity\Tourism\GraphsEntities\Iat;
+use Umbria\OpenApiBundle\Entity\Tourism\GraphsEntities\StrutturaRicettiva;
 use Umbria\OpenApiBundle\Entity\Tourism\PlaceItem\PlaceDetails;
 use Umbria\OpenApiBundle\Entity\Tourism\GraphsEntities\Profession;
 use Umbria\OpenApiBundle\Entity\Tourism\GraphsEntities\Proposal;
@@ -31,6 +32,7 @@ class DefaultController extends Controller
     private $consortiumRepo;
     private $professionRepo;
     private $iatRepo;
+    private $strutturaRicettivaRepo;
 
 
     /**
@@ -48,6 +50,7 @@ class DefaultController extends Controller
         $this->consortiumRepo = $em->getRepository('UmbriaOpenApiBundle:Tourism\GraphsEntities\Consortium');
         $this->professionRepo = $em->getRepository('UmbriaOpenApiBundle:Tourism\GraphsEntities\Profession');
         $this->iatRepo = $em->getRepository('UmbriaOpenApiBundle:Tourism\GraphsEntities\Iat');
+        $this->strutturaRicettivaRepo = $em->getRepository('UmbriaOpenApiBundle:Tourism\GraphsEntities\StrutturaRicettiva');
     }
 
     public function indexAction()
@@ -61,6 +64,7 @@ class DefaultController extends Controller
         $consorzi = array();
         $professioni = array();
         $iats = array();
+        $struttureRicettive = array();
 
             /** @var Attractor $attractor */
         foreach ($this->attractorRepo->findAll() as $attractor) {
@@ -209,11 +213,36 @@ class DefaultController extends Controller
                 }
             }
         }
+        /** @var StrutturaRicettiva $strutturaRicettiva */
+        foreach ($this->strutturaRicettivaRepo->findAll() as $strutturaRicettiva) {
+            if (isset($strutturaRicettiva)) {
+                $place = new PlaceDetails();
+                $place->setId($strutturaRicettiva->getId());
+                $place->setName($strutturaRicettiva->getName());
+                $place->setType('tourism_struttura-ricettiva');
+
+                if ($strutturaRicettiva->getAddress() != null &&
+                    $strutturaRicettiva->getAddress()->getLat() != null && $strutturaRicettiva->getAddress()->getLat() != 0
+                ) {
+                    $place->setLatitude($strutturaRicettiva->getAddress()->getLat());
+                    $place->setLongitude($strutturaRicettiva->getAddress()->getLng());
+                }
+
+                $uri = $this->get('router')->generate('struttura-ricettiva_show', array(
+                    'id' => $strutturaRicettiva->getId(),
+                ), UrlGeneratorInterface::ABSOLUTE_URL);
+                $place->setHref($uri);
+
+                if ($place->getLatitude() != '') {
+                    $struttureRicettive[] = $place;
+                }
+            }
+        }
 
         return $this->render('UmbriaProLocoBundle:Default:index.html.twig', array(
             'attrattori' => $attrattori, 'proposte' => $proposte, 'eventi' => $eventi,
             'agenzieViaggio' => $agenzieViaggio, 'professioni' => $professioni, 'consorzi' => $consorzi,
-            'iat' => $iats
+            'iat' => $iats, 'struttureRicettive' => $struttureRicettive
         ));
     }
 }

@@ -14,4 +14,4 @@ umbria_open_api_tourism_travel_agency: { type: rest, resource: 'Umbria\OpenApiBu
 umbria_open_api_tourism_consortium: { type: rest, resource: 'Umbria\OpenApiBundle\Controller\Tourism\ConsortiumController' }
 umbria_open_api_tourism_profession: { type: rest, resource: 'Umbria\OpenApiBundle\Controller\Tourism\ProfessionController' }
 umbria_open_api_tourism_iat: { type: rest, resource: 'Umbria\OpenApiBundle\Controller\Tourism\IatController' }
-
+umbria_open_api_tourism_struttura-ricettiva: { type: rest, resource: 'Umbria\OpenApiBundle\Controller\Tourism\StrutturaRicettivaController' }

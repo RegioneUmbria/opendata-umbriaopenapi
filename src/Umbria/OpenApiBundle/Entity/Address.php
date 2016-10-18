@@ -67,6 +67,20 @@ class Address
     private $istat;
 
     /**
+     * @var float
+     *
+     * @ORM\Column(name="lat", type="float", nullable=true)
+     */
+    private $lat;
+
+    /**
+     * @var float
+     *
+     * @ORM\Column(name="lng", type="float", nullable=true)
+     */
+    private $lng;
+
+    /**
      * @var array
      *
      * @ORM\Column(name="types", type="array", nullable=true)
@@ -168,6 +182,54 @@ class Address
     public function setIstat($istat)
     {
         $this->istat = $istat;
+    }
+
+    /**
+     * Set lat
+     *
+     * @param float $lat
+     *
+     * @return Address
+     */
+    public function setLat($lat)
+    {
+        $this->lat = $lat;
+
+        return $this;
+    }
+
+    /**
+     * Get lat
+     *
+     * @return float
+     */
+    public function getLat()
+    {
+        return $this->lat;
+    }
+
+    /**
+     * Set lng
+     *
+     * @param float $lng
+     *
+     * @return Address
+     */
+    public function setLng($lng)
+    {
+        $this->lng = $lng;
+
+        return $this;
+    }
+
+    /**
+     * Get lng
+     *
+     * @return float
+     */
+    public function getLng()
+    {
+        return $this->lng;
     }
 
     /**

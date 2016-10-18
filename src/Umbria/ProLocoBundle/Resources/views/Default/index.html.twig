@@ -21,7 +21,8 @@
             "tourism_travel_agency": [],
             "tourism_consortium": [],
             "tourism_profession": [],
-            "tourism_iat": []
+            "tourism_iat": [],
+            "tourism_struttura_ricettiva": []
         };
 
         // lista delle posizioni
@@ -116,6 +117,19 @@
             },
             {% endfor %}
         ];
+        var struttureRicettive = [
+            {% for entity in struttureRicettive %}
+            {
+                id: {{ entity.id }},
+                name: "{{ entity.name }}",
+                type: "{{ entity.type }}",
+                latitude: {{ entity.latitude }},
+                longitude: {{ entity.longitude }},
+                latLng: {lat: {{ entity.latitude }}, lng: {{ entity.longitude }}},
+                href: "{{ entity.href }}"
+            },
+            {% endfor %}
+        ];
 
         var mcAttrattori;
         var mcProposte;
@@ -124,6 +138,7 @@
         var mcConsorzi;
         var mcProfessioni;
         var mcIat;
+        var mcStruttureRicettive;
 
         function initMap() {
             // opzioni mappa
@@ -263,6 +278,17 @@
             var mcOptions7 = {maxZoom: 15, styles: clusterStyles7};
             mcIat = new MarkerClusterer(map, [], mcOptions7);
 
+            var clusterStyles8 = [
+                {
+                    textColor: '#011FFF',
+                    url: '{{ asset('img/map/cluster_marker.png') }}',
+                    height: 52,
+                    width: 53
+                }
+            ];
+            var mcOptions8 = {maxZoom: 15, styles: clusterStyles8};
+            mcStruttureRicettive = new MarkerClusterer(map, [], mcOptions8);
+
         }
         function initLegend() {
             //legend
@@ -336,6 +362,16 @@
                     '<span class="legendlabel">Iat </span>' +
                     '<input id="tourism_iat_cb" class="legendcheckbox" type="checkbox"' +
                     'onchange="updateMarkers(\'tourism_iat\')">' +
+                    '</div>';
+            legend.appendChild(div);
+
+            var div = document.createElement('div');
+            div.innerHTML =
+                    '<div class="legendrow">' +
+                    '<div style="background-color:#FFFFFF; width: 10px; height: 10px; display: inline-block"></div> ' +
+                    '<span class="legendlabel">Strutture Ricettive </span>' +
+                    '<input id="tourism_iat_cb" class="legendcheckbox" type="checkbox"' +
+                    'onchange="updateMarkers(\'tourism_struttura_ricettiva\')">' +
                     '</div>';
             legend.appendChild(div);
 
@@ -455,7 +491,8 @@
                 tourism_travel_agency: 0,
                 tourism_consortium: 0,
                 tourism_profession: 0,
-                tourism_iat: 0
+                tourism_iat: 0,
+                tourism_struttura_ricettiva: 0
             };
 
             if (document.getElementById("tourism_attractor_cb").checked) {
@@ -478,6 +515,9 @@
             }
             if (document.getElementById("tourism_iat_cb").checked) {
                 selectedPOI.tourism_iat = 1;
+            }
+            if (document.getElementById("tourism_struttura_ricettiva_cb").checked) {
+                selectedPOI.tourism_struttura_ricettiva = 1;
             }
             return selectedPOI;
         }
@@ -511,6 +551,10 @@
             }
             if (document.getElementById("tourism_iat_cb").checked) {
                 selectedPOI[cnt] = "tourism_iat";
+                cnt++;
+            }
+            if (document.getElementById("tourism_struttura_ricettiva_cb").checked) {
+                selectedPOI[cnt] = "tourism_struttura_ricettiva";
                 cnt++;
             }
             return selectedPOI;
@@ -556,7 +600,10 @@
                 return professioni;
             } else if (type == 'tourism_iat') {
                 return iat;
+            } else if (type == 'tourism_struttura_ricettiva') {
+                return struttureRicettive;
             }
+
             return [];
         }
 
@@ -575,6 +622,8 @@
                 return mcProfessioni;
             } else if (type == 'tourism_iat') {
                 return mcIat;
+            } else if (type == 'tourism_struttura_ricettiva') {
+                return mcStruttureRicettive;
             }
             return [];
         }
@@ -595,7 +644,10 @@
                 markerIcon = '{{ asset('img/map/marker_blue.png') }}';
             } else if (type == 'tourism_iat') {
                 markerIcon = '{{ asset('img/map/marker_blue_dark.png') }}';
+            } else if (type == 'tourism_struttura_ricettiva') {
+                markerIcon = '{{ asset('img/map/marker_blue_dark.png') }}';
             }
+
             return markerIcon;
         }
 
@@ -614,6 +666,8 @@
                 return markerGroups.tourism_profession;
             } else if (type == 'tourism_iat') {
                 return markerGroups.tourism_iat;
+            } else if (type == 'tourism_struttura_ricettiva') {
+                return markerGroups.tourism_struttura_ricettiva;
             }
             return [];
         }
@@ -647,6 +701,9 @@
                     return true;
             } else if (type == 'tourism_iat') {
                 if (document.getElementById("tourism_iat_cb").checked)
+                    return true;
+            } else if (type == 'tourism_struttura_ricettiva') {
+                if (document.getElementById("tourism_struttura_ricettiva_cb").checked)
                     return true;
             }
             return false;
