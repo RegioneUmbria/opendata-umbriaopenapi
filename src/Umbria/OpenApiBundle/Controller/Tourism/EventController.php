@@ -51,6 +51,7 @@ class EventController extends BaseController
      */
     public function __construct($em, $filterBag, $paginator)
     {
+        parent::__construct($em);
         $this->filterBag = $filterBag;
         $this->paginator = $paginator;
         $this->eventRepo = $em->getRepository('UmbriaOpenApiBundle:Tourism\GraphsEntities\Event');

@@ -56,6 +56,7 @@ class IatController extends BaseController
      */
     public function __construct($em, $filterBag, $paginator)
     {
+        parent::__construct($em);
         $this->filterBag = $filterBag;
         $this->paginator = $paginator;
         $this->iatRepo = $em->getRepository('UmbriaOpenApiBundle:Tourism\GraphsEntities\Iat');

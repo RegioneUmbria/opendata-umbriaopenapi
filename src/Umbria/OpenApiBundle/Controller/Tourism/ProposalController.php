@@ -56,6 +56,7 @@ class ProposalController extends BaseController
      */
     public function __construct($em, $filterBag, $paginator)
     {
+        parent::__construct($em);
         $this->filterBag = $filterBag;
         $this->paginator = $paginator;
         $this->proposalRepo = $em->getRepository('UmbriaOpenApiBundle:Tourism\GraphsEntities\Proposal');

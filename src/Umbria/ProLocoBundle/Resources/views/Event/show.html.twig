@@ -13,8 +13,17 @@
             <div class="col-md-7">
                 <h4>{{ event.textTitle }}</h4>
                 <p>
-                    {{ event.comment }}
+                    <small>
+                        {{ event.comment }}
+                    </small>
                 </p>
+                <br/>
+                <br/>
+                {% for description in event.descriptions %}
+                    {{ description.title|raw }}
+                    <br/>
+                    {{ description.text|raw }}
+                {% endfor %}
             </div>
             <div class="col-md-5">
                 <div class="row">

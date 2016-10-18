@@ -32,22 +32,22 @@ class BaseController extends FOSRestController
 
 
     /**
-     * @param EasyRdf_Resource[] $sameAsArray
+     * @param EasyRdf_Resource[] $externalResourcesUriArray
      * @param String $sparqlEndpointUri
      * @param String $labelPropertyUri
      * @param String $descriptionPropertyUri
      * @param String $resourceOriginPropertyUri
      * @return ExternalResource[]|null
      */
-    protected function getExternalResources($sameAsArray, $sparqlEndpointUri,
+    protected function getExternalResources($externalResourcesUriArray, $sparqlEndpointUri,
                                             $labelPropertyUri, $descriptionPropertyUri, $resourceOriginPropertyUri)
     {
-        if ($sameAsArray != null) {
-            $tempSameAs = array();
+        if ($externalResourcesUriArray != null) {
+            $tempExternalResources = array();
             $cnt = 0;
-            foreach ($sameAsArray as $sameAs) {
+            foreach ($externalResourcesUriArray as $externalResourcesUri) {
                 $externalResource = null;
-                $externalResourceUri = $sameAs->toRdfPhp()['value'];
+                $externalResourceUri = $externalResourcesUri->toRdfPhp()['value'];
                 $oldExternalResource = $this->externalResourceRepo->find($externalResourceUri);
                 if ($oldExternalResource != null) {
                     $externalResource = $oldExternalResource;
@@ -85,11 +85,11 @@ class BaseController extends FOSRestController
                     $externalResource->setResourceOriginUrl($current->o);
                     $sparqlResultResourceOrigin->next();
                 }
-                $tempSameAs[$cnt] = $externalResource;
+                $tempExternalResources[$cnt] = $externalResource;
                 $cnt++;
             }
-            if (count($tempSameAs) > 0) {
-                return $tempSameAs;
+            if (count($tempExternalResources) > 0) {
+                return $tempExternalResources;
             } else {
                 return null;
             }

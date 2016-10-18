@@ -57,6 +57,7 @@ class ProfessionController extends BaseController
      */
     public function __construct($em, $filterBag, $paginator)
     {
+        parent::__construct($em);
         $this->filterBag = $filterBag;
         $this->paginator = $paginator;
         $this->professionRepo = $em->getRepository('UmbriaOpenApiBundle:Tourism\GraphsEntities\Profession');

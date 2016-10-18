@@ -265,7 +265,7 @@ class AttractorController extends BaseController
         /**@var EasyRdf_Resource[] $resources */
         $resources = $this->graph->resources();
         foreach ($resources as $resource) {
-            if ($cnt > 10) break;
+            if ($cnt > 30) break;
             $resourceTypeArray = $resource->all("rdf:type");
             if ($resourceTypeArray != null) {
                 foreach ($resourceTypeArray as $resourceType) {
@@ -344,6 +344,7 @@ class AttractorController extends BaseController
 
             $imagearray1 = $attractorResource->all("<http://dati.umbria.it/tourism/ontology/immagine_copertina>");
             $imagearray2 = $attractorResource->all("<http://dati.umbria.it/tourism/ontology/immagine_spalla_destra>");
+            /**@var EasyRdf_Resource[] $imagearray */
             $imagearray = array_merge($imagearray1, $imagearray2);
             if ($imagearray != null) {
                 $tempImage = array();
@@ -399,8 +400,8 @@ class AttractorController extends BaseController
             }
             if ($locatedInResource != null) {
                 /**@var EasyRdf_Resource $locatedInResource */
-                $locatedInArray = $locatedInResource->all("<http://www.w3.org/2002/07/owl#sameAs>");
-                $newAttractor->setlocatedIn($this->getExternalResources($locatedInArray, "http://dbpedia.org/sparql",
+                $locatedInArray = $locatedInResource->all("<http://www.geonames.org/ontology#locatedIn>");
+                $newAttractor->setlocatedIn($this->getExternalResources($locatedInArray, "http://it.dbpedia.org/sparql",
                     "http://www.w3.org/2000/01/rdf-schema#label", "http://dbpedia.org/ontology/abstract", "http://www.w3.org/ns/prov#wasDerivedFrom"));
             }
 
