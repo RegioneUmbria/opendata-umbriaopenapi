@@ -155,7 +155,7 @@ class ImpiantoSportivoController
         $qb = $this->em->createQueryBuilder();
         $builder = $qb
             ->select('a')
-            ->from('UmbriaOpenApiBundle:Tourism\GraphsEntities\Attractor', 'a');
+            ->from('UmbriaOpenApiBundle:Tourism\GraphsEntities\ImpiantoSportivo', 'a');
 
 
         if ($labelLike != null) {
@@ -193,12 +193,13 @@ class ImpiantoSportivoController
             $lngMax != null ||
             $lngMin != null
         ) {
+            $builder = $qb->join('a.address', 'address');
             if ($latMax != null) {
                 $builder =
                     $qb->andWhere(
-                        $qb->expr()->lte("a.lat", ':latMax'),
-                        $qb->expr()->isNotNull("a.lat"),
-                        $qb->expr()->gt("a.lat", ':empty')
+                        $qb->expr()->lte("address.lat", ':latMax'),
+                        $qb->expr()->isNotNull("address.lat"),
+                        $qb->expr()->gt("address.lat", ':empty')
                     )
                         ->setParameter('latMax', $latMax)
                         ->setParameter('empty', '0');
@@ -206,9 +207,9 @@ class ImpiantoSportivoController
             if ($latMin != null) {
                 $builder =
                     $qb->andWhere(
-                        $qb->expr()->gte("a.lat", ':latMin'),
-                        $qb->expr()->isNotNull("a.lat"),
-                        $qb->expr()->gt("a.lat", ":empty")
+                        $qb->expr()->gte("address.lat", ':latMin'),
+                        $qb->expr()->isNotNull("address.lat"),
+                        $qb->expr()->gt("address.lat", ":empty")
                     )
                         ->setParameter('latMin', $latMin)
                         ->setParameter('empty', '0');
@@ -216,9 +217,9 @@ class ImpiantoSportivoController
             if ($lngMax != null) {
                 $builder =
                     $qb->andWhere(
-                        $qb->expr()->lte("a.lng", ':lngMax'),
-                        $qb->expr()->isNotNull("a.lng"),
-                        $qb->expr()->gt("a.longitude", ":empty")
+                        $qb->expr()->lte("address.lng", ':lngMax'),
+                        $qb->expr()->isNotNull("address.lng"),
+                        $qb->expr()->gt("address.lng", ":empty")
                     )
                         ->setParameter('lngMax', $lngMax)
                         ->setParameter('empty', '0');
@@ -226,9 +227,9 @@ class ImpiantoSportivoController
             if ($lngMin != null) {
                 $builder =
                     $qb->andWhere(
-                        $qb->expr()->gte("a.lng", ':lngMin'),
-                        $qb->expr()->isNotNull("a.lng"),
-                        $qb->expr()->gt("a.lng", ":empty")
+                        $qb->expr()->gte("address.lng", ':lngMin'),
+                        $qb->expr()->isNotNull("address.lng"),
+                        $qb->expr()->gt("address.lng", ":empty")
                     )
                         ->setParameter('lngMin', $lngMin)
                         ->setParameter('empty', '0');
