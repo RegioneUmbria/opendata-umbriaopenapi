@@ -332,30 +332,9 @@ class ImpiantoSportivoController
                 $addressObject->setAddressLocality(($p = $addressResource->get("<http://schema.org/addressLocality>")) != null ? $p->getValue() : null);
                 $addressObject->setAddressRegion(($p = $addressResource->get("<http://schema.org/addressRegion>")) != null ? $p->getValue() : null);
                 $addressObject->setStreetAddress(($p = $addressResource->get("<http://schema.org/streetAddress>")) != null ? $p->getValue() : null);
+                $addressObject->setLat(($p = $addressResource->get("<http://www.w3.org/2003/01/geo/wgs84_pos#lat>")) != null ? $p->getValue() : null);
+                $addressObject->setLng(($p = $addressResource->get("<http://www.w3.org/2003/01/geo/wgs84_pos#long>")) != null ? $p->getValue() : null);
                 $newImpiantoSportivo->setAddress($addressObject);
-
-                // Google Maps Api --------------------------
-                $url = 'http://maps.google.com/maps/api/geocode/json?address=' . urlencode($addressObject->getStreetAddress()) .
-                    '+' . $addressObject->getPostalCode() .
-                    '+' . $addressObject->getAddressLocality() .
-                    '+' . $addressObject->getAddressRegion() . '+Umbria+Italia';
-
-                $resp = json_decode($this->getWebResource($url), true);
-
-                // response status will be 'OK', if able to geocode given address
-                if ($resp['status'] == 'OK') {
-
-                    // get the important data
-                    $lat = $resp['results'][0]['geometry']['location']['lat'];
-                    $lng = $resp['results'][0]['geometry']['location']['lng'];
-
-                    // verify if data is complete
-                    if ($lat && $lng) {
-                        $newImpiantoSportivo->setLat($lat);
-                        $newImpiantoSportivo->setLng($lng);
-                    }
-                }
-
             }
 
             if (!$isAlreadyPersisted) {
