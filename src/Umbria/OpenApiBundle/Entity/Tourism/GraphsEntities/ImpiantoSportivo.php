@@ -87,9 +87,9 @@ class ImpiantoSportivo
     /**
      * @var integer
      *
-     * @ORM\Column(name="employes", type="integer", nullable=true)
+     * @ORM\Column(name="employees", type="integer", nullable=true)
      */
-    private $employes;
+    private $employees;
 
     /**
      * @var Address
@@ -271,17 +271,17 @@ class ImpiantoSportivo
     /**
      * @return int
      */
-    public function getEmployes()
+    public function getEmployees()
     {
-        return $this->employes;
+        return $this->employees;
     }
 
     /**
-     * @param int $employes
+     * @param int $employees
      */
-    public function setEmployes($employes)
+    public function setEmployees($employees)
     {
-        $this->employes = $employes;
+        $this->employees = $employees;
     }
 
     /**
