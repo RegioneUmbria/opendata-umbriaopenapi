@@ -7,7 +7,6 @@ use Doctrine\ORM\EntityManager;
 use EasyRdf_Graph;
 use EasyRdf_Resource;
 use FOS\RestBundle\Controller\Annotations as Rest;
-use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\View\View;
 use JMS\DiExtraBundle\Annotation as DI;
 use Knp\Component\Pager\Pagination\AbstractPagination;
@@ -21,7 +20,6 @@ use Umbria\OpenApiBundle\Entity\Tourism\Setting;
 use Umbria\OpenApiBundle\Repository\Tourism\GraphsEntities\IatRepository;
 use Umbria\OpenApiBundle\Serializer\View\EntityResponse;
 use Umbria\OpenApiBundle\Service\FilterBag;
-use Exception;
 
 /**
  * Class IatController

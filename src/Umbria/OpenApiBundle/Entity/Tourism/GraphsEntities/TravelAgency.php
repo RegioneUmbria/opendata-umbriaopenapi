@@ -344,7 +344,7 @@ class TravelAgency
     /**
      * Get address
      *
-     * @return \stdClass
+     * @return Address
      */
     public function getAddress()
     {
