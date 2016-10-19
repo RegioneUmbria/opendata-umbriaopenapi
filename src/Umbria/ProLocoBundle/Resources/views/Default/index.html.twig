@@ -368,9 +368,9 @@
             var div = document.createElement('div');
             div.innerHTML =
                     '<div class="legendrow">' +
-                    '<div style="background-color:#FFFFFF; width: 10px; height: 10px; display: inline-block"></div> ' +
+                    '<div style="background-color:#fa6603; width: 10px; height: 10px; display: inline-block"></div> ' +
                     '<span class="legendlabel">Strutture Ricettive </span>' +
-                    '<input id="tourism_iat_cb" class="legendcheckbox" type="checkbox"' +
+                    '<input id="tourism_struttura_ricettiva_cb" class="legendcheckbox" type="checkbox"' +
                     'onchange="updateMarkers(\'tourism_struttura_ricettiva\')">' +
                     '</div>';
             legend.appendChild(div);
@@ -631,21 +631,21 @@
         function getMarkerIconByType(type) {
             var markerIcon;
             if (type == 'tourism_attractor') {
-                markerIcon = '{{ asset('img/map/marker_red.png') }}';
+                markerIcon = '{{ asset('img/map/marker_star_red.png') }}';
             } else if (type == 'tourism_proposal') {
-                markerIcon = '{{ asset('img/map/marker_orange.png') }}';
+                markerIcon = '{{ asset('img/map/marker_star_orange.png') }}';
             } else if (type == 'tourism_event') {
-                markerIcon = '{{ asset('img/map/marker_green.png') }}';
+                markerIcon = '{{ asset('img/map/marker_star_green.png') }}';
             } else if (type == 'tourism_travel_agency') {
-                markerIcon = '{{ asset('img/map/marker_yellow.png') }}';
+                markerIcon = '{{ asset('img/map/marker_star_yellow.png') }}';
             } else if (type == 'tourism_consortium') {
-                markerIcon = '{{ asset('img/map/marker_purple.png') }}';
+                markerIcon = '{{ asset('img/map/marker_star_purple.png') }}';
             } else if (type == 'tourism_profession') {
-                markerIcon = '{{ asset('img/map/marker_blue.png') }}';
+                markerIcon = '{{ asset('img/map/marker_star_blue.png') }}';
             } else if (type == 'tourism_iat') {
-                markerIcon = '{{ asset('img/map/marker_blue_dark.png') }}';
+                markerIcon = '{{ asset('img/map/marker_star_blue_dark.png') }}';
             } else if (type == 'tourism_struttura_ricettiva') {
-                markerIcon = '{{ asset('img/map/marker_blue_dark.png') }}';
+                markerIcon = '{{ asset('img/map/marker_star_orange_dark.png') }}';
             }
 
             return markerIcon;
