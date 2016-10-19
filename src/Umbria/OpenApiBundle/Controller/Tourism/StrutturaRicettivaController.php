@@ -90,7 +90,7 @@ class StrutturaRicettivaController extends BaseController
     }
 
     /**
-     * @Rest\Get(pattern="/open-api/tourism-struttura-ricettiva")
+     * @Rest\Get(pattern="/open-api/tourism-accomodation")
      *
      * @param Request $request
      *
@@ -180,52 +180,53 @@ class StrutturaRicettivaController extends BaseController
 
         }
 
-//        if ($latMax != null ||
-//            $latMin != null ||
-//            $lngMax != null ||
-//            $lngMin != null
-//        ) {
-//            if ($latMax != null) {
-//                $builder =
-//                    $qb->andWhere(
-//                        $qb->expr()->lte("a.lat", ':latMax'),
-//                        $qb->expr()->isNotNull("a.lat"),
-//                        $qb->expr()->gt("a.lat", ':empty')
-//                    )
-//                        ->setParameter('latMax', $latMax)
-//                        ->setParameter('empty', '0');
-//            }
-//            if ($latMin != null) {
-//                $builder =
-//                    $qb->andWhere(
-//                        $qb->expr()->gte("a.lat", ':latMin'),
-//                        $qb->expr()->isNotNull("a.lat"),
-//                        $qb->expr()->gt("a.lat", ":empty")
-//                    )
-//                        ->setParameter('latMin', $latMin)
-//                        ->setParameter('empty', '0');
-//            }
-//            if ($lngMax != null) {
-//                $builder =
-//                    $qb->andWhere(
-//                        $qb->expr()->lte("a.lng", ':lngMax'),
-//                        $qb->expr()->isNotNull("a.lng"),
-//                        $qb->expr()->gt("a.longitude", ":empty")
-//                    )
-//                        ->setParameter('lngMax', $lngMax)
-//                        ->setParameter('empty', '0');
-//            }
-//            if ($lngMin != null) {
-//                $builder =
-//                    $qb->andWhere(
-//                        $qb->expr()->gte("a.lng", ':lngMin'),
-//                        $qb->expr()->isNotNull("a.lng"),
-//                        $qb->expr()->gt("a.lng", ":empty")
-//                    )
-//                        ->setParameter('lngMin', $lngMin)
-//                        ->setParameter('empty', '0');
-//            }
-//        }
+        if ($latMax != null ||
+            $latMin != null ||
+            $lngMax != null ||
+            $lngMin != null
+        ) {
+            $builder = $qb->join('a.address', 'address');
+            if ($latMax != null) {
+                $builder =
+                    $qb->andWhere(
+                        $qb->expr()->lte("address.lat", ':latMax'),
+                        $qb->expr()->isNotNull("address.lat"),
+                        $qb->expr()->gt("address.lat", ':empty')
+                    )
+                        ->setParameter('latMax', $latMax)
+                        ->setParameter('empty', '0');
+            }
+            if ($latMin != null) {
+                $builder =
+                    $qb->andWhere(
+                        $qb->expr()->gte("address.lat", ':latMin'),
+                        $qb->expr()->isNotNull("address.lat"),
+                        $qb->expr()->gt("address.lat", ":empty")
+                    )
+                        ->setParameter('latMin', $latMin)
+                        ->setParameter('empty', '0');
+            }
+            if ($lngMax != null) {
+                $builder =
+                    $qb->andWhere(
+                        $qb->expr()->lte("address.lng", ':lngMax'),
+                        $qb->expr()->isNotNull("address.lng"),
+                        $qb->expr()->gt("address.lng", ":empty")
+                    )
+                        ->setParameter('lngMax', $lngMax)
+                        ->setParameter('empty', '0');
+            }
+            if ($lngMin != null) {
+                $builder =
+                    $qb->andWhere(
+                        $qb->expr()->gte("address.lng", ':lngMin'),
+                        $qb->expr()->isNotNull("address.lng"),
+                        $qb->expr()->gt("address.lng", ":empty")
+                    )
+                        ->setParameter('lngMin', $lngMin)
+                        ->setParameter('empty', '0');
+            }
+        }
 
         /** @var AbstractPagination $resultsPagination */
         $resultsPagination = $this->paginator->paginate($builder, $page, $limit);
@@ -240,18 +241,15 @@ class StrutturaRicettivaController extends BaseController
 
     private function updateEntities()
     {
-        $count = 0;
         $this->graph = EasyRdf_Graph::newAndLoad($this->container->getParameter('struttura-ricettiva_graph_url'));
         /**@var EasyRdf_Resource[] $resources */
         $resources = $this->graph->resources();
         foreach ($resources as $resource) {
-            if ($count > 20) break;
             $resourceTypeArray = $resource->all("rdf:type");
             if ($resourceTypeArray != null) {
                 foreach ($resourceTypeArray as $resourceType) {
                     if (trim($resourceType) == "http://purl.org/acco/ns#Accomodation") {//is strutturaRicettiva
                         $this->createOrUpdateEntity($resource);
-                        $count++;
                         break;
                     }
                 }
