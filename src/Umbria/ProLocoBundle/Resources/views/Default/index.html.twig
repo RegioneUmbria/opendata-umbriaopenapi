@@ -21,7 +21,8 @@
             "tourism_travel_agency": [],
             "tourism_consortium": [],
             "tourism_profession": [],
-            "tourism_iat": []
+            "tourism_iat": [],
+            "tourism_impianto_sportivo": []
         };
 
         // lista delle posizioni
@@ -116,6 +117,19 @@
             },
             {% endfor %}
         ];
+        var impiantiSportivi = [
+            {% for entity in impiantiSportivi %}
+            {
+                id: {{ entity.id }},
+                name: "{{ entity.name }}",
+                type: "{{ entity.type }}",
+                latitude: {{ entity.latitude }},
+                longitude: {{ entity.longitude }},
+                latLng: {lat: {{ entity.latitude }}, lng: {{ entity.longitude }}},
+                href: "{{ entity.href }}"
+            },
+            {% endfor %}
+        ];
 
         var mcAttrattori;
         var mcProposte;
@@ -124,6 +138,7 @@
         var mcConsorzi;
         var mcProfessioni;
         var mcIat;
+        var mcImpiantiSportivi;
 
         function initMap() {
             // opzioni mappa
@@ -263,6 +278,17 @@
             var mcOptions7 = {maxZoom: 15, styles: clusterStyles7};
             mcIat = new MarkerClusterer(map, [], mcOptions7);
 
+            var clusterStyles8 = [
+                {
+                    textColor: '#011FFF',
+                    url: '{{ asset('img/map/cluster_marker.png') }}',
+                    height: 52,
+                    width: 53
+                }
+            ];
+            var mcOptions8 = {maxZoom: 15, styles: clusterStyles8};
+            mcImpiantiSportivi = new MarkerClusterer(map, [], mcOptions8);
+
         }
         function initLegend() {
             //legend
@@ -336,6 +362,16 @@
                     '<span class="legendlabel">Iat </span>' +
                     '<input id="tourism_iat_cb" class="legendcheckbox" type="checkbox"' +
                     'onchange="updateMarkers(\'tourism_iat\')">' +
+                    '</div>';
+            legend.appendChild(div);
+
+            var div = document.createElement('div');
+            div.innerHTML =
+                    '<div class="legendrow">' +
+                    '<div style="background-color:#fa6603; width: 10px; height: 10px; display: inline-block"></div> ' +
+                    '<span class="legendlabel">Impianti Sportivi </span>' +
+                    '<input id="tourism_impianto_sportivo_cb" class="legendcheckbox" type="checkbox"' +
+                    'onchange="updateMarkers(\'tourism_impianto_sportivo\')">' +
                     '</div>';
             legend.appendChild(div);
 
@@ -455,7 +491,8 @@
                 tourism_travel_agency: 0,
                 tourism_consortium: 0,
                 tourism_profession: 0,
-                tourism_iat: 0
+                tourism_iat: 0,
+                tourism_impianto_sportivo: 0
             };
 
             if (document.getElementById("tourism_attractor_cb").checked) {
@@ -478,6 +515,9 @@
             }
             if (document.getElementById("tourism_iat_cb").checked) {
                 selectedPOI.tourism_iat = 1;
+            }
+            if (document.getElementById("tourism_impianto_sportivo_cb").checked) {
+                selectedPOI.tourism_impianto_sportivo = 1;
             }
             return selectedPOI;
         }
@@ -511,6 +551,10 @@
             }
             if (document.getElementById("tourism_iat_cb").checked) {
                 selectedPOI[cnt] = "tourism_iat";
+                cnt++;
+            }
+            if (document.getElementById("tourism_impianto_sportivo_cb").checked) {
+                selectedPOI[cnt] = "tourism_impianto_sportivo";
                 cnt++;
             }
             return selectedPOI;
@@ -556,7 +600,10 @@
                 return professioni;
             } else if (type == 'tourism_iat') {
                 return iat;
+            } else if (type == 'tourism_impianto_sportivo') {
+                return impiantiSportivi;
             }
+
             return [];
         }
 
@@ -575,6 +622,8 @@
                 return mcProfessioni;
             } else if (type == 'tourism_iat') {
                 return mcIat;
+            } else if (type == 'tourism_impianto_sportivo') {
+                return mcImpiantiSportivi;
             }
             return [];
         }
@@ -582,20 +631,23 @@
         function getMarkerIconByType(type) {
             var markerIcon;
             if (type == 'tourism_attractor') {
-                markerIcon = '{{ asset('img/map/marker_red.png') }}';
+                markerIcon = '{{ asset('img/map/marker_star_red.png') }}';
             } else if (type == 'tourism_proposal') {
-                markerIcon = '{{ asset('img/map/marker_orange.png') }}';
+                markerIcon = '{{ asset('img/map/marker_star_orange.png') }}';
             } else if (type == 'tourism_event') {
-                markerIcon = '{{ asset('img/map/marker_green.png') }}';
+                markerIcon = '{{ asset('img/map/marker_star_green.png') }}';
             } else if (type == 'tourism_travel_agency') {
-                markerIcon = '{{ asset('img/map/marker_yellow.png') }}';
+                markerIcon = '{{ asset('img/map/marker_star_yellow.png') }}';
             } else if (type == 'tourism_consortium') {
-                markerIcon = '{{ asset('img/map/marker_purple.png') }}';
+                markerIcon = '{{ asset('img/map/marker_star_purple.png') }}';
             } else if (type == 'tourism_profession') {
-                markerIcon = '{{ asset('img/map/marker_blue.png') }}';
+                markerIcon = '{{ asset('img/map/marker_star_blue.png') }}';
             } else if (type == 'tourism_iat') {
-                markerIcon = '{{ asset('img/map/marker_blue_dark.png') }}';
+                markerIcon = '{{ asset('img/map/marker_star_blue_dark.png') }}';
+            } else if (type == 'tourism_impianto_sportivo') {
+                markerIcon = '{{ asset('img/map/marker_football_grey.png') }}';
             }
+
             return markerIcon;
         }
 
@@ -614,6 +666,8 @@
                 return markerGroups.tourism_profession;
             } else if (type == 'tourism_iat') {
                 return markerGroups.tourism_iat;
+            } else if (type == 'tourism_impianto_sportivo') {
+                return markerGroups.tourism_impianto_sportivo;
             }
             return [];
         }
@@ -648,6 +702,9 @@
             } else if (type == 'tourism_iat') {
                 if (document.getElementById("tourism_iat_cb").checked)
                     return true;
+            } else if (type == 'tourism_impianto_sportivo') {
+                if (document.getElementById("tourism_impianto_sportivo_cb").checked)
+                    return true;
             }
             return false;
         }
@@ -669,8 +726,8 @@
          var markerGroup = markerGroups[i];
          for(var j = 0; j < markerGroup.length; j++) {
          markerGroup[j].setMap(map);
-                }
-            }
+         }
+         }
          }*/
 
 
