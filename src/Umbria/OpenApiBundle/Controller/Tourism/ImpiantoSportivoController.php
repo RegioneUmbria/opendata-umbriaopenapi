@@ -17,6 +17,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Umbria\OpenApiBundle\Entity\Address;
 use Umbria\OpenApiBundle\Entity\Tourism\GraphsEntities\ImpiantoSportivo;
 use Umbria\OpenApiBundle\Entity\Tourism\Setting;
+use Umbria\OpenApiBundle\Entity\Type;
 use Umbria\OpenApiBundle\Repository\Tourism\GraphsEntities\ImpiantoSportivoRepository;
 use Umbria\OpenApiBundle\Serializer\View\EntityResponse;
 use Umbria\OpenApiBundle\Service\FilterBag;
@@ -41,6 +42,7 @@ class ImpiantoSportivoController
     /**@var ImpiantoSportivoRepository $impiantoSportivoRepo */
     private $impiantoSportivoRepo;
     private $settingsRepo;
+    private $typeRepo;
 
     private $graph;
 
@@ -61,6 +63,7 @@ class ImpiantoSportivoController
         $this->paginator = $paginator;
         $this->impiantoSportivoRepo = $em->getRepository('UmbriaOpenApiBundle:Tourism\GraphsEntities\ImpiantoSportivo');
         $this->settingsRepo = $em->getRepository('UmbriaOpenApiBundle:Tourism\Setting');
+        $this->typeRepo = $em->getRepository('UmbriaOpenApiBundle:Type');
         $this->em = $em;
     }
 
@@ -117,7 +120,7 @@ class ImpiantoSportivoController
      */
     public function getTourismImpiantoSportivoListAction(Request $request)
     {
-        $daysToOld = $this->container->getParameter('attractor_days_to_old');
+        $daysToOld = $this->container->getParameter('impianto_sportivo_days_to_old');
         $filters = $this->filterBag->getFilterBag($request);
         $offset = $filters->has('start') ? $filters->get('start') : 0;
         $limit = $filters->has('limit') ? $filters->get('limit') : self::DEFAULT_PAGE_SIZE;
@@ -250,14 +253,14 @@ class ImpiantoSportivoController
     private function updateEntities()
     {
 
-        $this->graph = EasyRdf_Graph::newAndLoad($this->container->getParameter('impiantoSportivo_graph_url'));
+        $this->graph = EasyRdf_Graph::newAndLoad($this->container->getParameter('impianto_sportivo_graph_url'));
         /**@var EasyRdf_Resource[] $resources */
         $resources = $this->graph->resources();
         foreach ($resources as $resource) {
             $resourceTypeArray = $resource->all("rdf:type");
             if ($resourceTypeArray != null) {
                 foreach ($resourceTypeArray as $resourceType) {
-                    if (trim($resourceType) == "http://dati.umbria.it/turismo/ontology/impiantoSportivoi_turistiche") {
+                    if (trim($resourceType) == "http://dbpedia.org/ontology/sportFacility") {
                         $this->createOrUpdateEntity($resource);
                         break;
                     }
@@ -293,11 +296,19 @@ class ImpiantoSportivoController
             /**@var EasyRdf_Resource[] $typesarray */
             $typesarray = $impiantoSportivoResource->all("rdf:type");
             if ($typesarray != null) {
+                /**@var Type[] $tempTypes */
                 $tempTypes = array();
-
                 $cnt = 0;
                 foreach ($typesarray as $type) {
-                    $tempTypes[$cnt] = $type->toRdfPhp()['value'];
+                    $oldType = $this->typeRepo->find($type->getUri());
+                    if ($oldType != null) {
+                        $tempTypes[$cnt] = $oldType;
+                    } else {
+                        $tempTypes[$cnt] = new Type();
+                        $tempTypes[$cnt]->setUri($type->getUri());
+                        $tempTypes[$cnt]->setName(($p = $type->get("rdfs:label")) != null ? $p->getValue() : null);
+                        $tempTypes[$cnt]->setComment(($p = $type->get("<http://www.w3.org/2000/01/rdf-schema#comment>")) != null ? $p->getValue() : null);
+                    }
                     $cnt++;
                 }
                 count($tempTypes) > 0 ? $newImpiantoSportivo->setTypes($tempTypes) : $newImpiantoSportivo->setTypes(null);
@@ -331,7 +342,7 @@ class ImpiantoSportivoController
             }
 
             /**@var EasyRdf_Resource $addressResource */
-            $addressResource = $impiantoSportivoResource->get("<http://dati.umbria.it/tourism/ontology/indirizzo>");
+            $addressResource = $impiantoSportivoResource->get("<http://schema.org/address>");
             if ($addressResource != null) {
                 $addressObject = new Address();
                 $addressObject->setPostalCode(($p = $addressResource->get("<http://schema.org/postalCode>")) != null ? $p->getValue() : null);

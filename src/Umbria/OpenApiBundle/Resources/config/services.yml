@@ -26,8 +26,8 @@ parameters:
     iat_graph_url: http://dati.umbria.it/dataset/32cca8e8-4e6e-43ed-b7df-2f577de8ac4d/resource/f6735fc3-1008-4694-95be-79bbe3e74863/download/iatitit.zipiatitit.rdf
     iat_days_to_old: 1
 
-    impianti_sportivi_graph_url: https://odnt-srv01/internalcatalog/dataset/fef2ef06-333a-42c8-93d0-3eea2bc96e75/resource/03dde0e7-d2d8-4a39-b4db-f9ab72bf1eff/download/impiantisportiviGeocoded.rdf
-    impianti_sportivi_days_to_old: 1
+    impianto_sportivo_graph_url: http://odnt-srv01/dataset/2dca7f88-78ba-46e6-ba1a-5552362309fe/resource/6c3982ab-b3f7-4f71-ade9-1621e5c4c5e8/download/impiantisportiviGeocoded.rdf
+    impianto_sportivo_days_to_old: 0
 
 services:
     umbria_open_api.tourism_entity_updater:
