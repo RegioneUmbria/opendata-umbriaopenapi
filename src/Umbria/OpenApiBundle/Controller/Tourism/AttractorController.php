@@ -161,6 +161,7 @@ class AttractorController extends BaseController
             $this->em->flush();
             $this->updateEntities();
         }
+
         $qb = $this->em->createQueryBuilder();
         $builder = $qb
             ->select('a')
@@ -227,7 +228,7 @@ class AttractorController extends BaseController
                     $qb->andWhere(
                         $qb->expr()->lte("a.lng", ':lngMax'),
                         $qb->expr()->isNotNull("a.lng"),
-                        $qb->expr()->gt("a.longitude", ":empty")
+                        $qb->expr()->gt("a.lng", ":empty")
                     )
                         ->setParameter('lngMax', $lngMax)
                         ->setParameter('empty', '0');
