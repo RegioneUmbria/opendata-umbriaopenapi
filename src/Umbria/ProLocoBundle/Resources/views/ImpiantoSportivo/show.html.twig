@@ -14,26 +14,37 @@
         </div>
         <div class="row">
             <div class="col-md-7">
-                <h4>{{ impiantoSportivo.name }}</h4>
+                <h4>Sport praticati</h4>
+                <ul>
+                    {% for sport in impiantoSportivo.sport %}
+
+                        <li>{{ sport }}</li>
+
+                    {% endfor %}
+                </ul>
+
                 <hr>
                 <p>
+                <h4>Indirizzo</h4>
                     <address>
+                        <p>
+                            {% if impiantoSportivo.address.streetAddress != '' %}
+                                {{ impiantoSportivo.address.streetAddress }}
+                            {% endif %}
+                            <br>
+                            {% if impiantoSportivo.address.addressLocality != '' %}
+                                {{ impiantoSportivo.address.addressLocality }}
+                            {% endif %}
+                            {% if impiantoSportivo.address.addressRegion != '' %}
+                                , {{ impiantoSportivo.address.addressRegion }}
+                            {% endif %}
+                            {% if impiantoSportivo.address.postalCode != '' %}
+                                {{ impiantoSportivo.address.postalCode }}
+                            {% endif %}
+                        </p>
+                    </address>
                 <p>
-                    {% if impiantoSportivo.address.streetAddress != '' %}
-                        {{ impiantoSportivo.address.streetAddress }}
-                    {% endif %}
-                    <br>
-                    {% if impiantoSportivo.address.addressLocality != '' %}
-                        {{ impiantoSportivo.address.addressLocality }}
-                    {% endif %}
-                    {% if impiantoSportivo.address.addressRegion != '' %}
-                        , {{ impiantoSportivo.address.addressRegion }}
-                    {% endif %}
-                    {% if impiantoSportivo.address.postalCode != '' %}
-                        {{ impiantoSportivo.address.postalCode }}
-                    {% endif %}
-                </p>
-                </address>
+                <hr>
                 <p>
                     {% if impiantoSportivo.publicTransport is not null %}
                         <span title="Trasporto pubblico">Trasporto pubblico:</span>{{ impiantoSportivo.publicTransport }}
@@ -46,9 +57,11 @@
                     {% if impiantoSportivo.employees is not null %}
                         <span title="Impiegati">Impiegati:</span>{{ impiantoSportivo.employees }}
                     {% endif %}
+                    {% if impiantoSportivo.disabledAccess is not null and  impiantoSportivo.disabledAccess=='true' %}
+                        <span title="Accesso disabili">Accessibile ai disabili</span>{{ impiantoSportivo.employees }}
+                    {% endif %}
+                </p>
 
-                </p>
-                </p>
             </div>
             <div class="col-md-5">
                 <div class="row">
@@ -82,12 +95,18 @@
                                 {% endif %}
                             </td>
                         </tr>
-                        </tbody>
-                    </table>
-                </div>
-                <div class="row">
-                    <table class="table table-condensed">
-                        <tbody>
+                        <tr>
+                            <td>
+                                <small>comune</small>
+                            </td>
+                            <td>
+                                {% if impiantoSportivo.municipality is not null %}
+                                    {{ impiantoSportivo.municipality }}
+                                {% else %}
+                                    -
+                                {% endif %}
+                            </td>
+                        </tr>
                         <tr>
                             <td>
                                 <small>tipi</small>
