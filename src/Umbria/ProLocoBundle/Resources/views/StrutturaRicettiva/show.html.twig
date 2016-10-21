@@ -14,53 +14,54 @@
         </div>
         <div class="row">
             <div class="col-md-7">
-                <h4>{{ strutturaRicettiva.name }}</h4>
+                <p>
+                <h4>Indirizzo</h4>
+                    <address>
+                        {% if strutturaRicettiva.address.streetAddress != '' %}
+                            {{ strutturaRicettiva.address.streetAddress }}
+                        {% endif %}
+                        <br>
+                        {% if strutturaRicettiva.address.addressLocality != '' %}
+                            {{ strutturaRicettiva.address.addressLocality }}
+                        {% endif %}
+                        {% if strutturaRicettiva.address.addressRegion != '' %}
+                            , {{ strutturaRicettiva.address.addressRegion }}
+                        {% endif %}
+                        {% if strutturaRicettiva.address.postalCode != '' %}
+                            {{ strutturaRicettiva.address.postalCode }}
+                        {% endif %}
+                    </address>
+                </p>
                 <hr>
                 <p>
-                    <address>
-                <p>
-                    {% if strutturaRicettiva.address.streetAddress != '' %}
-                        {{ strutturaRicettiva.address.streetAddress }}
-                    {% endif %}
-                    <br>
-                    {% if strutturaRicettiva.address.addressLocality != '' %}
-                        {{ strutturaRicettiva.address.addressLocality }}
-                    {% endif %}
-                    {% if strutturaRicettiva.address.addressRegion != '' %}
-                        , {{ strutturaRicettiva.address.addressRegion }}
-                    {% endif %}
-                    {% if strutturaRicettiva.address.postalCode != '' %}
-                        {{ strutturaRicettiva.address.postalCode }}
-                    {% endif %}
-                </p>
-                </address>
-                <p>
+                <h4>Contatti</h4>
                     {% for phone in strutturaRicettiva.telephone %}
-                        <abbr title="Phone">P:</abbr> {{ phone }}<br>
+                        <span title="Telefono">Telefono:</span> {{ phone }}<br>
                     {% endfor %}
                     {% for faxNumber in strutturaRicettiva.fax %}
-                        <abbr title="Fax number">F:</abbr> {{ faxNumber }}<br>
+                        <span title="Fax">Fax:</span> {{ faxNumber }}<br>
                     {% endfor %}
                     {% for mbox in strutturaRicettiva.email %}
-                        <abbr title="Email">E:</abbr> {{ mbox }}<br>
+                        <span title="Email">Email:</span> {{ mbox }}<br>
                     {% endfor %}
                     {% for homepage in strutturaRicettiva.resourceOriginUrl %}
-                        <abbr title="Homepage">H:</abbr> {{ homepage }}<br>
+                        <span title="Homepage">Homepage:</span> {{ homepage }}<br>
                     {% endfor %}
                 </p>
+                <hr>
                 <p>
+                <h4>Caratteristiche</h4>
                     {% if strutturaRicettiva.units is not null %}
-                        <abbr title="Unità">U:</abbr>{{ strutturaRicettiva.units }}
+                        <span title="Unità">Unità:</span>{{ strutturaRicettiva.units }}
                     {% endif %}
                     <br>
                     {% if strutturaRicettiva.beds is not null %}
-                        <abbr title="Letti">L:</abbr>{{ strutturaRicettiva.beds }}
+                        <span title="Letti">Letti:</span>{{ strutturaRicettiva.beds }}
                     {% endif %}
                     <br>
                     {% if strutturaRicettiva.toilets is not null %}
-                        <abbr title="Bagni">B:</abbr>{{ strutturaRicettiva.toilets }}
+                        <span title="Bagni">Bagni:</span>{{ strutturaRicettiva.toilets }}
                     {% endif %}
-                </p>
                 </p>
             </div>
             <div class="col-md-5">
