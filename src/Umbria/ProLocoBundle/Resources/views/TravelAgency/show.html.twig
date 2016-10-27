@@ -12,23 +12,24 @@
         <div class="row">
             <div class="col-md-7">
                 <p>
-                <address>
+                    <address>
                 <p>
                     <strong>{{ travelAgency.name }}</strong><br>
                     {% if travelAgency.address.streetAddress != '' %}
                         {{ travelAgency.address.streetAddress }}
-                        {% endif %}
-                        <br>
+                    {% endif %}
+                    <br>
                     {% if travelAgency.address.addressLocality != '' %}
                         {{ travelAgency.address.addressLocality }}
-                        {% endif %}
+                    {% endif %}
                     {% if travelAgency.address.addressRegion != '' %}
                         , {{ travelAgency.address.addressRegion }}
-                        {% endif %}
+                    {% endif %}
                     {% if travelAgency.address.postalCode != '' %}
                         {{ travelAgency.address.postalCode }}
-                        {% endif %}
+                    {% endif %}
                 </p>
+                </address>
                 <p>
                     {% for phone in travelAgency.telephone %}
                         <abbr title="Phone">P:</abbr> {{ phone }}<br>
@@ -43,7 +44,6 @@
                         <abbr title="Homepage">H:</abbr> {{ homepage }}<br>
                     {% endfor %}
                 </p>
-                </address>
                 </p>
             </div>
             <div class="col-md-5">

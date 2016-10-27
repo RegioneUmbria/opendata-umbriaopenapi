@@ -28,6 +28,10 @@ parameters:
 
     impianto_sportivo_graph_url: http://odnt-srv01/dataset/2dca7f88-78ba-46e6-ba1a-5552362309fe/resource/6c3982ab-b3f7-4f71-ade9-1621e5c4c5e8/download/impiantisportiviGeocoded.rdf
     impianto_sportivo_days_to_old: 0
+    struttura-ricettiva_graph_url: http://odnt-srv01/dataset/720aba45-3c8b-4f4b-a092-f9c5256f61d9/resource/a80a03a2-1aad-4c5e-8710-b64193e5f306/download/elencostrutturericettiveGeocoded.rdf
+    struttura-ricettiva_days_to_old: 0
+
+
 
 services:
     umbria_open_api.tourism_entity_updater:
