@@ -3,7 +3,7 @@
     <div class="container">
         <div class="row">
             <div class="page-header">
-                <h2>Attrattori</h2>
+                <h2>Impianti sportivi</h2>
             </div>
 
 
@@ -26,25 +26,20 @@
                     <th></th>
                     <th>{{ knp_pagination_sortable(pagination, 'Denominazione', 'a.name') }}</th>
                     <th>{{ knp_pagination_sortable(pagination, 'Comune', 'a.municipality') }}</th>
-                    <th>DBpedia</th>
                     <th><span class="badge pull-right">{{ pagination.getTotalItemCount }}</span></th>
                 </tr>
                 </thead>
                 <tbody>
-                {% for attractor in pagination %}
+                {% for impiantoSportivo in pagination %}
                     <tr>
                         <td class="text-muted">
                             <small>{{ loop.index }}</small>
                         </td>
-                        <td>{{ attractor.name }}</td>
-                        <td>{{ attractor.municipality }}</td>
+                        <td>{{ impiantoSportivo.name }}</td>
+                        <td>{{ impiantoSportivo.municipality }}</td>
                         <td>
-                            {% if attractor.hasDbpediaInfo %}
-                                <span class="badge"><span class="glyphicon glyphicon-ok"></span> </span>
-                            {% endif %}
-                        </td>
-                        <td>
-                            <a class="btn btn-info btn-xs" href="{{ path('attractor_show', { 'id': attractor.id }) }}">show</a>
+                            <a class="btn btn-info btn-xs"
+                               href="{{ path('impianto_sportivo_show', { 'id': impiantoSportivo.id }) }}">show</a>
                         </td>
                     </tr>
                 {% endfor %}

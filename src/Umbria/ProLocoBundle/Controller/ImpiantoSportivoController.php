@@ -9,15 +9,15 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 
 /**
- * Class AttractorController
+ * Class ImpiantoSportivoController
  * @package Umbria\ProLocoBundle\Controller
  *
  * @author Lorenzo Franco Ranucci <loryzizu@gmail.com>
  */
-class AttractorController extends Controller
+class ImpiantoSportivoController extends Controller
 {
     /**
-     * Lists all Attractor entities.
+     * Lists all ImpiantoSportivo entities.
      *
      * @param Request $request
      *
@@ -48,7 +48,7 @@ class AttractorController extends Controller
         }
 
         $repository = $this->getDoctrine()
-            ->getRepository('UmbriaOpenApiBundle:Tourism\GraphsEntities\Attractor');
+            ->getRepository('UmbriaOpenApiBundle:Tourism\GraphsEntities\ImpiantoSportivo');
         $qb = $repository->createQueryBuilder('a');
         $query = $qb
             ->where($qb->expr()->like('a.name', '?1'))
@@ -61,14 +61,14 @@ class AttractorController extends Controller
             $itemsOnPage/*limit per page*/
         );
 
-        return $this->render('UmbriaProLocoBundle:Attractor:index.html.twig', array(
+        return $this->render('UmbriaProLocoBundle:ImpiantoSportivo:index.html.twig', array(
             'pagination' => $pagination,
             'form' => $form->createView(),
         ));
     }
 
     /**
-     * Finds and displays a Attractor entity.
+     * Finds and displays a ImpiantoSportivo entity.
      *
      * @param int $id
      *
@@ -77,10 +77,10 @@ class AttractorController extends Controller
     public function showAction($id)
     {
         $repository = $this->getDoctrine()
-            ->getRepository('UmbriaOpenApiBundle:Tourism\GraphsEntities\Attractor');
-        $attractor = $repository->findById($id);
-        return $this->render('UmbriaProLocoBundle:Attractor:show.html.twig', array(
-            'attractor' => $attractor[0]
+            ->getRepository('UmbriaOpenApiBundle:Tourism\GraphsEntities\ImpiantoSportivo');
+        $impiantoSportivo = $repository->findById($id);
+        return $this->render('UmbriaProLocoBundle:ImpiantoSportivo:show.html.twig', array(
+            'impiantoSportivo' => $impiantoSportivo[0]
         ));
     }
 }

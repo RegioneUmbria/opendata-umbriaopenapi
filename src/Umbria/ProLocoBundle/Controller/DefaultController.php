@@ -10,6 +10,7 @@ use Umbria\OpenApiBundle\Entity\Tourism\GraphsEntities\Attractor;
 use Umbria\OpenApiBundle\Entity\Tourism\GraphsEntities\Consortium;
 use Umbria\OpenApiBundle\Entity\Tourism\GraphsEntities\Event;
 use Umbria\OpenApiBundle\Entity\Tourism\GraphsEntities\Iat;
+use Umbria\OpenApiBundle\Entity\Tourism\GraphsEntities\ImpiantoSportivo;
 use Umbria\OpenApiBundle\Entity\Tourism\PlaceItem\PlaceDetails;
 use Umbria\OpenApiBundle\Entity\Tourism\GraphsEntities\Profession;
 use Umbria\OpenApiBundle\Entity\Tourism\GraphsEntities\Proposal;
@@ -31,6 +32,7 @@ class DefaultController extends Controller
     private $consortiumRepo;
     private $professionRepo;
     private $iatRepo;
+    private $impiantoSportivoRepo;
 
 
     /**
@@ -48,6 +50,7 @@ class DefaultController extends Controller
         $this->consortiumRepo = $em->getRepository('UmbriaOpenApiBundle:Tourism\GraphsEntities\Consortium');
         $this->professionRepo = $em->getRepository('UmbriaOpenApiBundle:Tourism\GraphsEntities\Profession');
         $this->iatRepo = $em->getRepository('UmbriaOpenApiBundle:Tourism\GraphsEntities\Iat');
+        $this->impiantoSportivoRepo = $em->getRepository('UmbriaOpenApiBundle:Tourism\GraphsEntities\ImpiantoSportivo');
     }
 
     public function indexAction()
@@ -61,29 +64,30 @@ class DefaultController extends Controller
         $consorzi = array();
         $professioni = array();
         $iats = array();
+        $impiantiSportivi = array();
 
-            /** @var Attractor $attractor */
+        /** @var Attractor $attractor */
         foreach ($this->attractorRepo->findAll() as $attractor) {
             if (isset($attractor) && $attractor->getLat() != null) {
-                    $place = new PlaceDetails();
-                    $place->setId($attractor->getId());
-                    $place->setName($attractor->getName());
-                    $place->setType("tourism_attractor");
+                $place = new PlaceDetails();
+                $place->setId($attractor->getId());
+                $place->setName($attractor->getName());
+                $place->setType("tourism_attractor");
 
 
-                    $place->setLatitude($attractor->getLat());
-                    $place->setLongitude($attractor->getLng());
-                    $uri = $this->get('router')->generate('attractor_show', array(
-                        'id' => $attractor->getId(),
-                    ), UrlGeneratorInterface::ABSOLUTE_URL);
-                    $place->setHref($uri);
+                $place->setLatitude($attractor->getLat());
+                $place->setLongitude($attractor->getLng());
+                $uri = $this->get('router')->generate('attractor_show', array(
+                    'id' => $attractor->getId(),
+                ), UrlGeneratorInterface::ABSOLUTE_URL);
+                $place->setHref($uri);
 
-                    // TODO: rivedere
-                    if ($place->getLatitude() != null && $place->getLatitude() != '') {
-                        $attrattori[] = $place;
-                    }
+                // TODO: rivedere
+                if ($place->getLatitude() != null && $place->getLatitude() != '') {
+                    $attrattori[] = $place;
                 }
             }
+        }
         /** @var Proposal $proposal */
         foreach ($this->proposalRepo->findAll() as $proposal) {
             if (isset($proposal)) {
@@ -209,11 +213,36 @@ class DefaultController extends Controller
                 }
             }
         }
+        /** @var ImpiantoSportivo $impiantoSportivo */
+        foreach ($this->impiantoSportivoRepo->findAll() as $impiantoSportivo) {
+            if (isset($impiantoSportivo)) {
+                $place = new PlaceDetails();
+                $place->setId($impiantoSportivo->getId());
+                $place->setName($impiantoSportivo->getName());
+                $place->setType('tourism_impianto_sportivo');
+
+                if ($impiantoSportivo->getAddress() != null &&
+                    $impiantoSportivo->getAddress()->getLat() != null && $impiantoSportivo->getAddress()->getLat() != 0
+                ) {
+                    $place->setLatitude($impiantoSportivo->getAddress()->getLat());
+                    $place->setLongitude($impiantoSportivo->getAddress()->getLng());
+                }
+
+                $uri = $this->get('router')->generate('impianto_sportivo_show', array(
+                    'id' => $impiantoSportivo->getId(),
+                ), UrlGeneratorInterface::ABSOLUTE_URL);
+                $place->setHref($uri);
+
+                if ($place->getLatitude() != '') {
+                    $impiantiSportivi[] = $place;
+                }
+            }
+        }
 
         return $this->render('UmbriaProLocoBundle:Default:index.html.twig', array(
             'attrattori' => $attrattori, 'proposte' => $proposte, 'eventi' => $eventi,
             'agenzieViaggio' => $agenzieViaggio, 'professioni' => $professioni, 'consorzi' => $consorzi,
-            'iat' => $iats
+            'iat' => $iats, 'impiantiSportivi' => $impiantiSportivi
         ));
     }
 }
