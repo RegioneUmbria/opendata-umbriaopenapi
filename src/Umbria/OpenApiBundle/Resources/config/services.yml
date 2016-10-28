@@ -4,31 +4,32 @@ parameters:
     sparql_endpoint_uri: http://odnt-srv01/sparql
 
     proposal_graph_url: http://dati.umbria.it/dataset/8b4f4b4b-7abc-4103-9082-96ba7023021d/resource/c46f350d-c2da-4204-aad9-c5d32ca3283c/download/proposteitit.zipproposteitit.rdf
-    proposal_days_to_old: 1
+    proposal_days_to_old: 0
 
     attractors_graph_url : http://dati.umbria.it/dataset/ab39e23d-540f-4aa1-b27f-3fb244837545/resource/59822c9d-c9d6-4bcd-87c6-cd35a9f3d41d/download/attrattoriitit.zipattrattoriitit.rdf
     attractors_sameas_graph_url : http://dati.umbria.it/dataset/ab39e23d-540f-4aa1-b27f-3fb244837545/resource/2d9c13bf-d48c-4df2-b272-8f183c06c4c0/download/sameasdbpediaresource.rdf
     attractors_locatedin_graph_url : http://dati.umbria.it/dataset/ab39e23d-540f-4aa1-b27f-3fb244837545/resource/138b1d6c-3f01-407d-9b5d-36841442d44b/download/locatedindbpediaresource.rdf
-    attractor_days_to_old: 1
+    attractor_days_to_old: 0
 
     event_graph_url: http://dati.umbria.it/dataset/410faa97-546b-4362-a6d7-f8794d18ed19/resource/795338cb-d5b6-40c2-98ad-05fcad7f194c/download/eventiitit.zipeventiitit.rdf
-    event_days_to_old: 1
+    event_days_to_old: 0
 
     travel_agency_graph_url: http://dati.umbria.it/dataset/84d1bd8f-ec95-404c-93c8-81ce2e4705ab/resource/6b9bdb03-9c64-4120-9d2d-031391d2a378/download/agenzieturisticheitit.zipagenzieturisticheitit.rdf
-    travel_agency_days_to_old: 1
+    travel_agency_days_to_old: 0
 
     consortium_graph_url: http://dati.umbria.it/dataset/826515b8-a19d-4496-99af-e3b9967db130/resource/71aa158f-68f1-4037-abe6-d49f5d7ed238/download/consorziitconsorziitit.rdf
-    consortium_days_to_old: 1
+    consortium_days_to_old: 0
 
     profession_graph_url: http://dati.umbria.it/dataset/6afb8a5c-6907-45ee-941c-881dc0ab95f6/resource/d72cecda-c23f-403f-8b57-20d21b499d6c/download/professionituristicheitit.zipprofessionituristicheitit.rdf
-    profession_days_to_old: 1
+    profession_days_to_old: 0
 
     iat_graph_url: http://dati.umbria.it/dataset/32cca8e8-4e6e-43ed-b7df-2f577de8ac4d/resource/f6735fc3-1008-4694-95be-79bbe3e74863/download/iatitit.zipiatitit.rdf
-    iat_days_to_old: 1
+    iat_days_to_old: 0
 
     impianto_sportivo_graph_url: http://odnt-srv01/dataset/2dca7f88-78ba-46e6-ba1a-5552362309fe/resource/6c3982ab-b3f7-4f71-ade9-1621e5c4c5e8/download/impiantisportiviGeocoded.rdf
     impianto_sportivo_days_to_old: 0
-    struttura-ricettiva_graph_url: http://odnt-srv01/dataset/720aba45-3c8b-4f4b-a092-f9c5256f61d9/resource/a80a03a2-1aad-4c5e-8710-b64193e5f306/download/elencostrutturericettiveGeocoded.rdf
+
+    struttura-ricettiva_graph_url: http://odnt-srv01/dataset/720aba45-3c8b-4f4b-a092-f9c5256f61d9/resource/b953a49c-3a9d-4f18-8a71-aa7680d1feb3/download/elencostrutturericettivegeocoded.rdf
     struttura-ricettiva_days_to_old: 0
 
 

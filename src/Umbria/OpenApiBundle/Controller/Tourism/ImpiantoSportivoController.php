@@ -331,7 +331,7 @@ class ImpiantoSportivoController
             $newImpiantoSportivo->setMunicipality(($p = $impiantoSportivoResource->get("<http://dbpedia.org/ontology/municipality>")) != null ? $p->getValue() : null);
             $newImpiantoSportivo->setPublicTransport(($p = $impiantoSportivoResource->get("<http://dati.umbria.it/base/ontology/trasportoPubblico>")) != null ? $p->getValue() : null);
             $newImpiantoSportivo->setParkings(($p = $impiantoSportivoResource->get("<http://dati.umbria.it/base/ontology/numeroPostiMacchina>")) != null ? $p->getValue() : null);
-            $newImpiantoSportivo->setDisabledAccess(($p = $impiantoSportivoResource->get("<http://dati.umbria.it/base/ontology/accessoDisabili>")) != null ? $p->getValue() : null);
+            $newImpiantoSportivo->setDisabledAccess(($p = $impiantoSportivoResource->get("<http://dati.umbria.it/base/ontology/accessoDisabili>")) != null && strtoupper($p->getValue()) == "TRUE" ? 1 : 0);
             $newImpiantoSportivo->setEmployees(($p = $impiantoSportivoResource->get("<http://dati.umbria.it/base/ontology/accessoDisabili>")) != null ? $p->getValue() : null);
 
 
