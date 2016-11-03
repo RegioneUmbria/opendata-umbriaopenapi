@@ -6,6 +6,20 @@
             <div class="page-header">
                 <h2>Professioni Turistiche</h2>
             </div>
+
+            {% form_theme form 'form_table_layout.html.twig' %}
+
+            {% block form_row %}
+                {% spaceless %}
+                    <div class="form_row">
+                        {{ form_start(form) }}
+                        {{ form_errors(form.text) }}
+                        {{ form_widget(form.text) }}
+                        {{ form_end(form) }}
+                    </div>
+                {% endspaceless %}
+            {% endblock form_row %}
+
             <table class="table table-hover table-striped">
                 <thead>
                 <tr>

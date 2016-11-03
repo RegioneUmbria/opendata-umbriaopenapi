@@ -1,7 +1,7 @@
 event_index:
     path:     /
     defaults: { _controller: "UmbriaProLocoBundle:Event:index" }
-    methods:  GET
+    methods:  [GET,POST]
 
 event_show:
     path:     /{id}/show

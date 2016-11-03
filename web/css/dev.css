@@ -462,3 +462,14 @@ label {
 .legendlabel {
   font-size: 15px;
 }
+
+.json_result {
+  max-height: 200px;
+  overflow-y: scroll;
+  font-family: monospace;
+  white-space: pre;
+}
+
+a.resource_uri button.resource_uri {
+  color: #337ab7;
+}

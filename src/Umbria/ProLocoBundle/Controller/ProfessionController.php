@@ -5,6 +5,9 @@ namespace Umbria\ProLocoBundle\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Umbria\OpenApiBundle\Entity\Tourism\Profession;
+use Umbria\ProLocoBundle\Entity\SearchFilter;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 
 /**
  * Profession controller.
@@ -22,9 +25,36 @@ class ProfessionController extends Controller
     {
         $itemsOnPage = $this->container->getParameter('items_on_page');
 
-        $em = $this->getDoctrine()->getManager();
+        $searchFilter = new SearchFilter();
 
-        $query = $em->getRepository('UmbriaOpenApiBundle:Tourism\Profession')->getAllQuery();
+        $form = $this->createFormBuilder($searchFilter)
+            ->add("text", TextType::class, array('required' => false))
+            ->add('search', SubmitType::class, array('label' => 'Cerca'))
+            ->getForm();
+
+        $form->handleRequest($request);
+        $text = "";
+        if ($form->isSubmitted() && $form->isValid()) {
+            // $form->getData() holds the submitted values
+            // but, the original `$task` variable has also been updated
+            $searchFilter = $form->getData();
+            $text = $searchFilter->getText();
+            $form = $this->createFormBuilder($searchFilter)
+                ->add("text", TextType::class, array('required' => false))
+                ->add('search', SubmitType::class, array('label' => 'Ricerca'))
+                ->getForm();
+        }
+
+        $repository = $this->getDoctrine()
+            ->getRepository('UmbriaOpenApiBundle:Tourism\Profession');
+        $qb = $repository->createQueryBuilder('a');
+        $query = $qb
+            ->where($qb->expr()->orX(
+                $qb->expr()->like('a.firstName', '?1'),
+                $qb->expr()->like('a.lastName', '?1')
+            )
+            )
+            ->setParameter(1, '%' . $text . '%');
 
         $paginator = $this->get('knp_paginator');
         $pagination = $paginator->paginate(
@@ -35,6 +65,7 @@ class ProfessionController extends Controller
 
         return $this->render('UmbriaProLocoBundle:Profession:index.html.twig', array(
             'pagination' => $pagination,
+            'form' => $form->createView(),
         ));
     }
 
