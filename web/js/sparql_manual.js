@@ -24,7 +24,7 @@ function executeGraphsQuery() {
 }
 
 function executeTypeQuery() {
-    var graph = encodeURI(document.getElementById("sparqlQueryTypeGraph").value);
+    var graph = encodeURIComponent(document.getElementById("sparqlQueryTypeGraph").value);
     var requestUrl = "https://odnt-srv01/sparql?default-graph-uri=".concat(graph, "&query=SELECT+DISTINCT+%3Fo%0D%0AWHERE%7B%0D%0A++++%3Fs+%3Chttp%3A%2F%2Fwww.w3.org%2F1999%2F02%2F22-rdf-syntax-ns%23type%3E+%3Fo%0D%0A%7D&format=application%2Fsparql-results%2Bjson&timeout=0&debug=on");
     var xhr = createCORSRequest('GET', requestUrl);
     if (!xhr) {
@@ -41,9 +41,9 @@ function executeTypeQuery() {
 }
 
 function executeQuery() {
-    var graph = encodeURI(document.getElementById("sparqlQueryGraph").value);
-    var type = encodeURI(document.getElementById("sparqlQueryTypeHidden").value);
-    var requestUrl = "https://odnt-srv01/sparql?default-graph-uri=".concat(graph, "&query=SELECT+DISTINCT+%3Fs+%3Fp+%3Fo+WHERE%7B+%3Fs+%3Fp+%3Fo+.+%3Fs+%3Chttp%3A%2F%2Fwww.w3.org%2F1999%2F02%2F22-rdf-syntax-ns%23type%3E+%3C", type, "%3E+%7DLIMIT+200&format=application%2Fsparql-results%2Bjson&timeout=0&debug=on");
+    var graph = encodeURIComponent(document.getElementById("sparqlQueryGraph").value);
+    var type = encodeURIComponent(document.getElementById("sparqlQueryTypeHidden").value);
+    var requestUrl = "https://odnt-srv01/sparql?default-graph-uri=".concat(graph, "&query=SELECT+DISTINCT+%3Fs+%3Fp+%3Fo+WHERE%7B+%3Fs+%3Fp+%3Fo+.+%3Fs+%3Chttp%3A%2F%2Fwww.w3.org%2F1999%2F02%2F22-rdf-syntax-ns%23type%3E+%3C", type, "%3E+%7DLIMIT+50&format=application%2Fsparql-results%2Bjson&timeout=0&debug=on");
     var xhr = createCORSRequest('GET', requestUrl);
     if (!xhr) {
         throw new Error('CORS not supported');
@@ -191,7 +191,7 @@ function setResourcesResults(page, resetPages) {
             if (resourceTypeS == 'uri') {
                 var resourceButtonNodeS = document.createElement("button");
                 resourceButtonNodeS.type = "button";
-                resourceButtonNodeS.className = "list-group-item btn btn-default resource_uri";
+                resourceButtonNodeS.className = "list-group-item btn btn-default resource_uri triple-result-heigth-fixed";
                 resourceButtonNodeS.innerHTML = resourceDivValueS;
                 var resourceANodeS = document.createElement("a");
                 resourceANodeS.href = resourceDivValueS;
@@ -202,7 +202,7 @@ function setResourcesResults(page, resetPages) {
             }
             else {
                 var resourceDivNodeS = document.createElement("div");
-                resourceDivNodeS.className = "list-group-item";
+                resourceDivNodeS.className = "list-group-item triple-result-heigth-fixed";
                 resourceDivNodeS.innerHTML = resourceDivValueS;
                 resourcesListS.appendChild(resourceDivNodeS);
             }
@@ -213,7 +213,7 @@ function setResourcesResults(page, resetPages) {
             if (resourceTypeP == 'uri') {
                 var resourceButtonNodeP = document.createElement("button");
                 resourceButtonNodeP.type = "button";
-                resourceButtonNodeP.className = "list-group-item btn btn-default resource_uri";
+                resourceButtonNodeP.className = "list-group-item btn btn-default resource_uri triple-result-heigth-fixed";
                 resourceButtonNodeP.innerHTML = resourceDivValueP;
                 var resourceANodeP = document.createElement("a");
                 resourceANodeP.href = resourceDivValueP;
@@ -224,7 +224,7 @@ function setResourcesResults(page, resetPages) {
             }
             else {
                 var resourceDivNodeP = document.createElement("div");
-                resourceDivNodeP.className = "list-group-item";
+                resourceDivNodeP.className = "list-group-item triple-result-heigth-fixed";
                 resourceDivNodeP.innerHTML = resourceDivValueP;
                 resourcesListP.appendChild(resourceDivNodeP);
             }
@@ -234,7 +234,7 @@ function setResourcesResults(page, resetPages) {
             if (resourceTypeO == 'uri') {
                 var resourceButtonNodeO = document.createElement("button");
                 resourceButtonNodeO.type = "button";
-                resourceButtonNodeO.className = "list-group-item btn btn-default resource_uri";
+                resourceButtonNodeO.className = "list-group-item btn btn-default resource_uri triple-result-heigth-fixed";
                 resourceButtonNodeO.innerHTML = resourceDivValueO;
                 var resourceANodeO = document.createElement("a");
                 resourceANodeO.href = resourceDivValueO;
@@ -245,7 +245,7 @@ function setResourcesResults(page, resetPages) {
             }
             else {
                 var resourceDivNodeO = document.createElement("div");
-                resourceDivNodeO.className = "list-group-item";
+                resourceDivNodeO.className = "list-group-item triple-result-heigth-fixed";
                 resourceDivNodeO.innerHTML = resourceDivValueO;
                 resourcesListO.appendChild(resourceDivNodeO);
             }
@@ -286,7 +286,7 @@ function clearResources() {
     document.getElementById("show_json_resources").style.display = "none";
     document.getElementById("show_result_resources").style.display = "none";
     document.getElementById("sparqlQuerySubmit").disabled = true;
-    document.getElementById("sparqlQuery").innerHTML = "\n\n\nSELECT DISTINCT ?s ?p ?o \nWHERE{\n    ?s ?p ?o . \n    ?s  &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#type&gt; &lt;&gt;\n}\nLIMIT 200\n\n";
+    document.getElementById("sparqlQuery").innerHTML = "\n\n\nSELECT DISTINCT ?s ?p ?o \nWHERE{\n    ?s ?p ?o . \n    ?s  &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#type&gt; &lt;&gt;\n}\nLIMIT 50\n\n";
 }
 
 function clearResourcesResults() {
@@ -347,7 +347,7 @@ function setQueryGraph(button) {
 function setQueryType(button) {
     clearResources();
     var query = "\n\n\nSELECT DISTINCT ?s ?p ?o \nWHERE{\n    ?s ?p ?o . \n    ?s  &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#type&gt; ";
-    query = query.concat("<b style='color:#5cb85c'>&lt;", button.innerHTML, "&gt;</b>\n}\nLIMIT 200\n\n");
+    query = query.concat("<b style='color:#5cb85c'>&lt;", button.innerHTML, "&gt;</b>\n}\nLIMIT 50\n\n");
     document.getElementById("sparqlQuery").innerHTML = query;
     document.getElementById("sparqlQueryTypeHidden").value = button.innerHTML;
 
