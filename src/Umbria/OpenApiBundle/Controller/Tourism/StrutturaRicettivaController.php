@@ -242,14 +242,32 @@ class StrutturaRicettivaController extends BaseController
 
     private function updateEntities()
     {
-        /*TODO very big graph, need to divide into chunks*/
-        $struttureRdf = $this->getWebResource($this->container->getParameter('struttura-ricettiva_graph_url'));
-        $doc = new DOMDocument();
-        $doc->loadXML($struttureRdf);
-
-//        $this->graph = EasyRdf_Graph::newAndLoad($this->container->getParameter('struttura-ricettiva_graph_url'));
         $this->graph = new EasyRdf_Graph();
-        $this->graph->parse($doc->saveXML());
+        $agriturismi = $this->getWebResource($this->container->getParameter('struttura-ricettiva_graph_url_agriturismi'));
+        $this->graph->parse($agriturismi);
+        $agriturismi=null;
+        unset($agriturismi);
+        $affittacamere = $this->getWebResource($this->container->getParameter('struttura-ricettiva_graph_url_affittacamere'));
+        $this->graph->parse($affittacamere);
+        $affittacamere=null;
+        unset($affittacamere);
+        $case = $this->getWebResource($this->container->getParameter('struttura-ricettiva_graph_url_case'));
+        $this->graph->parse($case);
+        $case=null;
+        unset($case);
+        $alberghi = $this->getWebResource($this->container->getParameter('struttura-ricettiva_graph_url_alberghi'));
+        $this->graph->parse($alberghi);
+        $alberghi=null;
+        unset($alberghi);
+        $bb = $this->getWebResource($this->container->getParameter('struttura-ricettiva_graph_url_bb'));
+        $this->graph->parse($bb);
+        $bb=null;
+        unset($bb);
+        $altri = $this->getWebResource($this->container->getParameter('struttura-ricettiva_graph_url_altri'));
+        $this->graph->parse($altri);
+        $altri=null;
+        unset($altri);
+
         /**@var EasyRdf_Resource[] $resources */
         $resources = $this->graph->resources();
         foreach ($resources as $resource) {
