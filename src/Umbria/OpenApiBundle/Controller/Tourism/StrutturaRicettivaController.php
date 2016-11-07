@@ -5,9 +5,7 @@ namespace Umbria\OpenApiBundle\Controller\Tourism;
 
 use DateTime;
 use Doctrine\ORM\EntityManager;
-use DOMDocument;
-use EasyRdf_Graph;
-use EasyRdf_Resource;
+use EasyRdf_Sparql_Client;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\View\View;
 use JMS\DiExtraBundle\Annotation as DI;
@@ -47,7 +45,6 @@ class StrutturaRicettivaController extends BaseController
     private $categoryRepo;
     private $typeRepo;
 
-    private $graph;
 
     /**
      * @DI\InjectParams({
@@ -242,172 +239,191 @@ class StrutturaRicettivaController extends BaseController
 
     private function updateEntities()
     {
-        /*TODO very big graph, need to divide into chunks*/
-        $struttureRdf = $this->getWebResource($this->container->getParameter('struttura-ricettiva_graph_url'));
-        $doc = new DOMDocument();
-        $doc->loadXML($struttureRdf);
+        $sparqlClient = new EasyRdf_Sparql_Client("http://odnt-srv01/sparql");
+        $query ="    SELECT ?uri ?name ?provenance ?typology ?resourceOriginUrl ?units ?beds ?toilets
+                     FROM <http://dati.umbria.it/graph/strutture_ricettive>
+                     WHERE {
+                        ?uri <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://purl.org/acco/ns#Accomodation>.
+                            OPTIONAL{?uri <http://www.w3.org/2000/01/rdf-schema#label> ?name}.
+                            OPTIONAL{?uri <http://purl.org/dc/elements/1.1/provenance> ?provenance}.
+                            OPTIONAL{?uri <http://dati.umbria.it/base/ontology/tipologia> ?typology}.
+                            OPTIONAL{?uri <http://schema.org/web> ?resourceOriginUrl}.
+                            OPTIONAL{?uri <http://dati.umbria.it/base/ontology/numeroUnita> ?units}.
+                            OPTIONAL{?uri <http://dati.umbria.it/base/ontology/numeroLetti> ?beds}.
+                            OPTIONAL{?uri <http://dati.umbria.it/base/ontology/numeroBagni> ?toilets}.
+                    } ";
+        $sparqlResult = $sparqlClient->query($query);
+        $sparqlResult->rewind();
+        while ($sparqlResult->valid()) {
+            /** @var StrutturaRicettiva $newStrutturaRicettiva */
+            $newStrutturaRicettiva = null;
 
-//        $this->graph = EasyRdf_Graph::newAndLoad($this->container->getParameter('struttura-ricettiva_graph_url'));
-        $this->graph = new EasyRdf_Graph();
-        $this->graph->parse($doc->saveXML());
-        /**@var EasyRdf_Resource[] $resources */
-        $resources = $this->graph->resources();
-        foreach ($resources as $resource) {
-            $resourceTypeArray = $resource->all("rdf:type");
-            if ($resourceTypeArray != null) {
-                foreach ($resourceTypeArray as $resourceType) {
-                    if (trim($resourceType) == "http://purl.org/acco/ns#Accomodation") {//is strutturaRicettiva
-                        $this->createOrUpdateEntity($resource);
-                        break;
-                    }
+            $current = $sparqlResult->current();
+            $uri=($current->uri->getUri());
+            if ($uri != null) {
+                $oldStrutturaRicettiva = $this->strutturaRicettivaRepo->find($uri);
+                $isAlreadyPersisted = $oldStrutturaRicettiva != null;
+                if ($isAlreadyPersisted) {
+                    $newStrutturaRicettiva = $oldStrutturaRicettiva;
+                } else {
+                    $newStrutturaRicettiva = new StrutturaRicettiva();
                 }
-            }
+                $newStrutturaRicettiva->setUri($uri);
+                $newStrutturaRicettiva->setLastUpdateAt(new \DateTime('now'));
+                $newStrutturaRicettiva->setName(isset($current->name) ? $current->name->getValue() : null);
+                $newStrutturaRicettiva->setProvenance(isset($current->provenance) ? $current->provenance->getValue() : null);
+                $newStrutturaRicettiva->setTypology(isset($current->typology) ? $current->typology->getValue() : null);
+                $newStrutturaRicettiva->setResourceOriginUrl(isset($current->resourceOriginUrl) ? $current->resourceOriginUrl->getValue() : null);
+                $newStrutturaRicettiva->setUnits(isset($current->units) ? $current->units->getValue() : null);
+                $newStrutturaRicettiva->setBeds(isset($current->beds) ? $current->beds->getValue() : null);
+                $newStrutturaRicettiva->setToilets(isset($current->toilets) ? $current->toilets->getValue() : null);
 
+                $queryEmail = "SELECT ?email FROM <http://dati.umbria.it/graph/strutture_ricettive> WHERE { <" . $uri . "> <http://schema.org/email> ?email. } ";
+                $sparqlResultEmail = $sparqlClient->query($queryEmail);
+                $sparqlResultEmail->rewind();
+                if ($sparqlResultEmail->valid()) {
+                    $tempEmail = array();
+                    $cnt = 0;
+                    while ($sparqlResultEmail->valid()) {
+                        $tempEmail[$cnt] = $sparqlResultEmail->current()->email->getValue();
+                        $cnt++;
+                        $sparqlResultEmail->next();
+                    }
+                    count($tempEmail) > 0 ? $newStrutturaRicettiva->setEmail($tempEmail) : $newStrutturaRicettiva->setEmail(null);
+                }
+
+                $queryTelephone = "SELECT ?telephone FROM <http://dati.umbria.it/graph/strutture_ricettive> WHERE { <" . $uri . "> <http://schema.org/telephone> ?telephone. } ";
+                $sparqlResultTelephone = $sparqlClient->query($queryTelephone);
+                $sparqlResultTelephone->rewind();
+                if ($sparqlResultTelephone->valid()) {
+                    $tempTelephone = array();
+                    $cnt = 0;
+                    while ($sparqlResultTelephone->valid()) {
+                        $tempTelephone[$cnt] = $sparqlResultTelephone->current()->telephone->getValue();
+                        $cnt++;
+                        $sparqlResultTelephone->next();
+                    }
+                    count($tempTelephone) > 0 ? $newStrutturaRicettiva->setTelephone($tempTelephone) : $newStrutturaRicettiva->setTelephone(null);
+                }
+
+                $queryFax = "SELECT ?fax FROM <http://dati.umbria.it/graph/strutture_ricettive> WHERE { <" . $uri . "> <http://schema.org/fax> ?fax. } ";
+                $sparqlResultFax = $sparqlClient->query($queryFax);
+                $sparqlResultFax->rewind();
+                if ($sparqlResultFax->valid()) {
+                    $tempFax = array();
+                    $cnt = 0;
+                    while ($sparqlResultFax->valid()) {
+                        $tempFax[$cnt] = $sparqlResultFax->current()->fax->getValue();
+                        $cnt++;
+                        $sparqlResultFax->next();
+                    }
+                    count($tempFax) > 0 ? $newStrutturaRicettiva->setFax($tempFax) : $newStrutturaRicettiva->setFax(null);
+                }
+
+                $queryType = "SELECT ?type ?label ?comment
+                FROM <http://dati.umbria.it/graph/strutture_ricettive>
+                WHERE {
+                    <" . $uri . "> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> ?type.
+                    OPTIONAL{?type <http://www.w3.org/2000/01/rdf-schema#label> ?label}.
+                    OPTIONAL{?type <http://www.w3.org/2000/01/rdf-schema#comment> ?comment}.
+                } ";
+                $sparqlResultType = $sparqlClient->query($queryType);
+                $sparqlResultType->rewind();
+                if ($sparqlResultType->valid()) {
+                    /**@var Type[] $tempType */
+                    $tempType = array();
+                    $cnt = 0;
+                    while ($sparqlResultType->valid()) {
+                        $currentType=$sparqlResultType->current();
+                        $typeUri= $currentType->type->getUri();
+                        $oldType = $this->typeRepo->find($typeUri);
+                        if ($oldType != null) {
+                            $tempType[$cnt] = $oldType;
+                        } else {
+                            $tempType[$cnt] = new Type();
+                            $tempType[$cnt]->setUri($typeUri);
+                            $tempType[$cnt]->setName(isset($currentType->label) ? $currentType->label->getValue() : null);
+                            $tempType[$cnt]->setComment(isset($currentType->comment) ? $currentType->comment->getValue() : null);
+                        }
+                        $cnt++;
+                        $sparqlResultType->next();
+                    }
+                    count($tempType) > 0 ? $newStrutturaRicettiva->setTypes($tempType) : $newStrutturaRicettiva->setTypes(null);
+                }
+
+                $queryCategory = "SELECT ?category ?label ?comment
+                FROM <http://dati.umbria.it/graph/strutture_ricettive>
+                WHERE {
+                    <" . $uri . "> <http://dati.umbria.it/tourism/ontology/categoria> ?category.
+                    OPTIONAL{?category <http://www.w3.org/2000/01/rdf-schema#label> ?label}.
+                    OPTIONAL{?category <http://www.w3.org/2000/01/rdf-schema#comment> ?comment}.
+                } ";
+                $sparqlResultCategory = $sparqlClient->query($queryCategory);
+                $sparqlResultCategory->rewind();
+                if ($sparqlResultCategory->valid()) {
+                    /**@var Category[] $tempCategory */
+                    $tempCategory = array();
+                    $cnt = 0;
+                    while ($sparqlResultCategory->valid()) {
+                        $currentCategory=$sparqlResultCategory->current();
+                        $categoryUri= $currentCategory->category->getUri();
+                        $oldCategory = $this->categoryRepo->find($categoryUri);
+                        if ($oldCategory != null) {
+                            $tempCategory[$cnt] = $oldCategory;
+                        } else {
+                            $tempCategory[$cnt] = new Category();
+                            $tempCategory[$cnt]->setUri($categoryUri);
+                            $tempCategory[$cnt]->setName(isset($currentCategory->label) ? $currentCategory->label->getValue() : null);
+                            $tempCategory[$cnt]->setComment(isset($currentCategory->comment) ? $currentCategory->comment->getValue() : null);
+                        }
+                        $cnt++;
+                        $sparqlResultCategory->next();
+                    }
+                    count($tempCategory) > 0 ? $newStrutturaRicettiva->setCategories($tempCategory) : $newStrutturaRicettiva->setCategories(null);
+                }
+
+                $queryAddress = "SELECT ?uri ?postalcode ?istat ?addressLocality ?addressRegion ?streetAddress ?lat ?lng
+                                FROM <http://dati.umbria.it/graph/strutture_ricettive>
+                                WHERE {
+                                     <" . $uri . "> <http://schema.org/address> ?uri.
+                                    OPTIONAL{?uri <http://schema.org/postalCode> ?postalcode}.
+                                    OPTIONAL{?uri <http://dbpedia.org/ontology/istat> ?istat}.
+                                    OPTIONAL{?uri <http://schema.org/addressLocality> ?addressLocality}.
+                                    OPTIONAL{?uri <http://schema.org/addressRegion> ?addressRegion}.
+                                    OPTIONAL{?uri <http://schema.org/streetAddress> ?streetAddress}.
+                                    OPTIONAL{?uri <http://www.w3.org/2003/01/geo/wgs84_pos#lat> ?lat}.
+                                    OPTIONAL{?uri <http://www.w3.org/2003/01/geo/wgs84_pos#long> ?lng}.
+                                }";
+                $sparqlResultAddress = $sparqlClient->query($queryAddress);
+                $sparqlResultAddress->rewind();
+                if ($sparqlResultAddress->valid()) {
+                    /**@var Address $tempAddress */
+                    $tempAddress =  new Address();
+                    $currentAddress=$sparqlResultAddress->current();
+                    $tempAddress->setPostalCode(isset($currentAddress->postalCode) ? $currentAddress->postalCode->getValue() : null);
+                    $tempAddress->setIstat(isset($currentAddress->istat) ? $currentAddress->istat->getValue() : null);
+                    $tempAddress->setAddressLocality(isset($currentAddress->addressLocality) ? $currentAddress->addressLocality->getValue() : null);
+                    $tempAddress->setAddressRegion(isset($currentAddress->addressRegion) ? $currentAddress->addressRegion->getValue() : null);
+                    $tempAddress->setStreetAddress(isset($currentAddress->streetAddress) ? $currentAddress->streetAddress->getValue() : null);
+                    $tempAddress->setLat(isset($currentAddress->lat) ? $currentAddress->lat->getValue() : null);
+                    $tempAddress->setLng(isset($currentAddress->lng) ? $currentAddress->lng->getValue() : null);
+                    $newStrutturaRicettiva->setAddress($tempAddress);
+                }
+
+                if (!$isAlreadyPersisted) {
+                    $this->em->persist($newStrutturaRicettiva);
+                }
+                $this->em->flush();
+            }
+            $sparqlResult->next();
         }
         $now = new \DateTime();
         $this->deleteOldEntities($now);
     }
 
-    /**
-     * @param EasyRdf_Resource $strutturaRicettivaResource
-     */
-    private function createOrUpdateEntity($strutturaRicettivaResource)
-    {
-        /** @var StrutturaRicettiva $newStrutturaRicettiva */
-        $newStrutturaRicettiva = null;
-        $uri = $strutturaRicettivaResource->getUri();
-        if ($uri != null) {
-            $oldStrutturaRicettiva = $this->strutturaRicettivaRepo->find($uri);
-            $isAlreadyPersisted = $oldStrutturaRicettiva != null;
-            if ($isAlreadyPersisted) {
-                $newStrutturaRicettiva = $oldStrutturaRicettiva;
-            } else {
-                $newStrutturaRicettiva = new StrutturaRicettiva();
-            }
-            $newStrutturaRicettiva->setUri($uri);
-            $newStrutturaRicettiva->setLastUpdateAt(new \DateTime('now'));
-            $newStrutturaRicettiva->setName(($p = $strutturaRicettivaResource->get("rdfs:label")) != null ? $p->getValue() : null);
-
-            /**@var EasyRdf_Resource[] $typesarray */
-            $typesarray = $strutturaRicettivaResource->all("rdf:type");
-            if ($typesarray != null) {
-                /**@var Type[] $tempTypes */
-                $tempTypes = array();
-                $cnt = 0;
-                foreach ($typesarray as $type) {
-                    $oldType = $this->typeRepo->find($type->getUri());
-                    if ($oldType != null) {
-                        $tempTypes[$cnt] = $oldType;
-                    } else {
-                        $tempTypes[$cnt] = new Type();
-                        $tempTypes[$cnt]->setUri($type->getUri());
-                        $tempTypes[$cnt]->setName(($p = $type->get("rdfs:label")) != null ? $p->getValue() : null);
-                        $tempTypes[$cnt]->setComment(($p = $type->get("<http://www.w3.org/2000/01/rdf-schema#comment>")) != null ? $p->getValue() : null);
-                    }
-                    $cnt++;
-                }
-                count($tempTypes) > 0 ? $newStrutturaRicettiva->setTypes($tempTypes) : $newStrutturaRicettiva->setTypes(null);
-            }
-
-            $newStrutturaRicettiva->setProvenance(($p = $strutturaRicettivaResource->get("<http://purl.org/dc/elements/1.1/provenance>")) != null ? $p->getValue() : null);
-            $newStrutturaRicettiva->setTypology(($p = $strutturaRicettivaResource->get("<http://dati.umbria.it/base/ontology/tipologia>")) != null ? $p->getValue() : null);
-
-            /**@var EasyRdf_Resource[] $emailarray */
-            $emailarray = $strutturaRicettivaResource->all("<http://schema.org/email>");
-            if ($emailarray != null) {
-                $tempEmail = array();
-                $newStrutturaRicettiva->setEmail(array());
-                $cnt = 0;
-                foreach ($emailarray as $email) {
-                    $tempEmail[$cnt] = $email->toRdfPhp()['value'];
-                    $cnt++;
-                }
-                count($tempEmail) > 0 ? $newStrutturaRicettiva->setEmail($tempEmail) : $newStrutturaRicettiva->setEmail(null);
-            }
-
-            /**@var EasyRdf_Resource[] $telephonearray */
-            $telephonearray = $strutturaRicettivaResource->all("<http://schema.org/telephone>");
-            if ($telephonearray != null) {
-                $tempTelephone = array();
-                $cnt = 0;
-                foreach ($telephonearray as $telephone) {
-                    $tempTelephone[$cnt] = $telephone->toRdfPhp()['value'];
-                    $cnt++;
-                }
-                count($tempTelephone) > 0 ? $newStrutturaRicettiva->setTelephone($tempTelephone) : $newStrutturaRicettiva->setTelephone(null);
-            }
-
-            /**@var EasyRdf_Resource[] $faxarray */
-            $faxarray = $strutturaRicettivaResource->all("<http://schema.org/faxNumber>");
-            if ($faxarray != null) {
-                $tempFax = array();
-                $newStrutturaRicettiva->setFax(array());
-                $cnt = 0;
-                foreach ($faxarray as $fax) {
-                    $tempFax[$cnt] = $fax->toRdfPhp()['value'];
-                    $cnt++;
-                }
-                count($tempFax) > 0 ? $newStrutturaRicettiva->setFax($tempFax) : $newStrutturaRicettiva->setFax(null);
-            }
-            $newStrutturaRicettiva->setResourceOriginUrl(($p = $strutturaRicettivaResource->get("<http://schema.org/web>")) != null ? $p->getValue() : null);
-
-
-            if ($isAlreadyPersisted && ($oldAddress = $newStrutturaRicettiva->getAddress()) != null) {
-                $this->em->remove($oldAddress);
-                $newStrutturaRicettiva->setAddress(null);
-            }
-
-            /**@var EasyRdf_Resource $addressResource */
-            $addressResource = $strutturaRicettivaResource->get("<http://schema.org/address>");
-            if ($addressResource != null) {
-                $addressObject = new Address();
-                $addressObject->setPostalCode(($p = $addressResource->get("<http://schema.org/postalCode>")) != null ? $p->getValue() : null);
-                $addressObject->setIstat(($p = $addressResource->get("<http://dbpedia.org/ontology/istat>")) != null ? $p->getValue() : null);
-                $addressObject->setAddressLocality(($p = $addressResource->get("<http://schema.org/addressLocality>")) != null ? $p->getValue() : null);
-                $addressObject->setAddressRegion(($p = $addressResource->get("<http://schema.org/addressRegion>")) != null ? $p->getValue() : null);
-                $addressObject->setStreetAddress(($p = $addressResource->get("<http://schema.org/streetAddress>")) != null ? $p->getValue() : null);
-                $addressObject->setLat(($p = $addressResource->get("<http://www.w3.org/2003/01/geo/wgs84_pos#lat>")) != null ? $p->getValue() : null);
-                $addressObject->setLng(($p = $addressResource->get("<http://www.w3.org/2003/01/geo/wgs84_pos#long>")) != null ? $p->getValue() : null);
-                $newStrutturaRicettiva->setAddress($addressObject);
-            }
-
-
-            /**@var EasyRdf_Resource[] $categoriesarray */
-            $categoriesarray = $strutturaRicettivaResource->all("<http://dati.umbria.it/tourism/ontology/categoria>");
-            if ($categoriesarray != null) {
-                /**@var Category[] $tempCategories */
-                $tempCategories = array();
-                $cnt = 0;
-                foreach ($categoriesarray as $category) {
-                    $oldCategory = $this->categoryRepo->find($category->getUri());
-                    if ($oldCategory != null) {
-                        $tempCategories[$cnt] = $oldCategory;
-                    } else {
-                        $tempCategories[$cnt] = new Category();
-                        $tempCategories[$cnt]->setUri($category->getUri());
-                        $tempCategories[$cnt]->setName(($p = $category->get("rdfs:label")) != null ? $p->getValue() : null);
-                        $tempCategories[$cnt]->setComment(($p = $category->get("<http://www.w3.org/2000/01/rdf-schema#comment>")) != null ? $p->getValue() : null);
-                    }
-                    $cnt++;
-                }
-                count($tempCategories) > 0 ? $newStrutturaRicettiva->setCategories($tempCategories) : $newStrutturaRicettiva->setCategories(null);
-            }
-
-            $newStrutturaRicettiva->setUnits(($p = $strutturaRicettivaResource->get("<http://dati.umbria.it/base/ontology/numeroUnita>")) != null ? $p->getValue() : null);
-            $newStrutturaRicettiva->setBeds(($p = $strutturaRicettivaResource->get("<http://dati.umbria.it/base/ontology/numeroLetti>")) != null ? $p->getValue() : null);
-            $newStrutturaRicettiva->setToilets(($p = $strutturaRicettivaResource->get("<http://dati.umbria.it/base/ontology/numeroBagni>")) != null ? $p->getValue() : null);
-
-
-            if (!$isAlreadyPersisted) {
-                $this->em->persist($newStrutturaRicettiva);
-            }
-
-            $this->em->flush();
-        }
-    }
-
-    private function deleteOldEntities($olderThan)
+        private function deleteOldEntities($olderThan)
     {
         $this->strutturaRicettivaRepo->removeLastUpdatedBefore($olderThan);
     }
+
 }
