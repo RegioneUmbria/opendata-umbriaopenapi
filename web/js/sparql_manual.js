@@ -7,12 +7,14 @@ document.getElementById("sparqlQueryTypeSubmit").addEventListener("click", execu
 document.getElementById("sparqlQuerySubmit").addEventListener("click", executeQuery);
 
 function executeGraphsQuery() {
-    var xhr = createCORSRequest('GET', 'http://dati.umbria.it/sparql?default-graph-uri=http%3A%2F%2Fdati.umbria.it%2Fgraph%2Fattrattor&query=SELECT+DISTINCT+%3Fg%0D%0AWHERE%7B%0D%0A++++GRAPH+%3Fg+%7B%3Fs+a+%3Ft%7D%0D%0A%7D&format=application%2Fsparql-results%2Bjson&timeout=0&debug=on');
+    var url = window.location.href;
+    url = url.concat("/sparql_query_graphs");
+    var xhr = createCORSRequest('GET', url);
     if (!xhr) {
         throw new Error('CORS not supported');
     }
     xhr.onload = function () {
-        document.getElementById("graphsFormResult").innerHTML = JSON.stringify(JSON.parse(xhr.responseText), null, "\t");
+        document.getElementById("graphsFormResult").innerHTML = JSON.stringify(JSON.parse(xhr.responseText).data, null, "\t");
         setGraphsResults(1, true);
         document.getElementById("graphsFormSubmit").className = "btn btn-success";
         document.getElementById("show_json_graphs").style.display = "initial";
@@ -25,13 +27,14 @@ function executeGraphsQuery() {
 
 function executeTypeQuery() {
     var graph = encodeURIComponent(document.getElementById("sparqlQueryTypeGraph").value);
-    var requestUrl = "http://dati.umbria.it/sparql?default-graph-uri=".concat(graph, "&query=SELECT+DISTINCT+%3Fo%0D%0AWHERE%7B%0D%0A++++%3Fs+%3Chttp%3A%2F%2Fwww.w3.org%2F1999%2F02%2F22-rdf-syntax-ns%23type%3E+%3Fo%0D%0A%7D&format=application%2Fsparql-results%2Bjson&timeout=0&debug=on");
-    var xhr = createCORSRequest('GET', requestUrl);
+    var url = window.location.href;
+    url = url.concat("/sparql_query_types/", encodeURI(graph));
+    var xhr = createCORSRequest('GET', url);
     if (!xhr) {
         throw new Error('CORS not supported');
     }
     xhr.onload = function () {
-        document.getElementById("sparqlQueryTypeResult").innerHTML = JSON.stringify(JSON.parse(xhr.responseText), null, "\t");
+        document.getElementById("sparqlQueryTypeResult").innerHTML = JSON.stringify(JSON.parse(xhr.responseText).data, null, "\t");
         setTypesResults(1, true);
         document.getElementById("sparqlQueryTypeSubmit").className = "btn btn-success";
         document.getElementById("show_json_types").style.display = "initial";
@@ -43,13 +46,14 @@ function executeTypeQuery() {
 function executeQuery() {
     var graph = encodeURIComponent(document.getElementById("sparqlQueryGraph").value);
     var type = encodeURIComponent(document.getElementById("sparqlQueryTypeHidden").value);
-    var requestUrl = "http://dati.umbria.it/sparql?default-graph-uri=".concat(graph, "&query=SELECT+DISTINCT+%3Fs+%3Fp+%3Fo+WHERE%7B+%3Fs+%3Fp+%3Fo+.+%3Fs+%3Chttp%3A%2F%2Fwww.w3.org%2F1999%2F02%2F22-rdf-syntax-ns%23type%3E+%3C", type, "%3E+%7DLIMIT+50&format=application%2Fsparql-results%2Bjson&timeout=0&debug=on");
-    var xhr = createCORSRequest('GET', requestUrl);
+    var url = window.location.href;
+    url = url.concat("/sparql_query_data/", encodeURI(graph), "/", encodeURI(type));
+    var xhr = createCORSRequest('GET', url);
     if (!xhr) {
         throw new Error('CORS not supported');
     }
     xhr.onload = function () {
-        document.getElementById("sparqlQueryResult").innerHTML = JSON.stringify(JSON.parse(xhr.responseText), null, "\t");
+        document.getElementById("sparqlQueryResult").innerHTML = JSON.stringify(JSON.parse(xhr.responseText).data, null, "\t");
         setResourcesResults(1, true);
         document.getElementById("sparqlQuerySubmit").className = "btn btn-success";
         document.getElementById("show_json_resources").style.display = "initial";
@@ -60,7 +64,7 @@ function executeQuery() {
 
 function setGraphsResults(page, resetPages) {
     var responseObj = JSON.parse(document.getElementById("graphsFormResult").innerHTML);
-    var bindings = responseObj.results.bindings;
+    var bindings = JSON.parse(responseObj).results.bindings;
     var countGraphs = bindings.length;
     var pageCount = Math.ceil(countGraphs / 5);
     if (pageCount > 0) {
@@ -115,7 +119,7 @@ function setGraphsResults(page, resetPages) {
 
 function setTypesResults(page, resetPages) {
     var responseObj = JSON.parse(document.getElementById("sparqlQueryTypeResult").innerHTML);
-    var bindings = responseObj.results.bindings;
+    var bindings = JSON.parse(responseObj).results.bindings;
     var countTypes = bindings.length;
     var pageCount = Math.ceil(countTypes / 5);
     if (pageCount > 0) {
@@ -165,7 +169,7 @@ function setTypesResults(page, resetPages) {
 
 function setResourcesResults(page, resetPages) {
     var responseObj = JSON.parse(document.getElementById("sparqlQueryResult").innerHTML);
-    var bindings = responseObj.results.bindings;
+    var bindings = JSON.parse(responseObj).results.bindings;
     var countResources = bindings.length;
     var pageCount = Math.ceil(countResources / 5);
     if (pageCount > 0) {

@@ -6,6 +6,18 @@ umbria_open_api_sparql_manual:
     path:     /sparql_manual
     defaults: { _controller: UmbriaOpenApiBundle:SparqlManual:index }
 
+umbria_open_api_sparql_manual_query_graphs:
+    path:     /sparql_manual/sparql_query_graphs
+    defaults: {_controller: UmbriaOpenApiBundle:SparqlManual:sparqlQueryGraphs }
+
+umbria_open_api_sparql_manual_query_types:
+    path:     /sparql_manual/sparql_query_types/{graph}
+    defaults: {_controller: UmbriaOpenApiBundle:SparqlManual:sparqlQueryTypes }
+
+umbria_open_api_sparql_manual_query_data:
+    path:     /sparql_manual/sparql_query_data/{graph}/{type}
+    defaults: {_controller: UmbriaOpenApiBundle:SparqlManual:sparqlQueryData }
+
 # API REST
 umbria_open_api_tourism_proposal: { type: rest, resource: 'Umbria\OpenApiBundle\Controller\Tourism\ProposalController' }
 umbria_open_api_tourism_attractor: { type: rest, resource: 'Umbria\OpenApiBundle\Controller\Tourism\AttractorController' }
