@@ -7,7 +7,7 @@ document.getElementById("sparqlQueryTypeSubmit").addEventListener("click", execu
 document.getElementById("sparqlQuerySubmit").addEventListener("click", executeQuery);
 
 function executeGraphsQuery() {
-    var xhr = createCORSRequest('GET', 'https://odnt-srv01/sparql?default-graph-uri=http%3A%2F%2Fdati.umbria.it%2Fgraph%2Fattrattor&query=SELECT+DISTINCT+%3Fg%0D%0AWHERE%7B%0D%0A++++GRAPH+%3Fg+%7B%3Fs+a+%3Ft%7D%0D%0A%7D&format=application%2Fsparql-results%2Bjson&timeout=0&debug=on');
+    var xhr = createCORSRequest('GET', 'http://dati.umbria.it/sparql?default-graph-uri=http%3A%2F%2Fdati.umbria.it%2Fgraph%2Fattrattor&query=SELECT+DISTINCT+%3Fg%0D%0AWHERE%7B%0D%0A++++GRAPH+%3Fg+%7B%3Fs+a+%3Ft%7D%0D%0A%7D&format=application%2Fsparql-results%2Bjson&timeout=0&debug=on');
     if (!xhr) {
         throw new Error('CORS not supported');
     }
@@ -25,7 +25,7 @@ function executeGraphsQuery() {
 
 function executeTypeQuery() {
     var graph = encodeURIComponent(document.getElementById("sparqlQueryTypeGraph").value);
-    var requestUrl = "https://odnt-srv01/sparql?default-graph-uri=".concat(graph, "&query=SELECT+DISTINCT+%3Fo%0D%0AWHERE%7B%0D%0A++++%3Fs+%3Chttp%3A%2F%2Fwww.w3.org%2F1999%2F02%2F22-rdf-syntax-ns%23type%3E+%3Fo%0D%0A%7D&format=application%2Fsparql-results%2Bjson&timeout=0&debug=on");
+    var requestUrl = "http://dati.umbria.it/sparql?default-graph-uri=".concat(graph, "&query=SELECT+DISTINCT+%3Fo%0D%0AWHERE%7B%0D%0A++++%3Fs+%3Chttp%3A%2F%2Fwww.w3.org%2F1999%2F02%2F22-rdf-syntax-ns%23type%3E+%3Fo%0D%0A%7D&format=application%2Fsparql-results%2Bjson&timeout=0&debug=on");
     var xhr = createCORSRequest('GET', requestUrl);
     if (!xhr) {
         throw new Error('CORS not supported');
@@ -43,7 +43,7 @@ function executeTypeQuery() {
 function executeQuery() {
     var graph = encodeURIComponent(document.getElementById("sparqlQueryGraph").value);
     var type = encodeURIComponent(document.getElementById("sparqlQueryTypeHidden").value);
-    var requestUrl = "https://odnt-srv01/sparql?default-graph-uri=".concat(graph, "&query=SELECT+DISTINCT+%3Fs+%3Fp+%3Fo+WHERE%7B+%3Fs+%3Fp+%3Fo+.+%3Fs+%3Chttp%3A%2F%2Fwww.w3.org%2F1999%2F02%2F22-rdf-syntax-ns%23type%3E+%3C", type, "%3E+%7DLIMIT+50&format=application%2Fsparql-results%2Bjson&timeout=0&debug=on");
+    var requestUrl = "http://dati.umbria.it/sparql?default-graph-uri=".concat(graph, "&query=SELECT+DISTINCT+%3Fs+%3Fp+%3Fo+WHERE%7B+%3Fs+%3Fp+%3Fo+.+%3Fs+%3Chttp%3A%2F%2Fwww.w3.org%2F1999%2F02%2F22-rdf-syntax-ns%23type%3E+%3C", type, "%3E+%7DLIMIT+50&format=application%2Fsparql-results%2Bjson&timeout=0&debug=on");
     var xhr = createCORSRequest('GET', requestUrl);
     if (!xhr) {
         throw new Error('CORS not supported');
