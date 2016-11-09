@@ -24,9 +24,9 @@
                 <thead>
                 <tr>
                     <th></th>
-                    <th>Titolo</th>
-                    <th>Inizio</th>
-                    <th>Fine</th>
+                    <th>{{ knp_pagination_sortable(pagination, 'Titolo', 'a.title') }}</th>
+                    <th>{{ knp_pagination_sortable(pagination, 'Inizio', 'a.startDate') }}</th>
+                    <th>{{ knp_pagination_sortable(pagination, 'Fine', 'a.endDate') }}</th>
                     <th><span class="badge pull-right">{{ pagination.getTotalItemCount }}</span></th>
                 </tr>
                 </thead>
