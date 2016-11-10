@@ -1,11 +1,13 @@
 <?php
 
+
 namespace Umbria\OpenApiBundle\Controller\Tourism;
 
 use DateTime;
 use Doctrine\ORM\EntityManager;
+use EasyRdf_Graph;
+use EasyRdf_Resource;
 use FOS\RestBundle\Controller\Annotations as Rest;
-use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\View\View;
 use JMS\DiExtraBundle\Annotation as DI;
 use Knp\Component\Pager\Pagination\AbstractPagination;
@@ -13,39 +15,62 @@ use Knp\Component\Pager\Paginator;
 use Nelmio\ApiDocBundle\Annotation as ApiDoc;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Umbria\OpenApiBundle\Entity\Category;
+use Umbria\OpenApiBundle\Entity\Tourism\GraphsEntities\Attractor;
+use Umbria\OpenApiBundle\Entity\Tourism\GraphsEntitiesInnerObjects\AttractorDescription;
 use Umbria\OpenApiBundle\Entity\Tourism\Setting;
+use Umbria\OpenApiBundle\Entity\Type;
+use Umbria\OpenApiBundle\Repository\Tourism\GraphsEntities\AttractorRepository;
 use Umbria\OpenApiBundle\Serializer\View\EntityResponse;
-use Umbria\OpenApiBundle\Service\CurlBuilder;
 use Umbria\OpenApiBundle\Service\FilterBag;
 
-class AttractorController extends FOSRestController
+
+/**
+ * Class AttractorController
+ * @package Umbria\OpenApiBundle\Controller\Tourism
+ *
+ * @author Lorenzo Franco Ranucci <loryzizu@gmail.com>
+ */
+class AttractorController extends BaseController
 {
     const DEFAULT_PAGE_SIZE = 100;
     const DATASET_TOURISM_ATTRACTOR = 'tourism-attractor';
-
-    /**
-     * @var EntityManager
-     * @DI\Inject("doctrine.orm.entity_manager")
-     */
-    public $em;
-
-    /**
-     * @var CurlBuilder
-     * @DI\Inject("umbria_open_api.curl_builder")
-     */
-    public $curlBuilder;
-
-    /**
-     * @var FilterBag
-     * @DI\Inject("umbria_open_api.filter_bag")
-     */
     private $filterBag;
+    private $paginator;
+
+    private $em;
+    /**@var AttractorRepository attractorRepo */
+    private $attractorRepo;
+
+    private $settingsRepo;
+    private $categoryRepo;
+    private $typeRepo;
+
+    private $graph;
+    private $sameAsGraph;
+    private $locatedInGraph;
 
     /**
-     * @var Paginator
-     * @DI\Inject("knp_paginator")
+     * @DI\InjectParams({
+     *      "em" = @DI\Inject("doctrine.orm.entity_manager"),
+     *      "filterBag" = @DI\Inject("umbria_open_api.filter_bag"),
+     *      "paginator" = @DI\Inject("knp_paginator")
+     * })
+     * @param $em EntityManager
+     * @param $filterBag FilterBag
+     * @param $paginator Paginator
      */
-    private $paginator;
+    public function __construct($em, $filterBag, $paginator)
+    {
+        parent::__construct($em);
+        $this->filterBag = $filterBag;
+        $this->paginator = $paginator;
+        $this->attractorRepo = $em->getRepository('UmbriaOpenApiBundle:Tourism\GraphsEntities\Attractor');
+        $this->settingsRepo = $em->getRepository('UmbriaOpenApiBundle:Tourism\Setting');
+        $this->categoryRepo = $em->getRepository('UmbriaOpenApiBundle:Category');
+        $this->typeRepo = $em->getRepository('UmbriaOpenApiBundle:Type');
+        $this->em = $em;
+    }
 
     /**
      * @Rest\Options(pattern="/open-api/tourism-attractor")
@@ -102,10 +127,6 @@ class AttractorController extends FOSRestController
     public function getTourismAttractorListAction(Request $request)
     {
         $daysToOld = $this->container->getParameter('attractor_days_to_old');
-        $url = $this->container->getParameter('url_attractor');
-        $urlSilkSameAs = $this->container->getParameter('url_attractor_silk');
-        $urlSilkLocatedIn = $this->container->getParameter('url_attractor_silk_located_in');
-
         $filters = $this->filterBag->getFilterBag($request);
         $offset = $filters->has('start') ? $filters->get('start') : 0;
         $limit = $filters->has('limit') ? $filters->get('limit') : self::DEFAULT_PAGE_SIZE;
@@ -122,17 +143,15 @@ class AttractorController extends FOSRestController
         $page = floor($offset / $limit) + 1;
 
         /** @var Setting $setting */
-        $setting = $this->em->getRepository('UmbriaOpenApiBundle:Tourism\Setting')->findOneBy(array('datasetName' => self::DATASET_TOURISM_ATTRACTOR));
+        $setting = $this->settingsRepo->findOneBy(array('datasetName' => self::DATASET_TOURISM_ATTRACTOR));
         if ($setting != null) {
             $diff = $setting->getUpdatedAt()->diff(new DateTime('now'));
-            // controllo intervallo di tempo da ultima estrazione
             if ($diff->days >= $daysToOld) {
                 $setting->setDatasetName(self::DATASET_TOURISM_ATTRACTOR);
                 $setting->setUpdatedAtValue();
                 $this->em->persist($setting);
                 $this->em->flush();
-
-                $this->curlBuilder->updateEntities($url, self::DATASET_TOURISM_ATTRACTOR, $urlSilkSameAs, $urlSilkLocatedIn);
+                $this->updateEntities();
             }
         } else {
             $setting = new Setting();
@@ -140,30 +159,28 @@ class AttractorController extends FOSRestController
             $setting->setUpdatedAtValue();
             $this->em->persist($setting);
             $this->em->flush();
-
-            $this->curlBuilder->updateEntities($url, self::DATASET_TOURISM_ATTRACTOR, $urlSilkSameAs, $urlSilkLocatedIn);
+            $this->updateEntities();
         }
         $qb = $this->em->createQueryBuilder();
         $builder = $qb
             ->select('a')
-            ->from('UmbriaOpenApiBundle:Tourism\Attractor', 'a');
+            ->from('UmbriaOpenApiBundle:Tourism\GraphsEntities\Attractor', 'a');
 
 
         if ($labelLike != null) {
             $builder = $qb
-                ->andWhere($qb->expr()->like('a.denominazione', '?2'))
+                ->andWhere($qb->expr()->like('a.name', '?2'))
                 ->setParameter(2, $labelLike);
         }
 
         if ($descriptionLike != null) {
             $builder = $qb
-                ->innerJoin('a.descrizioni', 'd')
+                ->innerJoin('a.descriptions', 'd')
                 ->andWhere(
                     $qb->expr()->orX(
-                        $qb->expr()->like('d.testo', '?1'),
-                        $qb->expr()->like('a.descrizioneSintetica', '?1'),
-                        $qb->expr()->like('a.abstract', '?1'),
-                        $qb->expr()->like('a.dbpediaAbstract', '?1')
+                        $qb->expr()->like('d.title', '?1'),
+                        $qb->expr()->like('d.text', '?1'),
+                        $qb->expr()->like('a.comment', '?1')
                     )
                 )
                 ->setParameter(1, $descriptionLike);
@@ -172,9 +189,9 @@ class AttractorController extends FOSRestController
 
         if ($categoryLike != null) {
             $builder = $qb
-                ->leftJoin('a.categorie', 'cat')
+                ->leftJoin('a.categories', 'cat')
                 ->andWhere(
-                    $qb->expr()->like('cat.cat', ':categoryLike')
+                    $qb->expr()->like('cat.name', ':categoryLike')
                 )
                 ->setParameter("categoryLike", $categoryLike);
 
@@ -185,14 +202,12 @@ class AttractorController extends FOSRestController
             $lngMax != null ||
             $lngMin != null
         ) {
-            $builder = $qb
-                ->innerJoin('a.coordinate', 'c');
             if ($latMax != null) {
                 $builder =
                     $qb->andWhere(
-                        $qb->expr()->lte("c.latitude", ':latMax'),
-                        $qb->expr()->isNotNull("c.latitude"),
-                        $qb->expr()->gt("c.latitude", ':empty')
+                        $qb->expr()->lte("a.lat", ':latMax'),
+                        $qb->expr()->isNotNull("a.lat"),
+                        $qb->expr()->gt("a.lat", ':empty')
                     )
                         ->setParameter('latMax', $latMax)
                         ->setParameter('empty', '0');
@@ -200,9 +215,9 @@ class AttractorController extends FOSRestController
             if ($latMin != null) {
                 $builder =
                     $qb->andWhere(
-                        $qb->expr()->gte("c.latitude", ':latMin'),
-                        $qb->expr()->isNotNull("c.latitude"),
-                        $qb->expr()->gt("c.latitude", ":empty")
+                        $qb->expr()->gte("a.lat", ':latMin'),
+                        $qb->expr()->isNotNull("a.lat"),
+                        $qb->expr()->gt("a.lat", ":empty")
                     )
                         ->setParameter('latMin', $latMin)
                         ->setParameter('empty', '0');
@@ -210,9 +225,9 @@ class AttractorController extends FOSRestController
             if ($lngMax != null) {
                 $builder =
                     $qb->andWhere(
-                        $qb->expr()->lte("c.longitude", ':lngMax'),
-                        $qb->expr()->isNotNull("c.longitude"),
-                        $qb->expr()->gt("c.longitude", ":empty")
+                        $qb->expr()->lte("a.lng", ':lngMax'),
+                        $qb->expr()->isNotNull("a.lng"),
+                        $qb->expr()->gt("a.longitude", ":empty")
                     )
                         ->setParameter('lngMax', $lngMax)
                         ->setParameter('empty', '0');
@@ -220,9 +235,9 @@ class AttractorController extends FOSRestController
             if ($lngMin != null) {
                 $builder =
                     $qb->andWhere(
-                        $qb->expr()->gte("c.longitude", ':lngMin'),
-                        $qb->expr()->isNotNull("c.longitude"),
-                        $qb->expr()->gt("c.longitude", ":empty")
+                        $qb->expr()->gte("a.lng", ':lngMin'),
+                        $qb->expr()->isNotNull("a.lng"),
+                        $qb->expr()->gt("a.lng", ":empty")
                     )
                         ->setParameter('lngMin', $lngMin)
                         ->setParameter('empty', '0');
@@ -234,14 +249,190 @@ class AttractorController extends FOSRestController
         /** @var AbstractPagination $countPagination */
         $countPagination = $this->paginator->paginate($builder, 1, 1);
 
-        $viewGroups = array(
-            'response',
-            'rdf.*', 'attractor.*', 'description.*', 'category.*', 'info.*', 'travel-time.*', 'coordinate.*', 'download.*',
-        );
 
         $view = new View(new EntityResponse($resultsPagination->getItems(), count($resultsPagination), $countPagination->getTotalItemCount()));
-        $view->getSerializationContext()->setGroups($viewGroups);
 
         return $view;
+    }
+
+    private function updateEntities()
+    {
+
+        $this->graph = EasyRdf_Graph::newAndLoad($this->container->getParameter('attractors_graph_url'));
+        $this->sameAsGraph = EasyRdf_Graph::newAndLoad($this->container->getParameter('attractors_sameas_graph_url'));
+        $this->locatedInGraph = EasyRdf_Graph::newAndLoad($this->container->getParameter('attractors_locatedin_graph_url'));
+        /**@var EasyRdf_Resource[] $resources */
+        $resources = $this->graph->resources();
+        foreach ($resources as $resource) {
+            $resourceTypeArray = $resource->all("rdf:type");
+            if ($resourceTypeArray != null) {
+                foreach ($resourceTypeArray as $resourceType) {
+                    if (trim($resourceType) == "http://linkedgeodata.org/ontology/Attraction") {//is attractor
+                        $sameAsResource = null;
+                        $locatedInResource = null;
+                        if ($this->sameAsGraph != null) {
+                            $sameAsResource = $this->sameAsGraph->resource($resource->getUri());
+                        }
+                        if ($this->locatedInGraph != null) {
+                            $locatedInResource = $this->locatedInGraph->resource($resource->getUri());
+                        }
+
+                        $this->createOrUpdateEntity($resource, $sameAsResource, $locatedInResource);
+                        break;
+                    }
+                }
+            }
+
+        }
+        $now = new \DateTime();
+        $this->deleteOldEntities($now);
+    }
+
+    /**
+     * @param EasyRdf_Resource $attractorResource
+     * @param EasyRdf_Resource null $sameAsResource
+     * @param EasyRdf_Resource null $locatedInResource
+     */
+    private function createOrUpdateEntity($attractorResource, $sameAsResource = null, $locatedInResource = null)
+    {
+        /** @var Attractor $newAttractor */
+        $newAttractor = null;
+        $uri = $attractorResource->getUri();
+        if ($uri != null) {
+            $oldAttractor = $this->attractorRepo->find($uri);
+            $isAlreadyPersisted = $oldAttractor != null;
+            if ($isAlreadyPersisted) {
+                $newAttractor = $oldAttractor;
+            } else {
+                $newAttractor = new Attractor();
+            }
+            $newAttractor->setUri($uri);
+            $newAttractor->setLastUpdateAt(new \DateTime('now'));
+            $newAttractor->setName(($p = $attractorResource->get("rdfs:label")) != null ? $p->getValue() : null);
+
+            /**@var EasyRdf_Resource[] $typesarray */
+            $typesarray = $attractorResource->all("rdf:type");
+            if ($typesarray != null) {
+                /**@var Type[] $tempTypes */
+                $tempTypes = array();
+                $cnt = 0;
+                foreach ($typesarray as $type) {
+                    $oldType = $this->typeRepo->find($type->getUri());
+                    if ($oldType != null) {
+                        $tempTypes[$cnt] = $oldType;
+                    } else {
+                        $tempTypes[$cnt] = new Type();
+                        $tempTypes[$cnt]->setUri($type->getUri());
+                        $tempTypes[$cnt]->setName(($p = $type->get("rdfs:label")) != null ? $p->getValue() : null);
+                        $tempTypes[$cnt]->setComment(($p = $type->get("<http://www.w3.org/2000/01/rdf-schema#comment>")) != null ? $p->getValue() : null);
+                    }
+                    $cnt++;
+                }
+                count($tempTypes) > 0 ? $newAttractor->setTypes($tempTypes) : $newAttractor->setTypes(null);
+            }
+
+            $newAttractor->setComment(($p = $attractorResource->get("<http://www.w3.org/2000/01/rdf-schema#comment>")) != null ? $p->getValue() : null);
+            $newAttractor->setProvenance(($p = $attractorResource->get("<http://purl.org/dc/elements/1.1/provenance>")) != null ? $p->getValue() : null);
+            $newAttractor->setMunicipality(($p = $attractorResource->get("<http://dbpedia.org/ontology/municipality>")) != null ? $p->getValue() : null);
+            $newAttractor->setIstat(($p = $attractorResource->get("<http://dbpedia.org/ontology/istat>")) != null ? $p->getValue() : null);
+            $newAttractor->setSubject(($p = $attractorResource->get("<http://purl.org/dc/elements/1.1/subject>")) != null ? $p->getValue() : null);
+            $newAttractor->setLat(($p = $attractorResource->get("<http://www.w3.org/2003/01/geo/wgs84_pos#lat>")) != null ? (float)$p->getValue() : null);
+            $newAttractor->setLng(($p = $attractorResource->get("<http://www.w3.org/2003/01/geo/wgs84_pos#long>")) != null ? (float)$p->getValue() : null);
+
+            $imagearray1 = $attractorResource->all("<http://dati.umbria.it/tourism/ontology/immagine_copertina>");
+            $imagearray2 = $attractorResource->all("<http://dati.umbria.it/tourism/ontology/immagine_spalla_destra>");
+            /**@var EasyRdf_Resource[] $imagearray */
+            $imagearray = array_merge($imagearray1, $imagearray2);
+            if ($imagearray != null) {
+                $tempImage = array();
+                $newAttractor->setImages(array());
+                $cnt = 0;
+                foreach ($imagearray as $image) {
+                    $tempImage[$cnt] = $image->toRdfPhp()['value'];
+                    $cnt++;
+                }
+                count($tempImage) > 0 ? $newAttractor->setImages($tempImage) : $newAttractor->setImages(null);
+            }
+
+            $newAttractor->setTextTitle(($p = $attractorResource->get("<http://dati.umbria.it/tourism/ontology/titolo_testo>")) != null ? $p->getValue() : null);
+            /*TODO link esterni associati*/
+            $newAttractor->setResourceOriginUrl(($p = $attractorResource->get("<http://dati.umbria.it/tourism/ontology/url_risorsa>")) != null ? $p->getValue() : null);
+            $newAttractor->setShortDescription(($p = $attractorResource->get("<http://dati.umbria.it/tourism/ontology/descrizione_sintetica>")) != null ? $p->getValue() : null);
+            $newAttractor->setLanguage(($p = $attractorResource->get("<http://purl.org/dc/elements/1.1/language>")) != null ? $p->getUri() : null);
+
+            if ($isAlreadyPersisted && ($oldDescriptions = $newAttractor->getDescriptions()) != null) {
+                foreach ($oldDescriptions as $oldDescription) {
+                    $this->em->remove($oldDescription);
+                }
+                $newAttractor->setDescriptions(null);
+            }
+            /**@var EasyRdf_Resource[] $descriptionArray */
+            $descriptionArray = $attractorResource->all("<http://dati.umbria.it/tourism/ontology/descrizione>");
+            if ($descriptionArray != null) {
+                $tempDescriptions = array();
+                $cnt = 0;
+                foreach ($descriptionArray as $descriptionResource) {
+                    $descriptionTitle = $descriptionResource->get("<http://dati.umbria.it/tourism/ontology/titolo>")->getValue();
+                    $descriptionText = $descriptionResource->get("<http://dati.umbria.it/tourism/ontology/testo>")->getValue();
+                    $descriptionObject = new AttractorDescription();
+                    $descriptionObject->setTitle($descriptionTitle);
+                    $descriptionObject->setText($descriptionText);
+                    $descriptionObject->setAttractor($newAttractor);
+                    $tempDescriptions[$cnt] = $descriptionObject;
+                    $cnt++;
+                }
+                if (count($tempDescriptions) > 0) {
+                    $newAttractor->setDescriptions($tempDescriptions);
+                }
+            }
+
+            /*TODO travel time*/
+
+
+            if ($sameAsResource != null) {
+                /**@var EasyRdf_Resource $sameAsResource */
+                $sameAsArray = $sameAsResource->all("<http://www.w3.org/2002/07/owl#sameAs>");
+                $newAttractor->setSameAs($this->getExternalResources($sameAsArray, "http://dbpedia.org/sparql",
+                    "http://www.w3.org/2000/01/rdf-schema#label", "http://dbpedia.org/ontology/abstract", "http://www.w3.org/ns/prov#wasDerivedFrom"));
+            }
+            if ($locatedInResource != null) {
+                /**@var EasyRdf_Resource $locatedInResource */
+                $locatedInArray = $locatedInResource->all("<http://www.geonames.org/ontology#locatedIn>");
+                $newAttractor->setlocatedIn($this->getExternalResources($locatedInArray, "http://it.dbpedia.org/sparql",
+                    "http://www.w3.org/2000/01/rdf-schema#label", "http://dbpedia.org/ontology/abstract", "http://www.w3.org/ns/prov#wasDerivedFrom"));
+            }
+
+            /**@var EasyRdf_Resource[] $categoriesarray */
+            $categoriesarray = $attractorResource->all("<http://dati.umbria.it/tourism/ontology/categoria>");
+            if ($categoriesarray != null) {
+                /**@var Category[] $tempCategories */
+                $tempCategories = array();
+                $cnt = 0;
+                foreach ($categoriesarray as $category) {
+                    $oldCategory = $this->categoryRepo->find($category->getUri());
+                    if ($oldCategory != null) {
+                        $tempCategories[$cnt] = $oldCategory;
+                    } else {
+                        $tempCategories[$cnt] = new Category();
+                        $tempCategories[$cnt]->setUri($category->getUri());
+                        $tempCategories[$cnt]->setName(($p = $category->get("rdfs:label")) != null ? $p->getValue() : null);
+                        $tempCategories[$cnt]->setComment(($p = $category->get("<http://www.w3.org/2000/01/rdf-schema#comment>")) != null ? $p->getValue() : null);
+                    }
+                    $cnt++;
+                }
+                count($tempCategories) > 0 ? $newAttractor->setCategories($tempCategories) : $newAttractor->setCategories(null);
+            }
+
+            if (!$isAlreadyPersisted) {
+                $this->em->persist($newAttractor);
+            }
+
+            $this->em->flush();
+        }
+    }
+
+    private function deleteOldEntities($olderThan)
+    {
+        $this->attractorRepo->removeLastUpdatedBefore($olderThan);
     }
 }

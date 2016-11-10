@@ -24,7 +24,7 @@
                 <thead>
                 <tr>
                     <th></th>
-                    <th>{{ knp_pagination_sortable(pagination, 'Denominazione', 'a.denominazione') }}</th>
+                    <th>{{ knp_pagination_sortable(pagination, 'Denominazione', 'c.name') }}</th>
                     <th><span class="badge pull-right">{{ pagination.getTotalItemCount }}</span></th>
                 </tr>
                 </thead>
@@ -34,7 +34,7 @@
                         <td class="text-muted">
                             <small>{{ loop.index }}</small>
                         </td>
-                        <td>{{ consortium.denominazione }}</td>
+                        <td>{{ consortium.name }}</td>
                         <td>
                             <a class="btn btn-info btn-xs"
                                href="{{ path('consortium_show', { 'id': consortium.id }) }}">show</a>

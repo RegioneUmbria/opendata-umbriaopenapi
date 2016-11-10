@@ -26,6 +26,10 @@ umbria_pro_loco_iat:
     resource: "@UmbriaProLocoBundle/Resources/config/routing/iat.yml"
     prefix:   /iat
 
+umbria_pro_loco_impianto_sportivo:
+    resource: "@UmbriaProLocoBundle/Resources/config/routing/impianto_sportivo.yml"
+    prefix:   /impianto_sportivo
+
 umbria_pro_loco_homepage:
     path:     /tourism/map
     defaults: { _controller: UmbriaProLocoBundle:Default:index }

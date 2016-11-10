@@ -5,7 +5,7 @@
         <div class="row">
             <div class="page-header">
                 <h2>
-                    {{ travelAgency.denominazione }}
+                    {{ travelAgency.name }}
                 </h2>
             </div>
         </div>
@@ -13,36 +13,36 @@
             <div class="col-md-7">
                 <p>
                 <address>
-                    <strong>{{ travelAgency.denominazione }}</strong><br>
-                    {% for address in travelAgency.address %}
-                        {% if address.streetAddress != '' %}
-                            {{ address.streetAddress }}
+                <p>
+                    <strong>{{ travelAgency.name }}</strong><br>
+                    {% if travelAgency.address.streetAddress != '' %}
+                        {{ travelAgency.address.streetAddress }}
                         {% endif %}
                         <br>
-                        {% if address.addressLocality != '' %}
-                            {{ address.addressLocality }}
+                    {% if travelAgency.address.addressLocality != '' %}
+                        {{ travelAgency.address.addressLocality }}
                         {% endif %}
-                        {% if address.addressRegion != '' %}
-                            , {{ address.addressRegion }}
+                    {% if travelAgency.address.addressRegion != '' %}
+                        , {{ travelAgency.address.addressRegion }}
                         {% endif %}
-                        {% if address.postalCode != '' %}
-                            {{ address.postalCode }}
+                    {% if travelAgency.address.postalCode != '' %}
+                        {{ travelAgency.address.postalCode }}
                         {% endif %}
-                        <br>
+                </p>
+                <p>
+                    {% for phone in travelAgency.telephone %}
+                        <abbr title="Phone">P:</abbr> {{ phone }}<br>
                     {% endfor %}
-                    <br>
-                    {% for phone in travelAgency.phone %}
-                        <abbr title="Phone">P:</abbr> {{ phone.numTelefono }}<br>
+                    {% for faxNumber in travelAgency.fax %}
+                        <abbr title="Fax number">F:</abbr> {{ faxNumber }}<br>
                     {% endfor %}
-                    {% for faxNumber in travelAgency.faxNumber %}
-                        <abbr title="Fax number">F:</abbr> {{ faxNumber.numFax }}<br>
+                    {% for mbox in travelAgency.email %}
+                        <abbr title="Email">E:</abbr> {{ mbox }}<br>
                     {% endfor %}
-                    {% for mbox in travelAgency.mbox %}
-                        <abbr title="Email">E:</abbr> {{ mbox.email }}<br>
+                    {% for homepage in travelAgency.resourceOriginUrl %}
+                        <abbr title="Homepage">H:</abbr> {{ homepage }}<br>
                     {% endfor %}
-                    {% for homepage in travelAgency.homepage %}
-                        <abbr title="Homepage">H:</abbr> {{ homepage.indirizzoInternet }}<br>
-                    {% endfor %}
+                </p>
                 </address>
                 </p>
             </div>
@@ -55,47 +55,39 @@
                                 <small><b>Risorsa RDF</b></small>
                             </td>
                             <td><b>
-                                    <a href="{{ baseUrlRisorsa }}/{{ travelAgency.idContenuto }}">
-                                        {{ baseUrlRisorsa }}/{{ travelAgency.idContenuto }}
+                                    <a href="{{ travelAgency.uri }}">
+                                        {{ travelAgency.uri }}
                                     </a>
                                 </b>
                             </td>
                         </tr>
                         <tr>
                             <td>
-                                <small>id contenuto</small>
+                                <small>coordinate</small>
                             </td>
-                            <td>{{ travelAgency.idContenuto }}</td>
+                            <td>
+                                {% if travelAgency.lat != null %}
+                                    <a href="{{ path('umbria_pro_loco_homepage') }}"
+                                       onclick="setCoordCookie({{ travelAgency.lat }},{{ travelAgency.lng }})">
+                                        {{ travelAgency.lat }},{{ travelAgency.lng }}
+                                    </a>
+                                {% else %}
+                                    -
+                                {% endif %}
+                            </td>
                         </tr>
-                        {% for address in travelAgency.address %}
-                            <tr>
-                                <td>
-                                    <small>coordinate</small>
-                                </td>
-                                <td>
-                                    {% if address.latitude != '' %}
-                                        <a href="{{ path('umbria_pro_loco_homepage') }}"
-                                           onclick="setCoordCookie({{ address.latitude }},{{ address.longitude }})">
-                                            {{ address.latitude }},{{ address.longitude }}
-                                        </a>
-                                    {% else %}
-                                        -
-                                    {% endif %}
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <small>codice ISTAT comune</small>
-                                </td>
-                                <td>
-                                    {% if address.codiceIstatComune != '' %}
-                                        {{ address.codiceIstatComune }}
-                                    {% else %}
-                                        -
-                                    {% endif %}
-                                </td>
-                            </tr>
-                        {% endfor %}
+                        <tr>
+                            <td>
+                                <small>codice ISTAT comune</small>
+                            </td>
+                            <td>
+                                {% if travelAgency.address!= null and travelAgency.address.istat != '' %}
+                                    {{ travelAgency.address.istat }}
+                                {% else %}
+                                    -
+                                {% endif %}
+                            </td>
+                        </tr>
                         </tbody>
                     </table>
                 </div>
@@ -119,7 +111,7 @@
             <br/>
             <ol class="breadcrumb">
                 <li><a href="{{ path('travelagency_index') }}">Lista Agenzie Viaggio</a></li>
-                <li class="active">{{ travelAgency.denominazione }}</li>
+                <li class="active">{{ travelAgency.name }}</li>
             </ol>
         </div>
     </div>
@@ -135,12 +127,10 @@
 
         {% set latitude = '' %}
         {% set longitude = '' %}
-        {% for address in travelAgency.address %}
-        {% if address.latitude != '' %}
-        {% set latitude = address.latitude %}
-        {% set longitude = address.longitude %}
+        {% if travelAgency.lat != null %}
+        {% set latitude = travelAgency.lat %}
+        {% set longitude = travelAgency.lng %}
         {% endif %}
-        {% endfor %}
 
     </script>
 {% endblock %}

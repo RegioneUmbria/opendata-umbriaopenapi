@@ -5,16 +5,25 @@
         <div class="row">
             <div class="page-header">
                 <h2>
-                    {{ event.title }}
+                    {{ event.name }}
                 </h2>
             </div>
         </div>
         <div class="row">
             <div class="col-md-7">
-                <h4>{{ event.titoloTesto }}</h4>
+                <h4>{{ event.textTitle }}</h4>
                 <p>
-                    {{ event.eventDescription }}
+                    <small>
+                        {{ event.comment }}
+                    </small>
                 </p>
+                <br/>
+                <br/>
+                {% for description in event.descriptions %}
+                    {{ description.title|raw }}
+                    <br/>
+                    {{ description.text|raw }}
+                {% endfor %}
             </div>
             <div class="col-md-5">
                 <div class="row">
@@ -25,52 +34,25 @@
                                 <small><b>Risorsa RDF</b></small>
                             </td>
                             <td><b>
-                                    <a href="{{ baseUrlRisorsa }}/{{ event.idContenuto }}">
-                                        {{ baseUrlRisorsa }}/{{ event.idContenuto }}
+                                    <a href="{{ event.uri }}">
+                                        {{ event.uri }}
                                     </a>
                                 </b>
                             </td>
                         </tr>
                         <tr>
                             <td>
-                                <small>id contenuto</small>
-                            </td>
-                            <td>{{ event.idContenuto }}</td>
-                        </tr>
-                        <tr>
-                            <td>
                                 <small>coordinate</small>
                             </td>
                             <td>
-                                {% for coordinate in event.coordinate %}
-                                    {% if coordinate.latitude != '' %}
-                                        <small>umbria:</small>
+                                {% if event.lat != '' %}
                                         <a href="{{ path('umbria_pro_loco_homepage') }}"
-                                           onclick="setCoordCookie({{ coordinate.latitude }},{{ coordinate.longitude }})">
-                                            {{ coordinate.latitude }},{{ coordinate.longitude }}
+                                           onclick="setCoordCookie({{ event.lat }},{{ event.lng }})">
+                                            {{ event.lat }},{{ event.lng }}
                                         </a>
-                                    {% elseif coordinate.dbpediaLatitude != '' %}
-                                        <small>dbpedia:
-                                        </small>
-                                        <a href="{{ path('umbria_pro_loco_homepage') }}"
-                                           onclick="setCoordCookie({{ coordinate.dbpediaLatitude }},{{ coordinate.dbpediaLongitude }})">
-                                            {{ coordinate.dbpediaLatitude }},{{ coordinate.dbpediaLongitude }}
-                                        </a>
-                                    {% elseif coordinate.googleLatitude != '' %}
-                                        <small>google:
-                                        </small>
-                                        <a href="{{ path('umbria_pro_loco_homepage') }}"
-                                           onclick="setCoordCookie({{ coordinate.googleLatitude }},{{ coordinate.googleLongitude }})">
-                                            {{ coordinate.googleLatitude }}
-                                            ,{{ coordinate.googleLongitude }}
-                                        </a>
-                                        <span class="glyphicon glyphicon-info-sign pull-right" data-toggle="tooltip"
-                                              data-placement="top"
-                                              title="Posizione calcola. Non se ne garantisce l'affidabilità"></span>
                                     {% else %}
                                         -
                                     {% endif %}
-                                {% endfor %}
                             </td>
                         </tr>
                         <tr>
@@ -78,11 +60,9 @@
                                 <small>categorie</small>
                             </td>
                             <td>
-                                {% for categoria in event.categorie %}
-                                    {% if categoria.categoriaAssociata is not null %}
-                                        <span class="label label-default">{{ categoria.categoriaAssociata }}</span>
-                                        <br/>
-                                    {% endif %}
+                                {% for categoria in event.categories %}
+                                    <span class="label label-default">{{ categoria }}</span>
+                                    <br/>
                                 {% endfor %}
                             </td>
                         </tr>
@@ -90,7 +70,7 @@
                             <td>
                                 <small>periodo</small>
                             </td>
-                            <td>{{ event.startDate }} - {{ event.endDate }}</td>
+                            <td>{{ event.startDate.format("d/m/Y") }} - {{ event.endDate.format("d/m/Y") }}</td>
                         </tr>
                         </tbody>
                     </table>
@@ -103,16 +83,21 @@
                                 <small>tipo</small>
                             </td>
                             <td>
-                                <a href="http://schema.org/Event" target="_blank">
-                                    http://schema.org/Event
-                                </a>
+                                {% if event.types != null %}
+                                    {{ event.types[0] }}
+                                {% else %}
+                                    -
+                                {% endif %}
                             </td>
                         </tr>
                         </tbody>
                     </table>
                 </div>
                 <div class="row">
-                    <img src="{{ event.immagineSpallaDestra }}" height="150">
+                    {% for image in event.images %}
+                        <img src="{{ image }}" height="150">
+                        <br/>
+                    {% endfor %}
                 </div>
             </div>
         </div>
@@ -120,7 +105,7 @@
             <br/>
             <ol class="breadcrumb">
                 <li><a href="{{ path('event_index') }}">Lista Eventi</a></li>
-                <li class="active">{{ event.title }}</li>
+                <li class="active">{{ event.name }}</li>
             </ol>
         </div>
     </div>
@@ -136,18 +121,10 @@
 
         {% set latitude = '' %}
         {% set longitude = '' %}
-        {% for coordinate in event.coordinate %}
-        {% if coordinate.latitude != '' %}
-        {% set latitude = coordinate.latitude %}
-        {% set longitude = coordinate.longitude %}
-        {% elseif coordinate.dbpediaLatitude != '' %}
-        {% set latitude = coordinate.dbpediaLatitude %}
-        {% set longitude = coordinate.dbpediaLongitude %}
-        {% elseif coordinate.googleLatitude != '' %}
-        {% set latitude = coordinate.googleLatitude %}
-        {% set longitude = coordinate.googleLongitude %}
+        {% if event.lat != null and event.lng != null %}
+        {% set latitude = event.lat %}
+        {% set longitude = event.lng %}
         {% endif %}
-        {% endfor %}
 
     </script>
 {% endblock %}

@@ -11,8 +11,6 @@ use Shaygan\TelegramBotApiBundle\TelegramBotApi;
 use Shaygan\TelegramBotApiBundle\Type\Update;
 use Symfony\Component\Config\Definition\Exception\Exception;
 use TelegramBot\Api\Types\ReplyKeyboardMarkup;
-use Umbria\OpenApiBundle\Entity\Tourism\Attractor;
-use Umbria\OpenApiBundle\Entity\Tourism\Coordinate;
 
 class UpdateReceiver implements UpdateReceiverInterface
 {

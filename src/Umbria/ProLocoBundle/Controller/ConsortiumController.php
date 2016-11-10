@@ -4,13 +4,16 @@ namespace Umbria\ProLocoBundle\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
-use Umbria\OpenApiBundle\Entity\Tourism\Consortium;
+use Umbria\OpenApiBundle\Entity\Tourism\GraphsEntities\Consortium;
 use Umbria\ProLocoBundle\Entity\SearchFilter;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 
 /**
- * Consortium controller.
+ * Class ConsortiumController
+ * @package Umbria\ProLocoBundle\Controller
+ *
+ * @author Lorenzo Franco Ranucci <loryzizu@gmail.com>
  */
 class ConsortiumController extends Controller
 {
@@ -42,10 +45,10 @@ class ConsortiumController extends Controller
         }
 
         $repository = $this->getDoctrine()
-            ->getRepository('UmbriaOpenApiBundle:Tourism\Consortium');
+            ->getRepository('UmbriaOpenApiBundle:Tourism\GraphsEntities\Consortium');
         $qb = $repository->createQueryBuilder('a');
         $query = $qb
-            ->where($qb->expr()->like('a.denominazione', '?1'))
+            ->where($qb->expr()->like('a.name', '?1'))
             ->setParameter(1, '%' . $text . '%');
 
         $paginator = $this->get('knp_paginator');
@@ -64,15 +67,17 @@ class ConsortiumController extends Controller
     /**
      * Finds and displays a Consortium entity.
      *
-     * @param Consortium $consortium
+     * @param int $id
      *
      * @return \Symfony\Component\HttpFoundation\Response
      */
-    public function showAction(Consortium $consortium)
+    public function showAction($id)
     {
-        $baseUrlRisorsa = $this->container->getParameter('base_url_res_consortium');
+        $repository = $this->getDoctrine()
+            ->getRepository('UmbriaOpenApiBundle:Tourism\GraphsEntities\Consortium');
+        $consortium = $repository->findById($id);
         return $this->render('UmbriaProLocoBundle:Consortium:show.html.twig', array(
-            'consortium' => $consortium, 'baseUrlRisorsa' => $baseUrlRisorsa
+            'consortium' => $consortium[0]
         ));
     }
 }

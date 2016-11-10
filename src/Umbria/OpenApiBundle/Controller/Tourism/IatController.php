@@ -4,8 +4,9 @@ namespace Umbria\OpenApiBundle\Controller\Tourism;
 
 use DateTime;
 use Doctrine\ORM\EntityManager;
+use EasyRdf_Graph;
+use EasyRdf_Resource;
 use FOS\RestBundle\Controller\Annotations as Rest;
-use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\View\View;
 use JMS\DiExtraBundle\Annotation as DI;
 use Knp\Component\Pager\Pagination\AbstractPagination;
@@ -13,46 +14,53 @@ use Knp\Component\Pager\Paginator;
 use Nelmio\ApiDocBundle\Annotation as ApiDoc;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Serializer\Serializer;
+use Umbria\OpenApiBundle\Entity\Address;
+use Umbria\OpenApiBundle\Entity\Tourism\GraphsEntities\Iat;
 use Umbria\OpenApiBundle\Entity\Tourism\Setting;
+use Umbria\OpenApiBundle\Repository\Tourism\GraphsEntities\IatRepository;
 use Umbria\OpenApiBundle\Serializer\View\EntityResponse;
-use Umbria\OpenApiBundle\Service\CurlBuilder;
 use Umbria\OpenApiBundle\Service\FilterBag;
 
-class IatController extends FOSRestController
+/**
+ * Class IatController
+ * @package Umbria\OpenApiBundle\Controller\Tourism
+ *
+ * @author Lorenzo Franco Ranucci <loryzizu@gmail.com>
+ */
+class IatController extends BaseController
 {
     const DEFAULT_PAGE_SIZE = 100;
     const DATASET_TOURISM_IAT = 'tourism-iat';
 
-    /**
-     * @var EntityManager
-     * @DI\Inject("doctrine.orm.entity_manager")
-     */
-    public $em;
-
-    /**
-     * @var CurlBuilder
-     * @DI\Inject("umbria_open_api.curl_builder")
-     */
-    public $curlBuilder;
-
-    /**
-     * @var FilterBag
-     * @DI\Inject("umbria_open_api.filter_bag")
-     */
     private $filterBag;
-
-    /**
-     * @var Paginator
-     * @DI\Inject("knp_paginator")
-     */
     private $paginator;
 
+    private $em;
+    /**@var IatRepository $iatRepo */
+    private $iatRepo;
+    private $settingsRepo;
+
+    private $graph;
+
     /**
-     * @var Serializer
-     * @DI\Inject("jms_serializer")
+     * @DI\InjectParams({
+     *      "em" = @DI\Inject("doctrine.orm.entity_manager"),
+     *      "filterBag" = @DI\Inject("umbria_open_api.filter_bag"),
+     *      "paginator" = @DI\Inject("knp_paginator")
+     * })
+     * @param $em EntityManager
+     * @param $filterBag FilterBag
+     * @param $paginator Paginator
      */
-    public $serializer;
+    public function __construct($em, $filterBag, $paginator)
+    {
+        parent::__construct($em);
+        $this->filterBag = $filterBag;
+        $this->paginator = $paginator;
+        $this->iatRepo = $em->getRepository('UmbriaOpenApiBundle:Tourism\GraphsEntities\Iat');
+        $this->settingsRepo = $em->getRepository('UmbriaOpenApiBundle:Tourism\Setting');
+        $this->em = $em;
+    }
 
     /**
      * @Rest\Options(pattern="/open-api/tourism-iat")
@@ -100,8 +108,6 @@ class IatController extends FOSRestController
     public function getTourismIatListAction(Request $request)
     {
         $daysToOld = $this->container->getParameter('iat_days_to_old');
-        $url = $this->container->getParameter('url_iat');
-        $urlSilkSameAs = $this->container->getParameter('url_iat_silk');
 
         $filters = $this->filterBag->getFilterBag($request);
         $offset = $filters->has('start') ? $filters->get('start') : 0;
@@ -112,7 +118,7 @@ class IatController extends FOSRestController
         $page = floor($offset / $limit) + 1;
 
         /** @var Setting $setting */
-        $setting = $this->em->getRepository('UmbriaOpenApiBundle:Tourism\Setting')->findOneBy(array('datasetName' => self::DATASET_TOURISM_IAT));
+        $setting = $this->settingsRepo->findOneBy(array('datasetName' => self::DATASET_TOURISM_IAT));
         if ($setting != null) {
             $diff = $setting->getUpdatedAt()->diff(new DateTime('now'));
             // controllo intervallo di tempo da ultima estrazione
@@ -122,7 +128,7 @@ class IatController extends FOSRestController
                 $this->em->persist($setting);
                 $this->em->flush();
 
-                $this->curlBuilder->updateEntities($url, self::DATASET_TOURISM_IAT, $urlSilkSameAs);
+                $this->updateEntities();
             }
         } else {
             $setting = new Setting();
@@ -131,26 +137,170 @@ class IatController extends FOSRestController
             $this->em->persist($setting);
             $this->em->flush();
 
-            $this->curlBuilder->updateEntities($url, self::DATASET_TOURISM_IAT, $urlSilkSameAs);
+            $this->updateEntities();
         }
 
         $builder = $this->em->createQueryBuilder()
             ->select('i')
-            ->from('UmbriaOpenApiBundle:Tourism\Iat', 'i');
+            ->from('UmbriaOpenApiBundle:Tourism\GraphsEntities\Iat', 'i');
 
         /** @var AbstractPagination $resultsPagination */
         $resultsPagination = $this->paginator->paginate($builder, $page, $limit);
         /** @var AbstractPagination $countPagination */
         $countPagination = $this->paginator->paginate($builder, 1, 1);
 
-        $viewGroups = array(
-            'response',
-            'rdf.*', 'iat.*', 'phone.*', 'fax-number.*', 'mail.*',
-        );
-
         $view = new View(new EntityResponse($resultsPagination->getItems(), count($resultsPagination), $countPagination->getTotalItemCount()));
-        $view->getSerializationContext()->setGroups($viewGroups);
 
         return $view;
     }
+
+    private function updateEntities()
+    {
+
+        $this->graph = EasyRdf_Graph::newAndLoad($this->container->getParameter('iat_graph_url'));
+        /**@var EasyRdf_Resource[] $resources */
+        $resources = $this->graph->resources();
+        foreach ($resources as $resource) {
+            $resourceTypeArray = $resource->all("rdf:type");
+            if ($resourceTypeArray != null) {
+                foreach ($resourceTypeArray as $resourceType) {
+                    if (trim($resourceType) == "http://dati.umbria.it/tourism/ontology/iat") {
+                        $this->createOrUpdateEntity($resource);
+                        break;
+                    }
+                }
+            }
+
+        }
+        $now = new \DateTime();
+        $this->deleteOldEntities($now);
+    }
+
+    /**
+     * @param \EasyRdf_Resource $iatResource
+     */
+    private function createOrUpdateEntity($iatResource)
+    {
+        /** @var Iat $newIat */
+        $newIat = null;
+        $uri = $iatResource->getUri();
+        if ($uri != null) {
+            $oldIat = $this->iatRepo->find($uri);
+            $isAlreadyPersisted = $oldIat != null;
+            if ($isAlreadyPersisted) {
+                $newIat = $oldIat;
+            } else {
+                $newIat = new Iat();
+            }
+            $newIat->setUri($uri);
+            $newIat->setLastUpdateAt(new \DateTime('now'));
+            $newIat->setName(($p = $iatResource->get("rdfs:label")) != null ? $p->getValue() : null);
+
+            $typesarray = $iatResource->all("rdf:type");
+            if ($typesarray != null) {
+                $tempTypes = array();
+
+                $cnt = 0;
+                foreach ($typesarray as $type) {
+                    $tempTypes[$cnt] = $type->toRdfPhp()['value'];
+                    $cnt++;
+                }
+                count($tempTypes) > 0 ? $newIat->setTypes($tempTypes) : $newIat->setTypes(null);
+            }
+
+            $newIat->setProvenance(($p = $iatResource->get("<http://purl.org/dc/elements/1.1/provenance>")) != null ? $p->getValue() : null);
+            $newIat->setLanguage(($p = $iatResource->get("<http://purl.org/dc/elements/1.1/language>")) != null ? $p->getUri() : null);
+            $newIat->setMunicipalitiesList(($p = $iatResource->get("<http://dati.umbria.it/tourism/ontology/lista_comuni>")) != null ? $p->getValue() : null);
+
+
+            $emailarray = $iatResource->all("<http://schema.org/email>");
+            if ($emailarray != null) {
+                $tempEmail = array();
+                $newIat->setEmail(array());
+                $cnt = 0;
+                foreach ($emailarray as $email) {
+                    $tempEmail[$cnt] = $email->toRdfPhp()['value'];
+                    $cnt++;
+                }
+                count($tempEmail) > 0 ? $newIat->setEmail($tempEmail) : $newIat->setEmail(null);
+            }
+
+            $telephonearray = $iatResource->all("<http://schema.org/telephone>");
+            if ($telephonearray != null) {
+                $tempTelephone = array();
+                $cnt = 0;
+                foreach ($telephonearray as $telephone) {
+                    $tempTelephone[$cnt] = $telephone->toRdfPhp()['value'];
+                    $cnt++;
+                }
+                count($tempTelephone) > 0 ? $newIat->setTelephone($tempTelephone) : $newIat->setTelephone(null);
+            }
+
+            $faxarray = $iatResource->all("<http://schema.org/faxNumber>");
+            if ($faxarray != null) {
+                $tempFax = array();
+                $newIat->setFax(array());
+                $cnt = 0;
+                foreach ($faxarray as $fax) {
+                    $tempFax[$cnt] = $fax->toRdfPhp()['value'];
+                    $cnt++;
+                }
+                count($tempFax) > 0 ? $newIat->setFax($tempFax) : $newIat->setFax(null);
+            }
+
+
+            if ($isAlreadyPersisted && ($oldAddress = $newIat->getAddress()) != null) {
+                $this->em->remove($oldAddress);
+                $newIat->setAddress(null);
+            }
+
+            /**@var EasyRdf_Resource $addressResource */
+            $addressResource = $iatResource->get("<http://dati.umbria.it/tourism/ontology/indirizzo>");
+            if ($addressResource != null) {
+                $addressObject = new Address();
+                $addressObject->setPostalCode(($p = $addressResource->get("<http://schema.org/postalCode>")) != null ? $p->getValue() : null);
+                $addressObject->setIstat(($p = $addressResource->get("<http://dbpedia.org/ontology/istat>")) != null ? $p->getValue() : null);
+                $addressObject->setAddressLocality(($p = $addressResource->get("<http://schema.org/addressLocality>")) != null ? $p->getValue() : null);
+                $addressObject->setAddressRegion(($p = $addressResource->get("<http://schema.org/addressRegion>")) != null ? $p->getValue() : null);
+                $addressObject->setStreetAddress(($p = $addressResource->get("<http://schema.org/streetAddress>")) != null ? $p->getValue() : null);
+                $newIat->setAddress($addressObject);
+
+                // Google Maps Api --------------------------
+                $url = 'http://maps.google.com/maps/api/geocode/json?address=' . urlencode($addressObject->getStreetAddress()) .
+                    '+' . $addressObject->getPostalCode() .
+                    '+' . $addressObject->getAddressLocality() .
+                    '+' . $addressObject->getAddressRegion() . '+Umbria+Italia';
+
+                $resp = json_decode($this->getWebResource($url), true);
+
+                // response status will be 'OK', if able to geocode given address
+                if ($resp['status'] == 'OK') {
+
+                    // get the important data
+                    $lat = $resp['results'][0]['geometry']['location']['lat'];
+                    $lng = $resp['results'][0]['geometry']['location']['lng'];
+
+                    // verify if data is complete
+                    if ($lat && $lng) {
+                        $newIat->setLat($lat);
+                        $newIat->setLng($lng);
+                    }
+                }
+
+            }
+
+            if (!$isAlreadyPersisted) {
+                $this->em->persist($newIat);
+            }
+
+            $this->em->flush();
+        }
+    }
+
+    private function deleteOldEntities($olderThan)
+    {
+        $this->iatRepo->removeLastUpdatedBefore($olderThan);
+
+    }
+
 }

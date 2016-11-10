@@ -4,13 +4,16 @@ namespace Umbria\ProLocoBundle\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
-use Umbria\OpenApiBundle\Entity\Tourism\TravelAgency;
+use Umbria\OpenApiBundle\Repository\Tourism\GraphsEntities\TravelAgencyRepository;
 use Umbria\ProLocoBundle\Entity\SearchFilter;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 
 /**
- * TravelAgency controller.
+ * Class TravelAgencyController
+ * @package Umbria\ProLocoBundle\Controller
+ *
+ * @author Lorenzo Franco Ranucci <loryzizu@gmail.com>
  */
 class TravelAgencyController extends Controller
 {
@@ -46,10 +49,10 @@ class TravelAgencyController extends Controller
         }
 
         $repository = $this->getDoctrine()
-            ->getRepository('UmbriaOpenApiBundle:Tourism\TravelAgency');
+            ->getRepository('UmbriaOpenApiBundle:Tourism\GraphsEntities\TravelAgency');
         $qb = $repository->createQueryBuilder('a');
         $query = $qb
-            ->where($qb->expr()->like('a.denominazione', '?1'))
+            ->where($qb->expr()->like('a.name', '?1'))
             ->setParameter(1, '%' . $text . '%');
 
         $paginator = $this->get('knp_paginator');
@@ -65,18 +68,22 @@ class TravelAgencyController extends Controller
         ));
     }
 
+
     /**
      * Finds and displays a TravelAgency entity.
      *
-     * @param TravelAgency $travelAgency
+     * @param int $id
      *
      * @return \Symfony\Component\HttpFoundation\Response
      */
-    public function showAction(TravelAgency $travelAgency)
+    public function showAction($id)
     {
-        $baseUrlRisorsa = $this->container->getParameter('base_url_res_travel_agency');
+        /**@var TravelAgencyRepository $repository */
+        $repository = $this->getDoctrine()
+            ->getRepository('UmbriaOpenApiBundle:Tourism\GraphsEntities\TravelAgency');
+        $travelAgency = $repository->findById($id);
         return $this->render('UmbriaProLocoBundle:TravelAgency:show.html.twig', array(
-            'travelAgency' => $travelAgency, 'baseUrlRisorsa' => $baseUrlRisorsa
+            'travelAgency' => $travelAgency[0]
         ));
     }
 }

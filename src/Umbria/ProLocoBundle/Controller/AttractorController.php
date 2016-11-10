@@ -4,13 +4,15 @@ namespace Umbria\ProLocoBundle\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
-use Umbria\OpenApiBundle\Entity\Tourism\Attractor;
 use Umbria\ProLocoBundle\Entity\SearchFilter;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 
 /**
- * Attractor controller.
+ * Class AttractorController
+ * @package Umbria\ProLocoBundle\Controller
+ *
+ * @author Lorenzo Franco Ranucci <loryzizu@gmail.com>
  */
 class AttractorController extends Controller
 {
@@ -46,10 +48,10 @@ class AttractorController extends Controller
         }
 
         $repository = $this->getDoctrine()
-            ->getRepository('UmbriaOpenApiBundle:Tourism\Attractor');
+            ->getRepository('UmbriaOpenApiBundle:Tourism\GraphsEntities\Attractor');
         $qb = $repository->createQueryBuilder('a');
         $query = $qb
-            ->where($qb->expr()->like('a.denominazione', '?1'))
+            ->where($qb->expr()->like('a.name', '?1'))
             ->setParameter(1, '%' . $text . '%');
 
         $paginator = $this->get('knp_paginator');
@@ -68,15 +70,17 @@ class AttractorController extends Controller
     /**
      * Finds and displays a Attractor entity.
      *
-     * @param Attractor $attractor
+     * @param int $id
      *
      * @return \Symfony\Component\HttpFoundation\Response
      */
-    public function showAction(Attractor $attractor)
+    public function showAction($id)
     {
-        $baseUrlRisorsa = $this->container->getParameter('base_url_res_attractor');
+        $repository = $this->getDoctrine()
+            ->getRepository('UmbriaOpenApiBundle:Tourism\GraphsEntities\Attractor');
+        $attractor = $repository->findById($id);
         return $this->render('UmbriaProLocoBundle:Attractor:show.html.twig', array(
-            'attractor' => $attractor, 'baseUrlRisorsa' => $baseUrlRisorsa
+            'attractor' => $attractor[0]
         ));
     }
 }
