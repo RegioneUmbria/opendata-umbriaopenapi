@@ -26,23 +26,23 @@
                 <hr>
                 <p>
                 <h4>Indirizzo</h4>
-                    <address>
-                        <p>
-                            {% if impiantoSportivo.address.streetAddress != '' %}
-                                {{ impiantoSportivo.address.streetAddress }}
-                            {% endif %}
-                            <br>
-                            {% if impiantoSportivo.address.addressLocality != '' %}
-                                {{ impiantoSportivo.address.addressLocality }}
-                            {% endif %}
-                            {% if impiantoSportivo.address.addressRegion != '' %}
-                                , {{ impiantoSportivo.address.addressRegion }}
-                            {% endif %}
-                            {% if impiantoSportivo.address.postalCode != '' %}
-                                {{ impiantoSportivo.address.postalCode }}
-                            {% endif %}
-                        </p>
-                    </address>
+                <address>
+                    <p>
+                        {% if impiantoSportivo.address.streetAddress != '' %}
+                            {{ impiantoSportivo.address.streetAddress }}
+                        {% endif %}
+                        <br>
+                        {% if impiantoSportivo.address.addressLocality != '' %}
+                            {{ impiantoSportivo.address.addressLocality }}
+                        {% endif %}
+                        {% if impiantoSportivo.address.addressRegion != '' %}
+                            , {{ impiantoSportivo.address.addressRegion }}
+                        {% endif %}
+                        {% if impiantoSportivo.address.postalCode != '' %}
+                            {{ impiantoSportivo.address.postalCode }}
+                        {% endif %}
+                    </p>
+                </address>
                 <p>
                 <hr>
                 <p>

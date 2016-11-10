@@ -335,7 +335,6 @@ class ImpiantoSportivoController
             $newImpiantoSportivo->setEmployees(($p = $impiantoSportivoResource->get("<http://dati.umbria.it/base/ontology/accessoDisabili>")) != null ? $p->getValue() : null);
 
 
-
             if ($isAlreadyPersisted && ($oldAddress = $newImpiantoSportivo->getAddress()) != null) {
                 $this->em->remove($oldAddress);
                 $newImpiantoSportivo->setAddress(null);

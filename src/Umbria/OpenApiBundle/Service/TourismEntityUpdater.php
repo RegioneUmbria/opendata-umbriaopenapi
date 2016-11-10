@@ -32,23 +32,23 @@ class TourismEntityUpdater
     public $sparqlClient;
 
 
-
     public function __construct(EntityManager $em, Serializer $serializer, $sparqlEndpointUri)
     {
         $this->em = $em;
         $this->serializer = $serializer;
-        $this->sparqlClient=new EasyRdf_Sparql_Client($sparqlEndpointUri,null);
+        $this->sparqlClient = new EasyRdf_Sparql_Client($sparqlEndpointUri, null);
     }
 
-    public function executeSparqlQuery($query){
+    public function executeSparqlQuery($query)
+    {
 
 
         //$namedGraphsList=$this->sparqlClient->listNamedGraphs();
-        $sparqlResult=$this->sparqlClient->query($query);
+        $sparqlResult = $this->sparqlClient->query($query);
         /**
          * @var EasyRdf_Graph
          */
-        $graph=$this->getGraph("http://odnt-srv01/dataset/54480509-bf69-47e1-b735-de5ddac001a2/resource/e27179f1-4020-4d8b-90cb-6ec4f47471f3/download/attrattoriitIT.zipattrattoriitIT.rdf");
+        $graph = $this->getGraph("http://odnt-srv01/dataset/54480509-bf69-47e1-b735-de5ddac001a2/resource/e27179f1-4020-4d8b-90cb-6ec4f47471f3/download/attrattoriitIT.zipattrattoriitIT.rdf");
         $resources = $graph->resources();
         foreach ($resources as $resource) {
             $propertyUris = $graph->propertyUris($resource);
@@ -59,7 +59,7 @@ class TourismEntityUpdater
             }
         }
         $sparqlResult->rewind();
-        while($sparqlResult->valid()) {
+        while ($sparqlResult->valid()) {
             $current = $sparqlResult->current();
 
             $sparqlResult->next();
@@ -68,7 +68,7 @@ class TourismEntityUpdater
 
     private function getGraph($uri)
     {
-        $graph= EasyRdf_Graph::newAndLoad($uri);
+        $graph = EasyRdf_Graph::newAndLoad($uri);
         return $graph;
     }
 
