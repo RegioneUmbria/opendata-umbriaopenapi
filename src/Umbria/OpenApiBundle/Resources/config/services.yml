@@ -27,7 +27,7 @@ parameters:
     iat_days_to_old: 1
 
     impianto_sportivo_graph_url: http://odnt-srv01/dataset/2dca7f88-78ba-46e6-ba1a-5552362309fe/resource/6c3982ab-b3f7-4f71-ade9-1621e5c4c5e8/download/impiantisportiviGeocoded.rdf
-    impianto_sportivo_days_to_old: 0
+    impianto_sportivo_days_to_old: 1
 
 services:
     umbria_open_api.tourism_entity_updater:
