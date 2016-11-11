@@ -114,3 +114,6 @@ Icon
 .AppleDesktop
 Network Trash Folder
 Temporary
+
+#ignore app dev in production branch
+/web/app_dev.php
