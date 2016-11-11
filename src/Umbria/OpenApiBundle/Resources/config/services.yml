@@ -1,7 +1,7 @@
 parameters:
 
 
-    sparql_endpoint_uri: http://odnt-srv01/sparql
+    sparql_endpoint_uri: http://dati.umbria.it/sparql
 
     proposal_graph_url: http://dati.umbria.it/dataset/8b4f4b4b-7abc-4103-9082-96ba7023021d/resource/c46f350d-c2da-4204-aad9-c5d32ca3283c/download/proposteitit.zipproposteitit.rdf
     proposal_days_to_old: 1
@@ -29,9 +29,8 @@ parameters:
     impianto_sportivo_graph_url: http://odnt-srv01/dataset/2dca7f88-78ba-46e6-ba1a-5552362309fe/resource/6c3982ab-b3f7-4f71-ade9-1621e5c4c5e8/download/impiantisportiviGeocoded.rdf
     impianto_sportivo_days_to_old: 1
 
+    struttura-ricettiva_days_to_old: 1
+
 services:
-    umbria_open_api.tourism_entity_updater:
-        class: Umbria\OpenApiBundle\Service\TourismEntityUpdater
-        arguments: [@doctrine.orm.entity_manager, @jms_serializer, '%sparql_endpoint_uri%']
     umbria_open_api.filter_bag:
         class: Umbria\OpenApiBundle\Service\FilterBag

@@ -57,8 +57,9 @@
                     {% if impiantoSportivo.employees is not null %}
                         <span title="Impiegati">Impiegati:</span>{{ impiantoSportivo.employees }}
                     {% endif %}
+                    <br>
                     {% if impiantoSportivo.disabledAccess is not null and  impiantoSportivo.disabledAccess=='true' %}
-                        <span title="Accesso disabili">Accessibile ai disabili</span>{{ impiantoSportivo.employees }}
+                        <span title="Accesso disabili">Accessibile ai disabili</span>
                     {% endif %}
                 </p>
 

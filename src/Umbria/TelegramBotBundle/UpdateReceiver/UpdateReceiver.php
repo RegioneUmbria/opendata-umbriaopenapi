@@ -11,6 +11,8 @@ use Shaygan\TelegramBotApiBundle\TelegramBotApi;
 use Shaygan\TelegramBotApiBundle\Type\Update;
 use Symfony\Component\Config\Definition\Exception\Exception;
 use TelegramBot\Api\Types\ReplyKeyboardMarkup;
+use Umbria\OpenApiBundle\Entity\Tourism\GraphsEntities\Attractor;
+use Umbria\OpenApiBundle\Repository\Tourism\GraphsEntities\AttractorRepository;
 
 class UpdateReceiver implements UpdateReceiverInterface
 {
@@ -46,7 +48,7 @@ class UpdateReceiver implements UpdateReceiverInterface
             if (($latitude >= 42.36 AND $latitude <= 43.60)
                 AND ($longitude >= 11.88 AND $longitude <= 13.25)
             ) {
-                $arrayOfMessages = $this->createQuery($latitude, $longitude, 10, false);
+                $arrayOfMessages = $this->executeAttractorQuery($latitude, $longitude, 10, false);
                 $text = "Vicino a te puoi trovare: \n";
                 $this->telegramBotApi->sendMessage($message['chat']['id'], $text);
                 $i = 1;
@@ -58,21 +60,20 @@ class UpdateReceiver implements UpdateReceiverInterface
                 }
             }
             else {
-                $arrayOfMessages = $this->createQuery(43.105275, 12.391995, 100, true);
+                $arrayOfMessages = $this->executeAttractorQuery(43.105275, 12.391995, 100, true);
                 $plainText = implode("\n", $arrayOfMessages);
                 $text = "Ciao " . $message['from']['first_name'] . ". Sei troppo lontano dall'Umbria. Da noi puoi trovare: " . $plainText;
                 $this->telegramBotApi->sendMessage($message['chat']['id'], $text);
             }
 
-        }
+        } else if (isset($message['text'])) {
 
-        if (isset($message['text'])) {
             switch ($message['text']) {
                 case "/about":
                     $text = "UmbriaTourismBot ti permette di ricevere informazioni turistiche. Invia la tua posizione per scoprire tutte le bellezze che la nostra regione ha in serbo per te";
                     break;
                 case "/hello":
-                    $arrayOfMessages = $this->createQuery(43.105275, 12.391995, 100, true);
+                    $arrayOfMessages = $this->executeAttractorQuery(43.105275, 12.391995, 100, true);
                     $plainText = implode("\n", $arrayOfMessages);
                     $text = "Ciao " . $message['from']['first_name'] . ". Oggi ti consiglio di visitare ". $plainText;
                     break;
@@ -95,104 +96,42 @@ class UpdateReceiver implements UpdateReceiverInterface
 
     }
 
-    public function createQuery($lat, $lng, $radius, $rand)
+    public function executeAttractorQuery($lat, $lng, $radius, $rand)
     {
-        $builder = $this->em->createQueryBuilder()
-            ->select('c')
-            ->from('UmbriaOpenApiBundle:Tourism\Coordinate', 'c');
+        /**@var AttractorRepository $attractorRepo */
+        $attractorRepo = $this->em->getRepository('UmbriaOpenApiBundle:Tourism\GraphsEntities\Attractor');
 
-        if ($lat && $lng) {
-            $lat = floatval($lat);
-            $lng = floatval($lng);
-            $radius = floatval($radius);
+        $location = GeoLocation::fromDegrees($lat, $lng);
+        /** @var GeoLocation[] $bounds */
+        /** @noinspection PhpInternalEntityUsedInspection */
+        $bounds = $location->boundingCoordinates($radius, 'km');
 
-            $location = GeoLocation::fromDegrees($lat, $lng);
-            /** @var GeoLocation[] $bounds */
-            /** @noinspection PhpInternalEntityUsedInspection */
-            $bounds = $location->boundingCoordinates($radius, 'km');
-
-            // AS HIDDEN consente di definire un campo di ordinamento (usabile in having) senza alterare
-            // il risultato restituito né il formato di restituzione!
-            $alias = 'HIDDEN distance';
-            $builder->select("c, GEO_DISTANCE(:lat, :lng, c.latitude, c.longitude) AS $alias")
-                ->andWhere('c.latitude BETWEEN :minLat and :maxLat')
-                ->andWhere('c.longitude BETWEEN :minLng and :maxLng')
-                ->andWhere('GEO_DISTANCE(:lat, :lng, c.latitude, c.longitude) < :radius')
-                ->orderBy('distance')
-                ->setMaxResults(4);
-
-            // è necessario specificare i tipi dei parametri come INTEGER per evitare che doctrine
-            // inserisca gli apici, cosa che impedisce il funzionamento della query.
-            $builder->setParameters(new ArrayCollection(array(
-                new Parameter('lat', $lat, Type::INTEGER),
-                new Parameter('lng', $lng, Type::INTEGER),
-                new Parameter('minLat', $bounds[0]->getLatitudeInDegrees(), Type::INTEGER),
-                new Parameter('minLng', $bounds[0]->getLongitudeInDegrees(), Type::INTEGER),
-                new Parameter('maxLat', $bounds[1]->getLatitudeInDegrees(), Type::INTEGER),
-                new Parameter('maxLng', $bounds[1]->getLongitudeInDegrees(), Type::INTEGER),
-                new Parameter('radius', $radius, Type::INTEGER),
-            )));
-        }
-
-        $query = $builder->getQuery();
-        $coordinates = $query->getResult();
-
-        $pois = array();
-        /** @var Coordinate $poi */
-        foreach ($coordinates as $poi) {
-            $attractor = $poi->getAttrattore();
-            if ($attractor != null) {
-                $pois[] = $attractor;
-            }
-        }
+        $pois = $attractorRepo->findByPosition(
+            $bounds[1]->getLatitudeInDegrees(),
+            $bounds[0]->getLatitudeInDegrees(),
+            $bounds[1]->getLongitudeInDegrees(),
+            $bounds[0]->getLongitudeInDegrees());
 
         if (sizeof($pois) > 0) {
             if ($rand) {
                 $key = array_rand($pois);
-                /** @var Attractor $poi */
+
                 $poi = $pois[$key];
-                $stringResult[0] = $poi->getDenominazione();
-                $stringResult[1] = str_replace('&nbsp;', ' ', strip_tags($poi->getDescrizioneSintetica()));
-                $stringResult[2] = $poi->getUrlRisorsa();
+                $stringResult[0] = $poi->getName();
+                $stringResult[1] = str_replace('&nbsp;', ' ', strip_tags($poi->getShortDescription()));
+                $stringResult[2] = $poi->getUri();
                 return $stringResult;
             } else {
-                $den = $this->retrieveDenominazione($pois);
-                $desc = $this->retrieveDescrizione($pois);
-                $resource = $this->retrieveUrlRisorsa($pois);
-                $max = sizeof($pois);
-                for ($i = 0; $i < $max; $i++) {
-                    $stringResult[$i] = strtoupper($den[$i]) . "\n" . str_replace('&nbsp;', ' ', strip_tags($desc[$i])) . "\n" . $resource[$i] . "\n";
+                $i = 0;
+                foreach ($pois as $poi) {
+                    $stringResult[$i] = strtoupper($poi->getName()) . "\n" . str_replace('&nbsp;', ' ', str_replace('&nbsp;', ' ', strip_tags($poi->getShortDescription())) . "\n" . $poi->getUri() . "\n");
+                    $i++;
                 }
                 return $stringResult;
-                //return implode("\n", $stringResult);
             }
         } else {
             throw new Exception();
         }
-
     }
 
-    public function retrieveDenominazione($pois){
-        foreach ($pois as $res){
-            $result = $res->getDenominazione();
-            $nearbyAttr[] = $result;
-        }
-        return $nearbyAttr;
-    }
-
-    public function retrieveDescrizione($pois){
-        foreach ($pois as $res){
-            $result = $res->getDescrizioneSintetica();
-            $nearbyAttr[] = $result;
-        }
-        return $nearbyAttr;
-    }
-
-    public function retrieveUrlRisorsa($pois){
-        foreach ($pois as $res){
-            $result = $res->getUrlRisorsa();
-            $nearbyAttr[] = $result;
-        }
-        return $nearbyAttr;
-    }
 }

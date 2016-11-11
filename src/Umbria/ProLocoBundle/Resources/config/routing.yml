@@ -30,6 +30,10 @@ umbria_pro_loco_impianto_sportivo:
     resource: "@UmbriaProLocoBundle/Resources/config/routing/impianto_sportivo.yml"
     prefix:   /impianto_sportivo
 
+umbria_pro_loco_struttura-ricettiva:
+    resource: "@UmbriaProLocoBundle/Resources/config/routing/struttura-ricettiva.yml"
+    prefix:   /tourism/struttura-ricettiva
+
 umbria_pro_loco_homepage:
     path:     /tourism/map
     defaults: { _controller: UmbriaProLocoBundle:Default:index }

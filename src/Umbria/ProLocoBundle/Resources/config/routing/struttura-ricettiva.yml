@@ -1,0 +1,9 @@
+struttura-ricettiva_index:
+    path:     /
+    defaults: { _controller: "UmbriaProLocoBundle:StrutturaRicettiva:index" }
+    methods:  [GET,POST]
+
+struttura-ricettiva_show:
+    path:     /{id}/show
+    defaults: { _controller: "UmbriaProLocoBundle:StrutturaRicettiva:show" }
+    methods:  GET

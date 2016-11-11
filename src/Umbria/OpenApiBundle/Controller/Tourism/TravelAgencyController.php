@@ -248,6 +248,7 @@ class TravelAgencyController extends BaseController
                 }
                 count($tempFax) > 0 ? $newTravelAgency->setFax($tempFax) : $newTravelAgency->setFax(null);
             }
+            $newTravelAgency->setResourceOriginUrl(($p = $travelAgencyResource->get("<http://dati.umbria.it/tourism/ontology/url_risorsa>")) != null ? $p->getValue() : null);
 
 
             if ($isAlreadyPersisted && ($oldAddress = $newTravelAgency->getAddress()) != null) {
@@ -255,7 +256,6 @@ class TravelAgencyController extends BaseController
                 $newTravelAgency->setAddress(null);
             }
 
-            $newTravelAgency->setResourceOriginUrl(($p = $travelAgencyResource->get("<http://dati.umbria.it/tourism/ontology/url_risorsa>")) != null ? $p->getValue() : null);
 
 
             /**@var EasyRdf_Resource $addressResource */
