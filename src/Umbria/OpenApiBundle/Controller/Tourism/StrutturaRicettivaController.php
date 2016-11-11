@@ -239,7 +239,7 @@ class StrutturaRicettivaController extends BaseController
 
     private function updateEntities()
     {
-        $sparqlClient = new EasyRdf_Sparql_Client("http://odnt-srv01/sparql");
+        $sparqlClient = new EasyRdf_Sparql_Client("http://dati.umbria.it/sparql");
         $query ="    SELECT ?uri ?name ?provenance ?typology ?resourceOriginUrl ?units ?beds ?toilets
                      FROM <http://dati.umbria.it/graph/strutture_ricettive>
                      WHERE {
