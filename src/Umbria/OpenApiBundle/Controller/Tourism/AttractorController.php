@@ -47,8 +47,6 @@ class AttractorController extends BaseController
     private $typeRepo;
 
     private $graph;
-    private $sameAsGraph;
-    private $locatedInGraph;
 
     /**
      * @DI\InjectParams({
@@ -260,8 +258,6 @@ class AttractorController extends BaseController
     {
 
         $this->graph = EasyRdf_Graph::newAndLoad($this->container->getParameter('attractors_graph_url'));
-        $this->sameAsGraph = EasyRdf_Graph::newAndLoad($this->container->getParameter('attractors_sameas_graph_url'));
-        $this->locatedInGraph = EasyRdf_Graph::newAndLoad($this->container->getParameter('attractors_locatedin_graph_url'));
         /**@var EasyRdf_Resource[] $resources */
         $resources = $this->graph->resources();
         foreach ($resources as $resource) {
@@ -269,16 +265,7 @@ class AttractorController extends BaseController
             if ($resourceTypeArray != null) {
                 foreach ($resourceTypeArray as $resourceType) {
                     if (trim($resourceType) == "http://linkedgeodata.org/ontology/Attraction") {//is attractor
-                        $sameAsResource = null;
-                        $locatedInResource = null;
-                        if ($this->sameAsGraph != null) {
-                            $sameAsResource = $this->sameAsGraph->resource($resource->getUri());
-                        }
-                        if ($this->locatedInGraph != null) {
-                            $locatedInResource = $this->locatedInGraph->resource($resource->getUri());
-                        }
-
-                        $this->createOrUpdateEntity($resource, $sameAsResource, $locatedInResource);
+                        $this->createOrUpdateEntity($resource);
                         break;
                     }
                 }
@@ -291,10 +278,8 @@ class AttractorController extends BaseController
 
     /**
      * @param EasyRdf_Resource $attractorResource
-     * @param EasyRdf_Resource null $sameAsResource
-     * @param EasyRdf_Resource null $locatedInResource
      */
-    private function createOrUpdateEntity($attractorResource, $sameAsResource = null, $locatedInResource = null)
+    private function createOrUpdateEntity($attractorResource)
     {
         /** @var Attractor $newAttractor */
         $newAttractor = null;
@@ -309,7 +294,7 @@ class AttractorController extends BaseController
             }
             $newAttractor->setUri($uri);
             $newAttractor->setLastUpdateAt(new \DateTime('now'));
-            $newAttractor->setName(($p = $attractorResource->get("rdfs:label")) != null ? $p->getValue() : null);
+            $newAttractor->setName(($p = $attractorResource->get("rdfs:label", null, "it")) != null ? $p->getValue() : null);
 
             /**@var EasyRdf_Resource[] $typesarray */
             $typesarray = $attractorResource->all("rdf:type");
@@ -332,7 +317,7 @@ class AttractorController extends BaseController
                 count($tempTypes) > 0 ? $newAttractor->setTypes($tempTypes) : $newAttractor->setTypes(null);
             }
 
-            $newAttractor->setComment(($p = $attractorResource->get("<http://www.w3.org/2000/01/rdf-schema#comment>")) != null ? $p->getValue() : null);
+            $newAttractor->setComment(($p = $attractorResource->get("<http://www.w3.org/2000/01/rdf-schema#comment>", null, "it")) != null ? $p->getValue() : null);
             $newAttractor->setProvenance(($p = $attractorResource->get("<http://purl.org/dc/elements/1.1/provenance>")) != null ? $p->getValue() : null);
             $newAttractor->setMunicipality(($p = $attractorResource->get("<http://dbpedia.org/ontology/municipality>")) != null ? $p->getValue() : null);
             $newAttractor->setIstat(($p = $attractorResource->get("<http://dbpedia.org/ontology/istat>")) != null ? $p->getValue() : null);
@@ -355,11 +340,10 @@ class AttractorController extends BaseController
                 count($tempImage) > 0 ? $newAttractor->setImages($tempImage) : $newAttractor->setImages(null);
             }
 
-            $newAttractor->setTextTitle(($p = $attractorResource->get("<http://dati.umbria.it/tourism/ontology/titolo_testo>")) != null ? $p->getValue() : null);
+            $newAttractor->setTextTitle(($p = $attractorResource->get("<http://dati.umbria.it/tourism/ontology/titolo_testo>", null, "it")) != null ? $p->getValue() : null);
             /*TODO link esterni associati*/
             $newAttractor->setResourceOriginUrl(($p = $attractorResource->get("<http://dati.umbria.it/tourism/ontology/url_risorsa>")) != null ? $p->getValue() : null);
-            $newAttractor->setShortDescription(($p = $attractorResource->get("<http://dati.umbria.it/tourism/ontology/descrizione_sintetica>")) != null ? $p->getValue() : null);
-            $newAttractor->setLanguage(($p = $attractorResource->get("<http://purl.org/dc/elements/1.1/language>")) != null ? $p->getUri() : null);
+            $newAttractor->setShortDescription(($p = $attractorResource->get("<http://dati.umbria.it/tourism/ontology/descrizione_sintetica>", null, "it")) != null ? $p->getValue() : null);
 
             if ($isAlreadyPersisted && ($oldDescriptions = $newAttractor->getDescriptions()) != null) {
                 foreach ($oldDescriptions as $oldDescription) {
@@ -373,14 +357,16 @@ class AttractorController extends BaseController
                 $tempDescriptions = array();
                 $cnt = 0;
                 foreach ($descriptionArray as $descriptionResource) {
-                    $descriptionTitle = $descriptionResource->get("<http://dati.umbria.it/tourism/ontology/titolo>")->getValue();
-                    $descriptionText = $descriptionResource->get("<http://dati.umbria.it/tourism/ontology/testo>")->getValue();
-                    $descriptionObject = new AttractorDescription();
-                    $descriptionObject->setTitle($descriptionTitle);
-                    $descriptionObject->setText($descriptionText);
-                    $descriptionObject->setAttractor($newAttractor);
-                    $tempDescriptions[$cnt] = $descriptionObject;
-                    $cnt++;
+                    if ($descriptionResource->get("<http://dati.umbria.it/tourism/ontology/testo>")->getLang() == "it") {
+                        $descriptionTitle = ($p = $descriptionResource->get("<http://dati.umbria.it/tourism/ontology/titolo>")) != null ? $p->getValue() : null;
+                        $descriptionText = $descriptionResource->get("<http://dati.umbria.it/tourism/ontology/testo>")->getValue();
+                        $descriptionObject = new AttractorDescription();
+                        $descriptionObject->setTitle($descriptionTitle);
+                        $descriptionObject->setText($descriptionText);
+                        $descriptionObject->setAttractor($newAttractor);
+                        $tempDescriptions[$cnt] = $descriptionObject;
+                        $cnt++;
+                    }
                 }
                 if (count($tempDescriptions) > 0) {
                     $newAttractor->setDescriptions($tempDescriptions);
@@ -390,16 +376,16 @@ class AttractorController extends BaseController
             /*TODO travel time*/
 
 
-            if ($sameAsResource != null) {
-                /**@var EasyRdf_Resource $sameAsResource */
-                $sameAsArray = $sameAsResource->all("<http://www.w3.org/2002/07/owl#sameAs>");
+            /**@var EasyRdf_Resource[] $sameAsArray */
+            $sameAsArray = $attractorResource->all("<http://www.w3.org/2002/07/owl#sameAs>");
+            if ($sameAsArray != null) {
                 $newAttractor->setSameAs($this->getExternalResources($sameAsArray, "http://dbpedia.org/sparql",
                     "http://www.w3.org/2000/01/rdf-schema#label", "http://dbpedia.org/ontology/abstract", "http://www.w3.org/ns/prov#wasDerivedFrom"));
             }
-            if ($locatedInResource != null) {
-                /**@var EasyRdf_Resource $locatedInResource */
-                $locatedInArray = $locatedInResource->all("<http://www.geonames.org/ontology#locatedIn>");
-                $newAttractor->setlocatedIn($this->getExternalResources($locatedInArray, "http://it.dbpedia.org/sparql",
+            /**@var EasyRdf_Resource[] $locatedInArray */
+            $locatedInArray = $attractorResource->all("<http://www.geonames.org/ontology#locatedIn>");
+            if ($locatedInArray != null) {
+                $newAttractor->setLocatedIn($this->getExternalResources($locatedInArray, "http://it.dbpedia.org/sparql",
                     "http://www.w3.org/2000/01/rdf-schema#label", "http://dbpedia.org/ontology/abstract", "http://www.w3.org/ns/prov#wasDerivedFrom"));
             }
 

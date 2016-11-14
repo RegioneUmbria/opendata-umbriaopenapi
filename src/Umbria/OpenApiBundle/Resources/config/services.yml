@@ -6,9 +6,7 @@ parameters:
     proposal_graph_url: http://dati.umbria.it/dataset/8b4f4b4b-7abc-4103-9082-96ba7023021d/resource/c46f350d-c2da-4204-aad9-c5d32ca3283c/download/proposteitit.zipproposteitit.rdf
     proposal_days_to_old: 1
 
-    attractors_graph_url : http://dati.umbria.it/dataset/ab39e23d-540f-4aa1-b27f-3fb244837545/resource/59822c9d-c9d6-4bcd-87c6-cd35a9f3d41d/download/attrattoriitit.zipattrattoriitit.rdf
-    attractors_sameas_graph_url : http://dati.umbria.it/dataset/ab39e23d-540f-4aa1-b27f-3fb244837545/resource/2d9c13bf-d48c-4df2-b272-8f183c06c4c0/download/sameasdbpediaresource.rdf
-    attractors_locatedin_graph_url : http://dati.umbria.it/dataset/ab39e23d-540f-4aa1-b27f-3fb244837545/resource/138b1d6c-3f01-407d-9b5d-36841442d44b/download/locatedindbpediaresource.rdf
+    attractors_graph_url : http://odnt-srv01/dataset/54480509-bf69-47e1-b735-de5ddac001a2/resource/95b7cec1-e111-488b-82ce-8be35321c1d5/download/attrattori.rdf
     attractor_days_to_old: 1
 
     event_graph_url: http://dati.umbria.it/dataset/410faa97-546b-4362-a6d7-f8794d18ed19/resource/795338cb-d5b6-40c2-98ad-05fcad7f194c/download/eventiitit.zipeventiitit.rdf
