@@ -9,7 +9,7 @@ parameters:
     attractors_graph_url : http://dati.umbria.it/dataset/ab39e23d-540f-4aa1-b27f-3fb244837545/resource/df1012df-04d4-4666-acd1-d756d3b1c903/download/attrattori.rdf
     attractor_days_to_old: 1
 
-    event_graph_url: http://dati.umbria.it/dataset/410faa97-546b-4362-a6d7-f8794d18ed19/resource/795338cb-d5b6-40c2-98ad-05fcad7f194c/download/eventiitit.zipeventiitit.rdf
+    event_graph_url: http://dati.umbria.it/dataset/410faa97-546b-4362-a6d7-f8794d18ed19/resource/ea6a9ff8-835b-4c71-b4bb-86145f15a931/download/eventi.rdf
     event_days_to_old: 1
 
     travel_agency_graph_url: http://dati.umbria.it/dataset/84d1bd8f-ec95-404c-93c8-81ce2e4705ab/resource/6b9bdb03-9c64-4120-9d2d-031391d2a378/download/agenzieturisticheitit.zipagenzieturisticheitit.rdf
@@ -28,8 +28,6 @@ parameters:
     impianto_sportivo_days_to_old: 1
 
     struttura-ricettiva_days_to_old: 1
-
-
 
 services:
     umbria_open_api.filter_bag:

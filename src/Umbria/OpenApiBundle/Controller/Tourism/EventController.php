@@ -4,8 +4,8 @@ namespace Umbria\OpenApiBundle\Controller\Tourism;
 
 use DateTime;
 use Doctrine\ORM\EntityManager;
+use EasyRdf_Resource;
 use FOS\RestBundle\Controller\Annotations as Rest;
-use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\View\View;
 use JMS\DiExtraBundle\Annotation as DI;
 use Knp\Component\Pager\Pagination\AbstractPagination;
@@ -16,6 +16,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Umbria\OpenApiBundle\Entity\Tourism\GraphsEntities\Event;
 use Umbria\OpenApiBundle\Entity\Tourism\GraphsEntitiesInnerObjects\EventDescription;
 use Umbria\OpenApiBundle\Entity\Tourism\Setting;
+use Umbria\OpenApiBundle\Repository\Tourism\GraphsEntities\EventRepository;
 use Umbria\OpenApiBundle\Serializer\View\EntityResponse;
 use Umbria\OpenApiBundle\Service\FilterBag;
 use EasyRdf_Graph;
@@ -34,6 +35,7 @@ class EventController extends BaseController
     private $paginator;
 
     private $em;
+    /**@var EventRepository eventRepo */
     private $eventRepo;
     private $settingsRepo;
 
@@ -250,6 +252,7 @@ class EventController extends BaseController
     {
 
         $this->graph = EasyRdf_Graph::newAndLoad($this->container->getParameter('event_graph_url'));
+        /**@var EasyRdf_Resource[] $resources */
         $resources = $this->graph->resources();
         foreach ($resources as $resource) {
             $resourceTypeArray = $resource->all("rdf:type");
@@ -285,8 +288,8 @@ class EventController extends BaseController
             }
             $newEvent->setUri($uri);
             $newEvent->setLastUpdateAt(new \DateTime('now'));
-            $newEvent->setName(($p = $eventResource->get("<http://purl.org/dc/elements/1.1/title>")) != null ? $p->getValue() : null);
-            $newEvent->setComment(($p = $eventResource->get("<http://www.w3.org/2000/01/rdf-schema#comment>")) != null ? $p->getValue() : null);
+            $newEvent->setName(($p = $eventResource->get("<http://purl.org/dc/elements/1.1/title>", null, "it")) != null ? $p->getValue() : null);
+            $newEvent->setComment(($p = $eventResource->get("<http://www.w3.org/2000/01/rdf-schema#comment>", null, "it")) != null ? $p->getValue() : null);
             $newEvent->setLat(($p = $eventResource->get("<http://www.w3.org/2003/01/geo/wgs84_pos#lat>")) != null ? (float)$p->getValue() : null);
             $newEvent->setLng(($p = $eventResource->get("<http://www.w3.org/2003/01/geo/wgs84_pos#long>")) != null ? (float)$p->getValue() : null);
             $startDate = $eventResource->get("<http://schema.org/start_date>");
@@ -300,6 +303,7 @@ class EventController extends BaseController
                 $newEvent->setEndDate($endDateObj);
             }
 
+            /**@var EasyRdf_Resource[] $categoriesarray */
             $categoriesarray = $eventResource->all("<http://dati.umbria.it/tourism/ontology/categoria>");
             if ($categoriesarray != null) {
                 $tempCategories = array();
@@ -312,6 +316,7 @@ class EventController extends BaseController
                 count($tempCategories) > 0 ? $newEvent->setCategories($tempCategories) : $newEvent->setCategories(null);
             }
 
+            /**@var EasyRdf_Resource[] $typesarray */
             $typesarray = $eventResource->all("rdf:type");
             if ($typesarray != null) {
                 $tempTypes = array();
@@ -325,10 +330,10 @@ class EventController extends BaseController
             }
 
             $newEvent->setProvenance(($p = $eventResource->get("<http://purl.org/dc/elements/1.1/provenance>")) != null ? $p->getValue() : null);
-            $newEvent->setLanguage(($p = $eventResource->get("<http://purl.org/dc/elements/1.1/language>")) != null ? $p->getUri() : null);
 
             $imagearray1 = $eventResource->all("<http://dati.umbria.it/tourism/ontology/immagine_copertina>");
             $imagearray2 = $eventResource->all("<http://dati.umbria.it/tourism/ontology/immagine_spalla_destra>");
+            /**@var EasyRdf_Resource[] $imagearray */
             $imagearray = array_merge($imagearray1, $imagearray2);
             if ($imagearray != null) {
                 $tempImage = array();
@@ -350,19 +355,25 @@ class EventController extends BaseController
                 }
                 $newEvent->setDescriptions(null);
             }
+
+            /**@var EasyRdf_Resource[] $descriptionArray */
             $descriptionArray = $eventResource->all("<http://dati.umbria.it/tourism/ontology/descrizione>");
             if ($descriptionArray != null) {
                 $tempDescriptions = array();
                 $cnt = 0;
                 foreach ($descriptionArray as $descriptionResource) {
-                    $descriptionTitle = $descriptionResource->get("<http://dati.umbria.it/tourism/ontology/titolo>")->getValue();
-                    $descriptionText = $descriptionResource->get("<http://dati.umbria.it/tourism/ontology/testo>")->getValue();
-                    $descriptionObject = new EventDescription();
-                    $descriptionObject->setTitle($descriptionTitle);
-                    $descriptionObject->setText($descriptionText);
-                    $descriptionObject->setEvent($newEvent);
-                    $tempDescriptions[$cnt] = $descriptionObject;
-                    $cnt++;
+                    if ($descriptionResource->get("<http://dati.umbria.it/tourism/ontology/testo>") != null &&
+                        $descriptionResource->get("<http://dati.umbria.it/tourism/ontology/testo>")->getLang() == "it"
+                    ) {
+                        $descriptionTitle = $descriptionResource->get("<http://dati.umbria.it/tourism/ontology/titolo>")->getValue();
+                        $descriptionText = $descriptionResource->get("<http://dati.umbria.it/tourism/ontology/testo>")->getValue();
+                        $descriptionObject = new EventDescription();
+                        $descriptionObject->setTitle($descriptionTitle);
+                        $descriptionObject->setText($descriptionText);
+                        $descriptionObject->setEvent($newEvent);
+                        $tempDescriptions[$cnt] = $descriptionObject;
+                        $cnt++;
+                    }
                 }
                 if (count($tempDescriptions) > 0) {
                     $newEvent->setDescriptions($tempDescriptions);
