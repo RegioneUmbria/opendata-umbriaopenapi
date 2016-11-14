@@ -357,7 +357,9 @@ class AttractorController extends BaseController
                 $tempDescriptions = array();
                 $cnt = 0;
                 foreach ($descriptionArray as $descriptionResource) {
-                    if ($descriptionResource->get("<http://dati.umbria.it/tourism/ontology/testo>")->getLang() == "it") {
+                    if ($descriptionResource->get("<http://dati.umbria.it/tourism/ontology/testo>") != null &&
+                        $descriptionResource->get("<http://dati.umbria.it/tourism/ontology/testo>")->getLang() == "it"
+                    ) {
                         $descriptionTitle = ($p = $descriptionResource->get("<http://dati.umbria.it/tourism/ontology/titolo>")) != null ? $p->getValue() : null;
                         $descriptionText = $descriptionResource->get("<http://dati.umbria.it/tourism/ontology/testo>")->getValue();
                         $descriptionObject = new AttractorDescription();
