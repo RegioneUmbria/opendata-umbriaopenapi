@@ -254,7 +254,7 @@ class ProposalController extends BaseController
                     if ($descriptionResource->get("<http://dati.umbria.it/tourism/ontology/testo>") != null &&
                         $descriptionResource->get("<http://dati.umbria.it/tourism/ontology/testo>")->getLang() == "it"
                     ) {
-                        $descriptionTitle = $descriptionResource->get("<http://dati.umbria.it/tourism/ontology/titolo>")->getValue();
+                        $descriptionTitle = ($p = $descriptionResource->get("<http://dati.umbria.it/tourism/ontology/titolo>")) != null ? $p->getValue() : null;
                         $descriptionText = $descriptionResource->get("<http://dati.umbria.it/tourism/ontology/testo>")->getValue();
                         $descriptionObject = new ProposalDescription();
                         $descriptionObject->setTitle($descriptionTitle);
