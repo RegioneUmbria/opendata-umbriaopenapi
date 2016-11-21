@@ -4,6 +4,7 @@ namespace Umbria\OpenApiBundle\Controller\Tourism;
 
 use DateTime;
 use Doctrine\ORM\EntityManager;
+use EasyRdf_Literal;
 use EasyRdf_Resource;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\View\View;
@@ -289,8 +290,23 @@ class EventController extends BaseController
             }
             $newEvent->setUri($uri);
             $newEvent->setLastUpdateAt(new \DateTime('now'));
-            $newEvent->setName(($p = $eventResource->get("<http://purl.org/dc/elements/1.1/title>", null, "it")) != null ? $p->getValue() : null);
-            $newEvent->setComment(($p = $eventResource->get("<http://www.w3.org/2000/01/rdf-schema#comment>", null, "it")) != null ? $p->getValue() : null);
+
+            /**@var EasyRdf_Literal[] $labelArray */
+            $labelArray = $eventResource->all("rdfs:label");
+            foreach ($labelArray as $label) {
+                if ($label->getLang() == "it") {
+                    $newEvent->setName($label->getValue());
+                    break;
+                }
+            }
+            /**@var EasyRdf_Literal[] $commentArray */
+            $commentArray = $eventResource->all("<http://dati.umbria.it/tourism/ontology/event_description>");
+            foreach ($commentArray as $comment) {
+                if ($comment->getLang() == "it") {
+                    $newEvent->setComment($comment->getValue());
+                    break;
+                }
+            }
             $newEvent->setLat(($p = $eventResource->get("<http://www.w3.org/2003/01/geo/wgs84_pos#lat>")) != null ? (float)$p->getValue() : null);
             $newEvent->setLng(($p = $eventResource->get("<http://www.w3.org/2003/01/geo/wgs84_pos#long>")) != null ? (float)$p->getValue() : null);
             $startDate = $eventResource->get("<http://schema.org/start_date>");

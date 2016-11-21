@@ -5,6 +5,7 @@ namespace Umbria\OpenApiBundle\Controller\Tourism;
 use DateTime;
 use Doctrine\ORM\EntityManager;
 use EasyRdf_Graph;
+use EasyRdf_Literal;
 use EasyRdf_Resource;
 use Exception;
 use FOS\RestBundle\Controller\Annotations as Rest;
@@ -196,8 +197,15 @@ class TravelAgencyController extends BaseController
             }
             $newTravelAgency->setUri($uri);
             $newTravelAgency->setLastUpdateAt(new \DateTime('now'));
-            $newTravelAgency->setName(($p = $travelAgencyResource->get("rdfs:label")) != null ? $p->getValue() : null);
 
+            /**@var EasyRdf_Literal[] $labelArray */
+            $labelArray = $travelAgencyResource->all("rdfs:label");
+            foreach ($labelArray as $label) {
+                if ($label->getLang() == "it") {
+                    $newTravelAgency->setName($label->getValue());
+                    break;
+                }
+            }
             $typesarray = $travelAgencyResource->all("rdf:type");
             if ($typesarray != null) {
                 $tempTypes = array();
@@ -211,7 +219,6 @@ class TravelAgencyController extends BaseController
             }
 
             $newTravelAgency->setProvenance(($p = $travelAgencyResource->get("<http://purl.org/dc/elements/1.1/provenance>")) != null ? $p->getValue() : null);
-            $newTravelAgency->setLanguage(($p = $travelAgencyResource->get("<http://purl.org/dc/elements/1.1/language>")) != null ? $p->getUri() : null);
 
 
             $emailarray = $travelAgencyResource->all("<http://schema.org/email>");

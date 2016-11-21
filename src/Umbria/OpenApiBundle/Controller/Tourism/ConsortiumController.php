@@ -5,6 +5,7 @@ namespace Umbria\OpenApiBundle\Controller\Tourism;
 use DateTime;
 use Doctrine\ORM\EntityManager;
 use EasyRdf_Graph;
+use EasyRdf_Literal;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\View\View;
@@ -195,7 +196,15 @@ class ConsortiumController extends BaseController
             }
             $newConsortium->setUri($uri);
             $newConsortium->setLastUpdateAt(new \DateTime('now'));
-            $newConsortium->setName(($p = $consortiumResource->get("rdfs:label")) != null ? $p->getValue() : null);
+
+            /**@var EasyRdf_Literal[] $labelArray */
+            $labelArray = $consortiumResource->all("rdfs:label");
+            foreach ($labelArray as $label) {
+                if ($label->getLang() == "it") {
+                    $newConsortium->setName($label->getValue());
+                    break;
+                }
+            }
 
             $typesarray = $consortiumResource->all("rdf:type");
             if ($typesarray != null) {

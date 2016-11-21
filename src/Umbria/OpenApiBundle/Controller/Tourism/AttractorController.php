@@ -6,6 +6,7 @@ namespace Umbria\OpenApiBundle\Controller\Tourism;
 use DateTime;
 use Doctrine\ORM\EntityManager;
 use EasyRdf_Graph;
+use EasyRdf_Literal;
 use EasyRdf_Resource;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\View\View;
@@ -294,7 +295,15 @@ class AttractorController extends BaseController
             }
             $newAttractor->setUri($uri);
             $newAttractor->setLastUpdateAt(new \DateTime('now'));
-            $newAttractor->setName(($p = $attractorResource->get("rdfs:label", null, "it")) != null ? $p->getValue() : null);
+
+            /**@var EasyRdf_Literal[] $labelArray */
+            $labelArray = $attractorResource->all("rdfs:label");
+            foreach ($labelArray as $label) {
+                if ($label->getLang() == "it") {
+                    $newAttractor->setName($label->getValue());
+                    break;
+                }
+            }
 
             /**@var EasyRdf_Resource[] $typesarray */
             $typesarray = $attractorResource->all("rdf:type");
@@ -317,7 +326,14 @@ class AttractorController extends BaseController
                 count($tempTypes) > 0 ? $newAttractor->setTypes($tempTypes) : $newAttractor->setTypes(null);
             }
 
-            $newAttractor->setComment(($p = $attractorResource->get("<http://www.w3.org/2000/01/rdf-schema#comment>", null, "it")) != null ? $p->getValue() : null);
+            /**@var EasyRdf_Literal[] $commentArray */
+            $commentArray = $attractorResource->all("<http://www.w3.org/2000/01/rdf-schema#comment>");
+            foreach ($commentArray as $comment) {
+                if ($comment->getLang() == "it") {
+                    $newAttractor->setComment($comment->getValue());
+                    break;
+                }
+            }
             $newAttractor->setProvenance(($p = $attractorResource->get("<http://purl.org/dc/elements/1.1/provenance>")) != null ? $p->getValue() : null);
             $newAttractor->setMunicipality(($p = $attractorResource->get("<http://dbpedia.org/ontology/municipality>")) != null ? $p->getValue() : null);
             $newAttractor->setIstat(($p = $attractorResource->get("<http://dbpedia.org/ontology/istat>")) != null ? $p->getValue() : null);
@@ -340,10 +356,23 @@ class AttractorController extends BaseController
                 count($tempImage) > 0 ? $newAttractor->setImages($tempImage) : $newAttractor->setImages(null);
             }
 
-            $newAttractor->setTextTitle(($p = $attractorResource->get("<http://dati.umbria.it/tourism/ontology/titolo_testo>", null, "it")) != null ? $p->getValue() : null);
-            /*TODO link esterni associati*/
+            /**@var EasyRdf_Literal[] $titleArray */
+            $titleArray = $attractorResource->all("<http://dati.umbria.it/tourism/ontology/titolo_testo>");
+            foreach ($titleArray as $title) {
+                if ($title->getLang() == "it") {
+                    $newAttractor->setTextTitle($title->getValue());
+                    break;
+                }
+            }
             $newAttractor->setResourceOriginUrl(($p = $attractorResource->get("<http://dati.umbria.it/tourism/ontology/url_risorsa>")) != null ? $p->getValue() : null);
-            $newAttractor->setShortDescription(($p = $attractorResource->get("<http://dati.umbria.it/tourism/ontology/descrizione_sintetica>", null, "it")) != null ? $p->getValue() : null);
+            /**@var EasyRdf_Literal[] $shortDescriptionArray */
+            $shortDescriptionArray = $attractorResource->all("<http://dati.umbria.it/tourism/ontology/descrizione_sintetica>");
+            foreach ($shortDescriptionArray as $shortDescription) {
+                if ($shortDescription->getLang() == "it") {
+                    $newAttractor->setShortDescription($shortDescription->getValue());
+                    break;
+                }
+            }
 
             if ($isAlreadyPersisted && ($oldDescriptions = $newAttractor->getDescriptions()) != null) {
                 foreach ($oldDescriptions as $oldDescription) {
