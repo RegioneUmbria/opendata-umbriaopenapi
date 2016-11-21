@@ -5,6 +5,7 @@ namespace Umbria\OpenApiBundle\Controller\Tourism;
 use DateTime;
 use Doctrine\ORM\EntityManager;
 use EasyRdf_Graph;
+use EasyRdf_Literal;
 use EasyRdf_Resource;
 use Exception;
 use FOS\RestBundle\Controller\Annotations as Rest;
@@ -195,8 +196,18 @@ class ProposalController extends BaseController
             }
             $newProposal->setUri($uri);
             $newProposal->setLastUpdateAt(new \DateTime('now'));
-            $newProposal->setName(($p = $proposalResource->get("rdfs:label")) != null ? $p->getValue() : null);
-            /*TODO link esterni associati*/
+
+            /**@var EasyRdf_Literal[] $labelArray */
+            $labelArray = $proposalResource->all("rdfs:label");
+            foreach ($labelArray as $label) {
+                if ($label->getLang() == "it") {
+                    $newProposal->setName($label->getValue());
+                    break;
+                }
+            }
+
+            if ($newProposal->getName() == null) return;
+
 
             $typesarray = $proposalResource->all("rdf:type");
             if ($typesarray != null) {
@@ -213,8 +224,15 @@ class ProposalController extends BaseController
             $newProposal->setProvenance(($p = $proposalResource->get("<http://purl.org/dc/elements/1.1/provenance>")) != null ? $p->getValue() : null);
             $newProposal->setResourceOriginUrl(($p = $proposalResource->get("<http://dati.umbria.it/tourism/ontology/url_risorsa>")) != null ? $p->getValue() : null);
             $newProposal->setProvenance(($p = $proposalResource->get("<http://purl.org/dc/elements/1.1/provenance>")) != null ? $p->getValue() : null);
-            $newProposal->setSubject(($p = $proposalResource->get("<http://purl.org/dc/elements/1.1/subject>")) != null ? $p->getValue() : null);
 
+            /**@var EasyRdf_Literal[] $subjectArray */
+            $subjectArray = $proposalResource->all("<http://purl.org/dc/elements/1.1/subject>");
+            foreach ($subjectArray as $subject) {
+                if ($subject->getLang() == "it") {
+                    $newProposal->setSubject($subject->getValue());
+                    break;
+                }
+            }
 
             $imagearray1 = $proposalResource->all("<http://dati.umbria.it/tourism/ontology/immagine_copertina>");
             $imagearray2 = $proposalResource->all("<http://dati.umbria.it/tourism/ontology/immagine_spalla_destra>");
@@ -230,14 +248,32 @@ class ProposalController extends BaseController
                 count($tempImage) > 0 ? $newProposal->setImages($tempImage) : $newProposal->setImages(null);
             }
 
-            $newProposal->setTextTitle(($p = $proposalResource->get("<http://dati.umbria.it/tourism/ontology/titolo_testo>")) != null ? $p->getValue() : null);
-            /*TODO link esterni associati*/
+            /**@var EasyRdf_Literal[] $textTitleArray */
+            $textTitleArray = $proposalResource->all("<http://dati.umbria.it/tourism/ontology/titolo_testo>");
+            foreach ($textTitleArray as $textTitle) {
+                if ($textTitle->getLang() == "it") {
+                    $newProposal->setTextTitle($textTitle->getValue());
+                    break;
+                }
+            }
 
             $newProposal->setResourceOriginUrl(($p = $proposalResource->get("<http://dati.umbria.it/tourism/ontology/url_risorsa>")) != null ? $p->getValue() : null);
-            $newProposal->setShortDescription(($p = $proposalResource->get("<http://dati.umbria.it/tourism/ontology/descrizione_sintetica>")) != null ? $p->getValue() : null);
-            $newProposal->setLanguage(($p = $proposalResource->get("<http://purl.org/dc/elements/1.1/language>")) != null ? $p->getUri() : null);
-            $newProposal->setComment(($p = $proposalResource->get("<http://www.w3.org/2000/01/rdf-schema#comment>")) != null ? $p->getValue() : null);
-
+            /**@var EasyRdf_Literal[] $shortDescriptionArray */
+            $shortDescriptionArray = $proposalResource->all("<http://dati.umbria.it/tourism/ontology/descrizione_sintetica>");
+            foreach ($shortDescriptionArray as $shortDescription) {
+                if ($shortDescription->getLang() == "it") {
+                    $newProposal->setShortDescription($shortDescription->getValue());
+                    break;
+                }
+            }
+            /**@var EasyRdf_Literal[] $abstractArray */
+            $abstractArray = $proposalResource->all("<http://purl.org/ontology/bibo/abstract>");
+            foreach ($abstractArray as $abstract) {
+                if ($abstract->getLang() == "it") {
+                    $newProposal->setComment($abstract->getValue());
+                    break;
+                }
+            }
 
             if ($isAlreadyPersisted && ($oldDescriptions = $newProposal->getDescriptions()) != null) {
                 foreach ($oldDescriptions as $oldDescription) {
@@ -245,27 +281,30 @@ class ProposalController extends BaseController
                 }
                 $newProposal->setDescriptions(null);
             }
+
             /**@var EasyRdf_Resource[] $descriptionArray */
             $descriptionArray = $proposalResource->all("<http://dati.umbria.it/tourism/ontology/descrizione>");
             if ($descriptionArray != null) {
                 $tempDescriptions = array();
                 $cnt = 0;
                 foreach ($descriptionArray as $descriptionResource) {
-                    $descriptionTitle = $descriptionResource->get("<http://dati.umbria.it/tourism/ontology/titolo>")->getValue();
-                    $descriptionText = $descriptionResource->get("<http://dati.umbria.it/tourism/ontology/testo>")->getValue();
-                    $descriptionObject = new ProposalDescription();
-                    $descriptionObject->setTitle($descriptionTitle);
-                    $descriptionObject->setText($descriptionText);
-                    $descriptionObject->setProposal($newProposal);
-                    $tempDescriptions[$cnt] = $descriptionObject;
-                    $cnt++;
+                    if ($descriptionResource->get("<http://dati.umbria.it/tourism/ontology/testo>") != null &&
+                        $descriptionResource->get("<http://dati.umbria.it/tourism/ontology/testo>")->getLang() == "it"
+                    ) {
+                        $descriptionTitle = ($p = $descriptionResource->get("<http://dati.umbria.it/tourism/ontology/titolo>")) != null ? $p->getValue() : null;
+                        $descriptionText = $descriptionResource->get("<http://dati.umbria.it/tourism/ontology/testo>")->getValue();
+                        $descriptionObject = new ProposalDescription();
+                        $descriptionObject->setTitle($descriptionTitle);
+                        $descriptionObject->setText($descriptionText);
+                        $descriptionObject->setProposal($newProposal);
+                        $tempDescriptions[$cnt] = $descriptionObject;
+                        $cnt++;
+                    }
                 }
                 if (count($tempDescriptions) > 0) {
                     $newProposal->setDescriptions($tempDescriptions);
                 }
             }
-
-            /*TODO travel time*/
 
             $categoriesarray = $proposalResource->all("<http://dati.umbria.it/turismo/ontology/categoria>");
             if ($categoriesarray != null) {
