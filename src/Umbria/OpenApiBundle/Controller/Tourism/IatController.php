@@ -5,6 +5,7 @@ namespace Umbria\OpenApiBundle\Controller\Tourism;
 use DateTime;
 use Doctrine\ORM\EntityManager;
 use EasyRdf_Graph;
+use EasyRdf_Literal;
 use EasyRdf_Resource;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\View\View;
@@ -194,8 +195,15 @@ class IatController extends BaseController
             }
             $newIat->setUri($uri);
             $newIat->setLastUpdateAt(new \DateTime('now'));
-            $newIat->setName(($p = $iatResource->get("rdfs:label")) != null ? $p->getValue() : null);
 
+            /**@var EasyRdf_Literal[] $labelArray */
+            $labelArray = $iatResource->all("rdfs:label");
+            foreach ($labelArray as $label) {
+                if ($label->getLang() == "it") {
+                    $newIat->setName($label->getValue());
+                    break;
+                }
+            }
             $typesarray = $iatResource->all("rdf:type");
             if ($typesarray != null) {
                 $tempTypes = array();
