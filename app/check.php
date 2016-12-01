@@ -121,7 +121,7 @@ function echo_block($style, $title, $message)
 
     echo_style($style, str_repeat(' ', $width));
     echo PHP_EOL;
-    echo_style($style, str_pad(' ['.$title.']', $width, ' ', STR_PAD_RIGHT));
+    echo_style($style, str_pad(' [' . $title . ']', $width, ' ', STR_PAD_RIGHT));
     echo PHP_EOL;
     echo_style($style, $message);
     echo PHP_EOL;

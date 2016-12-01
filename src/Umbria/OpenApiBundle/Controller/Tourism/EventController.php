@@ -21,6 +21,7 @@ use Umbria\OpenApiBundle\Repository\Tourism\GraphsEntities\EventRepository;
 use Umbria\OpenApiBundle\Serializer\View\EntityResponse;
 use Umbria\OpenApiBundle\Service\FilterBag;
 use EasyRdf_Graph;
+
 /**
  * Class EventController
  * @package Umbria\OpenApiBundle\Controller\Tourism

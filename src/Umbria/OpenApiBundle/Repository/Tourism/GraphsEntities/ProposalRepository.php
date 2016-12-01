@@ -1,6 +1,7 @@
 <?php
 
 namespace Umbria\OpenApiBundle\Repository\Tourism\GraphsEntities;
+
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\EntityRepository;
 

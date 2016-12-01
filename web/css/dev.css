@@ -473,3 +473,8 @@ label {
 a.resource_uri button.resource_uri {
   color: #337ab7;
 }
+
+.triple-result-heigth-fixed {
+  height: 40px;
+  max-height: 40px;
+}

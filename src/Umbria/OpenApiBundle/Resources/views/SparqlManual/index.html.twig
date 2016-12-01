@@ -231,7 +231,7 @@
                                 ?s ?p ?o .
                                 ?s &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#type&gt; &lt;&gt;
                                 }
-                                LIMIT 200
+                                LIMIT 50
 
 
                             </code>
@@ -376,7 +376,7 @@
 
                             SELECT ?resource_uri ?nome_evento
                             WHERE{
-                            ?resource_uri dc:title ?nome_evento.
+                            ?resource_uri rdfs:label ?nome_evento.
                             ?resource_uri rdf:type schema:Event.
                             ?resource_uri dbpedia-owl:municipality ?municipality.
                             FILTER regex(?municipality, "Terni", "i")
@@ -384,7 +384,7 @@
 
 
                         </code>
-<a href="http://dati.umbria.it/sparql?default-graph-uri=http://dati.umbria.it/graph/eventi&qtxt=PREFIX+dbpedia-owl%3A+%3Chttp%3A%2F%2Fdbpedia.org%2Fontology%2F%3E%0D%0APREFIX+dc%3A+%3Chttp%3A%2F%2Fpurl.org%2Fdc%2Felements%2F1.1%2F%3E%0D%0A%0D%0ASELECT+%3Fresource_uri+%3Fnome_evento%0D%0AWHERE%7B%0D%0A%09%3Fresource_uri+dc%3Atitle+%3Fnome_evento.%0D%0A%09%3Fresource_uri++%3Chttp%3A%2F%2Fwww.w3.org%2F1999%2F02%2F22-rdf-syntax-ns%23type%3E+%3Chttp%3A%2F%2Fschema.org%2FEvent%3E.%0D%0A%09%3Fresource_uri+dbpedia-owl%3Amunicipality+%3Fmunicipality.%0D%0A%09FILTER+regex%28%3Fmunicipality%2C+%22Terni%22%2C+%22i%22%29%0D%0A%7D"
+<a href="http://dati.umbria.it/sparql?default-graph-uri=http://dati.umbria.it/graph/eventi&qtxt=PREFIX+dbpedia-owl%3A+%3Chttp%3A%2F%2Fdbpedia.org%2Fontology%2F%3E%0D%0APREFIX+dc%3A+%3Chttp%3A%2F%2Fpurl.org%2Fdc%2Felements%2F1.1%2F%3E%0D%0A%0D%0ASELECT+%3Fresource_uri+%3Fnome_evento%0D%0AWHERE%7B%0D%0A%09%3Fresource_uri+rdfs%3Alabel+%3Fnome_evento.%0D%0A%09%3Fresource_uri++%3Chttp%3A%2F%2Fwww.w3.org%2F1999%2F02%2F22-rdf-syntax-ns%23type%3E+%3Chttp%3A%2F%2Fschema.org%2FEvent%3E.%0D%0A%09%3Fresource_uri+dbpedia-owl%3Amunicipality+%3Fmunicipality.%0D%0A%09FILTER+regex%28%3Fmunicipality%2C+%22Terni%22%2C+%22i%22%29%0D%0A%7D"
    target="_blank">
     <button type="button" class="btn btn-primary">Vai a SPARQL Endpoint</button>
 </a></pre>

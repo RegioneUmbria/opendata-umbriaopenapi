@@ -619,9 +619,5 @@ class Proposal
     }
 
 
-
-
-
-
 }
 

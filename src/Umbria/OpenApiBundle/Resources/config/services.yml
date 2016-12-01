@@ -24,7 +24,7 @@ parameters:
     iat_graph_url: http://dati.umbria.it/dataset/32cca8e8-4e6e-43ed-b7df-2f577de8ac4d/resource/4bc8be8f-52f1-440a-a7b7-2860b9611be7/download/iat.rdf
     iat_days_to_old: 1
 
-    impianto_sportivo_graph_url: http://dati.umbria.it/dataset/c2b4592f-618f-41eb-a37d-f0fc74200441/resource/915d49ae-e973-4d2e-828f-03918060830e/download/impiantisportivi.rdf
+    impianto_sportivo_graph_url: http://dati.umbria.it/dataset/c2b4592f-618f-41eb-a37d-f0fc74200441/resource/d7699464-3b02-46cd-baff-6780a2c76643/download/impiantisportivigeocoded.rdf
     impianto_sportivo_days_to_old: 1
 
     struttura-ricettiva_days_to_old: 1
