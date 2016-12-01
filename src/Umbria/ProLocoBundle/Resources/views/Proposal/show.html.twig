@@ -67,7 +67,7 @@
                                 {% if proposal.lat != null and proposal.lat != '' %}
                                     <small>umbria:</small>
                                     <a href="{{ path('umbria_pro_loco_homepage') }}"
-                                       onclick="setCoordCookie({{ proposal.lat }},{{ proposal.lng }})">
+                                       onclick="setCoordCookie({{ proposal.lat }},{{ proposal.lng }},'tourism_proposal_cb')">
                                         {{ proposal.lat }},{{ proposal.lng }}
                                     </a>
                                 {% else %}

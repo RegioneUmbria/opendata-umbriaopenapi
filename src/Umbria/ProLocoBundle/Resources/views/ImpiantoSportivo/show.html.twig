@@ -88,7 +88,7 @@
                                 {% if impiantoSportivo.address is not null and impiantoSportivo.address.lat is not null %}
                                     <small>umbria:</small>
                                     <a href="{{ path('umbria_pro_loco_homepage') }}"
-                                       onclick="setCoordCookie({{ impiantoSportivo.address.lat }},{{ impiantoSportivo.address.lng }})">
+                                       onclick="setCoordCookie({{ impiantoSportivo.address.lat }},{{ impiantoSportivo.address.lng }},'tourism_impianto_sportivo_cb')">
                                         {{ impiantoSportivo.address.lat }},{{ impiantoSportivo.address.lng }}
                                     </a>
                                 {% else %}

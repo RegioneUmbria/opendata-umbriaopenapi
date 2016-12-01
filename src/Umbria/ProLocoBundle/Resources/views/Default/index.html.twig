@@ -211,8 +211,6 @@
 
             initMarkerClusterers();
             updateMarkersAll();
-
-
         }
 
         function initMarkerClusterers() {
@@ -410,8 +408,9 @@
                     'onchange="updateMarkers(\'tourism_struttura_ricettiva\')">' +
                     '</div>';
             legend.appendChild(div);
-
+            setLayerFromCookies();
         }
+
         function setPositionFromCookies() {
             // riposizionamento mappa in relazione all'ultimo place visitato
             var latCenter = Cookies.get('lat');
@@ -430,6 +429,26 @@
 
             map.setCenter({lat: parseFloat(latCenter), lng: parseFloat(lngCenter)});
             map.setZoom(parseInt(zoom));
+
+
+        }
+
+        function setLayerFromCookies() {
+            // riposizionamento layer in relazione all'ultimo place visitato
+            var layer = Cookies.get('layer');
+            if (layer != null) {
+                Cookies.remove('layer');
+                document.getElementById("tourism_attractor_cb").checked = false;
+                document.getElementById("tourism_proposal_cb").checked = false;
+                document.getElementById("tourism_event_cb").checked = false;
+                document.getElementById("tourism_travel_agency_cb").checked = false;
+                document.getElementById("tourism_consortium_cb").checked = false;
+                document.getElementById("tourism_profession_cb").checked = false;
+                document.getElementById("tourism_iat_cb").checked = false;
+                document.getElementById("tourism_impianto_sportivo_cb").checked = false;
+                document.getElementById("tourism_struttura_ricettiva_cb").checked = false;
+                document.getElementById(layer).checked = true;
+            }
 
 
         }

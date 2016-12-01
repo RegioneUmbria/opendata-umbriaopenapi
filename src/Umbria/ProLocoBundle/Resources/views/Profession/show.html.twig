@@ -82,7 +82,7 @@
                             <td>
                                 {% if profession.lat != null and profession.lat != '' %}
                                     <a href="{{ path('umbria_pro_loco_homepage') }}"
-                                       onclick="setCoordCookie({{ profession.lat }},{{ profession.lng }})">
+                                       onclick="setCoordCookie({{ profession.lat }},{{ profession.lng }},'tourism_profession_cb')">
                                         {{ profession.lat }},{{ profession.lng }}
                                     </a>
                                 {% else %}

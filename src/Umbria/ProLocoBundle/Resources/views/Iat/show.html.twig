@@ -67,7 +67,7 @@
                                 <td>
                                     {% if iat.lat != null %}
                                         <a href="{{ path('umbria_pro_loco_homepage') }}"
-                                           onclick="setCoordCookie({{ iat.lat }},{{ iat.lng }})">
+                                           onclick="setCoordCookie({{ iat.lat }},{{ iat.lng }},'tourism_iat_cb')">
                                             {{ iat.lat }},{{ iat.lng }}
                                         </a>
                                     {% else %}

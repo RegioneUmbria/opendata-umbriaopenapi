@@ -38,10 +38,11 @@
                 }
             }
         }
-        function setCoordCookie(lat, lng) {
+        function setCoordCookie(lat, lng, layer) {
             Cookies.set('lat', lat);
             Cookies.set('lng', lng);
             Cookies.set('zoom', 18);
+            Cookies.set('layer', layer);
         }
 
     </script>

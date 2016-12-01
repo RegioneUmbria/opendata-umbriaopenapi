@@ -76,7 +76,7 @@
                                 {% if attractor.lat != '' %}
                                     <small>umbria:</small>
                                     <a href="{{ path('umbria_pro_loco_homepage') }}"
-                                       onclick="setCoordCookie({{ attractor.lat }},{{ attractor.lng }})">
+                                       onclick="setCoordCookie({{ attractor.lat }},{{ attractor.lng }},'tourism_attractor_cb')">
                                         {{ attractor.lat }},{{ attractor.lng }}
                                     </a>
                                     {#{% elseif coordinate.dbpediaLatitude != '' %}
