@@ -3,16 +3,13 @@
 namespace Umbria\TelegramBotBundle\UpdateReceiver;
 
 use AnthonyMartin\GeoLocation\GeoLocation;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\DBAL\Types\Type;
-use Doctrine\ORM\Query\Parameter;
 use JMS\DiExtraBundle\Annotation as DI;
 use Shaygan\TelegramBotApiBundle\TelegramBotApi;
 use Shaygan\TelegramBotApiBundle\Type\Update;
 use Symfony\Component\Config\Definition\Exception\Exception;
 use TelegramBot\Api\Types\ReplyKeyboardMarkup;
-use Umbria\OpenApiBundle\Entity\Tourism\GraphsEntities\Attractor;
 use Umbria\OpenApiBundle\Repository\Tourism\GraphsEntities\AttractorRepository;
+use Umbria\OpenApiBundle\Repository\Tourism\GraphsEntities\ProposalRepository;
 
 class UpdateReceiver implements UpdateReceiverInterface
 {
@@ -48,7 +45,7 @@ class UpdateReceiver implements UpdateReceiverInterface
             if (($latitude >= 42.36 AND $latitude <= 43.60)
                 AND ($longitude >= 11.88 AND $longitude <= 13.25)
             ) {
-                $arrayOfMessages = $this->executeAttractorQuery($latitude, $longitude, 10, false);
+                $arrayOfMessages = $this->executeProposalQuery($latitude, $longitude, 10, false);
                 $text = "Vicino a te puoi trovare: \n";
                 $this->telegramBotApi->sendMessage($message['chat']['id'], $text);
                 $i = 1;
@@ -60,7 +57,7 @@ class UpdateReceiver implements UpdateReceiverInterface
                 }
             }
             else {
-                $arrayOfMessages = $this->executeAttractorQuery(43.105275, 12.391995, 100, true);
+                $arrayOfMessages = $this->executeProposalQuery(43.105275, 12.391995, 100, true);
                 $plainText = implode("\n", $arrayOfMessages);
                 $text = "Ciao " . $message['from']['first_name'] . ". Sei troppo lontano dall'Umbria. Da noi puoi trovare: " . $plainText;
                 $this->telegramBotApi->sendMessage($message['chat']['id'], $text);
@@ -73,9 +70,9 @@ class UpdateReceiver implements UpdateReceiverInterface
                     $text = "UmbriaTourismBot ti permette di ricevere informazioni turistiche. Invia la tua posizione per scoprire tutte le bellezze che la nostra regione ha in serbo per te";
                     break;
                 case "/hello":
-                    $arrayOfMessages = $this->executeAttractorQuery(43.105275, 12.391995, 100, true);
+                    $arrayOfMessages = $this->executeProposalQuery(43.105275, 12.391995, 100, true);
                     $plainText = implode("\n", $arrayOfMessages);
-                    $text = "Ciao " . $message['from']['first_name'] . ". Oggi ti consiglio di visitare ". $plainText;
+                    $text = "Ciao " . $message['from']['first_name'] . ". Oggi ti consiglio: " . $plainText;
                     break;
                 case "/help":
                 case "/start":
@@ -107,6 +104,44 @@ class UpdateReceiver implements UpdateReceiverInterface
         $bounds = $location->boundingCoordinates($radius, 'km');
 
         $pois = $attractorRepo->findByPosition(
+            $bounds[1]->getLatitudeInDegrees(),
+            $bounds[0]->getLatitudeInDegrees(),
+            $bounds[1]->getLongitudeInDegrees(),
+            $bounds[0]->getLongitudeInDegrees());
+
+        if (sizeof($pois) > 0) {
+            if ($rand) {
+                $key = array_rand($pois);
+
+                $poi = $pois[$key];
+                $stringResult[0] = $poi->getName();
+                $stringResult[1] = str_replace('&nbsp;', ' ', strip_tags($poi->getShortDescription()));
+                $stringResult[2] = $poi->getUri();
+                return $stringResult;
+            } else {
+                $i = 0;
+                foreach ($pois as $poi) {
+                    $stringResult[$i] = strtoupper($poi->getName()) . "\n" . str_replace('&nbsp;', ' ', str_replace('&nbsp;', ' ', strip_tags($poi->getShortDescription())) . "\n" . $poi->getUri() . "\n");
+                    $i++;
+                }
+                return $stringResult;
+            }
+        } else {
+            throw new Exception();
+        }
+    }
+
+    public function executeProposalQuery($lat, $lng, $radius, $rand)
+    {
+        /**@var ProposalRepository $proposalRepo */
+        $proposalRepo = $this->em->getRepository('UmbriaOpenApiBundle:Tourism\GraphsEntities\Proposal');
+
+        $location = GeoLocation::fromDegrees($lat, $lng);
+        /** @var GeoLocation[] $bounds */
+        /** @noinspection PhpInternalEntityUsedInspection */
+        $bounds = $location->boundingCoordinates($radius, 'km');
+
+        $pois = $proposalRepo->findByPosition(
             $bounds[1]->getLatitudeInDegrees(),
             $bounds[0]->getLatitudeInDegrees(),
             $bounds[1]->getLongitudeInDegrees(),

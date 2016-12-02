@@ -4,6 +4,7 @@ namespace Umbria\OpenApiBundle\Repository\Tourism\GraphsEntities;
 
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\EntityRepository;
+use Umbria\OpenApiBundle\Entity\Tourism\GraphsEntities\Proposal;
 
 /**
  * ProposalRepository
@@ -32,6 +33,61 @@ class ProposalRepository extends EntityRepository
         $qb = $this->createQueryBuilder("o");
         $qb->where($qb->expr()->like("o.uri", "?1"));
         $qb->setParameter(1, "%/" . $id);
+        return $qb->getQuery()->getResult();
+    }
+
+    /**
+     * @param $latMax
+     * @param $latMin
+     * @param $lngMax
+     * @param $lngMin
+     * @return Proposal[]
+     */
+    public function findByPosition($latMax, $latMin, $lngMax, $lngMin)
+    {
+        $qb = $this->createQueryBuilder("a");
+        if ($latMax != null ||
+            $latMin != null ||
+            $lngMax != null ||
+            $lngMin != null
+        ) {
+            if ($latMax != null) {
+                $qb = $qb->andWhere(
+                    $qb->expr()->lte("a.lat", ':latMax'),
+                    $qb->expr()->isNotNull("a.lat"),
+                    $qb->expr()->gt("a.lat", ':empty')
+                )
+                    ->setParameter('latMax', $latMax)
+                    ->setParameter('empty', '0');
+            }
+            if ($latMin != null) {
+                $qb = $qb->andWhere(
+                    $qb->expr()->gte("a.lat", ':latMin'),
+                    $qb->expr()->isNotNull("a.lat"),
+                    $qb->expr()->gt("a.lat", ":empty")
+                )
+                    ->setParameter('latMin', $latMin)
+                    ->setParameter('empty', '0');
+            }
+            if ($lngMax != null) {
+                $qb = $qb->andWhere(
+                    $qb->expr()->lte("a.lng", ':lngMax'),
+                    $qb->expr()->isNotNull("a.lng"),
+                    $qb->expr()->gt("a.lng", ":empty")
+                )
+                    ->setParameter('lngMax', $lngMax)
+                    ->setParameter('empty', '0');
+            }
+            if ($lngMin != null) {
+                $qb = $qb->andWhere(
+                    $qb->expr()->gte("a.lng", ':lngMin'),
+                    $qb->expr()->isNotNull("a.lng"),
+                    $qb->expr()->gt("a.lng", ":empty")
+                )
+                    ->setParameter('lngMin', $lngMin)
+                    ->setParameter('empty', '0');
+            }
+        }
         return $qb->getQuery()->getResult();
     }
 }
