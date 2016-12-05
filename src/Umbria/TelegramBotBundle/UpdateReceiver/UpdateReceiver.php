@@ -116,12 +116,12 @@ class UpdateReceiver implements UpdateReceiverInterface
                 $poi = $pois[$key];
                 $stringResult[0] = $poi->getName();
                 $stringResult[1] = str_replace('&nbsp;', ' ', strip_tags($poi->getShortDescription()));
-                $stringResult[2] = $poi->getUri();
+                $stringResult[2] = $poi->getResourceOriginUrl();
                 return $stringResult;
             } else {
                 $i = 0;
                 foreach ($pois as $poi) {
-                    $stringResult[$i] = strtoupper($poi->getName()) . "\n" . str_replace('&nbsp;', ' ', str_replace('&nbsp;', ' ', strip_tags($poi->getShortDescription())) . "\n" . $poi->getUri() . "\n");
+                    $stringResult[$i] = strtoupper($poi->getName()) . "\n" . str_replace('&nbsp;', ' ', str_replace('&nbsp;', ' ', strip_tags($poi->getShortDescription())) . "\n" . $poi->getResourceOriginUrl() . "\n");
                     $i++;
                 }
                 return $stringResult;
@@ -154,12 +154,12 @@ class UpdateReceiver implements UpdateReceiverInterface
                 $poi = $pois[$key];
                 $stringResult[0] = $poi->getName();
                 $stringResult[1] = str_replace('&nbsp;', ' ', strip_tags($poi->getShortDescription()));
-                $stringResult[2] = $poi->getUri();
+                $stringResult[2] = $poi->getResourceOriginUrl();
                 return $stringResult;
             } else {
                 $i = 0;
                 foreach ($pois as $poi) {
-                    $stringResult[$i] = strtoupper($poi->getName()) . "\n" . str_replace('&nbsp;', ' ', str_replace('&nbsp;', ' ', strip_tags($poi->getShortDescription())) . "\n" . $poi->getUri() . "\n");
+                    $stringResult[$i] = strtoupper($poi->getName()) . "\n" . str_replace('&nbsp;', ' ', str_replace('&nbsp;', ' ', strip_tags($poi->getShortDescription())) . "\n" . $poi->getResourceOriginUrl() . "\n");
                     $i++;
                 }
                 return $stringResult;
