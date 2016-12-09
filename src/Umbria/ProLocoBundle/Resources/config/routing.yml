@@ -37,3 +37,11 @@ umbria_pro_loco_struttura-ricettiva:
 umbria_pro_loco_homepage:
     path:     /tourism/map
     defaults: { _controller: UmbriaProLocoBundle:Default:index }
+
+umbria_pro_loco_statistiche:
+    path:     /statistiche
+    defaults: { _controller: UmbriaProLocoBundle:SUAPE:index }
+
+umbria_pro_loco_suape:
+    path:     /statistiche/SUAPE
+    defaults: { _controller: UmbriaProLocoBundle:SUAPE:index }
