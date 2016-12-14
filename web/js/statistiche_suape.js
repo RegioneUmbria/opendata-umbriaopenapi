@@ -5,38 +5,39 @@
 
 function mainDrawCharts() {
     setComuneSelectOptions();
+    //setAnnoSelectOptions();
+    //setMeseSelectOptions();
     google.charts.load('current', {'packages': ['corechart', 'controls', 'annotationchart', 'table']});
     google.charts.setOnLoadCallback(drawCharts);
 }
 
 function drawCharts(dataSelectorButtonPressed) {
+    if (document.getElementById("evaseDatasetSelector").classList.contains("btn-primary"))
+        drawEvaseCharts();
+    else if (document.getElementById("tipologieDatasetSelector").classList.contains("btn-primary"))
+        drawTipologieCharts();
+    else if (document.getElementById("categorieDatasetSelector").classList.contains("btn-primary"))
+        drawCategorieCharts();
+
+}
+
+function drawEvaseCharts() {
+    drawEvaseAnnotationAndTableCharts();
+}
+
+function drawTipologieCharts() {
+    drawTipologieAnnotationChart();
+    drawTipologiePieChart();
+}
+
+function drawCategorieCharts() {
+    drawCategorieAnnotationChart();
+    drawCategoriePieChart();
+}
+
+
+function drawEvaseAnnotationAndTableCharts() {
     var comune = $("#comuneFilter").val();
-    if (comune == null) {
-        comune = "GUBBIO";
-    }
-    if (dataSelectorButtonPressed == null || dataSelectorButtonPressed.id == 'evaseDatasetSelector')
-        drawEvaseCharts(comune);
-    else if (dataSelectorButtonPressed.id == 'tipologieDatasetSelector')
-        drawTipologieCharts(comune);
-    else if (dataSelectorButtonPressed.id == 'categorieDatasetSelector')
-        drawCategorieCharts(comune);
-
-}
-
-function drawEvaseCharts(comune) {
-    drawEvaseAnnotationAndTableCharts(comune);
-}
-
-function drawTipologieCharts(comune) {
-    drawTipologieAnnotationChart(comune);
-}
-
-function drawCategorieCharts(comune) {
-    drawCategorieAnnotationChart(comune);
-}
-
-
-function drawEvaseAnnotationAndTableCharts(comune) {
     var sparqlQuery =
         "select ?anno ?mese  (SUM(?chiuse3) AS ?chiuse) (SUM(?totali3) AS ?totali)" +
         "where {" +
@@ -118,7 +119,8 @@ function drawEvaseTableChart(data) {
     evase_chart.draw(data, evaseChartOptions);
 }
 
-function drawTipologieAnnotationChart(comune) {
+function drawTipologieAnnotationChart() {
+    var comune = $("#comuneFilter").val();
     var sparqlQueryTipologie = "select distinct ?tipologia " +
         " where{" +
         "     ?pratiche <http://purl.org/linked-data/cube#dataSet> <http://dati.umbria.it/risorsa/dataset/SUAPE/2> ." +
@@ -204,7 +206,57 @@ function drawTipologieAnnotationChart(comune) {
     }, "json");
 }
 
-function drawCategorieAnnotationChart(comune) {
+function drawTipologiePieChart() {
+    var comune = $("#comuneFilter").val();
+    var anno = $("#annoFilter").val();
+    var mese = $("#meseFilter").val();
+    var filterAnno = "";
+    var filterMese = "";
+    if (anno != "all") {
+        filterAnno = "FILTER (?anno=" + anno + ").";
+    }
+    if (mese != "all") {
+        filterMese = "FILTER regex(?mese,\"" + mese + "\", \"i\").";
+    }
+
+    var sparqlQueryTipologie = "SELECT ?tipologia (SUM(?quantita) AS ?quantita)" +
+        " WHERE{" +
+        "     ?s <http://purl.org/linked-data/cube#dataSet> <http://dati.umbria.it/risorsa/dataset/SUAPE/2> ." +
+        "     ?s <http://dati.umbria.it/risorsa/dimensione/tipologia_SUAPE> ?tipologia." +
+        "     ?s <http://dati.umbria.it/risorsa/misura/quantita> ?quantita." +
+        "     ?s <http://dati.umbria.it/risorsa/dimensione/comune> ?comune." +
+        "     FILTER regex(?comune, \"" + comune + "\", \"i\")." +
+        "     ?s <http://dati.umbria.it/risorsa/dimensione/anno> ?anno." +
+        "     " + filterAnno +
+        "     ?s <http://dati.umbria.it/risorsa/dimensione/mese> ?mese." +
+        "     " + filterMese +
+        " }" +
+        "GROUP BY ?tipologia";
+    var queryObj = {query: sparqlQueryTipologie, format: "application/sparql-results+json"};
+    $.post("http://dati.umbria.it/sparql", queryObj, function (resp, textStatus) {
+        var dataPratichePerTipologia = new google.visualization.DataTable();
+        dataPratichePerTipologia.addColumn('string', 'Tipologia');
+        dataPratichePerTipologia.addColumn('number', 'Quantità');
+        var rowsPratichePerTipologia = resp.results.bindings;
+        for (var i = 0; i < rowsPratichePerTipologia.length; i++) {
+            var row = rowsPratichePerTipologia[i];
+            var tipologiaLabel = row.tipologia.value;
+            var tipologiaQuantita = parseInt(row.quantita.value);
+            var rowArray = [tipologiaLabel, tipologiaQuantita];
+            dataPratichePerTipologia.addRow(rowArray);
+        }
+        var tipologieChartOptions = {
+            pieHole: 0.4,
+            backgroundColor: "#EEEEEE",
+        };
+        var tipologieChart = new google.visualization.PieChart(document.getElementById('chart_div_2'));
+        tipologieChart.draw(dataPratichePerTipologia, tipologieChartOptions);
+
+    }, "json");
+}
+
+function drawCategorieAnnotationChart() {
+    var comune = $("#comuneFilter").val();
     var sparqlQueryCategorie = "select distinct ?categorie" +
         " where{" +
         "     ?pratiche <http://purl.org/linked-data/cube#dataSet> <http://dati.umbria.it/risorsa/dataset/SUAPE/3> ." +
@@ -293,6 +345,55 @@ function drawCategorieAnnotationChart(comune) {
 
 }
 
+function drawCategoriePieChart() {
+    var comune = $("#comuneFilter").val();
+    var anno = $("#annoFilter").val();
+    var mese = $("#meseFilter").val();
+    var filterAnno = "";
+    var filterMese = "";
+    if (anno != "all") {
+        filterAnno = "FILTER (?anno=" + anno + ").";
+    }
+    if (mese != "all") {
+        filterMese = "FILTER regex(?mese,\"" + mese + "\", \"i\").";
+    }
+
+    var sparqlQueryCategorie = "SELECT ?categoria (SUM(?quantita) AS ?quantita)" +
+        " WHERE{" +
+        "     ?s <http://purl.org/linked-data/cube#dataSet> <http://dati.umbria.it/risorsa/dataset/SUAPE/3> ." +
+        "     ?s <http://dati.umbria.it/risorsa/dimensione/categoria_SUAPE> ?categoria." +
+        "     ?s <http://dati.umbria.it/risorsa/misura/quantita> ?quantita." +
+        "     ?s <http://dati.umbria.it/risorsa/dimensione/comune> ?comune." +
+        "     FILTER regex(?comune, \"" + comune + "\", \"i\")." +
+        "     ?s <http://dati.umbria.it/risorsa/dimensione/anno> ?anno." +
+        "     " + filterAnno +
+        "     ?s <http://dati.umbria.it/risorsa/dimensione/mese> ?mese." +
+        "     " + filterMese +
+        " }" +
+        "GROUP BY ?categoria";
+    var queryObj = {query: sparqlQueryCategorie, format: "application/sparql-results+json"};
+    $.post("http://dati.umbria.it/sparql", queryObj, function (resp, textStatus) {
+        var dataPratichePerCategoria = new google.visualization.DataTable();
+        dataPratichePerCategoria.addColumn('string', 'Categoria');
+        dataPratichePerCategoria.addColumn('number', 'Quantità');
+        var rowsPratichePerCategoria = resp.results.bindings;
+        for (var i = 0; i < rowsPratichePerCategoria.length; i++) {
+            var row = rowsPratichePerCategoria[i];
+            var categoriaLabel = row.categoria.value;
+            var categoriaQuantita = parseInt(row.quantita.value);
+            var rowArray = [categoriaLabel, categoriaQuantita];
+            dataPratichePerCategoria.addRow(rowArray);
+        }
+        var categorieChartOptions = {
+            pieHole: 0.4,
+            backgroundColor: "#EEEEEE",
+        };
+        var categorieChart = new google.visualization.PieChart(document.getElementById('chart_div_2'));
+        categorieChart.draw(dataPratichePerCategoria, categorieChartOptions);
+
+    }, "json");
+}
+
 
 /*Return SPARQL bindings to long value 0 for all properties in "properties" except the property at position "j"*/
 function getBindings(properties, j) {
@@ -318,11 +419,92 @@ function setComuneSelectOptions() {
     });
 }
 
+function setAnnoSelectOptions() {
+    $("#annoFilter").html("<option value=\"all\" selected>Tutti</option>");
+    var datasetId;
+    if (document.getElementById("tipologieDatasetSelector").classList.contains("btn-primary")) {
+        datasetId = "2";
+    }
+    else if (document.getElementById("categorieDatasetSelector").classList.contains("btn-primary")) {
+        datasetId = "3";
+    }
+    else {
+        return;
+    }
+    var comune = $("#comuneFilter").val();
+    var sparqlQuery = "SELECT DISTINCT ?anno" +
+        " WHERE{" +
+        "     ?s <http://purl.org/linked-data/cube#dataSet> <http://dati.umbria.it/risorsa/dataset/SUAPE/" + datasetId + "> ." +
+        "     ?s <http://dati.umbria.it/risorsa/dimensione/comune> ?comune." +
+        "     FILTER regex(?comune, \"" + comune + "\", \"i\")." +
+        "     ?s <http://dati.umbria.it/risorsa/dimensione/anno> ?anno." +
+        "}" +
+        "ORDER BY ?anno";
+    var queryObj = {query: sparqlQuery, format: "application/sparql-results+json"};
+    $.post("http://dati.umbria.it/sparql", queryObj, function (resp, textStatus) {
+        var rows = resp.results.bindings;
+        for (var i = 0; i < rows.length; i++) {
+            var row = rows[i];
+            var anno = row.anno.value;
+            if (anno != '2105') {
+                $("#annoFilter").html($("#annoFilter").html() + " <option value=\"" + anno + "\">" + anno + "</option>");
+            }
+        }
+    }, "json");
+}
+
+function setMeseSelectOptions() {
+    $("#meseFilter").html("<option value=\"all\" selected>Tutti</option>");
+    var datasetId;
+    if (document.getElementById("tipologieDatasetSelector").classList.contains("btn-primary")) {
+        datasetId = "2";
+    }
+    else if (document.getElementById("categorieDatasetSelector").classList.contains("btn-primary")) {
+        datasetId = "3";
+    }
+    else {
+        return;
+    }
+    var comune = $("#comuneFilter").val();
+    var sparqlQuery = "SELECT DISTINCT ?mese" +
+        " WHERE{" +
+        "     ?s <http://purl.org/linked-data/cube#dataSet> <http://dati.umbria.it/risorsa/dataset/SUAPE/" + datasetId + "> ." +
+        "     ?s <http://dati.umbria.it/risorsa/dimensione/comune> ?comune." +
+        "     FILTER regex(?comune, \"" + comune + "\", \"i\")." +
+        "     ?s <http://dati.umbria.it/risorsa/dimensione/mese> ?mese." +
+        "}" +
+        "ORDER BY ?mese";
+    var queryObj = {query: sparqlQuery, format: "application/sparql-results+json"};
+    $.post("http://dati.umbria.it/sparql", queryObj, function (resp, textStatus) {
+        var rows = resp.results.bindings;
+        for (var i = 0; i < rows.length; i++) {
+            var row = rows[i];
+            var anno = row.mese.value;
+            $("#meseFilter").html($("#meseFilter").html() + " <option value=\"" + anno + "\">" + anno + "</option>");
+        }
+    }, "json");
+}
+
 
 function datasetSelectorChange(buttonPressed) {
     datasetSelectorChangeColor(buttonPressed);
     changeChartDescription(buttonPressed);
-    drawCharts(buttonPressed);
+    showCorrectFilters(buttonPressed);
+    drawCharts();
+}
+
+function showCorrectFilters(buttonPressed) {
+    var buttonId = buttonPressed.id;
+    if (buttonId == 'tipologieDatasetSelector' || buttonId == 'categorieDatasetSelector') {
+        $('#annoFilter').css('visibility', 'visible');
+        $('#meseFilter').css('visibility', 'visible');
+        setAnnoSelectOptions();
+        setMeseSelectOptions();
+    }
+    else {
+        $('#annoFilter').css('visibility', 'hidden');
+        $('#meseFilter').css('visibility', 'hidden');
+    }
 }
 
 function datasetSelectorChangeColor(buttonPressed) {
@@ -349,24 +531,3 @@ function changeChartDescription(buttonPressed) {
     }
 }
 
-function showCurrentDatasetChart(buttonPressed) {
-    $('#chart_evase_div').css('visibility', 'hidden');
-    $('#chart_evase_div').css('height', 0);
-    $('#chart_tipologie_div').css('visibility', 'hidden');
-    $('#chart_tipologie_div').css('height', 0);
-    $('#chart_categorie_div').css('visibility', 'hidden');
-    $('#chart_categorie_div').css('height', 0);
-    var buttonId = buttonPressed.id;
-    if (buttonId == 'tipologieDatasetSelector') {
-        $('#chart_tipologie_div').css('height', 300);
-        $('#chart_tipologie_div').css('visibility', 'visible');
-    }
-    else if (buttonId == 'categorieDatasetSelector') {
-        $('#chart_categorie_div').css('height', 300);
-        $('#chart_categorie_div').css('visibility', 'visible');
-    }
-    else {
-        $('#chart_evase_div').css('height', 300);
-        $('#chart_evase_div').css('visibility', 'visible');
-    }
-}
