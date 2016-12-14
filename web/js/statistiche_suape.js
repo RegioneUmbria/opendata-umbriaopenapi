@@ -86,7 +86,7 @@ function drawEvaseAnnotationAndTableCharts() {
                 var mese = row.mese.value;
                 var chiuse = parseInt(row.chiuse.value);
                 var totali = parseInt(row.totali.value);
-                var date = new Date(anno, new Date(Date.parse(mese + " 1, 2012")).getMonth() + 1);
+                var date = new Date(anno, new Date(Date.parse(mese + " 1, 2012")).getMonth());
 
                 data.addRows([
                     [date, chiuse, totali]
@@ -184,7 +184,7 @@ function drawTipologieAnnotationChart() {
             var rowsPratichePerTipologia = resp2.results.bindings;
             for (var i = 0; i < rowsPratichePerTipologia.length; i++) {
                 var row = rowsPratichePerTipologia[i];
-                var date = new Date(row.anno.value, new Date(Date.parse(row.mese.value + " 1, 2012")).getMonth() + 1);
+                var date = new Date(row.anno.value, new Date(Date.parse(row.mese.value + " 1, 2012")).getMonth());
                 var rowArray = Object.keys(row).map(function (key) {
                     return parseInt(row[key].value);
                 });
@@ -248,6 +248,7 @@ function drawTipologiePieChart() {
         var tipologieChartOptions = {
             pieHole: 0.4,
             backgroundColor: "#EEEEEE",
+            chartArea: {left: 250}
         };
         var tipologieChart = new google.visualization.PieChart(document.getElementById('chart_div_2'));
         tipologieChart.draw(dataPratichePerTipologia, tipologieChartOptions);
@@ -323,7 +324,7 @@ function drawCategorieAnnotationChart() {
             var rowsPratichePerCategoria = resp2.results.bindings;
             for (var i = 0; i < rowsPratichePerCategoria.length; i++) {
                 var row = rowsPratichePerCategoria[i];
-                var date = new Date(row.anno.value, new Date(Date.parse(row.mese.value + " 1, 2012")).getMonth() + 1);
+                var date = new Date(row.anno.value, new Date(Date.parse(row.mese.value + " 1, 2012")).getMonth());
                 var rowArray = Object.keys(row).map(function (key) {
                     return parseInt(row[key].value);
                 });
@@ -387,6 +388,7 @@ function drawCategoriePieChart() {
         var categorieChartOptions = {
             pieHole: 0.4,
             backgroundColor: "#EEEEEE",
+            chartArea: {left: 250}
         };
         var categorieChart = new google.visualization.PieChart(document.getElementById('chart_div_2'));
         categorieChart.draw(dataPratichePerCategoria, categorieChartOptions);
@@ -496,14 +498,12 @@ function datasetSelectorChange(buttonPressed) {
 function showCorrectFilters(buttonPressed) {
     var buttonId = buttonPressed.id;
     if (buttonId == 'tipologieDatasetSelector' || buttonId == 'categorieDatasetSelector') {
-        $('#annoFilter').css('visibility', 'visible');
-        $('#meseFilter').css('visibility', 'visible');
+        $('#chart2_time_filter').css('visibility', 'visible');
         setAnnoSelectOptions();
         setMeseSelectOptions();
     }
     else {
-        $('#annoFilter').css('visibility', 'hidden');
-        $('#meseFilter').css('visibility', 'hidden');
+        $('#chart2_time_filter').css('visibility', 'hidden');
     }
 }
 
