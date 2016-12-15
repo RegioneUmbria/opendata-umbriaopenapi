@@ -419,7 +419,7 @@ function getBindings(properties, j) {
 }
 
 function setComuneSelectOptions() {
-    var comuniURLQuerySPARQL = "http://dati.umbria.it/sparql?default-graph-uri=http%3A%2F%2Fdati.umbria.it%2Fgraph%2Fsuape&query=select+distinct+%3Fcomune%0D%0Awhere%7B%0D%0A%3Fs+%3Chttp%3A%2F%2Fdati.umbria.it%2Frisorsa%2Fdimensione%2Fcomune%3E+%3Fcomune.%0D%0A%7D&format=application%2Fsparql-results%2Bjson&timeout=0&debug=on";
+    var comuniURLQuerySPARQL = "https://dati.umbria.it/sparql?default-graph-uri=http%3A%2F%2Fdati.umbria.it%2Fgraph%2Fsuape&query=select+distinct+%3Fcomune%0D%0Awhere%7B%0D%0A%3Fs+%3Chttp%3A%2F%2Fdati.umbria.it%2Frisorsa%2Fdimensione%2Fcomune%3E+%3Fcomune.%0D%0A%7D&format=application%2Fsparql-results%2Bjson&timeout=0&debug=on";
     $.getJSON(comuniURLQuerySPARQL, function (resp) {
         var row = resp.results.bindings;
         $.each(row, function (key, val) {
