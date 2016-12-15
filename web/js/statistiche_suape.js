@@ -121,13 +121,16 @@ function drawEvaseTableChart(data) {
 
 function drawTipologieAnnotationChart() {
     var comune = $("#comuneFilter").val();
-    var sparqlQueryTipologie = "select distinct ?tipologia " +
-        " where{" +
+    var sparqlQueryTipologie = "SELECT ?tipologia (SUM(?quantita) AS ?quantita)" +
+        "WHERE{" +
         "     ?pratiche <http://purl.org/linked-data/cube#dataSet> <http://dati.umbria.it/risorsa/dataset/SUAPE/2> ." +
         "     ?pratiche <http://dati.umbria.it/risorsa/dimensione/tipologia_SUAPE> ?tipologia." +
+        "     ?pratiche <http://dati.umbria.it/risorsa/misura/quantita> ?quantita." +
         "     ?pratiche <http://dati.umbria.it/risorsa/dimensione/comune> ?comune." +
         "     FILTER regex(?comune, \"" + comune + "\", \"i\")." +
-        "}";
+        "}" +
+        "GROUP BY ?tipologia " +
+        "ORDER BY DESC (?quantita) ";
     var queryObj = {query: sparqlQueryTipologie, format: "application/sparql-results+json"};
     /*Get every tipologia value that is tipologia of at least one pratica of selected comune*/
     $.post("http://dati.umbria.it/sparql", queryObj, function (resp, textStatus) {
@@ -231,7 +234,8 @@ function drawTipologiePieChart() {
         "     ?s <http://dati.umbria.it/risorsa/dimensione/mese> ?mese." +
         "     " + filterMese +
         " }" +
-        "GROUP BY ?tipologia";
+        "GROUP BY ?tipologia " +
+        "ORDER BY DESC(?quantita)";
     var queryObj = {query: sparqlQueryTipologie, format: "application/sparql-results+json"};
     $.post("http://dati.umbria.it/sparql", queryObj, function (resp, textStatus) {
         var dataPratichePerTipologia = new google.visualization.DataTable();
@@ -258,13 +262,16 @@ function drawTipologiePieChart() {
 
 function drawCategorieAnnotationChart() {
     var comune = $("#comuneFilter").val();
-    var sparqlQueryCategorie = "select distinct ?categorie" +
-        " where{" +
+    var sparqlQueryCategorie = "SELECT ?categorie (SUM(?quantita) AS ?quantita)" +
+        "WHERE{" +
         "     ?pratiche <http://purl.org/linked-data/cube#dataSet> <http://dati.umbria.it/risorsa/dataset/SUAPE/3> ." +
         "     ?pratiche <http://dati.umbria.it/risorsa/dimensione/categoria_SUAPE> ?categorie." +
+        "     ?pratiche <http://dati.umbria.it/risorsa/misura/quantita> ?quantita." +
         "     ?pratiche <http://dati.umbria.it/risorsa/dimensione/comune> ?comune." +
         "     FILTER regex(?comune, \"" + comune + "\", \"i\")." +
-        "}";
+        "}" +
+        "GROUP BY ?categorie " +
+        "ORDER BY DESC (?quantita) ";
 
     var queryObj = {query: sparqlQueryCategorie, format: "application/sparql-results+json"};
     /*Get every categoria value that is categoria of at least one pratica of selected comune*/
@@ -297,7 +304,7 @@ function drawCategorieAnnotationChart() {
                 "\n ?s <http://dati.umbria.it/risorsa/dimensione/categoria_SUAPE> ?categoria. " +
                 "\n ?s <http://dati.umbria.it/risorsa/misura/quantita> ?" + categorie[i].replace(/\W/g, '') + ". " +
                 "\n FILTER regex(?comune, \"" + comune + "\", \"i\"). " +
-                "\n FILTER regex(?categoria, \"" + categorie[i].replace("(", "\\\\(").replace(")", "\\\\)") + "\", \"i\"). " +
+                "\n FILTER regex(?categoria, \"" + categorie[i].replace(new RegExp("\\(", 'g'), "\\\\(").replace(new RegExp("\\)", 'g'), "\\\\)") + "\", \"i\"). " +
                 getBindings(categorie, i) +
                 "\n} " +
                 "\n GROUP BY ?anno ?mese " +
@@ -337,7 +344,10 @@ function drawCategorieAnnotationChart() {
                 dateFormat: 'MMMM, yyyy',
                 fill: 10,
                 legendPosition: 'newRow',
-                thickness: 2
+                thickness: 2,
+                displayAnnotations: true,
+                allowHtml: true,
+                annotationsWidth: 80
             };
             var categorieChart = new google.visualization.AnnotationChart(document.getElementById('chart_div_1'));
             categorieChart.draw(dataPratichePerCategoria, categorieChartOptions);
@@ -371,7 +381,8 @@ function drawCategoriePieChart() {
         "     ?s <http://dati.umbria.it/risorsa/dimensione/mese> ?mese." +
         "     " + filterMese +
         " }" +
-        "GROUP BY ?categoria";
+        "GROUP BY ?categoria " +
+        "ORDER BY DESC (?quantita) ";
     var queryObj = {query: sparqlQueryCategorie, format: "application/sparql-results+json"};
     $.post("http://dati.umbria.it/sparql", queryObj, function (resp, textStatus) {
         var dataPratichePerCategoria = new google.visualization.DataTable();
@@ -476,13 +487,20 @@ function setMeseSelectOptions() {
         "     ?s <http://dati.umbria.it/risorsa/dimensione/mese> ?mese." +
         "}" +
         "ORDER BY ?mese";
+
     var queryObj = {query: sparqlQuery, format: "application/sparql-results+json"};
     $.post("http://dati.umbria.it/sparql", queryObj, function (resp, textStatus) {
         var rows = resp.results.bindings;
+        var months = [];
         for (var i = 0; i < rows.length; i++) {
             var row = rows[i];
-            var anno = row.mese.value;
-            $("#meseFilter").html($("#meseFilter").html() + " <option value=\"" + anno + "\">" + anno + "</option>");
+            months[i] = row.mese.value;
+        }
+        var allMonths = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+        for (var j = 0; j < 12; j++) {
+            if ($.inArray(allMonths[j], months) >= 0) {
+                $("#meseFilter").html($("#meseFilter").html() + " <option value=\"" + allMonths[j] + "\">" + allMonths[j] + "</option>");
+            }
         }
     }, "json");
 }
@@ -521,13 +539,15 @@ function changeChartDescription(buttonPressed) {
 
     var buttonId = buttonPressed.id;
     if (buttonId == 'tipologieDatasetSelector') {
-        $('#chartDescription').html("Grafico che mostra la ripartizione delle tipologie delle proposte");
+        $('#chartDescription').html("Grafici che mostrano la ripartizione delle tipologie delle proposte");
     }
     else if (buttonId == 'categorieDatasetSelector') {
-        $('#chartDescription').html("Grafico che mostra la ripartizione delle categorie delle proposte");
+        $('#chartDescription').html("Grafici che mostrano la ripartizione delle categorie delle proposte");
     }
     else {
-        $('#chartDescription').html("Grafico che mostra il rapporto tra le pratiche evase e le pratiche totali");
+        $('#chartDescription').html("Grafici che mostrano il rapporto tra le pratiche evase e le pratiche totali");
     }
 }
+
+
 
