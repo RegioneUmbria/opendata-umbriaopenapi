@@ -45,3 +45,8 @@ umbria_pro_loco_statistiche:
 umbria_pro_loco_suape:
     path:     /statistiche/SUAPE
     defaults: { _controller: UmbriaProLocoBundle:SUAPE:index }
+
+umbria_pro_loco_suape_execute_sparql_query:
+    path:     /statistiche/SUAPE/execute_sparql_query/
+    defaults: {_controller: UmbriaProLocoBundle:SUAPE:executeSparqlQuery }
+    methods:  [POST]

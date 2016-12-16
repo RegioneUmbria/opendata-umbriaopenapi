@@ -25,9 +25,9 @@ class BaseController extends FOSRestController
      * BaseController constructor.
      * @param $em EntityManager
      */
-    public function __construct($em)
+    public function __construct($em = null)
     {
-        $this->externalResourceRepo = $em->getRepository('UmbriaOpenApiBundle:ExternalResource');
+        if ($em != null) $this->externalResourceRepo = $em->getRepository('UmbriaOpenApiBundle:ExternalResource');
     }
 
 
@@ -95,6 +95,23 @@ class BaseController extends FOSRestController
             }
         }
         return null;
+    }
+
+    public function postWebResource($url = 'null', $data)
+    {
+        $options = array(
+            'http' => array(
+                'header' => "Content-type: application/x-www-form-urlencoded\r\n",
+                'method' => 'POST',
+                'content' => http_build_query($data)
+            )
+        );
+        $context = stream_context_create($options);
+        $result = file_get_contents($url, false, $context);
+        if ($result === FALSE) {
+            return null;
+        }
+        return $result;
     }
 
     public function getWebResource($url = 'null', $writeError = true)

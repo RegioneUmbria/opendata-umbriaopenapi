@@ -5,10 +5,6 @@
 
 function mainDrawCharts() {
     setComuneSelectOptions();
-    //setAnnoSelectOptions();
-    //setMeseSelectOptions();
-    google.charts.load('current', {'packages': ['corechart', 'controls', 'annotationchart', 'table']});
-    google.charts.setOnLoadCallback(drawCharts);
 }
 
 function drawCharts(dataSelectorButtonPressed) {
@@ -72,13 +68,14 @@ function drawEvaseAnnotationAndTableCharts() {
         " GROUP BY ?anno ?mese" +
         " ORDER BY  ?anno ?mese";
 
-    var queryObj = {query: sparqlQuery, format: "application/sparql-results+json"};
-    $.post("https://dati.umbria.it/sparql", queryObj, function (resp, textStatus) {
+    var queryObj = {query: sparqlQuery};
+    var url = "http://".concat(window.location.hostname.concat("/umbriaopenapi/web/open-api/example/statistiche/SUAPE/execute_sparql_query/"));
+    $.post(url, queryObj, function (resp, textStatus) {
         var data = new google.visualization.DataTable();
         data.addColumn('date', 'Data');
         data.addColumn('number', 'Chiuse positivamente');
         data.addColumn('number', 'Totali');
-        var rows = resp.results.bindings;
+        var rows = JSON.parse(resp.data).results.bindings;
         for (var i = 0; i < rows.length; i++) {
             var row = rows[i];
             var anno = row.anno.value;
@@ -131,10 +128,12 @@ function drawTipologieAnnotationChart() {
         "}" +
         "GROUP BY ?tipologia " +
         "ORDER BY DESC (?quantita) ";
-    var queryObj = {query: sparqlQueryTipologie, format: "application/sparql-results+json"};
+
+    var queryObj = {query: sparqlQueryTipologie};
+    var url = "http://".concat(window.location.hostname.concat("/umbriaopenapi/web/open-api/example/statistiche/SUAPE/execute_sparql_query/"));
     /*Get every tipologia value that is tipologia of at least one pratica of selected comune*/
-    $.post("https://dati.umbria.it/sparql", queryObj, function (resp, textStatus) {
-        var tipologieArray = resp.results.bindings;
+    $.post(url, queryObj, function (resp, textStatus) {
+        var tipologieArray = JSON.parse(resp.data).results.bindings;
         var select1 = "";
         var selectSubquery = "";
         var tipologie = [];
@@ -177,14 +176,15 @@ function drawTipologieAnnotationChart() {
             "\n WHERE{\n" + allSubqueries + "}" +
             "\n GROUP BY ?anno ?mese" +
             "\n ORDER BY ?anno ?mese";
-        var queryObj = {query: sparqlQuery, format: "application/sparql-results+json"};
-        $.post("https://dati.umbria.it/sparql", queryObj, function (resp2, textStatus) {
+        var queryObj = {query: sparqlQuery};
+        var url = "http://".concat(window.location.hostname.concat("/umbriaopenapi/web/open-api/example/statistiche/SUAPE/execute_sparql_query/"));
+        $.post(url, queryObj, function (resp2, textStatus) {
             var dataPratichePerTipologia = new google.visualization.DataTable();
             dataPratichePerTipologia.addColumn('date', 'Data');
             for (var j = 0; j < tipologie.length; j++) {
                 dataPratichePerTipologia.addColumn('number', tipologie[j]);
             }
-            var rowsPratichePerTipologia = resp2.results.bindings;
+            var rowsPratichePerTipologia = JSON.parse(resp2.data).results.bindings;
             for (var i = 0; i < rowsPratichePerTipologia.length; i++) {
                 var row = rowsPratichePerTipologia[i];
                 var date = new Date(row.anno.value, new Date(Date.parse(row.mese.value + " 1, 2012")).getMonth());
@@ -236,12 +236,13 @@ function drawTipologiePieChart() {
         " }" +
         "GROUP BY ?tipologia " +
         "ORDER BY DESC(?quantita)";
-    var queryObj = {query: sparqlQueryTipologie, format: "application/sparql-results+json"};
-    $.post("https://dati.umbria.it/sparql", queryObj, function (resp, textStatus) {
+    var queryObj = {query: sparqlQueryTipologie};
+    var url = "http://".concat(window.location.hostname.concat("/umbriaopenapi/web/open-api/example/statistiche/SUAPE/execute_sparql_query/"));
+    $.post(url, queryObj, function (resp, textStatus) {
         var dataPratichePerTipologia = new google.visualization.DataTable();
         dataPratichePerTipologia.addColumn('string', 'Tipologia');
         dataPratichePerTipologia.addColumn('number', 'Quantità');
-        var rowsPratichePerTipologia = resp.results.bindings;
+        var rowsPratichePerTipologia = JSON.parse(resp.data).results.bindings;
         for (var i = 0; i < rowsPratichePerTipologia.length; i++) {
             var row = rowsPratichePerTipologia[i];
             var tipologiaLabel = row.tipologia.value;
@@ -273,10 +274,11 @@ function drawCategorieAnnotationChart() {
         "GROUP BY ?categorie " +
         "ORDER BY DESC (?quantita) ";
 
-    var queryObj = {query: sparqlQueryCategorie, format: "application/sparql-results+json"};
+    var queryObj = {query: sparqlQueryCategorie};
+    var url = "http://".concat(window.location.hostname.concat("/umbriaopenapi/web/open-api/example/statistiche/SUAPE/execute_sparql_query/"));
     /*Get every categoria value that is categoria of at least one pratica of selected comune*/
-    $.post("https://dati.umbria.it/sparql", queryObj, function (resp, textStatus) {
-        var categorieArray = resp.results.bindings;
+    $.post(url, queryObj, function (resp, textStatus) {
+        var categorieArray = JSON.parse(resp.data).results.bindings;
         var select1 = "";
         var selectSubquery = "";
         var categorie = [];
@@ -321,14 +323,15 @@ function drawCategorieAnnotationChart() {
             "\n GROUP BY ?anno ?mese" +
             "\n ORDER BY ?anno ?mese";
 
-        var queryObj = {query: sparqlQuery, format: "application/sparql-results+json"};
-        $.post("https://dati.umbria.it/sparql", queryObj, function (resp2, textStatus) {
+        var queryObj = {query: sparqlQuery};
+        var url = "http://".concat(window.location.hostname.concat("/umbriaopenapi/web/open-api/example/statistiche/SUAPE/execute_sparql_query/"));
+        $.post(url, queryObj, function (resp2, textStatus) {
             var dataPratichePerCategoria = new google.visualization.DataTable();
             dataPratichePerCategoria.addColumn('date', 'Data');
             for (var j = 0; j < categorie.length; j++) {
                 dataPratichePerCategoria.addColumn('number', categorie[j]);
             }
-            var rowsPratichePerCategoria = resp2.results.bindings;
+            var rowsPratichePerCategoria = JSON.parse(resp2.data).results.bindings;
             for (var i = 0; i < rowsPratichePerCategoria.length; i++) {
                 var row = rowsPratichePerCategoria[i];
                 var date = new Date(row.anno.value, new Date(Date.parse(row.mese.value + " 1, 2012")).getMonth());
@@ -383,12 +386,13 @@ function drawCategoriePieChart() {
         " }" +
         "GROUP BY ?categoria " +
         "ORDER BY DESC (?quantita) ";
-    var queryObj = {query: sparqlQueryCategorie, format: "application/sparql-results+json"};
-    $.post("https://dati.umbria.it/sparql", queryObj, function (resp, textStatus) {
+    var queryObj = {query: sparqlQueryCategorie};
+    var url = "http://".concat(window.location.hostname.concat("/umbriaopenapi/web/open-api/example/statistiche/SUAPE/execute_sparql_query/"));
+    $.post(url, queryObj, function (resp, textStatus) {
         var dataPratichePerCategoria = new google.visualization.DataTable();
         dataPratichePerCategoria.addColumn('string', 'Categoria');
         dataPratichePerCategoria.addColumn('number', 'Quantità');
-        var rowsPratichePerCategoria = resp.results.bindings;
+        var rowsPratichePerCategoria = JSON.parse(resp.data).results.bindings;
         for (var i = 0; i < rowsPratichePerCategoria.length; i++) {
             var row = rowsPratichePerCategoria[i];
             var categoriaLabel = row.categoria.value;
@@ -419,16 +423,25 @@ function getBindings(properties, j) {
 }
 
 function setComuneSelectOptions() {
-    var comuniURLQuerySPARQL = "https://dati.umbria.it/sparql?default-graph-uri=http%3A%2F%2Fdati.umbria.it%2Fgraph%2Fsuape&query=select+distinct+%3Fcomune%0D%0Awhere%7B%0D%0A%3Fs+%3Chttp%3A%2F%2Fdati.umbria.it%2Frisorsa%2Fdimensione%2Fcomune%3E+%3Fcomune.%0D%0A%7D&format=application%2Fsparql-results%2Bjson&timeout=0&debug=on";
-    $.getJSON(comuniURLQuerySPARQL, function (resp) {
-        var row = resp.results.bindings;
-        $.each(row, function (key, val) {
+    var sparqlQuery = "select distinct ?comune" +
+        " WHERE{" +
+        "     ?s <http://dati.umbria.it/risorsa/dimensione/comune> ?comune." +
+        " }" +
+        "ORDER BY  (?comune) ";
+    var queryObj = {query: sparqlQuery};
+    var url = "http://".concat(window.location.hostname.concat("/umbriaopenapi/web/open-api/example/statistiche/SUAPE/execute_sparql_query/"));
+    $.post(url, queryObj, function (resp, textStatus) {
+        var rows = JSON.parse(resp.data).results.bindings;
+        for (var i = 0; i < rows.length; i++) {
+            var row = rows[i];
             var selected = "";
-            if (val.comune.value == "GUBBIO") {
+            if (row.comune.value == "GUBBIO") {
                 selected = "selected";
             }
-            $("#comuneFilter").html($("#comuneFilter").html() + " <option value=\"" + val.comune.value + "\" " + selected + " >" + val.comune.value + "</option>");
-        });
+            $("#comuneFilter").html($("#comuneFilter").html() + " <option value=\"" + row.comune.value + "\" " + selected + " >" + row.comune.value + "</option>");
+        }
+        google.charts.load('current', {'packages': ['corechart', 'controls', 'annotationchart', 'table']});
+        google.charts.setOnLoadCallback(drawCharts);
     });
 }
 
@@ -453,9 +466,10 @@ function setAnnoSelectOptions() {
         "     ?s <http://dati.umbria.it/risorsa/dimensione/anno> ?anno." +
         "}" +
         "ORDER BY ?anno";
-    var queryObj = {query: sparqlQuery, format: "application/sparql-results+json"};
-    $.post("https://dati.umbria.it/sparql", queryObj, function (resp, textStatus) {
-        var rows = resp.results.bindings;
+    var queryObj = {query: sparqlQuery};
+    var url = "/umbriaopenapi/web/open-api/example/statistiche/SUAPE/execute_sparql_query/";
+    $.post(url, queryObj, function (resp, textStatus) {
+        var rows = JSON.parse(resp.data).results.bindings;
         for (var i = 0; i < rows.length; i++) {
             var row = rows[i];
             var anno = row.anno.value;
@@ -488,9 +502,10 @@ function setMeseSelectOptions() {
         "}" +
         "ORDER BY ?mese";
 
-    var queryObj = {query: sparqlQuery, format: "application/sparql-results+json"};
-    $.post("https://dati.umbria.it/sparql", queryObj, function (resp, textStatus) {
-        var rows = resp.results.bindings;
+    var queryObj = {query: sparqlQuery};
+    var url = "/umbriaopenapi/web/open-api/example/statistiche/SUAPE/execute_sparql_query/";
+    $.post(url, queryObj, function (resp, textStatus) {
+        var rows = JSON.parse(resp.data).results.bindings;
         var months = [];
         for (var i = 0; i < rows.length; i++) {
             var row = rows[i];
