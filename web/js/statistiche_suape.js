@@ -69,7 +69,7 @@ function drawEvaseAnnotationAndTableCharts() {
         " ORDER BY  ?anno ?mese";
 
     var queryObj = {query: sparqlQuery};
-    var url = "http://".concat(window.location.hostname.concat("/umbriaopenapi/web/open-api/example/statistiche/SUAPE/execute_sparql_query/"));
+    var url = "https://".concat(window.location.hostname.concat("/umbriaopenapi/web/open-api/example/statistiche/SUAPE/execute_sparql_query/"));
     $.post(url, queryObj, function (resp, textStatus) {
         var data = new google.visualization.DataTable();
         data.addColumn('date', 'Data');
@@ -130,7 +130,7 @@ function drawTipologieAnnotationChart() {
         "ORDER BY DESC (?quantita) ";
 
     var queryObj = {query: sparqlQueryTipologie};
-    var url = "http://".concat(window.location.hostname.concat("/umbriaopenapi/web/open-api/example/statistiche/SUAPE/execute_sparql_query/"));
+    var url = "https://".concat(window.location.hostname.concat("/umbriaopenapi/web/open-api/example/statistiche/SUAPE/execute_sparql_query/"));
     /*Get every tipologia value that is tipologia of at least one pratica of selected comune*/
     $.post(url, queryObj, function (resp, textStatus) {
         var tipologieArray = JSON.parse(resp.data).results.bindings;
@@ -177,7 +177,7 @@ function drawTipologieAnnotationChart() {
             "\n GROUP BY ?anno ?mese" +
             "\n ORDER BY ?anno ?mese";
         var queryObj = {query: sparqlQuery};
-        var url = "http://".concat(window.location.hostname.concat("/umbriaopenapi/web/open-api/example/statistiche/SUAPE/execute_sparql_query/"));
+        var url = "https://".concat(window.location.hostname.concat("/umbriaopenapi/web/open-api/example/statistiche/SUAPE/execute_sparql_query/"));
         $.post(url, queryObj, function (resp2, textStatus) {
             var dataPratichePerTipologia = new google.visualization.DataTable();
             dataPratichePerTipologia.addColumn('date', 'Data');
@@ -237,7 +237,7 @@ function drawTipologiePieChart() {
         "GROUP BY ?tipologia " +
         "ORDER BY DESC(?quantita)";
     var queryObj = {query: sparqlQueryTipologie};
-    var url = "http://".concat(window.location.hostname.concat("/umbriaopenapi/web/open-api/example/statistiche/SUAPE/execute_sparql_query/"));
+    var url = "https://".concat(window.location.hostname.concat("/umbriaopenapi/web/open-api/example/statistiche/SUAPE/execute_sparql_query/"));
     $.post(url, queryObj, function (resp, textStatus) {
         var dataPratichePerTipologia = new google.visualization.DataTable();
         dataPratichePerTipologia.addColumn('string', 'Tipologia');
@@ -275,7 +275,7 @@ function drawCategorieAnnotationChart() {
         "ORDER BY DESC (?quantita) ";
 
     var queryObj = {query: sparqlQueryCategorie};
-    var url = "http://".concat(window.location.hostname.concat("/umbriaopenapi/web/open-api/example/statistiche/SUAPE/execute_sparql_query/"));
+    var url = "https://".concat(window.location.hostname.concat("/umbriaopenapi/web/open-api/example/statistiche/SUAPE/execute_sparql_query/"));
     /*Get every categoria value that is categoria of at least one pratica of selected comune*/
     $.post(url, queryObj, function (resp, textStatus) {
         var categorieArray = JSON.parse(resp.data).results.bindings;
@@ -324,7 +324,7 @@ function drawCategorieAnnotationChart() {
             "\n ORDER BY ?anno ?mese";
 
         var queryObj = {query: sparqlQuery};
-        var url = "http://".concat(window.location.hostname.concat("/umbriaopenapi/web/open-api/example/statistiche/SUAPE/execute_sparql_query/"));
+        var url = "https://".concat(window.location.hostname.concat("/umbriaopenapi/web/open-api/example/statistiche/SUAPE/execute_sparql_query/"));
         $.post(url, queryObj, function (resp2, textStatus) {
             var dataPratichePerCategoria = new google.visualization.DataTable();
             dataPratichePerCategoria.addColumn('date', 'Data');
@@ -387,7 +387,7 @@ function drawCategoriePieChart() {
         "GROUP BY ?categoria " +
         "ORDER BY DESC (?quantita) ";
     var queryObj = {query: sparqlQueryCategorie};
-    var url = "http://".concat(window.location.hostname.concat("/umbriaopenapi/web/open-api/example/statistiche/SUAPE/execute_sparql_query/"));
+    var url = "https://".concat(window.location.hostname.concat("/umbriaopenapi/web/open-api/example/statistiche/SUAPE/execute_sparql_query/"));
     $.post(url, queryObj, function (resp, textStatus) {
         var dataPratichePerCategoria = new google.visualization.DataTable();
         dataPratichePerCategoria.addColumn('string', 'Categoria');
@@ -429,7 +429,7 @@ function setComuneSelectOptions() {
         " }" +
         "ORDER BY  (?comune) ";
     var queryObj = {query: sparqlQuery};
-    var url = "http://".concat(window.location.hostname.concat("/umbriaopenapi/web/open-api/example/statistiche/SUAPE/execute_sparql_query/"));
+    var url = "https://".concat(window.location.hostname.concat("/umbriaopenapi/web/open-api/example/statistiche/SUAPE/execute_sparql_query/"));
     $.post(url, queryObj, function (resp, textStatus) {
         var rows = JSON.parse(resp.data).results.bindings;
         for (var i = 0; i < rows.length; i++) {
