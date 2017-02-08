@@ -46,7 +46,7 @@ class UpdateReceiver implements UpdateReceiverInterface
                 AND ($longitude >= 11.88 AND $longitude <= 13.25)
             ) {
 
-                $this->telegramBotApi->sendMessage($message['chat']['id'], "Vicino a te puoi trovare questa proposta d'evento:");
+                $this->telegramBotApi->sendMessage($message['chat']['id'], "Vicino a te puoi trovare questa proposta di visita:");
                 $arrayOfMessages = $this->executeProposalQuery($latitude, $longitude, 10);
                 for ($i = 0; $i < count($arrayOfMessages); $i++) {
                     $this->telegramBotApi->sendMessage($message['chat']['id'], $arrayOfMessages[$i]);
