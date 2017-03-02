@@ -138,21 +138,19 @@ class EventController extends BaseController
             $diff = $setting->getUpdatedAt()->diff(new DateTime('now'));
             // controllo intervallo di tempo da ultima estrazione
             if ($diff->days >= $daysToOld) {
+                $this->updateEntities();
                 $setting->setDatasetName(self::DATASET_TOURISM_EVENT);
                 $setting->setUpdatedAtValue();
                 $this->em->persist($setting);
                 $this->em->flush();
-
-                $this->updateEntities();
             }
         } else {
+            $this->updateEntities();
             $setting = new Setting();
             $setting->setDatasetName(self::DATASET_TOURISM_EVENT);
             $setting->setUpdatedAtValue();
             $this->em->persist($setting);
             $this->em->flush();
-
-            $this->updateEntities();
         }
 
         $qb = $this->em->createQueryBuilder();

@@ -126,21 +126,19 @@ class TravelAgencyController extends BaseController
         if ($setting != null) {
             $diff = $setting->getUpdatedAt()->diff(new DateTime('now'));
             if ($diff->days >= $daysToOld) {
+                $this->updateEntities();
                 $setting->setDatasetName(self::DATASET_TOURISM_TRAVEL_AGENCY);
                 $setting->setUpdatedAtValue();
                 $this->em->persist($setting);
                 $this->em->flush();
-
-                $this->updateEntities();
             }
         } else {
+            $this->updateEntities();
             $setting = new Setting();
             $setting->setDatasetName(self::DATASET_TOURISM_TRAVEL_AGENCY);
             $setting->setUpdatedAtValue();
             $this->em->persist($setting);
             $this->em->flush();
-
-            $this->updateEntities();
         }
 
         $builder = $this->em->createQueryBuilder()

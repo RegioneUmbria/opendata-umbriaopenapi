@@ -21,7 +21,6 @@ use Umbria\OpenApiBundle\Entity\Tourism\GraphsEntities\Profession;
 use Umbria\OpenApiBundle\Entity\Tourism\Setting;
 use Umbria\OpenApiBundle\Repository\Tourism\GraphsEntities\ProfessionRepository;
 use Umbria\OpenApiBundle\Serializer\View\EntityResponse;
-use Umbria\OpenApiBundle\Service\TourismEntityUpdater;
 use Umbria\OpenApiBundle\Service\FilterBag;
 
 /**
@@ -125,21 +124,19 @@ class ProfessionController extends BaseController
         if ($setting != null) {
             $diff = $setting->getUpdatedAt()->diff(new DateTime('now'));
             if ($diff->days >= $daysToOld) {
+                $this->updateEntities();
                 $setting->setDatasetName(self::DATASET_TOURISM_PROFESSION);
                 $setting->setUpdatedAtValue();
                 $this->em->persist($setting);
                 $this->em->flush();
-
-                $this->updateEntities();
             }
         } else {
+            $this->updateEntities();
             $setting = new Setting();
             $setting->setDatasetName(self::DATASET_TOURISM_PROFESSION);
             $setting->setUpdatedAtValue();
             $this->em->persist($setting);
             $this->em->flush();
-
-            $this->updateEntities();
         }
 
         $builder = $this->em->createQueryBuilder()

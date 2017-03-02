@@ -124,21 +124,19 @@ class IatController extends BaseController
             $diff = $setting->getUpdatedAt()->diff(new DateTime('now'));
             // controllo intervallo di tempo da ultima estrazione
             if ($diff->days >= $daysToOld) {
+                $this->updateEntities();
                 $setting->setDatasetName(self::DATASET_TOURISM_IAT);
                 $setting->setUpdatedAtValue();
                 $this->em->persist($setting);
                 $this->em->flush();
-
-                $this->updateEntities();
             }
         } else {
+            $this->updateEntities();
             $setting = new Setting();
             $setting->setDatasetName(self::DATASET_TOURISM_IAT);
             $setting->setUpdatedAtValue();
             $this->em->persist($setting);
             $this->em->flush();
-
-            $this->updateEntities();
         }
 
         $builder = $this->em->createQueryBuilder()
