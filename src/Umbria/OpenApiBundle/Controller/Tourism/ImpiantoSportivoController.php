@@ -138,22 +138,54 @@ class ImpiantoSportivoController
 
         /** @var Setting $setting */
         $setting = $this->settingsRepo->findOneBy(array('datasetName' => self::DATASET_TOURISM_IMPIANTI_SPORTIVI));
+        $logger = $this->get('logger');
+
         if ($setting != null) {
-            $diff = $setting->getUpdatedAt()->diff(new DateTime('now'));
+            $now = new DateTime('now');
+            $diff = $setting->getUpdateStartAt()->diff($now);
             if ($diff->days >= $daysToOld) {
-                $this->updateEntities();
-                $setting->setDatasetName(self::DATASET_TOURISM_IMPIANTI_SPORTIVI);
-                $setting->setUpdatedAtValue();
-                $this->em->persist($setting);
-                $this->em->flush();
+                $this->em->getConnection()->beginTransaction();
+                try {
+                    $setting->setDatasetName(self::DATASET_TOURISM_IMPIANTI_SPORTIVI);
+
+                    $setting->setUpdateStartAt(new \DateTime());
+                    $this->em->persist($setting);
+                    $this->em->flush();
+                    $logger->info("Attractor update start");
+
+                    $this->updateEntities();
+
+                    $setting->setUpdatedAt(new \DateTime());
+                    $this->em->persist($setting);
+                    $this->em->flush();
+                    $logger->info("Attractor update end");
+                } catch (\Exception $e) {
+                    $logger->error('Attractor update failed with error: ' . $e->getMessage());
+                    $this->em->getConnection()->rollBack();
+                }
             }
         } else {
-            $this->updateEntities();
-            $setting = new Setting();
-            $setting->setDatasetName(self::DATASET_TOURISM_IMPIANTI_SPORTIVI);
-            $setting->setUpdatedAtValue();
-            $this->em->persist($setting);
-            $this->em->flush();
+            $this->em->getConnection()->beginTransaction();
+            try {
+                $setting = new Setting();
+                $setting->setDatasetName(self::DATASET_TOURISM_);
+
+                $setting->setUpdateStartAt(new \DateTime());
+                $this->em->persist($setting);
+                $this->em->flush();
+                $logger->info("Impianti sportivi update start");
+
+
+                $this->updateEntities();
+
+                $setting->setUpdatedAt(new \DateTime());
+                $this->em->persist($setting);
+                $this->em->flush();
+                $logger->info("Impianti sportivi update end");
+            } catch (\Exception $e) {
+                $logger->error('Impianti sportivi update failed with error: ' . $e->getMessage());
+                $this->em->getConnection()->rollBack();
+            }
         }
         $qb = $this->em->createQueryBuilder();
         $builder = $qb
@@ -268,6 +300,7 @@ class ImpiantoSportivoController
             }
 
         }
+
         $now = new \DateTime();
         $this->deleteOldEntities($now);
     }
@@ -357,14 +390,13 @@ class ImpiantoSportivoController
             if (!$isAlreadyPersisted) {
                 $this->em->persist($newImpiantoSportivo);
             }
-
             $this->em->flush();
         }
     }
 
     private function deleteOldEntities($olderThan)
     {
-        $this->impiantoSportivoRepo->removeLastUpdatedBefore($olderThan);
+        $this->impiantoSportivoRepo->removeLastUpdatedBefore($olderThan, $this->em);
 
     }
 

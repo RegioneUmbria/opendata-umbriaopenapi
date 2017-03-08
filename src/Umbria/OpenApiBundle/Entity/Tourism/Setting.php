@@ -30,19 +30,17 @@ class Setting
     /**
      * @var \DateTime
      *
-     * @ORM\Column(name="updated_at", type="datetime")
+     * @ORM\Column(name="update_start_at", type="datetime", nullable=true)
+     */
+    private $updateStartAt;
+
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="updated_at", type="datetime", nullable=true)
      */
     private $updatedAt;
 
-    /********** Callback **/
-    /**
-     * @ORM\PrePersist
-     * @ORM\PreUpdate
-     */
-    public function setUpdatedAtValue()
-    {
-        $this->updatedAt = new \DateTime('now');
-    }
 
     /**
      * Get id.
@@ -101,4 +99,22 @@ class Setting
     {
         return $this->updatedAt;
     }
+
+    /**
+     * @return \DateTime
+     */
+    public function getUpdateStartAt()
+    {
+        return $this->updateStartAt;
+    }
+
+    /**
+     * @param \DateTime $updateStartAt
+     */
+    public function setUpdateStartAt($updateStartAt)
+    {
+        $this->updateStartAt = $updateStartAt;
+    }
+
+
 }

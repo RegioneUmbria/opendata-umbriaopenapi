@@ -9,7 +9,6 @@ use EasyRdf_Literal;
 use EasyRdf_Resource;
 use Exception;
 use FOS\RestBundle\Controller\Annotations as Rest;
-use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\View\View;
 use JMS\DiExtraBundle\Annotation as DI;
 use Knp\Component\Pager\Pagination\AbstractPagination;
@@ -123,22 +122,54 @@ class ProposalController extends BaseController
 
         /** @var Setting $setting */
         $setting = $this->settingsRepo->findOneBy(array('datasetName' => self::DATASET_TOURISM_PROPOSAL));
+        $logger = $this->get('logger');
+
         if ($setting != null) {
-            $diff = $setting->getUpdatedAt()->diff(new DateTime('now'));
+            $now = new DateTime('now');
+            $diff = $setting->getUpdateStartAt()->diff($now);
             if ($diff->days >= $daysToOld) {
-                $this->updateEntities();
-                $setting->setDatasetName(self::DATASET_TOURISM_PROPOSAL);
-                $setting->setUpdatedAtValue();
-                $this->em->persist($setting);
-                $this->em->flush();
+                $this->em->getConnection()->beginTransaction();
+                try {
+                    $setting->setDatasetName(self::DATASET_TOURISM_PROPOSAL);
+
+                    $setting->setUpdateStartAt(new \DateTime());
+                    $this->em->persist($setting);
+                    $this->em->flush();
+                    $logger->info("Proposal update start");
+
+                    $this->updateEntities();
+
+                    $setting->setUpdatedAt(new \DateTime());
+                    $this->em->persist($setting);
+                    $this->em->flush();
+                    $logger->info("Proposal update end");
+                } catch (\Exception $e) {
+                    $logger->error('Proposal update failed with error: ' . $e->getMessage());
+                    $this->em->getConnection()->rollBack();
+                }
             }
         } else {
-            $this->updateEntities();
-            $setting = new Setting();
-            $setting->setDatasetName(self::DATASET_TOURISM_PROPOSAL);
-            $setting->setUpdatedAtValue();
-            $this->em->persist($setting);
-            $this->em->flush();
+            $this->em->getConnection()->beginTransaction();
+            try {
+                $setting = new Setting();
+                $setting->setDatasetName(self::DATASET_TOURISM_PROPOSAL);
+
+                $setting->setUpdateStartAt(new \DateTime());
+                $this->em->persist($setting);
+                $this->em->flush();
+                $logger->info("Proposal update start");
+
+
+                $this->updateEntities();
+
+                $setting->setUpdatedAt(new \DateTime());
+                $this->em->persist($setting);
+                $this->em->flush();
+                $logger->info("Proposal update end");
+            } catch (\Exception $e) {
+                $logger->error('Proposal update failed with error: ' . $e->getMessage());
+                $this->em->getConnection()->rollBack();
+            }
         }
 
         $builder = $this->em->createQueryBuilder()
@@ -172,6 +203,7 @@ class ProposalController extends BaseController
             }
 
         }
+
         $now = new \DateTime();
         $this->deleteOldEntities($now);
     }
@@ -325,49 +357,15 @@ class ProposalController extends BaseController
             if (!$isAlreadyPersisted) {
                 $this->em->persist($newProposal);
             }
-
             $this->em->flush();
         }
     }
 
     private function deleteOldEntities($olderThan)
     {
-        $this->proposalRepo->removeLastUpdatedBefore($olderThan);
+        $this->proposalRepo->removeLastUpdatedBefore($olderThan, $this->em);
 
     }
 
-    public function getWebResource($url = 'null', $writeError = true)
-    {
-        $ch = curl_init();
-        try {
-            if (false === $ch) {
-                throw new Exception('failed to initialize');
-            }
 
-            curl_setopt($ch, CURLOPT_URL, $url);
-            curl_setopt($ch, CURLOPT_HEADER, 0);
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-            curl_setopt($ch, CURLOPT_TIMEOUT, 10);
-            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-            $content = curl_exec($ch);
-            curl_close($ch);
-
-            if (false === $content) {
-                throw new Exception(curl_error($ch), curl_errno($ch));
-            }
-
-            return $content;
-        } catch (Exception $e) {
-            if ($writeError == true) {
-                trigger_error(sprintf(
-                    'Curl failed with error #%d: %s, URL: %s',
-                    $e->getCode(), $e->getMessage(), $url),
-                    E_USER_ERROR);
-            } else {
-                throw new Exception(curl_error($ch), curl_errno($ch));
-            }
-        }
-
-        return;
-    }
 }

@@ -17,15 +17,19 @@ class ProposalRepository extends EntityRepository
 
     /**
      * @param $date \DateTime
+     * @param null $em
      */
-    public function removeLastUpdatedBefore($date)
+    public function removeLastUpdatedBefore($date, $em = null)
     {
         $criteria = new Criteria();
         $criteria->where($criteria->expr()->lt('lastUpdateAt', $date));
         foreach ($this->matching($criteria) as $proposal) {
             $this->getEntityManager()->remove($proposal);
         }
-        $this->getEntityManager()->flush();
+        if ($em == null) {
+            $em = $this->getEntityManager();
+        }
+        $em->flush();
     }
 
     public function findById($id)

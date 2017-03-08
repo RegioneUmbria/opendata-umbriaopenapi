@@ -120,23 +120,56 @@ class IatController extends BaseController
 
         /** @var Setting $setting */
         $setting = $this->settingsRepo->findOneBy(array('datasetName' => self::DATASET_TOURISM_IAT));
+
+        $logger = $this->get('logger');
+
         if ($setting != null) {
-            $diff = $setting->getUpdatedAt()->diff(new DateTime('now'));
+            $diff = $setting->getUpdateStartAt()->diff(new DateTime('now'));
             // controllo intervallo di tempo da ultima estrazione
             if ($diff->days >= $daysToOld) {
-                $this->updateEntities();
-                $setting->setDatasetName(self::DATASET_TOURISM_IAT);
-                $setting->setUpdatedAtValue();
-                $this->em->persist($setting);
-                $this->em->flush();
+                $this->em->getConnection()->beginTransaction();
+                try {
+                    $setting->setDatasetName(self::DATASET_TOURISM_IAT);
+
+                    $setting->setUpdateStartAt(new \DateTime());
+                    $this->em->persist($setting);
+                    $this->em->flush();
+                    $logger->info('Iat update start at ' . $setting->getUpdateStartAt()->format("d/m/Y H:i:s") . "\n");
+
+                    $this->updateEntities();
+
+                    $setting->setUpdatedAt(new \DateTime());
+                    $this->em->persist($setting);
+                    $this->em->flush();
+                    $logger->info('Iat update end at ' . $setting->getUpdatedAt()->format("d/m/Y H:i:s") . "\n");
+                } catch (\Exception $e) {
+                    $logger->error('Iat update failed with error: ' . $e->getMessage() . "\n");
+                    $this->em->getConnection()->rollBack();
+                }
             }
         } else {
-            $this->updateEntities();
-            $setting = new Setting();
-            $setting->setDatasetName(self::DATASET_TOURISM_IAT);
-            $setting->setUpdatedAtValue();
-            $this->em->persist($setting);
-            $this->em->flush();
+            $this->em->getConnection()->beginTransaction();
+            try {
+                $setting = new Setting();
+                $setting->setDatasetName(self::DATASET_TOURISM_IAT);
+
+                $setting->setUpdateStartAt(new \DateTime());
+                $this->em->persist($setting);
+                $this->em->flush();
+                $logger->info('Iat update start at ' . $setting->getUpdateStartAt()->format("d/m/Y H:i:s") . "\n");
+
+
+                $this->updateEntities();
+
+                $setting->setUpdatedAt(new \DateTime());
+                $this->em->persist($setting);
+                $this->em->flush();
+                $this->em->commit();
+                $logger->info('Iat update end at ' . $setting->getUpdatedAt()->format("d/m/Y H:i:s") . "\n");
+            } catch (\Exception $e) {
+                $logger->error('Iat update failed with error: ' . $e->getMessage() . "\n");
+                $this->em->getConnection()->rollBack();
+            }
         }
 
         $builder = $this->em->createQueryBuilder()
@@ -298,14 +331,13 @@ class IatController extends BaseController
             if (!$isAlreadyPersisted) {
                 $this->em->persist($newIat);
             }
-
             $this->em->flush();
         }
     }
 
     private function deleteOldEntities($olderThan)
     {
-        $this->iatRepo->removeLastUpdatedBefore($olderThan);
+        $this->iatRepo->removeLastUpdatedBefore($olderThan, $this->em);
 
     }
 
