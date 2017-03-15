@@ -11,8 +11,8 @@ use Umbria\OpenApiBundle\Entity\Tourism\GraphsEntities\Attractor;
 use Umbria\OpenApiBundle\Entity\Tourism\GraphsEntities\Consortium;
 use Umbria\OpenApiBundle\Entity\Tourism\GraphsEntities\Event;
 use Umbria\OpenApiBundle\Entity\Tourism\GraphsEntities\Iat;
-use Umbria\OpenApiBundle\Entity\Tourism\GraphsEntities\ImpiantoSportivo;
-use Umbria\OpenApiBundle\Entity\Tourism\GraphsEntities\StrutturaRicettiva;
+use Umbria\OpenApiBundle\Entity\Tourism\GraphsEntities\SportFacility;
+use Umbria\OpenApiBundle\Entity\Tourism\GraphsEntities\Accomodation;
 use Umbria\OpenApiBundle\Entity\Tourism\PlaceItem\PlaceDetails;
 use Umbria\OpenApiBundle\Entity\Tourism\GraphsEntities\Profession;
 use Umbria\OpenApiBundle\Entity\Tourism\GraphsEntities\Proposal;
@@ -217,7 +217,7 @@ class DefaultController extends Controller
                 }
             }
         }
-        /** @var ImpiantoSportivo $impiantoSportivo */
+        /** @var SportFacility $impiantoSportivo */
         foreach ($this->impiantoSportivoRepo->findAll() as $impiantoSportivo) {
             if (isset($impiantoSportivo)) {
                 $place = new PlaceDetails();
@@ -242,7 +242,7 @@ class DefaultController extends Controller
                 }
             }
         }
-        /** @var StrutturaRicettiva $strutturaRicettiva */
+        /** @var Accomodation $strutturaRicettiva */
         foreach ($this->strutturaRicettivaRepo->findAll() as $strutturaRicettiva) {
             if (isset($strutturaRicettiva)) {
                 $place = new PlaceDetails();

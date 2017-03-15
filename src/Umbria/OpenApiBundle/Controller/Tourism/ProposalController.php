@@ -2,12 +2,7 @@
 
 namespace Umbria\OpenApiBundle\Controller\Tourism;
 
-use DateTime;
 use Doctrine\ORM\EntityManager;
-use EasyRdf_Graph;
-use EasyRdf_Literal;
-use EasyRdf_Resource;
-use Exception;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\View\View;
 use JMS\DiExtraBundle\Annotation as DI;
@@ -16,10 +11,6 @@ use Knp\Component\Pager\Paginator;
 use Nelmio\ApiDocBundle\Annotation as ApiDoc;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Umbria\OpenApiBundle\Entity\Tourism\GraphsEntities\Proposal;
-use Umbria\OpenApiBundle\Entity\Tourism\GraphsEntitiesInnerObjects\ProposalDescription;
-use Umbria\OpenApiBundle\Entity\Tourism\Setting;
-use Umbria\OpenApiBundle\Repository\Tourism\GraphsEntities\ProposalRepository;
 use Umbria\OpenApiBundle\Serializer\View\EntityResponse;
 use Umbria\OpenApiBundle\Service\FilterBag;
 
@@ -29,7 +20,7 @@ use Umbria\OpenApiBundle\Service\FilterBag;
  *
  * @author Lorenzo Franco Ranucci <loryzizu@gmail.com>
  */
-class ProposalController extends BaseController
+class ProposalController
 {
     const DEFAULT_PAGE_SIZE = 100;
     const DATASET_TOURISM_PROPOSAL = 'tourism-proposal';
@@ -38,11 +29,6 @@ class ProposalController extends BaseController
     private $paginator;
 
     private $em;
-    /**@var ProposalRepository $proposalRepo */
-    private $proposalRepo;
-    private $settingsRepo;
-
-    private $graph;
 
     /**
      * @DI\InjectParams({
@@ -56,11 +42,8 @@ class ProposalController extends BaseController
      */
     public function __construct($em, $filterBag, $paginator)
     {
-        parent::__construct($em);
         $this->filterBag = $filterBag;
         $this->paginator = $paginator;
-        $this->proposalRepo = $em->getRepository('UmbriaOpenApiBundle:Tourism\GraphsEntities\Proposal');
-        $this->settingsRepo = $em->getRepository('UmbriaOpenApiBundle:Tourism\Setting');
         $this->em = $em;
     }
 
@@ -110,7 +93,6 @@ class ProposalController extends BaseController
      */
     public function getTourismProposalListAction(Request $request)
     {
-        $daysToOld = $this->container->getParameter('proposal_days_to_old');
 
         $filters = $this->filterBag->getFilterBag($request);
         $offset = $filters->has('start') ? $filters->get('start') : 0;
@@ -120,57 +102,6 @@ class ProposalController extends BaseController
         }
         $page = floor($offset / $limit) + 1;
 
-        /** @var Setting $setting */
-        $setting = $this->settingsRepo->findOneBy(array('datasetName' => self::DATASET_TOURISM_PROPOSAL));
-        $logger = $this->get('logger');
-
-        if ($setting != null) {
-            $now = new DateTime('now');
-            $diff = $setting->getUpdateStartAt()->diff($now);
-            if ($diff->days >= $daysToOld) {
-                $this->em->getConnection()->beginTransaction();
-                try {
-                    $setting->setDatasetName(self::DATASET_TOURISM_PROPOSAL);
-
-                    $setting->setUpdateStartAt(new \DateTime());
-                    $this->em->persist($setting);
-                    $this->em->flush();
-                    $logger->info("Proposal update start");
-
-                    $this->updateEntities();
-
-                    $setting->setUpdatedAt(new \DateTime());
-                    $this->em->persist($setting);
-                    $this->em->flush();
-                    $logger->info("Proposal update end");
-                } catch (\Exception $e) {
-                    $logger->error('Proposal update failed with error: ' . $e->getMessage());
-                    $this->em->getConnection()->rollBack();
-                }
-            }
-        } else {
-            $this->em->getConnection()->beginTransaction();
-            try {
-                $setting = new Setting();
-                $setting->setDatasetName(self::DATASET_TOURISM_PROPOSAL);
-
-                $setting->setUpdateStartAt(new \DateTime());
-                $this->em->persist($setting);
-                $this->em->flush();
-                $logger->info("Proposal update start");
-
-
-                $this->updateEntities();
-
-                $setting->setUpdatedAt(new \DateTime());
-                $this->em->persist($setting);
-                $this->em->flush();
-                $logger->info("Proposal update end");
-            } catch (\Exception $e) {
-                $logger->error('Proposal update failed with error: ' . $e->getMessage());
-                $this->em->getConnection()->rollBack();
-            }
-        }
 
         $builder = $this->em->createQueryBuilder()
             ->select('a')
@@ -185,187 +116,5 @@ class ProposalController extends BaseController
 
         return $view;
     }
-
-    private function updateEntities()
-    {
-        $this->graph = EasyRdf_Graph::newAndLoad($this->container->getParameter('proposal_graph_url'));
-        /**@var EasyRdf_Resource[] $resources */
-        $resources = $this->graph->resources();
-        foreach ($resources as $resource) {
-            $resourceTypeArray = $resource->all("rdf:type");
-            if ($resourceTypeArray != null) {
-                foreach ($resourceTypeArray as $resourceType) {
-                    if (trim($resourceType) == "http://dati.umbria.it/tourism/ontology/proposte") {
-                        $this->createOrUpdateEntity($resource);
-                        break;
-                    }
-                }
-            }
-
-        }
-
-        $now = new \DateTime();
-        $this->deleteOldEntities($now);
-    }
-
-    /**
-     * @param \EasyRdf_Resource $proposalResource
-     */
-    private function createOrUpdateEntity($proposalResource)
-    {
-        /** @var Proposal $newProposal */
-        $newProposal = null;
-        $uri = $proposalResource->getUri();
-        if ($uri != null) {
-            $oldProposal = $this->proposalRepo->find($uri);
-            $isAlreadyPersisted = $oldProposal != null;
-            if ($isAlreadyPersisted) {
-                $newProposal = $oldProposal;
-            } else {
-                $newProposal = new Proposal();
-            }
-            $newProposal->setUri($uri);
-            $newProposal->setLastUpdateAt(new \DateTime('now'));
-
-            /**@var EasyRdf_Literal[] $labelArray */
-            $labelArray = $proposalResource->all("rdfs:label");
-            foreach ($labelArray as $label) {
-                if ($label->getLang() == "it") {
-                    $newProposal->setName($label->getValue());
-                    break;
-                }
-            }
-
-            if ($newProposal->getName() == null) return;
-
-
-            $typesarray = $proposalResource->all("rdf:type");
-            if ($typesarray != null) {
-                $tempTypes = array();
-
-                $cnt = 0;
-                foreach ($typesarray as $type) {
-                    $tempTypes[$cnt] = $type->toRdfPhp()['value'];
-                    $cnt++;
-                }
-                count($tempTypes) > 0 ? $newProposal->setTypes($tempTypes) : $newProposal->setTypes(null);
-            }
-
-            $newProposal->setProvenance(($p = $proposalResource->get("<http://purl.org/dc/elements/1.1/provenance>")) != null ? $p->getValue() : null);
-            $newProposal->setResourceOriginUrl(($p = $proposalResource->get("<http://dati.umbria.it/tourism/ontology/url_risorsa>")) != null ? $p->getValue() : null);
-            $newProposal->setProvenance(($p = $proposalResource->get("<http://purl.org/dc/elements/1.1/provenance>")) != null ? $p->getValue() : null);
-
-            /**@var EasyRdf_Literal[] $subjectArray */
-            $subjectArray = $proposalResource->all("<http://purl.org/dc/elements/1.1/subject>");
-            foreach ($subjectArray as $subject) {
-                if ($subject->getLang() == "it") {
-                    $newProposal->setSubject($subject->getValue());
-                    break;
-                }
-            }
-
-            $imagearray1 = $proposalResource->all("<http://dati.umbria.it/tourism/ontology/immagine_copertina>");
-            $imagearray2 = $proposalResource->all("<http://dati.umbria.it/tourism/ontology/immagine_spalla_destra>");
-            $imagearray = array_merge($imagearray1, $imagearray2);
-            if ($imagearray != null) {
-                $tempImage = array();
-                $newProposal->setImages(array());
-                $cnt = 0;
-                foreach ($imagearray as $image) {
-                    $tempImage[$cnt] = $image->toRdfPhp()['value'];
-                    $cnt++;
-                }
-                count($tempImage) > 0 ? $newProposal->setImages($tempImage) : $newProposal->setImages(null);
-            }
-
-            /**@var EasyRdf_Literal[] $textTitleArray */
-            $textTitleArray = $proposalResource->all("<http://dati.umbria.it/tourism/ontology/titolo_testo>");
-            foreach ($textTitleArray as $textTitle) {
-                if ($textTitle->getLang() == "it") {
-                    $newProposal->setTextTitle($textTitle->getValue());
-                    break;
-                }
-            }
-
-            $newProposal->setResourceOriginUrl(($p = $proposalResource->get("<http://dati.umbria.it/tourism/ontology/url_risorsa>")) != null ? $p->getValue() : null);
-            /**@var EasyRdf_Literal[] $shortDescriptionArray */
-            $shortDescriptionArray = $proposalResource->all("<http://dati.umbria.it/tourism/ontology/descrizione_sintetica>");
-            foreach ($shortDescriptionArray as $shortDescription) {
-                if ($shortDescription->getLang() == "it") {
-                    $newProposal->setShortDescription($shortDescription->getValue());
-                    break;
-                }
-            }
-            /**@var EasyRdf_Literal[] $abstractArray */
-            $abstractArray = $proposalResource->all("<http://purl.org/ontology/bibo/abstract>");
-            foreach ($abstractArray as $abstract) {
-                if ($abstract->getLang() == "it") {
-                    $newProposal->setComment($abstract->getValue());
-                    break;
-                }
-            }
-
-            if ($isAlreadyPersisted && ($oldDescriptions = $newProposal->getDescriptions()) != null) {
-                foreach ($oldDescriptions as $oldDescription) {
-                    $this->em->remove($oldDescription);
-                }
-                $newProposal->setDescriptions(null);
-            }
-
-            /**@var EasyRdf_Resource[] $descriptionArray */
-            $descriptionArray = $proposalResource->all("<http://dati.umbria.it/tourism/ontology/descrizione>");
-            if ($descriptionArray != null) {
-                $tempDescriptions = array();
-                $cnt = 0;
-                foreach ($descriptionArray as $descriptionResource) {
-                    if ($descriptionResource->get("<http://dati.umbria.it/tourism/ontology/testo>") != null &&
-                        $descriptionResource->get("<http://dati.umbria.it/tourism/ontology/testo>")->getLang() == "it"
-                    ) {
-                        $descriptionTitle = ($p = $descriptionResource->get("<http://dati.umbria.it/tourism/ontology/titolo>")) != null ? $p->getValue() : null;
-                        $descriptionText = $descriptionResource->get("<http://dati.umbria.it/tourism/ontology/testo>")->getValue();
-                        $descriptionObject = new ProposalDescription();
-                        $descriptionObject->setTitle($descriptionTitle);
-                        $descriptionObject->setText($descriptionText);
-                        $descriptionObject->setProposal($newProposal);
-                        $tempDescriptions[$cnt] = $descriptionObject;
-                        $cnt++;
-                    }
-                }
-                if (count($tempDescriptions) > 0) {
-                    $newProposal->setDescriptions($tempDescriptions);
-                }
-            }
-
-            $categoriesarray = $proposalResource->all("<http://dati.umbria.it/turismo/ontology/categoria>");
-            if ($categoriesarray != null) {
-                $tempCategories = array();
-
-                $cnt = 0;
-                foreach ($categoriesarray as $category) {
-                    $tempCategories[$cnt] = $category->toRdfPhp()['value'];
-                    $cnt++;
-                }
-                count($tempCategories) > 0 ? $newProposal->setCategories($tempCategories) : $newProposal->setCategories(null);
-            }
-
-            $newProposal->setPlaceFrom(($p = $proposalResource->get("<http://dati.umbria.it/tourism/ontology/luogo_da>")) != null ? $p->getValue() : null);
-            $newProposal->setPlaceTo(($p = $proposalResource->get("<http://dati.umbria.it/tourism/ontology/luogo_a>")) != null ? $p->getValue() : null);
-            $newProposal->setLat(($p = $proposalResource->get("<http://www.w3.org/2003/01/geo/wgs84_pos#lat>")) != null ? (float)$p->getValue() : null);
-            $newProposal->setLng(($p = $proposalResource->get("<http://www.w3.org/2003/01/geo/wgs84_pos#long>")) != null ? (float)$p->getValue() : null);
-
-
-            if (!$isAlreadyPersisted) {
-                $this->em->persist($newProposal);
-            }
-            $this->em->flush();
-        }
-    }
-
-    private function deleteOldEntities($olderThan)
-    {
-        $this->proposalRepo->removeLastUpdatedBefore($olderThan, $this->em);
-
-    }
-
 
 }

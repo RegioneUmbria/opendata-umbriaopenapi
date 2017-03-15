@@ -17,12 +17,12 @@ use Umbria\OpenApiBundle\Service\FilterBag;
 
 
 /**
- * Class AttractorController
+ * Class AccomodationController
  * @package Umbria\OpenApiBundle\Controller\Tourism
  *
  * @author Lorenzo Franco Ranucci <loryzizu@gmail.com>
  */
-class AttractorController
+class AccomodationController
 {
     const DEFAULT_PAGE_SIZE = 100;
     private $filterBag;
@@ -48,16 +48,16 @@ class AttractorController
     }
 
     /**
-     * @Rest\Options(pattern="/open-api/tourism-attractor")
+     * @Rest\Options(pattern="/open-api/tourism-accomodation")
      */
-    public function optionsTourismAttractorAction()
+    public function optionsTourismAccomodationAction()
     {
         $response = new Response();
 
         $response->setContent(json_encode(array(
             'Allow' => 'GET,OPTIONS',
             'GET' => array(
-                'description' => 'A get request for attractors',
+                'description' => 'A get request for accomodations',
             ),
         )));
         $response->setStatusCode(Response::HTTP_OK);
@@ -67,7 +67,7 @@ class AttractorController
     }
 
     /**
-     * @Rest\Get(pattern="/open-api/tourism-attractor")
+     * @Rest\Get(pattern="/open-api/tourism-accomodation")
      *
      * @param Request $request
      *
@@ -77,7 +77,7 @@ class AttractorController
      *
      * @ApiDoc\ApiDoc(
      *  section = "Tourism",
-     *  description = "Lista attrattori turistici regione Umbria",
+     *  description = "Lista strutture ricettive regione Umbria",
      *  tags = {
      *      "beta"
      *  },
@@ -85,7 +85,6 @@ class AttractorController
      *      {"name"="start", "dataType"="integer", "required"=false, "description"="Indice elemento iniziale"},
      *      {"name"="limit", "dataType"="integer", "required"=false, "description"="Numero di elementi"},
      *      {"name"="label_like", "dataType"="string", "required"=false, "description"="Condizione 'LIKE' su denominazione"},
-     *      {"name"="descriptions_like", "dataType"="string", "required"=false, "description"="Condizione 'LIKE' sulle descrizioni"},
      *      {"name"="category_like", "dataType"="string", "required"=false, "description"="Condizione 'LIKE' sulle categorie"},
      *      {"name"="lat_max", "dataType"="number", "required"=false, "description"="Latitudine massima"},
      *      {"name"="lat_min", "dataType"="number", "required"=false, "description"="Latitudine minima"},
@@ -99,13 +98,12 @@ class AttractorController
      *  }
      * )
      */
-    public function getTourismAttractorListAction(Request $request)
+    public function getTourismAccomodationListAction(Request $request)
     {
         $filters = $this->filterBag->getFilterBag($request);
         $offset = $filters->has('start') ? $filters->get('start') : 0;
         $limit = $filters->has('limit') ? $filters->get('limit') : self::DEFAULT_PAGE_SIZE;
         $labelLike = $filters->has('label_like') ? $filters->get('label_like') : null;
-        $descriptionLike = $filters->has('descriptions_like') ? $filters->get('descriptions_like') : null;
         $categoryLike = $filters->has('category_like') ? $filters->get('category_like') : null;
         $latMax = $filters->has('lat_max') && $filters->get('lat_max') ? floatval($filters->get('lat_max')) : null;
         $latMin = $filters->has('lat_min') && $filters->get('lat_min') ? floatval($filters->get('lat_min')) : null;
@@ -116,11 +114,10 @@ class AttractorController
         }
         $page = floor($offset / $limit) + 1;
 
-
         $qb = $this->em->createQueryBuilder();
         $builder = $qb
             ->select('a')
-            ->from('UmbriaOpenApiBundle:Tourism\GraphsEntities\Attractor', 'a');
+            ->from('UmbriaOpenApiBundle:Tourism\GraphsEntities\Accomodation', 'a');
 
 
         if ($labelLike != null) {
@@ -129,19 +126,6 @@ class AttractorController
                 ->setParameter(2, $labelLike);
         }
 
-        if ($descriptionLike != null) {
-            $builder = $qb
-                ->innerJoin('a.descriptions', 'd')
-                ->andWhere(
-                    $qb->expr()->orX(
-                        $qb->expr()->like('d.title', '?1'),
-                        $qb->expr()->like('d.text', '?1'),
-                        $qb->expr()->like('a.comment', '?1')
-                    )
-                )
-                ->setParameter(1, $descriptionLike);
-
-        }
 
         if ($categoryLike != null) {
             $builder = $qb
@@ -158,12 +142,13 @@ class AttractorController
             $lngMax != null ||
             $lngMin != null
         ) {
+            $builder = $qb->join('a.address', 'address');
             if ($latMax != null) {
                 $builder =
                     $qb->andWhere(
-                        $qb->expr()->lte("a.lat", ':latMax'),
-                        $qb->expr()->isNotNull("a.lat"),
-                        $qb->expr()->gt("a.lat", ':empty')
+                        $qb->expr()->lte("address.lat", ':latMax'),
+                        $qb->expr()->isNotNull("address.lat"),
+                        $qb->expr()->gt("address.lat", ':empty')
                     )
                         ->setParameter('latMax', $latMax)
                         ->setParameter('empty', '0');
@@ -171,9 +156,9 @@ class AttractorController
             if ($latMin != null) {
                 $builder =
                     $qb->andWhere(
-                        $qb->expr()->gte("a.lat", ':latMin'),
-                        $qb->expr()->isNotNull("a.lat"),
-                        $qb->expr()->gt("a.lat", ":empty")
+                        $qb->expr()->gte("address.lat", ':latMin'),
+                        $qb->expr()->isNotNull("address.lat"),
+                        $qb->expr()->gt("address.lat", ":empty")
                     )
                         ->setParameter('latMin', $latMin)
                         ->setParameter('empty', '0');
@@ -181,9 +166,9 @@ class AttractorController
             if ($lngMax != null) {
                 $builder =
                     $qb->andWhere(
-                        $qb->expr()->lte("a.lng", ':lngMax'),
-                        $qb->expr()->isNotNull("a.lng"),
-                        $qb->expr()->gt("a.lng", ":empty")
+                        $qb->expr()->lte("address.lng", ':lngMax'),
+                        $qb->expr()->isNotNull("address.lng"),
+                        $qb->expr()->gt("address.lng", ":empty")
                     )
                         ->setParameter('lngMax', $lngMax)
                         ->setParameter('empty', '0');
@@ -191,9 +176,9 @@ class AttractorController
             if ($lngMin != null) {
                 $builder =
                     $qb->andWhere(
-                        $qb->expr()->gte("a.lng", ':lngMin'),
-                        $qb->expr()->isNotNull("a.lng"),
-                        $qb->expr()->gt("a.lng", ":empty")
+                        $qb->expr()->gte("address.lng", ':lngMin'),
+                        $qb->expr()->isNotNull("address.lng"),
+                        $qb->expr()->gt("address.lng", ":empty")
                     )
                         ->setParameter('lngMin', $lngMin)
                         ->setParameter('empty', '0');
@@ -210,5 +195,8 @@ class AttractorController
 
         return $view;
     }
+
+
+
 
 }

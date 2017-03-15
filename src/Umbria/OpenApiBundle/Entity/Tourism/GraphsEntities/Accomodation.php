@@ -9,14 +9,14 @@ use Umbria\OpenApiBundle\Entity\Category;
 use JMS\Serializer\Annotation as JMS;
 
 /**
- * StrutturaRicettive entity
+ * Accomodation entity
  *
  * @author Lorenzo Franco Ranucci
  *
  * @ORM\Table(name="tourism_struttura_ricettiva")
- * @ORM\Entity(repositoryClass="Umbria\OpenApiBundle\Repository\Tourism\GraphsEntities\StrutturaRicettivaRepository")
+ * @ORM\Entity(repositoryClass="Umbria\OpenApiBundle\Repository\Tourism\GraphsEntities\AccomodationRepository")
  */
-class StrutturaRicettiva
+class Accomodation
 {
 
     /**
@@ -139,7 +139,7 @@ class StrutturaRicettiva
      *
      * @param string $uri
      *
-     * @return StrutturaRicettiva
+     * @return Accomodation
      */
     public function setUri($uri)
     {
@@ -163,7 +163,7 @@ class StrutturaRicettiva
      *
      * @param string $name
      *
-     * @return StrutturaRicettiva
+     * @return Accomodation
      */
     public function setName($name)
     {
@@ -187,7 +187,7 @@ class StrutturaRicettiva
      *
      * @param Type[] $types
      *
-     * @return StrutturaRicettiva
+     * @return Accomodation
      */
     public function setTypes($types)
     {
@@ -211,7 +211,7 @@ class StrutturaRicettiva
      *
      * @param string $provenance
      *
-     * @return StrutturaRicettiva
+     * @return Accomodation
      */
     public function setProvenance($provenance)
     {
@@ -251,7 +251,7 @@ class StrutturaRicettiva
      *
      * @param Category[] $categories
      *
-     * @return StrutturaRicettiva
+     * @return Accomodation
      */
     public function setCategories($categories)
     {
@@ -275,7 +275,7 @@ class StrutturaRicettiva
      *
      * @param string $email
      *
-     * @return StrutturaRicettiva
+     * @return Accomodation
      */
     public function setEmail($email)
     {
@@ -299,7 +299,7 @@ class StrutturaRicettiva
      *
      * @param array $telephone
      *
-     * @return StrutturaRicettiva
+     * @return Accomodation
      */
     public function setTelephone($telephone)
     {
@@ -323,7 +323,7 @@ class StrutturaRicettiva
      *
      * @param string $resourceOriginUrl
      *
-     * @return StrutturaRicettiva
+     * @return Accomodation
      */
     public function setResourceOriginUrl($resourceOriginUrl)
     {
@@ -347,7 +347,7 @@ class StrutturaRicettiva
      *
      * @param array $fax
      *
-     * @return StrutturaRicettiva
+     * @return Accomodation
      */
     public function setFax($fax)
     {

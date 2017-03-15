@@ -13,9 +13,9 @@ use Umbria\OpenApiBundle\Entity\Type;
  * @author Lorenzo Franco Ranucci
  *
  * @ORM\Table(name="tourism_impianto_sportivo")
- * @ORM\Entity(repositoryClass="Umbria\OpenApiBundle\Repository\Tourism\GraphsEntities\ImpiantoSportivoRepository")
+ * @ORM\Entity(repositoryClass="Umbria\OpenApiBundle\Repository\Tourism\GraphsEntities\SportFacilityRepository")
  */
-class ImpiantoSportivo
+class SportFacility
 {
     /**
      * @var string

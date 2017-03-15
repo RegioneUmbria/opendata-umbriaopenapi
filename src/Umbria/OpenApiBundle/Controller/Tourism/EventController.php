@@ -2,10 +2,7 @@
 
 namespace Umbria\OpenApiBundle\Controller\Tourism;
 
-use DateTime;
 use Doctrine\ORM\EntityManager;
-use EasyRdf_Literal;
-use EasyRdf_Resource;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\View\View;
 use JMS\DiExtraBundle\Annotation as DI;
@@ -14,13 +11,8 @@ use Knp\Component\Pager\Paginator;
 use Nelmio\ApiDocBundle\Annotation as ApiDoc;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Umbria\OpenApiBundle\Entity\Tourism\GraphsEntities\Event;
-use Umbria\OpenApiBundle\Entity\Tourism\GraphsEntitiesInnerObjects\EventDescription;
-use Umbria\OpenApiBundle\Entity\Tourism\Setting;
-use Umbria\OpenApiBundle\Repository\Tourism\GraphsEntities\EventRepository;
 use Umbria\OpenApiBundle\Serializer\View\EntityResponse;
 use Umbria\OpenApiBundle\Service\FilterBag;
-use EasyRdf_Graph;
 
 /**
  * Class EventController
@@ -28,20 +20,14 @@ use EasyRdf_Graph;
  *
  * @author Lorenzo Franco Ranucci <loryzizu@gmail.com>
  */
-class EventController extends BaseController
+class EventController
 {
     const DEFAULT_PAGE_SIZE = 100;
-    const DATASET_TOURISM_EVENT = 'tourism-event';
 
     private $filterBag;
     private $paginator;
 
     private $em;
-    /**@var EventRepository eventRepo */
-    private $eventRepo;
-    private $settingsRepo;
-
-    private $graph;
 
     /**
      * @DI\InjectParams({
@@ -55,11 +41,8 @@ class EventController extends BaseController
      */
     public function __construct($em, $filterBag, $paginator)
     {
-        parent::__construct($em);
         $this->filterBag = $filterBag;
         $this->paginator = $paginator;
-        $this->eventRepo = $em->getRepository('UmbriaOpenApiBundle:Tourism\GraphsEntities\Event');
-        $this->settingsRepo = $em->getRepository('UmbriaOpenApiBundle:Tourism\Setting');
         $this->em = $em;
     }
 
@@ -115,7 +98,6 @@ class EventController extends BaseController
      */
     public function getTourismEventListAction(Request $request)
     {
-        $daysToOld = $this->container->getParameter('event_days_to_old');
 
         $filters = $this->filterBag->getFilterBag($request);
         $offset = $filters->has('start') ? $filters->get('start') : 0;
@@ -131,58 +113,6 @@ class EventController extends BaseController
             $limit = self::DEFAULT_PAGE_SIZE;
         }
         $page = floor($offset / $limit) + 1;
-
-        /** @var Setting $setting */
-        $setting = $this->settingsRepo->findOneBy(array('datasetName' => self::DATASET_TOURISM_EVENT));
-        $logger = $this->get('logger');
-
-        if ($setting != null) {
-            $now = new DateTime('now');
-            $diff = $setting->getUpdateStartAt()->diff($now);
-            if ($diff->days >= $daysToOld) {
-                $this->em->getConnection()->beginTransaction();
-                try {
-                    $setting->setDatasetName(self::DATASET_TOURISM_EVENT);
-
-                    $setting->setUpdateStartAt(new \DateTime());
-                    $this->em->persist($setting);
-                    $this->em->flush();
-                    $logger->info("Event update start");
-
-                    $this->updateEntities();
-
-                    $setting->setUpdatedAt(new \DateTime());
-                    $this->em->persist($setting);
-                    $this->em->flush();
-                    $logger->info("Event update end");
-                } catch (\Exception $e) {
-                    $logger->error('Event update failed with error: ' . $e->getMessage());
-                    $this->em->getConnection()->rollBack();
-                }
-            }
-        } else {
-            $this->em->getConnection()->beginTransaction();
-            try {
-                $setting = new Setting();
-                $setting->setDatasetName(self::DATASET_TOURISM_EVENT);
-
-                $setting->setUpdateStartAt(new \DateTime());
-                $this->em->persist($setting);
-                $this->em->flush();
-                $logger->info("Event update start");
-
-
-                $this->updateEntities();
-
-                $setting->setUpdatedAt(new \DateTime());
-                $this->em->persist($setting);
-                $this->em->flush();
-                $logger->info("Event update end");
-            } catch (\Exception $e) {
-                $logger->error('Event update failed with error: ' . $e->getMessage());
-                $this->em->getConnection()->rollBack();
-            }
-        }
 
         $qb = $this->em->createQueryBuilder();
         $builder = $qb
@@ -279,163 +209,5 @@ class EventController extends BaseController
         return $view;
     }
 
-    private function updateEntities()
-    {
-
-        $this->graph = EasyRdf_Graph::newAndLoad($this->container->getParameter('event_graph_url'));
-        /**@var EasyRdf_Resource[] $resources */
-        $resources = $this->graph->resources();
-        foreach ($resources as $resource) {
-            $resourceTypeArray = $resource->all("rdf:type");
-            if ($resourceTypeArray != null) {
-                foreach ($resourceTypeArray as $resourceType) {
-                    if (trim($resourceType) == "http://schema.org/Event") {
-                        $this->createOrUpdateEntity($resource);
-                        break;
-                    }
-                }
-            }
-        }
-
-        $now = new \DateTime();
-        $this->deleteOldEntities($now);
-    }
-
-    /**
-     * @param \EasyRdf_Resource $eventResource
-     */
-    private function createOrUpdateEntity($eventResource)
-    {
-        /** @var Event $newEvent */
-        $newEvent = null;
-        $uri = $eventResource->getUri();
-        if ($uri != null) {
-            $oldEvent = $this->eventRepo->find($uri);
-            $isAlreadyPersisted = $oldEvent != null;
-            if ($isAlreadyPersisted) {
-                $newEvent = $oldEvent;
-            } else {
-                $newEvent = new Event();
-            }
-            $newEvent->setUri($uri);
-            $newEvent->setLastUpdateAt(new \DateTime('now'));
-
-            /**@var EasyRdf_Literal[] $labelArray */
-            $labelArray = $eventResource->all("rdfs:label");
-            foreach ($labelArray as $label) {
-                if ($label->getLang() == "it") {
-                    $newEvent->setName($label->getValue());
-                    break;
-                }
-            }
-            /**@var EasyRdf_Literal[] $commentArray */
-            $commentArray = $eventResource->all("<http://dati.umbria.it/tourism/ontology/event_description>");
-            foreach ($commentArray as $comment) {
-                if ($comment->getLang() == "it") {
-                    $newEvent->setComment($comment->getValue());
-                    break;
-                }
-            }
-            $newEvent->setLat(($p = $eventResource->get("<http://www.w3.org/2003/01/geo/wgs84_pos#lat>")) != null ? (float)$p->getValue() : null);
-            $newEvent->setLng(($p = $eventResource->get("<http://www.w3.org/2003/01/geo/wgs84_pos#long>")) != null ? (float)$p->getValue() : null);
-            $startDate = $eventResource->get("<http://schema.org/start_date>");
-            if ($startDate != null) {
-                $startDateObj = DateTime::createFromFormat('d/m/Y', $startDate);
-                $newEvent->setStartDate($startDateObj);
-            }
-            $endDate = $eventResource->get("<http://schema.org/end_date>");
-            if ($endDate != null) {
-                $endDateObj = DateTime::createFromFormat('d/m/Y', $endDate);
-                $newEvent->setEndDate($endDateObj);
-            }
-
-            /**@var EasyRdf_Resource[] $categoriesarray */
-            $categoriesarray = $eventResource->all("<http://dati.umbria.it/tourism/ontology/categoria>");
-            if ($categoriesarray != null) {
-                $tempCategories = array();
-
-                $cnt = 0;
-                foreach ($categoriesarray as $category) {
-                    $tempCategories[$cnt] = $category->toRdfPhp()['value'];
-                    $cnt++;
-                }
-                count($tempCategories) > 0 ? $newEvent->setCategories($tempCategories) : $newEvent->setCategories(null);
-            }
-
-            /**@var EasyRdf_Resource[] $typesarray */
-            $typesarray = $eventResource->all("rdf:type");
-            if ($typesarray != null) {
-                $tempTypes = array();
-
-                $cnt = 0;
-                foreach ($typesarray as $type) {
-                    $tempTypes[$cnt] = $type->toRdfPhp()['value'];
-                    $cnt++;
-                }
-                count($tempTypes) > 0 ? $newEvent->setTypes($tempTypes) : $newEvent->setTypes(null);
-            }
-
-            $newEvent->setProvenance(($p = $eventResource->get("<http://purl.org/dc/elements/1.1/provenance>")) != null ? $p->getValue() : null);
-
-            $imagearray1 = $eventResource->all("<http://dati.umbria.it/tourism/ontology/immagine_copertina>");
-            $imagearray2 = $eventResource->all("<http://dati.umbria.it/tourism/ontology/immagine_spalla_destra>");
-            /**@var EasyRdf_Resource[] $imagearray */
-            $imagearray = array_merge($imagearray1, $imagearray2);
-            if ($imagearray != null) {
-                $tempImage = array();
-                $newEvent->setImages(array());
-                $cnt = 0;
-                foreach ($imagearray as $image) {
-                    $tempImage[$cnt] = $image->toRdfPhp()['value'];
-                    $cnt++;
-                }
-                count($tempImage) > 0 ? $newEvent->setImages($tempImage) : $newEvent->setImages(null);
-            }
-
-
-            $newEvent->setResourceOriginUrl(($p = $eventResource->get("<http://xmlns.com/foaf/0.1/homepage>")) != null ? $p->getValue() : null);
-
-            if ($isAlreadyPersisted && ($oldDescriptions = $newEvent->getDescriptions()) != null) {
-                foreach ($oldDescriptions as $oldDescription) {
-                    $this->em->remove($oldDescription);
-                }
-                $newEvent->setDescriptions(null);
-            }
-
-            /**@var EasyRdf_Resource[] $descriptionArray */
-            $descriptionArray = $eventResource->all("<http://dati.umbria.it/tourism/ontology/descrizione>");
-            if ($descriptionArray != null) {
-                $tempDescriptions = array();
-                $cnt = 0;
-                foreach ($descriptionArray as $descriptionResource) {
-                    if ($descriptionResource->get("<http://dati.umbria.it/tourism/ontology/testo>") != null &&
-                        $descriptionResource->get("<http://dati.umbria.it/tourism/ontology/testo>")->getLang() == "it"
-                    ) {
-                        $descriptionTitle = ($p = $descriptionResource->get("<http://dati.umbria.it/tourism/ontology/titolo>")) != null ? $p->getValue() : null;
-                        $descriptionText = $descriptionResource->get("<http://dati.umbria.it/tourism/ontology/testo>")->getValue();
-                        $descriptionObject = new EventDescription();
-                        $descriptionObject->setTitle($descriptionTitle);
-                        $descriptionObject->setText($descriptionText);
-                        $descriptionObject->setEvent($newEvent);
-                        $tempDescriptions[$cnt] = $descriptionObject;
-                        $cnt++;
-                    }
-                }
-                if (count($tempDescriptions) > 0) {
-                    $newEvent->setDescriptions($tempDescriptions);
-                }
-            }
-
-            if (!$isAlreadyPersisted) {
-                $this->em->persist($newEvent);
-            }
-            $this->em->flush();
-        }
-    }
-
-    private function deleteOldEntities($olderThan)
-    {
-        $this->eventRepo->removeLastUpdatedBefore($olderThan, $this->em);
-    }
 
 }

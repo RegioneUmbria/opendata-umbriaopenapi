@@ -28,11 +28,11 @@ class Setting
     private $datasetName;
 
     /**
-     * @var \DateTime
+     * @var boolean
      *
-     * @ORM\Column(name="update_start_at", type="datetime", nullable=true)
+     * @ORM\Column(name="is_updating", type="boolean", nullable=false, options={"default":false})
      */
-    private $updateStartAt;
+    private $isUpdating;
 
     /**
      * @var \DateTime
@@ -101,20 +101,22 @@ class Setting
     }
 
     /**
-     * @return \DateTime
+     * @return boolean
      */
-    public function getUpdateStartAt()
+    public function getIsUpdating()
     {
-        return $this->updateStartAt;
+        return $this->isUpdating;
     }
 
     /**
-     * @param \DateTime $updateStartAt
+     * @param boolean $isUpdating
      */
-    public function setUpdateStartAt($updateStartAt)
+    public function setIsUpdating($isUpdating)
     {
-        $this->updateStartAt = $updateStartAt;
+        $this->isUpdating = $isUpdating;
     }
+
+
 
 
 }

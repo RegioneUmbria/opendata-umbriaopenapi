@@ -1,6 +1,5 @@
 <?php
 
-
 namespace Umbria\OpenApiBundle\Controller\Tourism;
 
 use Doctrine\ORM\EntityManager;
@@ -17,18 +16,20 @@ use Umbria\OpenApiBundle\Service\FilterBag;
 
 
 /**
- * Class AttractorController
+ * Class SportFacilityController
  * @package Umbria\OpenApiBundle\Controller\Tourism
  *
  * @author Lorenzo Franco Ranucci <loryzizu@gmail.com>
  */
-class AttractorController
+class SportFacilityController
 {
     const DEFAULT_PAGE_SIZE = 100;
+
     private $filterBag;
     private $paginator;
 
     private $em;
+
 
     /**
      * @DI\InjectParams({
@@ -48,16 +49,16 @@ class AttractorController
     }
 
     /**
-     * @Rest\Options(pattern="/open-api/tourism-attractor")
+     * @Rest\Options(pattern="/open-api/tourism-sports-facility")
      */
-    public function optionsTourismAttractorAction()
+    public function optionsTourismSportFacilityAction()
     {
         $response = new Response();
 
         $response->setContent(json_encode(array(
             'Allow' => 'GET,OPTIONS',
             'GET' => array(
-                'description' => 'A get request for attractors',
+                'description' => 'A get request for sportFacility',
             ),
         )));
         $response->setStatusCode(Response::HTTP_OK);
@@ -67,7 +68,7 @@ class AttractorController
     }
 
     /**
-     * @Rest\Get(pattern="/open-api/tourism-attractor")
+     * @Rest\Get(pattern="/open-api/tourism-sports-facility")
      *
      * @param Request $request
      *
@@ -77,7 +78,7 @@ class AttractorController
      *
      * @ApiDoc\ApiDoc(
      *  section = "Tourism",
-     *  description = "Lista attrattori turistici regione Umbria",
+     *  description = "Lista impianti sportivi regione Umbria",
      *  tags = {
      *      "beta"
      *  },
@@ -91,15 +92,14 @@ class AttractorController
      *      {"name"="lat_min", "dataType"="number", "required"=false, "description"="Latitudine minima"},
      *      {"name"="lng_max", "dataType"="number", "required"=false, "description"="Longitudine massima"},
      *      {"name"="lng_min", "dataType"="number", "required"=false, "description"="Longitudine minima"}
-     *
-     *
      *  },
+     *
      *  statusCodes={
-     *      200="Restituito in caso di successo"
+     *      200="Returned when successful"
      *  }
      * )
      */
-    public function getTourismAttractorListAction(Request $request)
+    public function getTourismSportFacilityListAction(Request $request)
     {
         $filters = $this->filterBag->getFilterBag($request);
         $offset = $filters->has('start') ? $filters->get('start') : 0;
@@ -120,7 +120,7 @@ class AttractorController
         $qb = $this->em->createQueryBuilder();
         $builder = $qb
             ->select('a')
-            ->from('UmbriaOpenApiBundle:Tourism\GraphsEntities\Attractor', 'a');
+            ->from('UmbriaOpenApiBundle:Tourism\GraphsEntities\SportFacility', 'a');
 
 
         if ($labelLike != null) {
@@ -158,12 +158,13 @@ class AttractorController
             $lngMax != null ||
             $lngMin != null
         ) {
+            $builder = $qb->join('a.address', 'address');
             if ($latMax != null) {
                 $builder =
                     $qb->andWhere(
-                        $qb->expr()->lte("a.lat", ':latMax'),
-                        $qb->expr()->isNotNull("a.lat"),
-                        $qb->expr()->gt("a.lat", ':empty')
+                        $qb->expr()->lte("address.lat", ':latMax'),
+                        $qb->expr()->isNotNull("address.lat"),
+                        $qb->expr()->gt("address.lat", ':empty')
                     )
                         ->setParameter('latMax', $latMax)
                         ->setParameter('empty', '0');
@@ -171,9 +172,9 @@ class AttractorController
             if ($latMin != null) {
                 $builder =
                     $qb->andWhere(
-                        $qb->expr()->gte("a.lat", ':latMin'),
-                        $qb->expr()->isNotNull("a.lat"),
-                        $qb->expr()->gt("a.lat", ":empty")
+                        $qb->expr()->gte("address.lat", ':latMin'),
+                        $qb->expr()->isNotNull("address.lat"),
+                        $qb->expr()->gt("address.lat", ":empty")
                     )
                         ->setParameter('latMin', $latMin)
                         ->setParameter('empty', '0');
@@ -181,9 +182,9 @@ class AttractorController
             if ($lngMax != null) {
                 $builder =
                     $qb->andWhere(
-                        $qb->expr()->lte("a.lng", ':lngMax'),
-                        $qb->expr()->isNotNull("a.lng"),
-                        $qb->expr()->gt("a.lng", ":empty")
+                        $qb->expr()->lte("address.lng", ':lngMax'),
+                        $qb->expr()->isNotNull("address.lng"),
+                        $qb->expr()->gt("address.lng", ":empty")
                     )
                         ->setParameter('lngMax', $lngMax)
                         ->setParameter('empty', '0');
@@ -191,9 +192,9 @@ class AttractorController
             if ($lngMin != null) {
                 $builder =
                     $qb->andWhere(
-                        $qb->expr()->gte("a.lng", ':lngMin'),
-                        $qb->expr()->isNotNull("a.lng"),
-                        $qb->expr()->gt("a.lng", ":empty")
+                        $qb->expr()->gte("address.lng", ':lngMin'),
+                        $qb->expr()->isNotNull("address.lng"),
+                        $qb->expr()->gt("address.lng", ":empty")
                     )
                         ->setParameter('lngMin', $lngMin)
                         ->setParameter('empty', '0');
@@ -210,5 +211,9 @@ class AttractorController
 
         return $view;
     }
+
+
+
+
 
 }
