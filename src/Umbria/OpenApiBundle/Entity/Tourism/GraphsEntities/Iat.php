@@ -33,12 +33,6 @@ class Iat
      */
     private $name;
 
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="provenance", type="string", length=255, nullable=true)
-     */
-    private $provenance;
 
     /**
      * @var array
@@ -161,29 +155,6 @@ class Iat
         return $this->name;
     }
 
-    /**
-     * Set provenance
-     *
-     * @param string $provenance
-     *
-     * @return Iat
-     */
-    public function setProvenance($provenance)
-    {
-        $this->provenance = $provenance;
-
-        return $this;
-    }
-
-    /**
-     * Get provenance
-     *
-     * @return string
-     */
-    public function getProvenance()
-    {
-        return $this->provenance;
-    }
 
     /**
      * Set email

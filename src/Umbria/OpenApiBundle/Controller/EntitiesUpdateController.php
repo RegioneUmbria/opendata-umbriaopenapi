@@ -61,7 +61,6 @@ class EntitiesUpdateController extends BaseController
             if($updateEntityType){
                 $settingsRepo=$this->em->getRepository('UmbriaOpenApiBundle:Tourism\Setting');
                 $setting = $settingsRepo->findOneBy(array('datasetName' => $entityType));
-                /**TODO check names*/
                 $daysToOld = $this->container->getParameter($entityType.'_days_to_old');
 
                 $isFirstEntityTypeRetrieve=false;
@@ -72,14 +71,17 @@ class EntitiesUpdateController extends BaseController
                     $isFirstEntityTypeRetrieve=true;
                 }
                 else{
+                    $isUpdating = $setting->getIsUpdating();
+                    if ($isUpdating) return;
                     $now = new DateTime('now');
                     $diff = $setting->getUpdatedAt()->diff($now);
                 }
 
-                if ( $isFirstEntityTypeRetrieve || $diff->days >= $daysToOld) {
-                    $setting->setUpdatedAt(new \DateTime());
+                if ($isFirstEntityTypeRetrieve || ($diff->days >= $daysToOld)) {
+                    $setting->setIsUpdating(true);
                     $this->em->persist($setting);
                     $this->em->flush();
+
                     $logger = $this->get('logger');
                     $this->em->getConnection()->beginTransaction();
                     try {
@@ -91,10 +93,16 @@ class EntitiesUpdateController extends BaseController
                         $setting->setUpdatedAt(new \DateTime());
                         $this->em->persist($setting);
                         $this->em->flush();
+                        $this->em->getConnection()->commit();
                         $logger->info("$entityType update end");
                     } catch (\Exception $e) {
                         $logger->error('$entityType update failed with error: ' . $e->getMessage());
                         $this->em->getConnection()->rollBack();
+
+                    } finally {
+                        $setting->setIsUpdating(false);
+                        $this->em->persist($setting);
+                        $this->em->flush();
                     }
                 }
             }
@@ -128,13 +136,15 @@ class EntitiesUpdateController extends BaseController
                                     break;
                                 case 'iat':$this->createOrUpdateIat($resource);
                                     break;
-                                case 'sport':$this->createOrUpdateSportFacility($resource);
+                                case 'sport_facility':
+                                    $this->createOrUpdateSportFacility($resource);
                                     break;
                                 case 'profession':$this->createOrUpdateProfession($resource);
                                     break;
                                 case 'proposal':$this->createOrUpdateProposal($resource);
                                     break;
-                                case 'travel':$this->createOrUpdateTravelAgency($resource);
+                                case 'travel_agency':
+                                    $this->createOrUpdateTravelAgency($resource);
                                     break;
                             }
 
@@ -160,7 +170,7 @@ class EntitiesUpdateController extends BaseController
             case 'iat':
                 $this->em->getRepository('UmbriaOpenApiBundle:Tourism\GraphsEntities\Iat')->removeLastUpdatedBefore($now, $this->em);
                 break;
-            case 'sport':
+            case 'sport_facility':
                 $this->em->getRepository('UmbriaOpenApiBundle:Tourism\GraphsEntities\SportFacility')->removeLastUpdatedBefore($now, $this->em);
                 break;
             case 'profession':
@@ -172,7 +182,7 @@ class EntitiesUpdateController extends BaseController
             case 'accomodation':
                 $this->em->getRepository('UmbriaOpenApiBundle:Tourism\GraphsEntities\Accomodation')->removeLastUpdatedBefore($now, $this->em);
                 break;
-            case 'travel':
+            case 'travel_agency':
                 $this->em->getRepository('UmbriaOpenApiBundle:Tourism\GraphsEntities\TravelAgency')->removeLastUpdatedBefore($now, $this->em);
                 break;
         }
@@ -301,7 +311,6 @@ class EntitiesUpdateController extends BaseController
             $this->mapFax($consortiumResource,$newConsortium);
             $this->mapAddress($consortiumResource,$newConsortium,$isAlreadyPersisted);
             $newConsortium->setResourceOriginUrl(($p = $consortiumResource->get("<http://xmlns.com/foaf/0.1/homepage>")) != null ? $p->getValue() : null);
-            $newConsortium->setProvenance(($p = $consortiumResource->get("<http://purl.org/dc/elements/1.1/provenance>")) != null ? $p->getValue() : null);
             $newConsortium->setLanguage(($p = $consortiumResource->get("<http://purl.org/dc/elements/1.1/language>")) != null ? $p->getUri() : null);
 
             if (!$isAlreadyPersisted) {
@@ -333,10 +342,10 @@ class EntitiesUpdateController extends BaseController
 
             $this->mapName($eventResource,$newEvent);
             $this->mapTypes($eventResource,$newEvent);
-            $this->mapCategories($eventResource,$newEvent);
             $this->mapImages($eventResource,$newEvent);
             $newEvent->setResourceOriginUrl(($p = $eventResource->get("<http://xmlns.com/foaf/0.1/homepage>")) != null ? $p->getValue() : null);
-            $newEvent->setProvenance(($p = $eventResource->get("<http://purl.org/dc/elements/1.1/provenance>")) != null ? $p->getValue() : null);
+            $newEvent->setMunicipality(($p = $eventResource->get("<http://dbpedia.org/ontology/municipality>")) != null ? $p->getValue() : null);
+            $newEvent->setIstat(($p = $eventResource->get("<http://dbpedia.org/ontology/istat>")) != null ? $p->getValue() : null);
 
             /**@var EasyRdf_Literal[] $commentArray */
             $commentArray = $eventResource->all("<http://dati.umbria.it/tourism/ontology/event_description>");
@@ -371,11 +380,11 @@ class EntitiesUpdateController extends BaseController
                 $tempDescriptions = array();
                 $cnt = 0;
                 foreach ($descriptionArray as $descriptionResource) {
-                    if ($descriptionResource->get("<http://dati.umbria.it/tourism/ontology/testo>") != null &&
-                        $descriptionResource->get("<http://dati.umbria.it/tourism/ontology/testo>")->getLang() == "it"
+                    if ($descriptionResource->get("<http://dati.umbria.it/tourism/ontology/titolo>") != null &&
+                        $descriptionResource->get("<http://dati.umbria.it/tourism/ontology/titolo>")->getLang() == "it"
                     ) {
-                        $descriptionTitle = ($p = $descriptionResource->get("<http://dati.umbria.it/tourism/ontology/titolo>")) != null ? $p->getValue() : null;
-                        $descriptionText = $descriptionResource->get("<http://dati.umbria.it/tourism/ontology/testo>")->getValue();
+                        $descriptionText = ($p = $descriptionResource->get("<http://dati.umbria.it/tourism/ontology/text>")) != null ? $p->getValue() : null;
+                        $descriptionTitle = $descriptionResource->get("<http://dati.umbria.it/tourism/ontology/titolo>")->getValue();
                         $descriptionObject = new EventDescription();
                         $descriptionObject->setTitle($descriptionTitle);
                         $descriptionObject->setText($descriptionText);
@@ -423,7 +432,6 @@ class EntitiesUpdateController extends BaseController
             $this->mapFax($iatResource,$newIat);
             $this->mapAddress($iatResource,$newIat,$isAlreadyPersisted);
 
-            $newIat->setProvenance(($p = $iatResource->get("<http://purl.org/dc/elements/1.1/provenance>")) != null ? $p->getValue() : null);
             $newIat->setLanguage(($p = $iatResource->get("<http://purl.org/dc/elements/1.1/language>")) != null ? $p->getUri() : null);
             $newIat->setMunicipalitiesList(($p = $iatResource->get("<http://dati.umbria.it/tourism/ontology/lista_comuni>")) != null ? $p->getValue() : null);
 
@@ -458,12 +466,11 @@ class EntitiesUpdateController extends BaseController
             $this->mapAddress($sportFacilityResource,$newSportFacility,$isAlreadyPersisted);
 
 
-            $newSportFacility->setProvenance(($p = $sportFacilityResource->get("<http://purl.org/dc/elements/1.1/provenance>")) != null ? $p->getValue() : null);
             $newSportFacility->setMunicipality(($p = $sportFacilityResource->get("<http://dbpedia.org/ontology/municipality>")) != null ? $p->getValue() : null);
             $newSportFacility->setPublicTransport(($p = $sportFacilityResource->get("<http://dati.umbria.it/base/ontology/trasportoPubblico>")) != null ? $p->getValue() : null);
             $newSportFacility->setParkings(($p = $sportFacilityResource->get("<http://dati.umbria.it/base/ontology/numeroPostiMacchina>")) != null ? $p->getValue() : null);
             $newSportFacility->setDisabledAccess(($p = $sportFacilityResource->get("<http://dati.umbria.it/base/ontology/accessoDisabili>")) != null && strtoupper($p->getValue()) == "TRUE" ? 1 : 0);
-            $newSportFacility->setEmployees(($p = $sportFacilityResource->get("<http://dati.umbria.it/base/ontology/accessoDisabili>")) != null ? $p->getValue() : null);
+            $newSportFacility->setEmployees(($p = $sportFacilityResource->get("<http://dbpedia.org/ontology/numberOfEmployees>")) != null ? $p->getValue() : null);
 
             /**@var EasyRdf_Resource[] $sportarray */
             $sportarray = $sportFacilityResource->all("<http://schema.org/sport>");
@@ -511,7 +518,6 @@ class EntitiesUpdateController extends BaseController
             $this->mapEmail($professionResource,$newProfession);
             $this->mapAddress($professionResource,$newProfession,$isAlreadyPersisted);
 
-            $newProfession->setProvenance(($p = $professionResource->get("<http://purl.org/dc/elements/1.1/provenance>")) != null ? $p->getValue() : null);
             $newProfession->setResourceOriginUrl(($p = $professionResource->get("<http://dati.umbria.it/tourism/ontology/url_risorsa>")) != null ? $p->getValue() : null);
 
             $spokenLanguagearray = $professionResource->all("<http://dati.umbria.it/tourism/ontology/lingua_parlata>");
@@ -1010,6 +1016,9 @@ class EntitiesUpdateController extends BaseController
             $entity->setAddress(null);
         }
         $addressResource = $resource->get("<http://dati.umbria.it/tourism/ontology/indirizzo>");
+        if ($addressResource == null) {
+            $addressResource = $resource->get("<http://schema.org/address>");
+        }
         if ($addressResource != null) {
             $addressObject = new Address();
             $addressObject->setPostalCode(($p = $addressResource->get("<http://schema.org/postalCode>")) != null ? $p->getValue() : null);
@@ -1017,30 +1026,37 @@ class EntitiesUpdateController extends BaseController
             $addressObject->setAddressLocality(($p = $addressResource->get("<http://schema.org/addressLocality>")) != null ? $p->getValue() : null);
             $addressObject->setAddressRegion(($p = $addressResource->get("<http://schema.org/addressRegion>")) != null ? $p->getValue() : null);
             $addressObject->setStreetAddress(($p = $addressResource->get("<http://schema.org/streetAddress>")) != null ? $p->getValue() : null);
+            $addressObject->setLat(($p = $addressResource->get("<http://www.w3.org/2003/01/geo/wgs84_pos#lat>")) != null ? $p->getValue() : null);
+            $addressObject->setLng(($p = $addressResource->get("<http://www.w3.org/2003/01/geo/wgs84_pos#long>")) != null ? $p->getValue() : null);
             $entity->setAddress($addressObject);
 
-            // Google Maps Api --------------------------
-            $url = 'http://maps.google.com/maps/api/geocode/json?address=' . urlencode($addressObject->getStreetAddress()) .
-                '+' . $addressObject->getPostalCode() .
-                '+' . $addressObject->getAddressLocality() .
-                '+' . $addressObject->getAddressRegion() . '+Umbria+Italia';
 
-            $resp = json_decode($this->getWebResource($url), true);
+            if ($addressObject->getLat() != null && $addressObject->getLng() != null) {
+                $entity->setLat($addressObject->getLat());
+                $entity->setLng($addressObject->getLng());
+            } else {
+                // Google Maps Api --------------------------
+                $url = 'http://maps.google.com/maps/api/geocode/json?address=' . urlencode($addressObject->getStreetAddress()) .
+                    '+' . $addressObject->getPostalCode() .
+                    '+' . $addressObject->getAddressLocality() .
+                    '+' . $addressObject->getAddressRegion() . '+Umbria+Italia';
 
-            // response status will be 'OK', if able to geocode given address
-            if ($resp['status'] == 'OK') {
+                $resp = json_decode($this->getWebResource($url), true);
 
-                // get the important data
-                $lat = $resp['results'][0]['geometry']['location']['lat'];
-                $lng = $resp['results'][0]['geometry']['location']['lng'];
+                // response status will be 'OK', if able to geocode given address
+                if ($resp['status'] == 'OK') {
 
-                // verify if data is complete
-                if ($lat && $lng) {
-                    $entity->setLat($lat);
-                    $entity->setLng($lng);
+                    // get the important data
+                    $lat = $resp['results'][0]['geometry']['location']['lat'];
+                    $lng = $resp['results'][0]['geometry']['location']['lng'];
+
+                    // verify if data is complete
+                    if ($lat && $lng) {
+                        $entity->setLat($lat);
+                        $entity->setLng($lng);
+                    }
                 }
             }
-
         }
     }
 
@@ -1094,53 +1110,17 @@ class EntitiesUpdateController extends BaseController
 
 
     private function getGraphURLByEntityType($entityType){
-        $graphURL="";
-        switch($entityType){
-            case 'attractor':$graphURL=$this->container->getParameter('attractors_graph_url');
-                break;
-            case 'consortium':$graphURL=$this->container->getParameter('consortium_graph_url');
-                break;
-            case 'event':$graphURL=$this->container->getParameter('event_graph_url');
-                break;
-            case 'iat':$graphURL=$this->container->getParameter('iat_graph_url');
-                break;
-            case 'sport':$graphURL=$this->container->getParameter('sport_facility_graph_url');
-                break;
-            case 'profession':$graphURL=$this->container->getParameter('profession_graph_url');
-                break;
-            case 'proposal':$graphURL=$this->container->getParameter('proposal_graph_url');
-                break;
-            case 'accomodation':$graphURL="";
-                break;
-            case 'travel':$graphURL=$this->container->getParameter('travel_agency_graph_url');
-                break;
+        if ($entityType == "accomodation") return "";
+        else {
+            return $this->container->getParameter($entityType . "_graph_url");
         }
-        return $graphURL;
     }
 
     private function getResourceTypeURIByEntityType($entityType){
-        $typeURI="";
-        switch($entityType){
-            case 'attractor':$typeURI=$this->container->getParameter('attractors_type_uri');
-                break;
-            case 'consortium':$typeURI=$this->container->getParameter('consortium_type_uri');
-                break;
-            case 'event':$typeURI=$this->container->getParameter('event_type_uri');
-                break;
-            case 'iat':$typeURI=$this->container->getParameter('iat_type_uri');
-                break;
-            case 'sport':$typeURI=$this->container->getParameter('sport_facility_type_uri');
-                break;
-            case 'profession':$typeURI=$this->container->getParameter('profession_type_uri');
-                break;
-            case 'proposal':$typeURI=$this->container->getParameter('proposal_type_uri');
-                break;
-            case 'accomodation':$typeURI="";
-                break;
-            case 'travel':$typeURI=$this->container->getParameter('travel_agency_type_uri');
-                break;
+        if ($entityType == "accomodation") return "";
+        else {
+            return $this->container->getParameter($entityType . "_type_uri");
         }
-        return $typeURI;
     }
 
 

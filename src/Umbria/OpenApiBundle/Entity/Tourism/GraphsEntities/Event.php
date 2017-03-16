@@ -40,19 +40,6 @@ class Event
      */
     private $images;
 
-    /**
-     * @var array
-     *
-     * @ORM\Column(name="externalLinks", type="array", nullable=true)
-     */
-    private $externalLinks;
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="textTitle", type="string", length=255, nullable=true)
-     */
-    private $textTitle;
 
     /**
      * @var \DateTime
@@ -68,12 +55,6 @@ class Event
      */
     private $endDate;
 
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="provenance", type="string", length=255, nullable=true)
-     */
-    private $provenance;
 
     /**
      * @var string
@@ -117,12 +98,6 @@ class Event
      */
     private $types;
 
-    /**
-     * @var array
-     *
-     * @ORM\Column(name="categories", type="array", nullable=true)
-     */
-    private $categories;
 
 
     /**
@@ -228,54 +203,6 @@ class Event
     }
 
     /**
-     * Set externalLinks
-     *
-     * @param array $externalLinks
-     *
-     * @return Event
-     */
-    public function setExternalLinks($externalLinks)
-    {
-        $this->externalLinks = $externalLinks;
-
-        return $this;
-    }
-
-    /**
-     * Get externalLinks
-     *
-     * @return array
-     */
-    public function getExternalLinks()
-    {
-        return $this->externalLinks;
-    }
-
-    /**
-     * Set textTitle
-     *
-     * @param string $textTitle
-     *
-     * @return Event
-     */
-    public function setTextTitle($textTitle)
-    {
-        $this->textTitle = $textTitle;
-
-        return $this;
-    }
-
-    /**
-     * Get textTitle
-     *
-     * @return string
-     */
-    public function getTextTitle()
-    {
-        return $this->textTitle;
-    }
-
-    /**
      * Set startDate
      *
      * @param \DateTime $startDate
@@ -323,29 +250,6 @@ class Event
         return $this->endDate;
     }
 
-    /**
-     * Set provenance
-     *
-     * @param string $provenance
-     *
-     * @return Event
-     */
-    public function setProvenance($provenance)
-    {
-        $this->provenance = $provenance;
-
-        return $this;
-    }
-
-    /**
-     * Get provenance
-     *
-     * @return string
-     */
-    public function getProvenance()
-    {
-        return $this->provenance;
-    }
 
     /**
      * Set resourceOriginUrl
@@ -491,29 +395,6 @@ class Event
         return $this->types;
     }
 
-    /**
-     * Set categories
-     *
-     * @param array $categories
-     *
-     * @return Event
-     */
-    public function setCategories($categories)
-    {
-        $this->categories = $categories;
-
-        return $this;
-    }
-
-    /**
-     * Get categories
-     *
-     * @return array
-     */
-    public function getCategories()
-    {
-        return $this->categories;
-    }
 
     /**
      * Set language
@@ -539,29 +420,6 @@ class Event
         return $this->language;
     }
 
-    /**
-     * Set description
-     *
-     * @param string $description
-     *
-     * @return Event
-     */
-    public function setDescription($description)
-    {
-        $this->description = $description;
-
-        return $this;
-    }
-
-    /**
-     * Get description
-     *
-     * @return string
-     */
-    public function getDescription()
-    {
-        return $this->description;
-    }
 
     /**
      * Set comment

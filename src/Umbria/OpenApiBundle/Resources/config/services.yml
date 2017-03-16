@@ -7,9 +7,9 @@ parameters:
     proposal_days_to_old: 0
     proposal_type_uri: http://dati.umbria.it/tourism/ontology/agenzia_viaggio
 
-    attractors_graph_url : http://dati.umbria.it/dataset/ab39e23d-540f-4aa1-b27f-3fb244837545/resource/df1012df-04d4-4666-acd1-d756d3b1c903/download/attrattori.rdf
+    attractor_graph_url : http://dati.umbria.it/dataset/ab39e23d-540f-4aa1-b27f-3fb244837545/resource/df1012df-04d4-4666-acd1-d756d3b1c903/download/attrattori.rdf
     attractor_days_to_old: 0
-    attractors_type_uri: http://linkedgeodata.org/ontology/Attraction
+    attractor_type_uri: http://linkedgeodata.org/ontology/Attraction
 
     event_graph_url: http://dati.umbria.it/dataset/410faa97-546b-4362-a6d7-f8794d18ed19/resource/0b15587e-fe50-4db5-86ab-14e3d50c0a82/download/eventi.rdf
     event_days_to_old: 0
@@ -32,7 +32,7 @@ parameters:
     iat_type_uri: http://dati.umbria.it/tourism/ontology/iat
 
     sport_facility_graph_url: http://dati.umbria.it/dataset/c2b4592f-618f-41eb-a37d-f0fc74200441/resource/d7699464-3b02-46cd-baff-6780a2c76643/download/impiantisportivigeocoded.rdf
-    impianto_sportivo_days_to_old: 0
+    sport_facility_days_to_old: 0
     sport_facility_type_uri: http://dbpedia.org/ontology/sportFacility
 
     accomodation_days_to_old: 0

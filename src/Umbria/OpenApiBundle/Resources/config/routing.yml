@@ -19,7 +19,7 @@ umbria_open_api_sparql_manual_query_data:
     defaults: {_controller: UmbriaOpenApiBundle:SparqlManual:sparqlQueryData }
 
 umbria_open_api_entities_update:
-    path:     /entities_update/{attractor}/{consortium}/{event}/{iat}/{sport}/{profession}/{proposal}/{accomodation}/{travel}
+    path:     /entities_update/{attractor}/{consortium}/{event}/{iat}/{sport_facility}/{profession}/{proposal}/{accomodation}/{travel_agency}
     defaults: { _controller: UmbriaOpenApiBundle:EntitiesUpdate:index }
     methods:  [GET]
     requirements:
@@ -27,11 +27,11 @@ umbria_open_api_entities_update:
       consortium: '0|1'
       event: '0|1'
       iat: '0|1'
-      sport: '0|1'
+      sport_facility: '0|1'
       profession: '0|1'
       proposal: '0|1'
       accomodation: '0|1'
-      travel: '0|1'
+      travel_agency: '0|1'
 
 
 # API REST

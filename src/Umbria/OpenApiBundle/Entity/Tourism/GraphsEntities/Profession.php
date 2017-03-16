@@ -41,13 +41,6 @@ class Profession
     private $lastName;
 
     /**
-     * @var string
-     *
-     * @ORM\Column(name="provenance", type="string", length=255, nullable=true)
-     */
-    private $provenance;
-
-    /**
      * @var array
      *
      * @ORM\Column(name="email", type="array", nullable=true)
@@ -200,29 +193,6 @@ class Profession
         return $this->lastName;
     }
 
-    /**
-     * Set provenance
-     *
-     * @param string $provenance
-     *
-     * @return Profession
-     */
-    public function setProvenance($provenance)
-    {
-        $this->provenance = $provenance;
-
-        return $this;
-    }
-
-    /**
-     * Get provenance
-     *
-     * @return string
-     */
-    public function getProvenance()
-    {
-        return $this->provenance;
-    }
 
     /**
      * Set email

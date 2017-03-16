@@ -8,7 +8,7 @@ use JMS\Serializer\Annotation as JMS;
 use Umbria\OpenApiBundle\Entity\Type;
 
 /**
- * ImpiantoSportivo
+ * SportFacility
  *
  * @author Lorenzo Franco Ranucci
  *
@@ -41,12 +41,6 @@ class SportFacility
     private $types;
 
 
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="provenance", type="string", length=255, nullable=true)
-     */
-    private $provenance;
 
     /**
      * @var array
@@ -97,6 +91,20 @@ class SportFacility
      * @ORM\JoinColumn(name="address_id", referencedColumnName="id")
      */
     private $address;
+
+    /**
+     * @var float
+     *
+     * @ORM\Column(name="lat", type="float", nullable=true)
+     */
+    private $lat;
+
+    /**
+     * @var float
+     *
+     * @ORM\Column(name="lng", type="float", nullable=true)
+     */
+    private $lng;
 
     /**
      * @var \DateTime
@@ -156,29 +164,6 @@ class SportFacility
         return $this->name;
     }
 
-    /**
-     * Set provenance
-     *
-     * @param string $provenance
-     *
-     * @return TravelAgency
-     */
-    public function setProvenance($provenance)
-    {
-        $this->provenance = $provenance;
-
-        return $this;
-    }
-
-    /**
-     * Get provenance
-     *
-     * @return string
-     */
-    public function getProvenance()
-    {
-        return $this->provenance;
-    }
 
     /**
      * @return array
@@ -353,6 +338,54 @@ class SportFacility
     public function getTypes()
     {
         return $this->types;
+    }
+
+    /**
+     * Set lat
+     *
+     * @param float $lat
+     *
+     * @return Attractor
+     */
+    public function setLat($lat)
+    {
+        $this->lat = $lat;
+
+        return $this;
+    }
+
+    /**
+     * Get lat
+     *
+     * @return float
+     */
+    public function getLat()
+    {
+        return $this->lat;
+    }
+
+    /**
+     * Set lng
+     *
+     * @param float $lng
+     *
+     * @return Attractor
+     */
+    public function setLng($lng)
+    {
+        $this->lng = $lng;
+
+        return $this;
+    }
+
+    /**
+     * Get lng
+     *
+     * @return float
+     */
+    public function getLng()
+    {
+        return $this->lng;
     }
 
 

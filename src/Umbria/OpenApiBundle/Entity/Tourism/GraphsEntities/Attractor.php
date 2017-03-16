@@ -103,12 +103,6 @@ class Attractor
      */
     private $textTitle;
 
-    /**
-     * @var array
-     *
-     * @ORM\Column(name="externalLinks", type="array", nullable=true)
-     */
-    private $externalLinks;
 
     /**
      * @var string
@@ -158,12 +152,6 @@ class Attractor
      */
     private $comment;
 
-    /**
-     * @var array
-     *
-     * @ORM\Column(name="travelTime", type="array", nullable=true)
-     */
-    private $travelTime;
 
     /**
      * @var AttractorDescription
@@ -456,29 +444,6 @@ class Attractor
         return $this->textTitle;
     }
 
-    /**
-     * Set externalLinks
-     *
-     * @param array $externalLinks
-     *
-     * @return Attractor
-     */
-    public function setExternalLinks($externalLinks)
-    {
-        $this->externalLinks = $externalLinks;
-
-        return $this;
-    }
-
-    /**
-     * Get externalLinks
-     *
-     * @return array
-     */
-    public function getExternalLinks()
-    {
-        return $this->externalLinks;
-    }
 
     /**
      * Set resourceOriginUrl
@@ -617,29 +582,6 @@ class Attractor
         return $this->comment;
     }
 
-    /**
-     * Set travelTime
-     *
-     * @param array $travelTime
-     *
-     * @return Attractor
-     */
-    public function setTravelTime($travelTime)
-    {
-        $this->travelTime = $travelTime;
-
-        return $this;
-    }
-
-    /**
-     * Get travelTime
-     *
-     * @return array
-     */
-    public function getTravelTime()
-    {
-        return $this->travelTime;
-    }
 
     /**
      * @return AttractorDescription
