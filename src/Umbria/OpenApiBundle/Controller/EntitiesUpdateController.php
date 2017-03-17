@@ -10,6 +10,7 @@ use EasyRdf_Literal;
 use EasyRdf_Resource;
 use EasyRdf_Sparql_Client;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Umbria\OpenApiBundle\Controller\Tourism\BaseController;
 use Umbria\OpenApiBundle\Entity\Address;
 use Umbria\OpenApiBundle\Entity\Category;
@@ -57,11 +58,14 @@ class EntitiesUpdateController extends BaseController
 
     public function indexAction(Request $request)
     {
+        $response = array();
         foreach($request->attributes->all()["_route_params"]  as $entityType=>$updateEntityType){
+            $responseObj = new \stdClass();
+            $responseObj->entityType = $entityType;
             if($updateEntityType){
                 $settingsRepo=$this->em->getRepository('UmbriaOpenApiBundle:Tourism\Setting');
                 $setting = $settingsRepo->findOneBy(array('datasetName' => $entityType));
-                $daysToOld = $this->container->getParameter($entityType.'_days_to_old');
+                $daysToHold = $this->container->getParameter($entityType . '_days_to_old');
 
                 $isFirstEntityTypeRetrieve=false;
                 $diff=null;
@@ -72,12 +76,16 @@ class EntitiesUpdateController extends BaseController
                 }
                 else{
                     $isUpdating = $setting->getIsUpdating();
-                    if ($isUpdating) return;
-                    $now = new DateTime('now');
-                    $diff = $setting->getUpdatedAt()->diff($now);
+                    $responseObj->wasAlreadyUpdating = $isUpdating;
+                    if (!$isUpdating) {
+                        $now = new DateTime('now');
+                        $diff = $setting->getUpdatedAt()->diff($now);
+                        $responseObj->daysToHold = $daysToHold;
+                        $responseObj->daysPassed = $diff->days;
+                    }
                 }
 
-                if ($isFirstEntityTypeRetrieve || ($diff->days >= $daysToOld)) {
+                if ($isFirstEntityTypeRetrieve || (!$isUpdating && $diff->days >= $daysToHold)) {
                     $setting->setIsUpdating(true);
                     $this->em->persist($setting);
                     $this->em->flush();
@@ -87,6 +95,7 @@ class EntitiesUpdateController extends BaseController
                     try {
 
                         $logger->info("$entityType update start");
+                        $responseObj->start = new \DateTime();
 
                         $this->updateEntities($entityType);
 
@@ -94,8 +103,8 @@ class EntitiesUpdateController extends BaseController
                         $this->em->persist($setting);
                         $this->em->flush();
                         $this->em->getConnection()->commit();
-                        $logger->info("$entityType update end");
                     } catch (\Exception $e) {
+                        $responseObj->error = $e->getMessage();
                         $logger->error('$entityType update failed with error: ' . $e->getMessage());
                         $this->em->getConnection()->rollBack();
 
@@ -103,10 +112,17 @@ class EntitiesUpdateController extends BaseController
                         $setting->setIsUpdating(false);
                         $this->em->persist($setting);
                         $this->em->flush();
+
+                        $logger->info("$entityType update end");
+                        $responseObj->end = new \DateTime();
                     }
+                    $response[] = $responseObj;
                 }
             }
         }
+        $response = new Response(json_encode($response, JSON_PRETTY_PRINT));
+        $response->headers->set('Content-Type', 'application/json');
+        return $response;
     }
 
 
@@ -577,8 +593,6 @@ class EntitiesUpdateController extends BaseController
             $this->mapCategories($proposalResource,$newProposal);
             $this->mapImages($proposalResource,$newProposal);
             $newProposal->setResourceOriginUrl(($p = $proposalResource->get("<http://dati.umbria.it/tourism/ontology/url_risorsa>")) != null ? $p->getValue() : null);
-            $newProposal->setProvenance(($p = $proposalResource->get("<http://purl.org/dc/elements/1.1/provenance>")) != null ? $p->getValue() : null);
-            $newProposal->setProvenance(($p = $proposalResource->get("<http://purl.org/dc/elements/1.1/provenance>")) != null ? $p->getValue() : null);
             $newProposal->setPlaceFrom(($p = $proposalResource->get("<http://dati.umbria.it/tourism/ontology/luogo_da>")) != null ? $p->getValue() : null);
             $newProposal->setPlaceTo(($p = $proposalResource->get("<http://dati.umbria.it/tourism/ontology/luogo_a>")) != null ? $p->getValue() : null);
             $newProposal->setLat(($p = $proposalResource->get("<http://www.w3.org/2003/01/geo/wgs84_pos#lat>")) != null ? (float)$p->getValue() : null);
@@ -682,8 +696,7 @@ class EntitiesUpdateController extends BaseController
             $this->mapEmail($travelAgencyResource,$newTravelAgency);
             $this->mapFax($travelAgencyResource,$newTravelAgency);
             $this->mapAddress($travelAgencyResource,$newTravelAgency,$isAlreadyPersisted);
-            $newTravelAgency->setResourceOriginUrl(($p = $travelAgencyResource->get("<http://dati.umbria.it/tourism/ontology/url_risorsa>")) != null ? $p->getValue() : null);
-            $newTravelAgency->setProvenance(($p = $travelAgencyResource->get("<http://purl.org/dc/elements/1.1/provenance>")) != null ? $p->getValue() : null);
+            $newTravelAgency->setResourceOriginUrl(($p = $travelAgencyResource->get("<http://xmlns.com/foaf/0.1/homepage>")) != null ? $p->getValue() : null);
 
             if (!$isAlreadyPersisted) {
                 $this->em->persist($newTravelAgency);
@@ -708,7 +721,7 @@ class EntitiesUpdateController extends BaseController
                             OPTIONAL{?uri <http://dati.umbria.it/base/ontology/numeroUnita> ?units}.
                             OPTIONAL{?uri <http://dati.umbria.it/base/ontology/numeroLetti> ?beds}.
                             OPTIONAL{?uri <http://dati.umbria.it/base/ontology/numeroBagni> ?toilets}.
-                    } ";
+                    }LIMIT 5 ";
         $sparqlResult = $sparqlClient->query($query);
         $sparqlResult->rewind();
         while ($sparqlResult->valid()) {
@@ -728,7 +741,6 @@ class EntitiesUpdateController extends BaseController
                 $newAccomodation->setUri($uri);
                 $newAccomodation->setLastUpdateAt(new \DateTime('now'));
                 $newAccomodation->setName(isset($current->name) ? $current->name->getValue() : null);
-                $newAccomodation->setProvenance(isset($current->provenance) ? $current->provenance->getValue() : null);
                 $newAccomodation->setTypology(isset($current->typology) ? $current->typology->getValue() : null);
                 $newAccomodation->setResourceOriginUrl(isset($current->resourceOriginUrl) ? $current->resourceOriginUrl->getValue() : null);
                 $newAccomodation->setUnits(isset($current->units) ? $current->units->getValue() : null);

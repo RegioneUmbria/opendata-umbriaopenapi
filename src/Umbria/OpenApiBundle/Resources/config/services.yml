@@ -5,7 +5,7 @@ parameters:
 
     proposal_graph_url: http://dati.umbria.it/dataset/8b4f4b4b-7abc-4103-9082-96ba7023021d/resource/3a6d0af4-8ba2-43ce-9ffe-8eb62e0a0375/download/proposte.rdf
     proposal_days_to_old: 0
-    proposal_type_uri: http://dati.umbria.it/tourism/ontology/agenzia_viaggio
+    proposal_type_uri: http://dati.umbria.it/tourism/ontology/proposte
 
     attractor_graph_url : http://dati.umbria.it/dataset/ab39e23d-540f-4aa1-b27f-3fb244837545/resource/df1012df-04d4-4666-acd1-d756d3b1c903/download/attrattori.rdf
     attractor_days_to_old: 0

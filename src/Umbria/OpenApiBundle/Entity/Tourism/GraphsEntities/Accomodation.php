@@ -45,12 +45,6 @@ class Accomodation
      */
     private $types;
 
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="provenance", type="string", length=255, nullable=true)
-     */
-    private $provenance;
 
     /**
      * @var string
@@ -206,29 +200,6 @@ class Accomodation
         return $this->types;
     }
 
-    /**
-     * Set provenance
-     *
-     * @param string $provenance
-     *
-     * @return Accomodation
-     */
-    public function setProvenance($provenance)
-    {
-        $this->provenance = $provenance;
-
-        return $this;
-    }
-
-    /**
-     * Get provenance
-     *
-     * @return string
-     */
-    public function getProvenance()
-    {
-        return $this->provenance;
-    }
 
     /**
      * @return string

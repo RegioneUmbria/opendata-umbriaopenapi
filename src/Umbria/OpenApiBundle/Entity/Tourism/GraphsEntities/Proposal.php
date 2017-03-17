@@ -33,12 +33,6 @@ class Proposal
      */
     private $name;
 
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="provenance", type="string", length=255, nullable=true)
-     */
-    private $provenance;
 
     /**
      * @var string
@@ -55,12 +49,6 @@ class Proposal
      */
     private $images;
 
-    /**
-     * @var array
-     *
-     * @ORM\Column(name="externalLinks", type="array", nullable=true)
-     */
-    private $externalLinks;
 
     /**
      * @var string
@@ -132,12 +120,6 @@ class Proposal
      */
     private $lng;
 
-    /**
-     * @var array
-     *
-     * @ORM\Column(name="travelTime", type="array", nullable=true)
-     */
-    private $travelTime;
 
     /**
      * @var string
@@ -210,29 +192,6 @@ class Proposal
         return $this->name;
     }
 
-    /**
-     * Set provenance
-     *
-     * @param string $provenance
-     *
-     * @return Proposal
-     */
-    public function setProvenance($provenance)
-    {
-        $this->provenance = $provenance;
-
-        return $this;
-    }
-
-    /**
-     * Get provenance
-     *
-     * @return string
-     */
-    public function getProvenance()
-    {
-        return $this->provenance;
-    }
 
     /**
      * Set subject
@@ -283,29 +242,7 @@ class Proposal
         return $this->images;
     }
 
-    /**
-     * Set externalLinks
-     *
-     * @param array $externalLinks
-     *
-     * @return Proposal
-     */
-    public function setExternalLinks($externalLinks)
-    {
-        $this->externalLinks = $externalLinks;
 
-        return $this;
-    }
-
-    /**
-     * Get externalLinks
-     *
-     * @return array
-     */
-    public function getExternalLinks()
-    {
-        return $this->externalLinks;
-    }
 
     /**
      * Set textTitle
@@ -499,29 +436,7 @@ class Proposal
         return $this->lng;
     }
 
-    /**
-     * Set travelTime
-     *
-     * @param array $travelTime
-     *
-     * @return Proposal
-     */
-    public function setTravelTime($travelTime)
-    {
-        $this->travelTime = $travelTime;
 
-        return $this;
-    }
-
-    /**
-     * Get travelTime
-     *
-     * @return array
-     */
-    public function getTravelTime()
-    {
-        return $this->travelTime;
-    }
 
     /**
      * @return ProposalDescription

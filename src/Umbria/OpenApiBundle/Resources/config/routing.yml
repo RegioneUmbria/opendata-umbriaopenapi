@@ -21,7 +21,7 @@ umbria_open_api_sparql_manual_query_data:
 umbria_open_api_entities_update:
     path:     /entities_update/{attractor}/{consortium}/{event}/{iat}/{sport_facility}/{profession}/{proposal}/{accomodation}/{travel_agency}
     defaults: { _controller: UmbriaOpenApiBundle:EntitiesUpdate:index }
-    methods:  [GET]
+    methods:  [PUT]
     requirements:
       attractor: '0|1'
       consortium: '0|1'
