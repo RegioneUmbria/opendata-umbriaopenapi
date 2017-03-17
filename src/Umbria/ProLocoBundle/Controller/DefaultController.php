@@ -33,8 +33,8 @@ class DefaultController extends Controller
     private $consortiumRepo;
     private $professionRepo;
     private $iatRepo;
-    private $strutturaRicettivaRepo;
-    private $impiantoSportivoRepo;
+    private $accomodationRepo;
+    private $sportFacilityRepo;
 
 
     /**
@@ -52,8 +52,8 @@ class DefaultController extends Controller
         $this->consortiumRepo = $em->getRepository('UmbriaOpenApiBundle:Tourism\GraphsEntities\Consortium');
         $this->professionRepo = $em->getRepository('UmbriaOpenApiBundle:Tourism\GraphsEntities\Profession');
         $this->iatRepo = $em->getRepository('UmbriaOpenApiBundle:Tourism\GraphsEntities\Iat');
-        $this->strutturaRicettivaRepo = $em->getRepository('UmbriaOpenApiBundle:Tourism\GraphsEntities\StrutturaRicettiva');
-        $this->impiantoSportivoRepo = $em->getRepository('UmbriaOpenApiBundle:Tourism\GraphsEntities\ImpiantoSportivo');
+        $this->accomodationRepo = $em->getRepository('UmbriaOpenApiBundle:Tourism\GraphsEntities\Accomodation');
+        $this->sportFacilityRepo = $em->getRepository('UmbriaOpenApiBundle:Tourism\GraphsEntities\SportFacility');
     }
 
     public function indexAction()
@@ -67,8 +67,8 @@ class DefaultController extends Controller
         $consorzi = array();
         $professioni = array();
         $iats = array();
-        $struttureRicettive = array();
-        $impiantiSportivi = array();
+        $accomodations = array();
+        $sportFacilities = array();
 
             /** @var Attractor $attractor */
         foreach ($this->attractorRepo->findAll() as $attractor) {
@@ -217,53 +217,53 @@ class DefaultController extends Controller
                 }
             }
         }
-        /** @var SportFacility $impiantoSportivo */
-        foreach ($this->impiantoSportivoRepo->findAll() as $impiantoSportivo) {
-            if (isset($impiantoSportivo)) {
+        /** @var SportFacility $sportFacility */
+        foreach ($this->sportFacilityRepo->findAll() as $sportFacility) {
+            if (isset($sportFacility)) {
                 $place = new PlaceDetails();
-                $place->setId($impiantoSportivo->getId());
-                $place->setName($impiantoSportivo->getName());
-                $place->setType('tourism_impianto_sportivo');
+                $place->setId($sportFacility->getId());
+                $place->setName($sportFacility->getName());
+                $place->setType('tourism_sport_facility');
 
-                if ($impiantoSportivo->getAddress() != null &&
-                    $impiantoSportivo->getAddress()->getLat() != null && $impiantoSportivo->getAddress()->getLat() != 0
+                if ($sportFacility->getAddress() != null &&
+                    $sportFacility->getAddress()->getLat() != null && $sportFacility->getAddress()->getLat() != 0
                 ) {
-                    $place->setLatitude($impiantoSportivo->getAddress()->getLat());
-                    $place->setLongitude($impiantoSportivo->getAddress()->getLng());
+                    $place->setLatitude($sportFacility->getAddress()->getLat());
+                    $place->setLongitude($sportFacility->getAddress()->getLng());
                 }
 
-                $uri = $this->get('router')->generate('impianto_sportivo_show', array(
-                    'id' => $impiantoSportivo->getId(),
+                $uri = $this->get('router')->generate('sport_facility_show', array(
+                    'id' => $sportFacility->getId(),
                 ), UrlGeneratorInterface::ABSOLUTE_URL);
                 $place->setHref($uri);
 
                 if ($place->getLatitude() != '') {
-                    $impiantiSportivi[] = $place;
+                    $sportFacilities[] = $place;
                 }
             }
         }
-        /** @var Accomodation $strutturaRicettiva */
-        foreach ($this->strutturaRicettivaRepo->findAll() as $strutturaRicettiva) {
-            if (isset($strutturaRicettiva)) {
+        /** @var Accomodation $accomodation */
+        foreach ($this->accomodationRepo->findAll() as $accomodation) {
+            if (isset($accomodation)) {
                 $place = new PlaceDetails();
-                $place->setId($strutturaRicettiva->getId());
-                $place->setName($strutturaRicettiva->getName());
-                $place->setType('tourism_struttura_ricettiva');
+                $place->setId($accomodation->getId());
+                $place->setName($accomodation->getName());
+                $place->setType('accomodation');
 
-                if ($strutturaRicettiva->getAddress() != null &&
-                    $strutturaRicettiva->getAddress()->getLat() != null && $strutturaRicettiva->getAddress()->getLat() != 0
+                if ($accomodation->getAddress() != null &&
+                    $accomodation->getAddress()->getLat() != null && $accomodation->getAddress()->getLat() != 0
                 ) {
-                    $place->setLatitude($strutturaRicettiva->getAddress()->getLat());
-                    $place->setLongitude($strutturaRicettiva->getAddress()->getLng());
+                    $place->setLatitude($accomodation->getAddress()->getLat());
+                    $place->setLongitude($accomodation->getAddress()->getLng());
                 }
 
-                $uri = $this->get('router')->generate('struttura-ricettiva_show', array(
-                    'id' => $strutturaRicettiva->getId(),
+                $uri = $this->get('router')->generate('accomodation_show', array(
+                    'id' => $accomodation->getId(),
                 ), UrlGeneratorInterface::ABSOLUTE_URL);
                 $place->setHref($uri);
 
                 if ($place->getLatitude() != '') {
-                    $struttureRicettive[] = $place;
+                    $accomodations[] = $place;
                 }
             }
         }
@@ -271,8 +271,8 @@ class DefaultController extends Controller
         return $this->render('UmbriaProLocoBundle:Default:index.html.twig', array(
             'attrattori' => $attrattori, 'proposte' => $proposte, 'eventi' => $eventi,
             'agenzieViaggio' => $agenzieViaggio, 'professioni' => $professioni, 'consorzi' => $consorzi,
-            'iat' => $iats, 'struttureRicettive' => $struttureRicettive,
-            'impiantiSportivi' => $impiantiSportivi
+            'iat' => $iats, 'accomodation' => $accomodations,
+            'sportFacility' => $sportFacilities
         ));
     }
 }

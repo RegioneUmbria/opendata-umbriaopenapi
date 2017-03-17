@@ -5,8 +5,8 @@
         <div class="row">
             <div class="page-header">
                 <h2>
-                    {{ impiantoSportivo.name }}
-                    <a href="{{ impiantoSportivo.uri }}" target="_blank">
+                    {{ sportFacility.name }}
+                    <a href="{{ sportFacility.uri }}" target="_blank">
                         <span class="glyphicon glyphicon-link pull-right" aria-hidden="true"></span>
                     </a>
                 </h2>
@@ -16,7 +16,7 @@
             <div class="col-md-7">
                 <h4>Sport praticati</h4>
                 <ul>
-                    {% for sport in impiantoSportivo.sport %}
+                    {% for sport in sportFacility.sport %}
 
                         <li>{{ sport }}</li>
 
@@ -28,37 +28,37 @@
                 <h4>Indirizzo</h4>
                 <address>
                     <p>
-                        {% if impiantoSportivo.address.streetAddress != '' %}
-                            {{ impiantoSportivo.address.streetAddress }}
+                        {% if sportFacility.address.streetAddress != '' %}
+                            {{ sportFacility.address.streetAddress }}
                         {% endif %}
                         <br>
-                        {% if impiantoSportivo.address.addressLocality != '' %}
-                            {{ impiantoSportivo.address.addressLocality }}
+                        {% if sportFacility.address.addressLocality != '' %}
+                            {{ sportFacility.address.addressLocality }}
                         {% endif %}
-                        {% if impiantoSportivo.address.addressRegion != '' %}
-                            , {{ impiantoSportivo.address.addressRegion }}
+                        {% if sportFacility.address.addressRegion != '' %}
+                            , {{ sportFacility.address.addressRegion }}
                         {% endif %}
-                        {% if impiantoSportivo.address.postalCode != '' %}
-                            {{ impiantoSportivo.address.postalCode }}
+                        {% if sportFacility.address.postalCode != '' %}
+                            {{ sportFacility.address.postalCode }}
                         {% endif %}
                     </p>
                 </address>
                 <p>
                 <hr>
                 <p>
-                    {% if impiantoSportivo.publicTransport is not null %}
-                        <span title="Trasporto pubblico">Trasporto pubblico:</span>{{ impiantoSportivo.publicTransport }}
+                    {% if sportFacility.publicTransport is not null %}
+                        <span title="Trasporto pubblico">Trasporto pubblico:</span>{{ sportFacility.publicTransport }}
                     {% endif %}
                     <br>
-                    {% if impiantoSportivo.parkings is not null %}
-                        <span title="Parcheggi">Parcheggi:</span>{{ impiantoSportivo.parkings }}
+                    {% if sportFacility.parkings is not null %}
+                        <span title="Parcheggi">Parcheggi:</span>{{ sportFacility.parkings }}
                     {% endif %}
                     <br>
-                    {% if impiantoSportivo.employees is not null %}
-                        <span title="Impiegati">Impiegati:</span>{{ impiantoSportivo.employees }}
+                    {% if sportFacility.employees is not null %}
+                        <span title="Impiegati">Impiegati:</span>{{ sportFacility.employees }}
                     {% endif %}
                     <br>
-                    {% if impiantoSportivo.disabledAccess is not null and  impiantoSportivo.disabledAccess=='true' %}
+                    {% if sportFacility.disabledAccess is not null and  sportFacility.disabledAccess=='true' %}
                         <span title="Accesso disabili">Accessibile ai disabili</span>
                     {% endif %}
                 </p>
@@ -74,8 +74,8 @@
                                 <small><b>Risorsa RDF</b></small>
                             </td>
                             <td><b>
-                                    <a href="{{ impiantoSportivo.uri }}">
-                                        {{ impiantoSportivo.uri }}
+                                    <a href="{{ sportFacility.uri }}">
+                                        {{ sportFacility.uri }}
                                     </a>
                                 </b>
                             </td>
@@ -85,11 +85,11 @@
                                 <small>coordinate</small>
                             </td>
                             <td>
-                                {% if impiantoSportivo.address is not null and impiantoSportivo.address.lat is not null %}
+                                {% if sportFacility.address is not null and sportFacility.address.lat is not null %}
                                     <small>umbria:</small>
                                     <a href="{{ path('umbria_pro_loco_homepage') }}"
-                                       onclick="setCoordCookie({{ impiantoSportivo.address.lat }},{{ impiantoSportivo.address.lng }},'tourism_impianto_sportivo_cb')">
-                                        {{ impiantoSportivo.address.lat }},{{ impiantoSportivo.address.lng }}
+                                       onclick="setCoordCookie({{ sportFacility.address.lat }},{{ sportFacility.address.lng }},'tourism_sport_facility_cb')">
+                                        {{ sportFacility.address.lat }},{{ sportFacility.address.lng }}
                                     </a>
                                 {% else %}
                                     -
@@ -101,8 +101,8 @@
                                 <small>comune</small>
                             </td>
                             <td>
-                                {% if impiantoSportivo.municipality is not null %}
-                                    {{ impiantoSportivo.municipality }}
+                                {% if sportFacility.municipality is not null %}
+                                    {{ sportFacility.municipality }}
                                 {% else %}
                                     -
                                 {% endif %}
@@ -113,7 +113,7 @@
                                 <small>tipi</small>
                             </td>
                             <td>
-                                {% for type in impiantoSportivo.types %}
+                                {% for type in sportFacility.types %}
 
                                     <a href="{{ type.uri }}">
                                         {% if type.name is not null %}{{ type.name }}
@@ -134,8 +134,8 @@
         <div class="row">
             <br/>
             <ol class="breadcrumb">
-                <li><a href="{{ path('impianto_sportivo_index') }}">Lista Impianti Sportivi</a></li>
-                <li class="active">{{ impiantoSportivo.name }}</li>
+                <li><a href="{{ path('sport_facility_index') }}">Lista Impianti Sportivi</a></li>
+                <li class="active">{{ sportFacility.name }}</li>
             </ol>
         </div>
     </div>
@@ -151,9 +151,9 @@
 
         {% set latitude = '' %}
         {% set longitude = '' %}
-        {% if impiantoSportivo.address.lat is not null %}
-        {% set latitude = impiantoSportivo.address.lat %}
-        {% set longitude = impiantoSportivo.address.lng %}
+        {% if sportFacility.address.lat is not null %}
+        {% set latitude = sportFacility.address.lat %}
+        {% set longitude = sportFacility.address.lng %}
         {% endif %}
 
 

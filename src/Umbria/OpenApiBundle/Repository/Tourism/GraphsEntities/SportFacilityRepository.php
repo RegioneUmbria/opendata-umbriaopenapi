@@ -22,8 +22,8 @@ class SportFacilityRepository extends EntityRepository
     {
         $criteria = new Criteria();
         $criteria->where($criteria->expr()->lt('lastUpdateAt', $date));
-        foreach ($this->matching($criteria) as $impianto) {
-            $this->getEntityManager()->remove($impianto);
+        foreach ($this->matching($criteria) as $sportFacility) {
+            $this->getEntityManager()->remove($sportFacility);
         }
         if ($em == null) {
             $em = $this->getEntityManager();

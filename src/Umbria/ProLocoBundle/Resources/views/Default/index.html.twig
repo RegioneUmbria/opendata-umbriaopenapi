@@ -22,8 +22,8 @@
             "tourism_consortium": [],
             "tourism_profession": [],
             "tourism_iat": [],
-            "tourism_impianto_sportivo": [],
-            "tourism_struttura_ricettiva": []
+            "tourism_sport_facility": [],
+            "accomodation": []
         };
 
         // lista delle posizioni
@@ -118,8 +118,8 @@
             },
             {% endfor %}
         ];
-        var impiantiSportivi = [
-            {% for entity in impiantiSportivi %}
+        var sportFacility = [
+            {% for entity in sportFacility %}
             {
                 id: {{ entity.id }},
                 name: "{{ entity.name }}",
@@ -131,8 +131,8 @@
             },
             {% endfor %}
         ];
-        var struttureRicettive = [
-            {% for entity in struttureRicettive %}
+        var accomodation = [
+            {% for entity in accomodation %}
             {
                 id: {{ entity.id }},
                 name: "{{ entity.name }}",
@@ -152,8 +152,8 @@
         var mcConsorzi;
         var mcProfessioni;
         var mcIat;
-        var mcStruttureRicettive;
-        var mcImpiantiSportivi;
+        var mcAccomodation;
+        var mcSportFacility;
 
         function initMap() {
             // opzioni mappa
@@ -300,7 +300,7 @@
                 }
             ];
             var mcOptions8 = {maxZoom: 15, styles: clusterStyles8};
-            mcImpiantiSportivi = new MarkerClusterer(map, [], mcOptions8);
+            mcSportFacility = new MarkerClusterer(map, [], mcOptions8);
 
             var clusterStyles9 = [
                 {
@@ -311,7 +311,7 @@
                 }
             ];
             var mcOptions9 = {maxZoom: 15, styles: clusterStyles9};
-            mcStruttureRicettive = new MarkerClusterer(map, [], mcOptions9);
+            mcAccomodation = new MarkerClusterer(map, [], mcOptions9);
 
         }
         function initLegend() {
@@ -394,8 +394,8 @@
                     '<div class="legendrow">' +
                     '<div style="background-color:#525052; width: 10px; height: 10px; display: inline-block"></div> ' +
                     '<span class="legendlabel">Impianti Sportivi </span>' +
-                    '<input id="tourism_impianto_sportivo_cb" class="legendcheckbox" type="checkbox"' +
-                    'onchange="updateMarkers(\'tourism_impianto_sportivo\')">' +
+                    '<input id="tourism_sport_facility_cb" class="legendcheckbox" type="checkbox"' +
+                    'onchange="updateMarkers(\'tourism_sport_facility\')">' +
                     '</div>';
             legend.appendChild(div);
 
@@ -404,8 +404,8 @@
                     '<div class="legendrow">' +
                     '<div style="background-color:#fa6603; width: 10px; height: 10px; display: inline-block"></div> ' +
                     '<span class="legendlabel">Strutture Ricettive </span>' +
-                    '<input id="tourism_struttura_ricettiva_cb" class="legendcheckbox" type="checkbox"' +
-                    'onchange="updateMarkers(\'tourism_struttura_ricettiva\')">' +
+                    '<input id="accomodation_cb" class="legendcheckbox" type="checkbox"' +
+                    'onchange="updateMarkers(\'accomodation\')">' +
                     '</div>';
             legend.appendChild(div);
             setLayerFromCookies();
@@ -445,8 +445,8 @@
                 document.getElementById("tourism_consortium_cb").checked = false;
                 document.getElementById("tourism_profession_cb").checked = false;
                 document.getElementById("tourism_iat_cb").checked = false;
-                document.getElementById("tourism_impianto_sportivo_cb").checked = false;
-                document.getElementById("tourism_struttura_ricettiva_cb").checked = false;
+                document.getElementById("tourism_sport_facility_cb").checked = false;
+                document.getElementById("accomodation_cb").checked = false;
                 document.getElementById(layer).checked = true;
             }
 
@@ -547,8 +547,8 @@
                 tourism_consortium: 0,
                 tourism_profession: 0,
                 tourism_iat: 0,
-                tourism_impianto_sportivo: 0,
-                tourism_struttura_ricettiva: 0
+                tourism_sport_facility: 0,
+                accomodation: 0
             };
 
             if (document.getElementById("tourism_attractor_cb").checked) {
@@ -572,11 +572,11 @@
             if (document.getElementById("tourism_iat_cb").checked) {
                 selectedPOI.tourism_iat = 1;
             }
-            if (document.getElementById("tourism_impianto_sportivo_cb").checked) {
-                selectedPOI.tourism_impianto_sportivo = 1;
+            if (document.getElementById("tourism_sport_facility_cb").checked) {
+                selectedPOI.tourism_sport_facility = 1;
             }
-            if (document.getElementById("tourism_struttura_ricettiva_cb").checked) {
-                selectedPOI.tourism_struttura_ricettiva = 1;
+            if (document.getElementById("accomodation_cb").checked) {
+                selectedPOI.accomodation = 1;
             }
             return selectedPOI;
         }
@@ -612,12 +612,12 @@
                 selectedPOI[cnt] = "tourism_iat";
                 cnt++;
             }
-            if (document.getElementById("tourism_impianto_sportivo_cb").checked) {
-                selectedPOI[cnt] = "tourism_impianto_sportivo";
+            if (document.getElementById("tourism_sport_facility_cb").checked) {
+                selectedPOI[cnt] = "tourism_sport_facility";
                 cnt++;
             }
-            if (document.getElementById("tourism_struttura_ricettiva_cb").checked) {
-                selectedPOI[cnt] = "tourism_struttura_ricettiva";
+            if (document.getElementById("accomodation_cb").checked) {
+                selectedPOI[cnt] = "accomodation";
                 cnt++;
             }
             return selectedPOI;
@@ -663,10 +663,10 @@
                 return professioni;
             } else if (type == 'tourism_iat') {
                 return iat;
-            } else if (type == 'tourism_impianto_sportivo') {
-                return impiantiSportivi;
-            } else if (type == 'tourism_struttura_ricettiva') {
-                return struttureRicettive;
+            } else if (type == 'tourism_sport_facility') {
+                return sportFacility;
+            } else if (type == 'accomodation') {
+                return accomodation;
             }
             return [];
         }
@@ -686,10 +686,10 @@
                 return mcProfessioni;
             } else if (type == 'tourism_iat') {
                 return mcIat;
-            } else if (type == 'tourism_impianto_sportivo') {
-                return mcImpiantiSportivi;
-            } else if (type == 'tourism_struttura_ricettiva') {
-                return mcStruttureRicettive;
+            } else if (type == 'tourism_sport_facility') {
+                return mcSportFacility;
+            } else if (type == 'accomodation') {
+                return mcAccomodation;
             }
             return [];
         }
@@ -710,9 +710,9 @@
                 markerIcon = '{{ asset('img/map/marker_profession_blue.png') }}';
             } else if (type == 'tourism_iat') {
                 markerIcon = '{{ asset('img/map/marker_info_blue.png') }}';
-            } else if (type == 'tourism_impianto_sportivo') {
+            } else if (type == 'tourism_sport_facility') {
                 markerIcon = '{{ asset('img/map/marker_football_grey.png') }}';
-            } else if (type == 'tourism_struttura_ricettiva') {
+            } else if (type == 'accomodation') {
                 markerIcon = '{{ asset('img/map/marker_star_orange_dark.png') }}';
             }
             return markerIcon;
@@ -733,10 +733,10 @@
                 return markerGroups.tourism_profession;
             } else if (type == 'tourism_iat') {
                 return markerGroups.tourism_iat;
-            } else if (type == 'tourism_impianto_sportivo') {
-                return markerGroups.tourism_impianto_sportivo;
-            } else if (type == 'tourism_struttura_ricettiva') {
-                return markerGroups.tourism_struttura_ricettiva;
+            } else if (type == 'tourism_sport_facility') {
+                return markerGroups.tourism_sport_facility;
+            } else if (type == 'accomodation') {
+                return markerGroups.accomodation;
             }
             return [];
         }
@@ -771,12 +771,12 @@
             } else if (type == 'tourism_iat') {
                 if (document.getElementById("tourism_iat_cb").checked)
                     return true;
-            } else if (type == 'tourism_impianto_sportivo') {
-                if (document.getElementById("tourism_impianto_sportivo_cb").checked)
+            } else if (type == 'tourism_sport_facility') {
+                if (document.getElementById("tourism_sport_facility_cb").checked)
                     return true;
             }
-            else if (type == 'tourism_struttura_ricettiva') {
-                if (document.getElementById("tourism_struttura_ricettiva_cb").checked)
+            else if (type == 'accomodation') {
+                if (document.getElementById("accomodation_cb").checked)
                     return true;
             }
             return false;

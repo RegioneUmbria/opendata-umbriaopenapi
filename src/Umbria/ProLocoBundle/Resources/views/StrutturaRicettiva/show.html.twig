@@ -5,8 +5,8 @@
         <div class="row">
             <div class="page-header">
                 <h2>
-                    {{ strutturaRicettiva.name }}
-                    <a href="{{ strutturaRicettiva.uri }}" target="_blank">
+                    {{ accomodation.name }}
+                    <a href="{{ accomodation.uri }}" target="_blank">
                         <span class="glyphicon glyphicon-link pull-right" aria-hidden="true"></span>
                     </a>
                 </h2>
@@ -17,50 +17,50 @@
                 <p>
                 <h4>Indirizzo</h4>
                     <address>
-                        {% if strutturaRicettiva.address.streetAddress != '' %}
-                            {{ strutturaRicettiva.address.streetAddress }}
+                        {% if accomodation.address.streetAddress != '' %}
+                            {{ accomodation.address.streetAddress }}
                         {% endif %}
                         <br>
-                        {% if strutturaRicettiva.address.addressLocality != '' %}
-                            {{ strutturaRicettiva.address.addressLocality }}
+                        {% if accomodation.address.addressLocality != '' %}
+                            {{ accomodation.address.addressLocality }}
                         {% endif %}
-                        {% if strutturaRicettiva.address.addressRegion != '' %}
-                            , {{ strutturaRicettiva.address.addressRegion }}
+                        {% if accomodation.address.addressRegion != '' %}
+                            , {{ accomodation.address.addressRegion }}
                         {% endif %}
-                        {% if strutturaRicettiva.address.postalCode != '' %}
-                            {{ strutturaRicettiva.address.postalCode }}
+                        {% if accomodation.address.postalCode != '' %}
+                            {{ accomodation.address.postalCode }}
                         {% endif %}
                     </address>
                 </p>
                 <hr>
                 <p>
                 <h4>Contatti</h4>
-                    {% for phone in strutturaRicettiva.telephone %}
+                {% for phone in accomodation.telephone %}
                         <span title="Telefono">Telefono:</span> {{ phone }}<br>
                     {% endfor %}
-                    {% for faxNumber in strutturaRicettiva.fax %}
+                {% for faxNumber in accomodation.fax %}
                         <span title="Fax">Fax:</span> {{ faxNumber }}<br>
                     {% endfor %}
-                    {% for mbox in strutturaRicettiva.email %}
+                {% for mbox in accomodation.email %}
                         <span title="Email">Email:</span> {{ mbox }}<br>
                     {% endfor %}
-                    {% for homepage in strutturaRicettiva.resourceOriginUrl %}
+                {% for homepage in accomodation.resourceOriginUrl %}
                         <span title="Homepage">Homepage:</span> {{ homepage }}<br>
                     {% endfor %}
                 </p>
                 <hr>
                 <p>
                 <h4>Caratteristiche</h4>
-                    {% if strutturaRicettiva.units is not null %}
-                        <span title="Unità">Unità:</span>{{ strutturaRicettiva.units }}
+                {% if accomodation.units is not null %}
+                    <span title="Unità">Unità:</span>{{ accomodation.units }}
                     {% endif %}
                     <br>
-                    {% if strutturaRicettiva.beds is not null %}
-                        <span title="Letti">Letti:</span>{{ strutturaRicettiva.beds }}
+                {% if accomodation.beds is not null %}
+                    <span title="Letti">Letti:</span>{{ accomodation.beds }}
                     {% endif %}
                     <br>
-                    {% if strutturaRicettiva.toilets is not null %}
-                        <span title="Bagni">Bagni:</span>{{ strutturaRicettiva.toilets }}
+                {% if accomodation.toilets is not null %}
+                    <span title="Bagni">Bagni:</span>{{ accomodation.toilets }}
                     {% endif %}
                 </p>
             </div>
@@ -74,8 +74,8 @@
                                 <small><b>Risorsa RDF</b></small>
                             </td>
                             <td><b>
-                                    <a href="{{ strutturaRicettiva.uri }}">
-                                        {{ strutturaRicettiva.uri }}
+                                    <a href="{{ accomodation.uri }}">
+                                        {{ accomodation.uri }}
                                     </a>
                                 </b>
                             </td>
@@ -85,11 +85,11 @@
                                 <small>coordinate</small>
                             </td>
                             <td>
-                                {% if strutturaRicettiva.address is not null and strutturaRicettiva.address.lat is not null %}
+                                {% if accomodation.address is not null and accomodation.address.lat is not null %}
                                     <small>umbria:</small>
                                     <a href="{{ path('umbria_pro_loco_homepage') }}"
-                                       onclick="setCoordCookie({{ strutturaRicettiva.address.lat }},{{ strutturaRicettiva.address.lng }},'tourism_struttura_ricettiva_cb')">
-                                        {{ strutturaRicettiva.address.lat }},{{ strutturaRicettiva.address.lng }}
+                                       onclick="setCoordCookie({{ accomodation.address.lat }},{{ accomodation.address.lng }},'accomodation_cb')">
+                                        {{ accomodation.address.lat }},{{ accomodation.address.lng }}
                                     </a>
                                 {% else %}
                                     -
@@ -101,7 +101,7 @@
                                 <small>categorie</small>
                             </td>
                             <td>
-                                {% for category in strutturaRicettiva.categories %}
+                                {% for category in accomodation.categories %}
                                     {% if category.name is not null %}
                                         <span class="label label-default">{{ category.name }}</span>
                                         <br/>
@@ -120,7 +120,7 @@
                                 <small>tipi</small>
                             </td>
                             <td>
-                                {% for type in strutturaRicettiva.types %}
+                                {% for type in accomodation.types %}
 
                                     <a href="{{ type.uri }}">
                                         {% if type.name is not null %}{{ type.name }}
@@ -141,8 +141,8 @@
         <div class="row">
             <br/>
             <ol class="breadcrumb">
-                <li><a href="{{ path('struttura-ricettiva_index') }}">Lista Strutture ricettive</a></li>
-                <li class="active">{{ strutturaRicettiva.name }}</li>
+                <li><a href="{{ path('accomodation_index') }}">Lista Strutture ricettive</a></li>
+                <li class="active">{{ accomodation.name }}</li>
             </ol>
         </div>
     </div>
@@ -158,9 +158,9 @@
 
         {% set latitude = '' %}
         {% set longitude = '' %}
-        {% if strutturaRicettiva.address.lat is not null %}
-        {% set latitude = strutturaRicettiva.address.lat %}
-        {% set longitude = strutturaRicettiva.address.lng %}
+        {% if accomodation.address.lat is not null %}
+        {% set latitude = accomodation.address.lat %}
+        {% set longitude = accomodation.address.lng %}
         {% endif %}
 
 

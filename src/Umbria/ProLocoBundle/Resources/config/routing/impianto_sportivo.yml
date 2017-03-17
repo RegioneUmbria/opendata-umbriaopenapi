@@ -1,9 +1,0 @@
-impianto_sportivo_index:
-    path:     /
-    defaults: { _controller: "UmbriaProLocoBundle:ImpiantoSportivo:index" }
-    methods:  [GET,POST]
-
-impianto_sportivo_show:
-    path:     /{id}/show
-    defaults: { _controller: "UmbriaProLocoBundle:ImpiantoSportivo:show" }
-    methods:  GET

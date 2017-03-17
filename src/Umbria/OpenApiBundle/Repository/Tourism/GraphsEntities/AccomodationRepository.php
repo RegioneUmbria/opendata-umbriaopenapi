@@ -21,8 +21,8 @@ class AccomodationRepository extends EntityRepository
     {
         $criteria = new Criteria();
         $criteria->where($criteria->expr()->lt('lastUpdateAt', $date));
-        foreach ($this->matching($criteria) as $struttura) {
-            $this->getEntityManager()->remove($struttura);
+        foreach ($this->matching($criteria) as $accomodation) {
+            $this->getEntityManager()->remove($accomodation);
         }
         if ($em == null) {
             $em = $this->getEntityManager();

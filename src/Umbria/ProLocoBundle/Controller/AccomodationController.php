@@ -9,15 +9,15 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 
 /**
- * Class ImpiantoSportivoController
+ * Class AccomodationController
  * @package Umbria\ProLocoBundle\Controller
  *
  * @author Lorenzo Franco Ranucci <loryzizu@gmail.com>
  */
-class ImpiantoSportivoController extends Controller
+class AccomodationController extends Controller
 {
     /**
-     * Lists all ImpiantoSportivo entities.
+     * Lists all Accomodation entities.
      *
      * @param Request $request
      *
@@ -48,7 +48,7 @@ class ImpiantoSportivoController extends Controller
         }
 
         $repository = $this->getDoctrine()
-            ->getRepository('UmbriaOpenApiBundle:Tourism\GraphsEntities\ImpiantoSportivo');
+            ->getRepository('UmbriaOpenApiBundle:Tourism\GraphsEntities\Accomodation');
         $qb = $repository->createQueryBuilder('a');
         $query = $qb
             ->where($qb->expr()->like('a.name', '?1'))
@@ -61,14 +61,14 @@ class ImpiantoSportivoController extends Controller
             $itemsOnPage/*limit per page*/
         );
 
-        return $this->render('UmbriaProLocoBundle:ImpiantoSportivo:index.html.twig', array(
+        return $this->render('UmbriaProLocoBundle:Accomodation:index.html.twig', array(
             'pagination' => $pagination,
             'form' => $form->createView(),
         ));
     }
 
     /**
-     * Finds and displays a ImpiantoSportivo entity.
+     * Finds and displays a Accomodation entity.
      *
      * @param int $id
      *
@@ -77,10 +77,10 @@ class ImpiantoSportivoController extends Controller
     public function showAction($id)
     {
         $repository = $this->getDoctrine()
-            ->getRepository('UmbriaOpenApiBundle:Tourism\GraphsEntities\ImpiantoSportivo');
-        $impiantoSportivo = $repository->findById($id);
-        return $this->render('UmbriaProLocoBundle:ImpiantoSportivo:show.html.twig', array(
-            'impiantoSportivo' => $impiantoSportivo[0]
+            ->getRepository('UmbriaOpenApiBundle:Tourism\GraphsEntities\Accomodation');
+        $accomodation = $repository->findById($id);
+        return $this->render('UmbriaProLocoBundle:Accomodation:show.html.twig', array(
+            'accomodation' => $accomodation[0]
         ));
     }
 }

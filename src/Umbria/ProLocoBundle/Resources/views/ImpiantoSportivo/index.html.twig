@@ -30,16 +30,16 @@
                 </tr>
                 </thead>
                 <tbody>
-                {% for impiantoSportivo in pagination %}
+                {% for sportFacility in pagination %}
                     <tr>
                         <td class="text-muted">
                             <small>{{ loop.index }}</small>
                         </td>
-                        <td>{{ impiantoSportivo.name }}</td>
-                        <td>{{ impiantoSportivo.municipality }}</td>
+                        <td>{{ sportFacility.name }}</td>
+                        <td>{{ sportFacility.municipality }}</td>
                         <td>
                             <a class="btn btn-info btn-xs"
-                               href="{{ path('impianto_sportivo_show', { 'id': impiantoSportivo.id }) }}">show</a>
+                               href="{{ path('sport_facility_show', { 'id': sportFacility.id }) }}">show</a>
                         </td>
                     </tr>
                 {% endfor %}

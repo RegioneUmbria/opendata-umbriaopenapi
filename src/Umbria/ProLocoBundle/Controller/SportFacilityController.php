@@ -9,15 +9,15 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 
 /**
- * Class StrutturaRicettivaController
+ * Class SportFacilityController
  * @package Umbria\ProLocoBundle\Controller
  *
  * @author Lorenzo Franco Ranucci <loryzizu@gmail.com>
  */
-class StrutturaRicettivaController extends Controller
+class SportFacilityController extends Controller
 {
     /**
-     * Lists all StrutturaRicettiva entities.
+     * Lists all SportFacility entities.
      *
      * @param Request $request
      *
@@ -48,7 +48,7 @@ class StrutturaRicettivaController extends Controller
         }
 
         $repository = $this->getDoctrine()
-            ->getRepository('UmbriaOpenApiBundle:Tourism\GraphsEntities\StrutturaRicettiva');
+            ->getRepository('UmbriaOpenApiBundle:Tourism\GraphsEntities\SportFacility');
         $qb = $repository->createQueryBuilder('a');
         $query = $qb
             ->where($qb->expr()->like('a.name', '?1'))
@@ -61,14 +61,14 @@ class StrutturaRicettivaController extends Controller
             $itemsOnPage/*limit per page*/
         );
 
-        return $this->render('UmbriaProLocoBundle:StrutturaRicettiva:index.html.twig', array(
+        return $this->render('UmbriaProLocoBundle:SportFacility:index.html.twig', array(
             'pagination' => $pagination,
             'form' => $form->createView(),
         ));
     }
 
     /**
-     * Finds and displays a StrutturaRicettiva entity.
+     * Finds and displays a SportFacility entity.
      *
      * @param int $id
      *
@@ -77,10 +77,10 @@ class StrutturaRicettivaController extends Controller
     public function showAction($id)
     {
         $repository = $this->getDoctrine()
-            ->getRepository('UmbriaOpenApiBundle:Tourism\GraphsEntities\StrutturaRicettiva');
-        $strutturaRicettiva = $repository->findById($id);
-        return $this->render('UmbriaProLocoBundle:StrutturaRicettiva:show.html.twig', array(
-            'strutturaRicettiva' => $strutturaRicettiva[0]
+            ->getRepository('UmbriaOpenApiBundle:Tourism\GraphsEntities\SportFacility');
+        $sportFacility = $repository->findById($id);
+        return $this->render('UmbriaProLocoBundle:SportFacility:show.html.twig', array(
+            'sportFacility' => $sportFacility[0]
         ));
     }
 }
