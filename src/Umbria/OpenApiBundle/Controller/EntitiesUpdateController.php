@@ -721,7 +721,7 @@ class EntitiesUpdateController extends BaseController
                             OPTIONAL{?uri <http://dati.umbria.it/base/ontology/numeroUnita> ?units}.
                             OPTIONAL{?uri <http://dati.umbria.it/base/ontology/numeroLetti> ?beds}.
                             OPTIONAL{?uri <http://dati.umbria.it/base/ontology/numeroBagni> ?toilets}.
-                    }LIMIT 5 ";
+                    } ";
         $sparqlResult = $sparqlClient->query($query);
         $sparqlResult->rewind();
         while ($sparqlResult->valid()) {
