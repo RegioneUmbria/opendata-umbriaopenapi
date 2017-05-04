@@ -542,8 +542,10 @@ class EntitiesUpdateController extends BaseController
                 $newProfession->setSpokenLanguage(array());
                 $cnt = 0;
                 foreach ($spokenLanguagearray as $spokenLanguage) {
-                    $tempSpokenLanguage[$cnt] = $spokenLanguage->toRdfPhp()['value'];
-                    $cnt++;
+                    if ($spokenLanguage->getLang() == "it") {
+                        $tempSpokenLanguage[$cnt] = $spokenLanguage->toRdfPhp()['value'];
+                        $cnt++;
+                    }
                 }
                 count($tempSpokenLanguage) > 0 ? $newProfession->setSpokenLanguage($tempSpokenLanguage) : $newProfession->setSpokenLanguage(null);
             }
@@ -554,8 +556,10 @@ class EntitiesUpdateController extends BaseController
                 $newProfession->setSpecialization(array());
                 $cnt = 0;
                 foreach ($specializationarray as $specialization) {
-                    $tempSpecialization[$cnt] = $specialization->toRdfPhp()['value'];
-                    $cnt++;
+                    if ($specialization->getLang() == "it") {
+                        $tempSpecialization[$cnt] = $specialization->toRdfPhp()['value'];
+                        $cnt++;
+                    }
                 }
                 count($tempSpecialization) > 0 ? $newProfession->setSpecialization($tempSpecialization) : $newProfession->setSpecialization(null);
             }
