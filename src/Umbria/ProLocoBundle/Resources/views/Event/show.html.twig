@@ -11,7 +11,7 @@
         </div>
         <div class="row">
             <div class="col-md-7">
-                <h4>{{ event.textTitle }}</h4>
+                <h4>{{ event.name }}</h4>
                 <p>
                     <small>
                         {{ event.comment }}
@@ -57,17 +57,6 @@
                         </tr>
                         <tr>
                             <td>
-                                <small>categorie</small>
-                            </td>
-                            <td>
-                                {% for categoria in event.categories %}
-                                    <span class="label label-default">{{ categoria }}</span>
-                                    <br/>
-                                {% endfor %}
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
                                 <small>periodo</small>
                             </td>
                             <td>{{ event.startDate.format("d/m/Y") }} - {{ event.endDate.format("d/m/Y") }}</td>
@@ -84,7 +73,7 @@
                             </td>
                             <td>
                                 {% if event.types != null %}
-                                    {{ event.types[0] }}
+                                    {{ event.types[0].uri }}
                                 {% else %}
                                     -
                                 {% endif %}
