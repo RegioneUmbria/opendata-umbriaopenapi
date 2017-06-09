@@ -1,4 +1,4 @@
-#Umbria Open API
+# Umbria Open API
 
 A demo project ([UmbriaOpenAPI](https://umbriaopenapi.regione.umbria.it)) using Linked Open Data of [Regione Umbria](http://www.regione.umbria.it/home).
 
@@ -15,15 +15,15 @@ Linked Open Data are retrieved from [Regione Umbria's catalog](http://dati.umbri
 
 These data should be retrieved periodically in RDF format. RDF entities are mapped as PHP objects, stored in a relational database and used by the portal.
 
-##Get started
+## Get started
 
 These instructions will get you a copy of the project up and running on your local machine for development and testing purposes.
 
-###Prerequisites
+### Prerequisites
 
 The project require a webserver with PHP and MySQL modules and PHP CLI enabled.
 
-###Installing
+### Installing
 
 Clone or download this project.
 
@@ -36,14 +36,14 @@ The relational database must be generated using Symfony CLI tools ([see](http://
 **NOTE** Symfony *console* file is placed under *app* directory instead *bin* directory as in the last Symfony versions.
 
 
-##Running
+## Running
 If all is well configured, the project homepage should be visible at ```http://localhost/umbriaopenapi/web/```
 
 Download RDF data and persist them performing a PUT request at ```http://localhost/umbriaopenapi/web/entities_update/[0|1]/[0|1]/[0|1]/[0|1]/[0|1]/[0|1]/[0|1]/[0|1]/[0|1]``` .
 Consult routing rule *umbria_open_api_entities_update* [here](\src\Umbria\OpenApiBundle\Resources\config\routing.yml) to better understand how to call this service. Note it may be a large time consuming task.
 This service can be called periodically (with cronjobs) to ensure data are always up to date.
 
-##Built With
+## Built With
 
 * PHP language with [Symfony framework version 2.8.11](https://symfony.com/).
 
@@ -57,12 +57,12 @@ This service can be called periodically (with cronjobs) to ensure data are alway
 
 * [Telegram bundle](https://packagist.org/packages/shaygan/telegram-bot-api-bundle) to implement Telegram BOT server.
 
-##Authors
+## Authors
 
 * Azzurra Pantella - *Project manager* - [AzzurraP](https://github.com/AzzurraP)
 * Lorenzo Ranucci - *Project developer* - [lorenzoranucci](https://github.com/lorenzoranucci)
 
-##License
+## License
 
 
 
