@@ -65,5 +65,3 @@ This service can be called periodically (with cronjobs) to ensure data are alway
 ## License
 
 
-
-
