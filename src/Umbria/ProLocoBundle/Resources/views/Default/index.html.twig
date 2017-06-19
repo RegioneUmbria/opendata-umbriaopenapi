@@ -166,13 +166,6 @@
             // creazione mappa
             map = new google.maps.Map(document.getElementById('map'), mapOptions);
 
-            oms = new OverlappingMarkerSpiderfier(map, {
-                markersWontMove: true,
-                markersWontHide: true,
-                basicFormatEvents: true
-            });
-
-
             initLegend();
             setPositionFromCookies();
             // GEOLOCATION
@@ -481,15 +474,11 @@
                 animation: google.maps.Animation.DROP
             });
 
-            google.maps.event.addListener(marker, 'spider_click', function (e) {  // 'spider_click', not plain 'click'
-
-            });
-
             // creazione array markers
             if (!markerGroups[type]) markerGroups[type] = [];
             markerGroups[type].push(marker);
 
-            oms.addMarker(marker);
+            mc.addMarker(marker);
 
             var contentString = '<div id="content">' +
                     '<h5>' +
@@ -504,7 +493,7 @@
             var infowindow = new google.maps.InfoWindow({
                 content: contentString
             });
-            marker.addListener('spider_click', function () {
+            marker.addListener('click', function () {
                 infowindow.open(map, marker);
             });
 
@@ -642,7 +631,7 @@
                 var icon = getMarkerIconByType(type);
                 var bounds = new google.maps.LatLngBounds();
                 for (var i = 0; i < places.length; i++) {
-                    addMarkerCall(places[i], bounds, 0, mc, icon, oms);
+                    addMarkerCall(places[i], bounds, 0, mc, icon);
                 }
             }
             else {
@@ -817,5 +806,4 @@
 
     </script>
     <script async defer src="https://maps.googleapis.com/maps/api/js?callback=initMap"></script>
-    <script async defer src="{{ asset('js/oms.min.js') }}"></script>
 {% endblock %}
