@@ -69,7 +69,4 @@ This service can be called periodically (with cronjobs) to ensure data is always
 * [Dipartimento di Informatica, Sistemistica e Comunicazione - Università degli Studi Milano Bicocca](http://www.disco.unimib.it)
 
 
-## License
-
-[GNU GPL](https://www.gnu.org/licenses/gpl-3.0.en.html)
 
