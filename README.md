@@ -36,7 +36,7 @@ Make sure to place the project under a directory your web server is configured t
 
 Check if your environment satisfy Symfony requirements ([see](https://symfony.com/doc/current/reference/requirements.html))
 
-Create a database with [this](/app/config/parameters.yml) parameters (you can change them).
+Create a database with [this](app/config/parameters.yml) parameters (you can change them).
 The database tables must be generated using Symfony CLI tools ([see](http://symfony.com/doc/current/doctrine.html)).
 
 **NOTE** Symfony *console* file is placed under *app* directory instead of *bin* directory as in the last Symfony versions.
@@ -46,7 +46,7 @@ The database tables must be generated using Symfony CLI tools ([see](http://symf
 If well configured, the project homepage should be visible at ```http://localhost/umbriaopenapi/web/```
 
 Download RDF data and persist them performing a PUT request at ```http://localhost/umbriaopenapi/web/entities_update/[0|1]/[0|1]/[0|1]/[0|1]/[0|1]/[0|1]/[0|1]/[0|1]/[0|1]``` .
-Consult routing rule *umbria_open_api_entities_update* [here](\src\Umbria\OpenApiBundle\Resources\config\routing.yml) to better understand how to call this service. Note it may be a large time consuming task.
+Consult routing rule *umbria_open_api_entities_update* [here](src/Umbria/OpenApiBundle/Resources/config/routing.yml) to better understand how to call this service. Note it may be a large time consuming task.
 This service can be called periodically (with cronjobs) to ensure data is always up to date.
 
 ## Built With
