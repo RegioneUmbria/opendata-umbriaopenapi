@@ -32,7 +32,7 @@ The project require a webserver with PHP and MySQL modules and PHP CLI enabled.
 
 Clone or download this project.
 
-Make sure to place the project under a directory your web server is configured to work with (we assume the directory is /var/www/umbriaopenapi).
+Make sure to place the project under a directory your web server is configured to work with (we assume the directory is /var/www/opendata-umbriaopenapi).
 
 Check if your environment satisfy Symfony requirements ([see](https://symfony.com/doc/current/reference/requirements.html))
 
@@ -48,9 +48,9 @@ and tables with:
 
 
 ## Running
-If well configured, the project homepage should be visible at ```http://localhost/umbriaopenapi/web/```
+If well configured, the project homepage should be visible at ```http://localhost/opendata-umbriaopenapi/web/```
 
-Download RDF data and persist them performing a PUT request at ```http://localhost/umbriaopenapi/web/entities_update/[0|1]/[0|1]/[0|1]/[0|1]/[0|1]/[0|1]/[0|1]/[0|1]/[0|1]``` .
+Download RDF data and persist them performing a PUT request at ```http://localhost/opendata-umbriaopenapi/web/entities_update/[0|1]/[0|1]/[0|1]/[0|1]/[0|1]/[0|1]/[0|1]/[0|1]/[0|1]``` .
 Consult routing rule *umbria_open_api_entities_update* [here](src/Umbria/OpenApiBundle/Resources/config/routing.yml) to better understand how to call this service. Note it may be a large time consuming task.
 This service can be called periodically (with cronjobs) to ensure data is always up to date.
 
