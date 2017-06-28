@@ -36,8 +36,13 @@ Make sure to place the project under a directory your web server is configured t
 
 Check if your environment satisfy Symfony requirements ([see](https://symfony.com/doc/current/reference/requirements.html))
 
-Create a database with [this](app/config/parameters.yml.dist) parameters (you can change them).
-The database tables must be generated using Symfony CLI tools ([see](http://symfony.com/doc/current/doctrine.html)).
+Create the database:  
+
+```php app/console doctrine:database:create``` 
+
+and tables with: 
+
+``` php app/console doctrine:schema:update --force``` ([see](http://symfony.com/doc/current/doctrine.html)).
 
 **NOTE** Symfony *console* file is placed under *app* directory instead of *bin* directory as in the last Symfony versions.
 
