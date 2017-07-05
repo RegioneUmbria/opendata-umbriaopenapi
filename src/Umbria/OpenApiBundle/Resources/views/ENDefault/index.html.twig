@@ -16,15 +16,15 @@
             </div>
             <div id="navbar" class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
-                    <li><a href="{{ path('umbria_pro_loco_homepage') }}">Turismo</a></li>
-                    <li><a href="{{ path('umbria_pro_loco_statistiche') }}">Statistiche SUAPE</a></li>
+                    <li><a href="{{ path('umbria_pro_loco_homepage') }}">Tourism</a></li>
+                    <li><a href="{{ path('umbria_pro_loco_statistiche') }}">SUAPE Statistics</a></li>
                     <li><a href="{{ path('nelmio_api_doc_index') }}">API docs</a></li>
                     <li><a href="{{ path('umbria_open_api_sparql_manual') }}">SPARQL Manual</a></li>
                 </ul>
 
-                <ul class="nav narbar-nav navbar-right">
+                <ul class="nav narbar-nav navbar-right" >
                     <li class="dropdown">
-                        <a  class="dropdown-toggle"  style="color:gray" data-toggle="dropdown">Language <b class="caret"></b></a>
+                        <a  class="dropdown-toggle" style="color:gray" data-toggle="dropdown">Language <strong class="caret"></strong></a>
                         <ul class="dropdown-menu">
                             <li>
                                 <a href="{{ path('umbria_open_api_ENhomepage')}}">English</a>
@@ -37,6 +37,7 @@
                 </ul>
 
             </div>
+
         </div>
     </nav>
 
@@ -58,8 +59,8 @@
                      alt="Turismo">
                 <div class="container">
                     <div class="carousel-caption">
-                        <h1>Turismo</h1>
-                        <p> Tutti i punti di interesse del portale <b>UmbriaTourism</b> in una sola mappa</p>
+                        <h1>Tourism</h1>
+                        <p> All points of interest of the portal <b>UmbriaTourism</b> In one map</p>
                         <p><a class="btn btn-lg btn-primary" href="{{ path('umbria_pro_loco_homepage') }}"
                               role="button">Vai</a></p>
                     </div>
@@ -70,12 +71,12 @@
                      src="{{ asset('img/innovation-lightbulb-image.jpg') }}"
                      alt="OpenApi">
                 <div class="container">
-                    <div class="carousel-caption">s
-                        <h1>Sei un developer?</h1>
-                        <p>I dati di UmbriaTourism disponibili in formato JSON</p>
-                        <p>Grazie alle nostre Open RESTful APIs
-                            puoi ottenere, in formato JSON, tutti i dati
-                            dei punti di interesse della Regione Umbria</p>
+                    <div class="carousel-caption">
+                        <h1>Are you a developer?</h1>
+                        <p>UmbriaTourism data available in JSON format</p>
+                        <p>Thanks to our Open RESTful APIs
+                            You can get all the data in JSON format
+                            Of the points of interest of the Umbria Region</p>
                         <p><a class="btn btn-lg btn-primary" href="{{ path('nelmio_api_doc_index') }}"
                               role="button">Vai</a></p>
                     </div>
@@ -87,9 +88,9 @@
                      alt="Telegram">
                 <div class="container">
                     <div class="carousel-caption">
-                        <h1 style="color:#5A5A5A">UmbriaTurismo Bot</h1>
-                        <p style="color:#5A5A5A">Se utilizzi Telegram prova il nostro nuovo Bot.Invia la tua posizione
-                            per ottenere interessanti informazioni.</p>
+                        <h1 style="color:#5A5A5A">UmbriaTourism Bot</h1>
+                        <p style="color:#5A5A5A">If you use Telegram try our new Bot. Submit your position
+                            To get interesting information.</p>
                         <p><a class="btn btn-lg btn-primary" href="https://telegram.me/UmbriaTurismo_bot" role="button"
                               target="_blank">Vai</a></p>
                     </div>
@@ -99,7 +100,7 @@
         <a class="left carousel-control" href="#myCarousel" role="button" data-slide="prev">
             <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
             <span class="sr-only">Previous</span>
-        </a>s
+        </a>
         <a class="right carousel-control" href="#myCarousel" role="button" data-slide="next">
             <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
             <span class="sr-only">Next</span>
@@ -168,12 +169,12 @@
             </h2>
             <p class="lead">
             <p>
-                <a class="homepage_link" href="http://dati.umbria.it/dataset">Visita il <b>Portale Open Data
+                <a class="homepage_link" href="http://dati.umbria.it/dataset">Visit the <b>Open Data Portal
                         dell'Umbria</b></a>
             </p>
             <p>
                 <a class="homepage_link" href="http://dati.umbria.it/dataset">
-                    I dati della Pubblica Amministrazione Umbra a disposizione dei cittadini
+                    The data of the Umbra Public Administration available to citizens
                 </a>
             </p>
             </p>
@@ -192,7 +193,7 @@
             </h2>
             <p class="lead">
                 <a class="homepage_link" href="http://dati.umbria.it/risorsa/attrattori/4435021">
-                    Visualizza i Linked Open Data della regione Umbria nel browser LodView
+                    Displays the Linked Open Data of the Umbria Region in the LodView browser
                 </a>
             </p>
         </div>
@@ -223,7 +224,7 @@
 
 
             <address style="margin: 30px">
-                <strong><a href="http://www.regione.umbria.it" target="_blank">Regione Umbria</a></strong><br>
+                <strong><a href="http://www.regione.umbria.it" target="_blank">Region Umbria</a></strong><br>
                 Corso Vannucci, 96<br>
                 06121 Perugia<br>
                 <a href="mailto:opendata@regione.umbria.it">opendata@regione.umbria.it</a><br>
@@ -256,4 +257,3 @@
 
 
 {% endblock %}
-
