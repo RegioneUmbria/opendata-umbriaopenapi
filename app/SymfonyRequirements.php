@@ -1,4 +1,4 @@
-<?php
+  <?php
 
 /*
  * This file is part of the Symfony package.
@@ -800,7 +800,7 @@ class SymfonyRequirements extends RequirementCollection
      */
     protected function getPhpRequiredVersion()
     {
-        if (!file_exists($path = __DIR__ . '/../composer.lock')) {
+        if (!file_exists($path = __DIR__.'/../composer.lock')) {
             return false;
         }
 
@@ -811,7 +811,7 @@ class SymfonyRequirements extends RequirementCollection
                 continue;
             }
 
-            return (int)$package['version'][1] > 2 ? self::REQUIRED_PHP_VERSION : self::LEGACY_REQUIRED_PHP_VERSION;
+            return (int) $package['version'][1] > 2 ? self::REQUIRED_PHP_VERSION : self::LEGACY_REQUIRED_PHP_VERSION;
         }
 
         return false;

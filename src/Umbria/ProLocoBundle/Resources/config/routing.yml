@@ -38,6 +38,10 @@ umbria_pro_loco_homepage:
     path:     /tourism/map
     defaults: { _controller: UmbriaProLocoBundle:Default:index }
 
+umbria_pro_loco_hp_en:
+    path:     /tourism/map/enlang
+    defaults: { _controller: UmbriaProLocoBundle:enlang:index }
+
 umbria_pro_loco_statistiche:
     path:     /statistiche
     defaults: { _controller: UmbriaProLocoBundle:SUAPE:index }
