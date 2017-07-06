@@ -1,0 +1,18 @@
+doctrine:
+  dbal:
+    charset: UTF8
+    driver: ~
+    host: 127.0.0.1
+    port: ~
+    dbname: test
+    user: travis
+    password: ~
+  orm:
+    auto_generate_proxy_classes: '%kernel.debug%'
+    auto_mapping: true
+
+framework:
+  router:
+    resource: ~
+  secret: whatever
+  test: ~
