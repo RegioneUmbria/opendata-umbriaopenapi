@@ -7,7 +7,7 @@ $BOT_NAME = ‘lcitbot’;
 
 try {
     // Create Telegram API object
-    $telegram = new shaygan\TelegramBotApiBundle\Telegram($API_KEY, $BOT_NAME);
+    $telegram = new shaygan\TelegramBotApiBzundle\Telegram($API_KEY, $BOT_NAME);
 
     // Handle telegram webhook request
     $telegram->handle();

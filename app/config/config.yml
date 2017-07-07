@@ -107,13 +107,8 @@ knp_paginator:
 
 # ShayganTelegramBotApiBundle Configuration
 shaygan_telegram_bot_api:
-#    token: 225932750:AAEAD3Z5dGgQNEjA9DYzp898_NDUV3bhbWE
-#    webhook:
-#        domain: umbriaopenapi.regione.umbria.it
-#        path_prefix: ~ # you can add prefix, if your web site is not on the root
-#        update_receiver: umbria_telegram_bot.my_update_receiver
-    token: 411313340:AAHh7qgj9GNQX5bNpqo5P_WyDoFhWCPnDZs
+    token: 401516015:AAGhqAbK_Ni0NZvqwa10b-2aoqiJq630lpw
     webhook:
         domain: luke.it
         path_prefix: ~ # you can add prefix, if your web site is not on the root
-        update_receiver: lcit_bot_bot.my_update_receiver
+        update_receiver: lcitbot.my_update_receiver
