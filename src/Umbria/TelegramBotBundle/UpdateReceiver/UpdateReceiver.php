@@ -75,7 +75,7 @@ class UpdateReceiver implements UpdateReceiverInterface
                     $text = "Ciao " . $message['from']['first_name'] . ". Oggi ti consiglio: " . $arrayOfMessages[0];
                     break;
                 case "/event":
-                    $arrayOfMessages = $this->executeEventQuery();
+                    $arrayOfMessages = $this->executeEventQuery(1);
                     $text = "Hello " . $message['from']['first_name'] . ". Today, my suggestion is: ";
                     break;
                 case "/help":
@@ -161,10 +161,22 @@ class UpdateReceiver implements UpdateReceiverInterface
         }
     }
 
-    public function executeEventQuery()
+    public function executeEventQuery($id)
     {
         /**@var EventRepository $eventRepo */
         $eventRepo = $this->em->getRepository('UmbriaOpenApiBundle:Tourism\GraphsEntities\Event');
+
+        $pois = $eventRepo->findById($id);
+
+        if (sizeof($pois) > 0) {
+            $key = array_rand($pois);
+            $poi = $pois[$key];
+            $stringResult[0] = $poi->getName() . "\n" . str_replace('&nbsp;', ' ', strip_tags($poi->getStartDate())) . "\n" . $poi->getResourceOriginUrl();
+            return $stringResult;
+
+        } else {
+            throw new Exception();
+        }
 
 
     }
