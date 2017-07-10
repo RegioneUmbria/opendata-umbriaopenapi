@@ -175,10 +175,8 @@ class UpdateReceiver implements UpdateReceiverInterface
             return $stringResult;
 
         } else {
-            throw new Exception();
+            return "a";
         }
-
-
     }
 
 
