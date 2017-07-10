@@ -82,7 +82,7 @@ class UpdateReceiver implements UpdateReceiverInterface
                     for ($i=0;$i<100;$i++) {
                         $arrayOfMessages = $this->executeEventQuery($i);
                         $text = "Hello " . $message['from']['first_name'] . ". Today, my suggestion is: " . $arrayOfMessages[0];
-                        $this->telegramBotApi->sendMessage( $message['chat']['id'], $text);
+                        print_r(array_values($arrayOfMessages));
                     }
                     break;
                 case "/help":
