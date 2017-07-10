@@ -75,7 +75,7 @@ class UpdateReceiver implements UpdateReceiverInterface
                     $text = "Ciao " . $message['from']['first_name'] . ". Oggi ti consiglio: " . $arrayOfMessages[0];
                     break;
                 case "/travelagency":
-                    $arrayOfMessages = $this->executeAttractorQuery(43.105275, 12.391995, 100, true);
+//                    // $arrayOfMessages = $this->executeAttractorQuery(43.105275, 12.391995, 100, true);
                     $text = "Hello " . $message['from']['first_name'] . ". Today, my suggestion is: " ;
                     break;
                 case "/help":
@@ -84,7 +84,7 @@ class UpdateReceiver implements UpdateReceiverInterface
                 default :
                     $text = "Lista comandi:\n";
                     $text .= "/about - Informazioni sul bot\n";
-                    $text .= "/event - Informazioni su eventi\n";
+                    $text .= "/travelagency - Informazioni sul travel agency\n";
                     $text .= "/hello - Suggerimenti\n";
                     $text .= "/help - Visualizzazione comandi disponibili\n";
                     break;
