@@ -170,21 +170,18 @@ class UpdateReceiver implements UpdateReceiverInterface
         /** @noinspection PhpInternalEntityUsedInspection */
         $bounds = $location->boundingCoordinates($radius, 'km');
 
-        $pois = $eventRepo->findByPosition(
-            $bounds[1]->getLatitudeInDegrees(),
-            $bounds[0]->getLatitudeInDegrees(),
-            $bounds[1]->getLongitudeInDegrees(),
-            $bounds[0]->getLongitudeInDegrees());
+        $pois = $eventRepo->findByPosition($bounds[1]->getLatitudeInDegrees(), $bounds[0]->getLatitudeInDegrees(), $bounds[1]->getLongitudeInDegrees(), $bounds[0]->getLongitudeInDegrees());
 
-        if (sizeof($pois) > 0) {
+        if (0 < sizeof($pois)) {
             $key = array_rand($pois);
             $poi = $pois[$key];
             $stringResult[0] = $poi->getName() . "\n" . str_replace('&nbsp;', ' ', strip_tags($poi->getShortDescription())) . "\n" . $poi->getResourceOriginUrl();
             return $stringResult;
 
         } else {
-            throw new Exception();
+            return "$";
         }
+    }
 
 
 }
