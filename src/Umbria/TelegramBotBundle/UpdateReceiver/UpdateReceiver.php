@@ -74,8 +74,8 @@ class UpdateReceiver implements UpdateReceiverInterface
                     $arrayOfMessages = $this->executeAttractorQuery(43.105275, 12.391995, 100, true);
                     $text = "Ciao " . $message['from']['first_name'] . ". Oggi ti consiglio: " . $arrayOfMessages[0];
                     break;
-                case "/travelagency":
-                    //$arrayOfMessages = $this->executeTravelAgencyQuery(43.105275, 12.391995, 100, true);
+                case "/event":
+                    $arrayOfMessages = $this->executeEventQuery();
                     $text = "Hello " . $message['from']['first_name'] . ". Today, my suggestion is: ";
                     break;
                 case "/help":
@@ -84,7 +84,7 @@ class UpdateReceiver implements UpdateReceiverInterface
                 default :
                     $text = "Lista comandi:\n";
                     $text .= "/about - Informazioni sul bot\n";
-                    $text .= "/travelagency - Informazioni sul travel agency\n";
+                    $text .= "/event - Informazioni sul eventi\n";
                     $text .= "/hello - Suggerimenti\n";
                     $text .= "/help - Visualizzazione comandi disponibili\n";
                     break;
@@ -161,33 +161,13 @@ class UpdateReceiver implements UpdateReceiverInterface
         }
     }
 
-
-    public function executeTravelAgencyQuery($lat, $lng, $radius)
+    public function executeEventQuery()
     {
-        /**@varTravelAgencyQueryRepository $TravelAgencyQueryRepo */
-        $travelagencyRepo = $this->em->getRepository('UmbriaOpenApiBundle:Tourism\GraphsEntities\TravelAgency');
+        /**@var EventRepository $eventRepo */
+        $eventRepo = $this->em->getRepository('UmbriaOpenApiBundle:Tourism\GraphsEntities\Event');
 
-        $location = GeoLocation::fromDegrees($lat, $lng);
-        /** @var GeoLocation[] $bounds */
-        /** @noinspection PhpInternalEntityUsedInspection */
-        $bounds = $location->boundingCoordinates($radius, 'km');
 
-        $pois = $travelagencyRepo->findByPosition(
-            $bounds[1]->getLatitudeInDegrees(),
-            $bounds[0]->getLatitudeInDegrees(),
-            $bounds[1]->getLongitudeInDegrees(),
-            $bounds[0]->getLongitudeInDegrees());
-
-//        if (sizeof($pois) > 0) {
-//            $key = array_rand($pois);
-//            $poi = $pois[$key];
-//            $stringResult[0] = $poi->getName()."\n" . $poi->getResourceOriginUrl();
-//            return $stringResult;
-//
-//        } else {
-//            return "abcdlalala";
-//        }
-        return $pois;
     }
+
 
 }
