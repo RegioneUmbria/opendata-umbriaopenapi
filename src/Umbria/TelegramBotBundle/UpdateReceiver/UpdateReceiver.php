@@ -31,7 +31,7 @@ class UpdateReceiver implements UpdateReceiverInterface
     public function handleUpdate(Update $update)
     {
         $arrayOfArraysOfStrings = array(
-            array("/about", "/hello","/Eventi","/help")
+            array("/about", "/hello","/event","/help")
         );
         $newKeyboard = new ReplyKeyboardMarkup($arrayOfArraysOfStrings, true, true);
         $message = json_decode(json_encode($update->message), true);
@@ -74,13 +74,14 @@ class UpdateReceiver implements UpdateReceiverInterface
                     $arrayOfMessages = $this->executeAttractorQuery(43.105275, 12.391995, 100, true);
                     $text = "Ciao " . $message['from']['first_name'] . ". Oggi ti consiglio: " . $arrayOfMessages[0];
                     break;
-                case "/Eventi":
+                case "/event":
                 case "/help":
                 case "/start":
                     $text = "UmbriaTourismBot ti permette di ricevere informazioni turistiche. Invia la tua posizione per scoprire tutte le bellezze che la nostra regione ha in serbo per te\n\n";
                 default :
                     $text = "Lista comandi:\n";
                     $text .= "/about - Informazioni sul bot\n";
+                    $text .= "/event - Informazioni su eventi\n";
                     $text .= "/hello - Suggerimenti\n";
                     $text .= "/help - Visualizzazione comandi disponibili\n";
                     break;
