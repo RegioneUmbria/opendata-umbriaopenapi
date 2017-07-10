@@ -165,7 +165,7 @@ class UpdateReceiver implements UpdateReceiverInterface
     public function executeTravelAgencyQuery($lat, $lng, $radius)
     {
         /**@var ProposalRepository $proposalRepo */
-        $proposalRepo = $this->em->getRepository('UmbriaOpenApiBundle:Tourism\GraphsEntities\Proposal');
+        $proposalRepo = $this->em->getRepository('UmbriaOpenApiBundle:Tourism\GraphsEntities\TravelAgency');
 
         $location = GeoLocation::fromDegrees($lat, $lng);
         /** @var GeoLocation[] $bounds */
@@ -181,12 +181,11 @@ class UpdateReceiver implements UpdateReceiverInterface
         if (sizeof($pois) > 0) {
             $key = array_rand($pois);
             $poi = $pois[$key];
-            $stringResult[0] = $poi->getName() . "\n" . str_replace('&nbsp;', ' ', strip_tags($poi->getShortDescription())) . "\n" . $poi->getResourceOriginUrl();
+            $stringResult[0] = $poi->getName()."\n" . $poi->getResourceOriginUrl();
             return $stringResult;
 
         } else {
             return "abcdlalala";
-            throw new Exception();
         }
     }
 
