@@ -1,6 +1,7 @@
 <?php
 // Load composer
-require __DIR__ . '/var/www/html/opendata-umbriaopenapi_luke/vendor/autoload.php';
+$root = realpath($_SERVER["DOCUMENT_ROOT"]);
+require __DIR__ . "$root/var/www/html/opendata-umbriaopenapi_luke/vendor/autoload.php";
 
 $API_KEY = '401516015:AAGhqAbK_Ni0NZvqwa10b-2aoqiJq630lpw';
 $BOT_NAME = 'lcitbot';
