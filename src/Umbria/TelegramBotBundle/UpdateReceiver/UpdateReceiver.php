@@ -75,8 +75,8 @@ class UpdateReceiver implements UpdateReceiverInterface
                     $text = "Ciao " . $message['from']['first_name'] . ". Oggi ti consiglio: " . $arrayOfMessages[0];
                     break;
                 case "/event":
-                    //$arrayOfMessages = $this->executeEventQuery(1);
-                    $text = "Hello " . $message['from']['first_name'] . ". Today, my suggestion is: ";
+                    $arrayOfMessages = $this->executeEventQuery(1);
+                    $text = "Hello " . $message['from']['first_name'] . ". Today, my suggestion is: ".$arrayOfMessages[0];
                     break;
                 case "/help":
                 case "/start":
