@@ -31,7 +31,7 @@ class UpdateReceiver implements UpdateReceiverInterface
     public function handleUpdate(Update $update)
     {
         $arrayOfArraysOfStrings = array(
-            array("/about", "/hello","/travelagency","/help")
+            array("/about", "/hello","/help","/travelagency")
         );
         $newKeyboard = new ReplyKeyboardMarkup($arrayOfArraysOfStrings, true, true);
         $message = json_decode(json_encode($update->message), true);
@@ -56,7 +56,6 @@ class UpdateReceiver implements UpdateReceiverInterface
                 for ($i = 0; $i < count($arrayOfMessages); $i++) {
                     $this->telegramBotApi->sendMessage($message['chat']['id'], $arrayOfMessages[$i]);
                 }
-
                 $this->telegramBotApi->sendMessage($message['chat']['id'], "Information about Travel Agencies:");
                 $arrayOfMessages = $this->executeTravelAgencyQuery($latitude, $longitude, 10, false);
                 for ($i = 0; $i < count($arrayOfMessages); $i++) {
@@ -81,8 +80,8 @@ class UpdateReceiver implements UpdateReceiverInterface
                     $text = "Ciao " . $message['from']['first_name'] . ". Oggi ti consiglio: " . $arrayOfMessages[0];
                     break;
                 case "/travelagency":
-                    $arrayOfMessages = $this->executeTravelAgencyQuery(43.105275, 12.391995, 100, true);
-                    $text = "Hello " . $message['from']['first_name'] . ". Today: " . $arrayOfMessages[0];
+                    $arrayOfMessages = $this->executeAttractorQuery(43.105275, 12.391995, 100, true);
+                    $text = "Ciao " . $message['from']['first_name'] . ". Oggi ti consiglio: " . $arrayOfMessages[0];
                     break;
                 case "/help":
                 case "/start":
