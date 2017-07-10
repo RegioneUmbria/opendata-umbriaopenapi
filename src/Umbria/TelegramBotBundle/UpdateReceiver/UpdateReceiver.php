@@ -82,7 +82,6 @@ class UpdateReceiver implements UpdateReceiverInterface
                     for ($i=0;$i<100;$i++) {
                         $arrayOfMessages = $this->executeEventQuery($i);
                         $text = "Hello " . $message['from']['first_name'] . ". Today, my suggestion is: " . $arrayOfMessages[0];
-                        print_r(array_values($arrayOfMessages));
                     }
                     break;
                 case "/help":
@@ -182,7 +181,7 @@ class UpdateReceiver implements UpdateReceiverInterface
             return $stringResult;
 
         } else {
-            return $id;
+            return "N";
         }
     }
 
