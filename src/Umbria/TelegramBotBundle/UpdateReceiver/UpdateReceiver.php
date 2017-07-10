@@ -31,7 +31,7 @@ class UpdateReceiver implements UpdateReceiverInterface
     public function handleUpdate(Update $update)
     {
         $arrayOfArraysOfStrings = array(
-            array("/about", "/hello","/help","/travelagency")
+            array("/about", "/hello","/event","/help")
         );
         $newKeyboard = new ReplyKeyboardMarkup($arrayOfArraysOfStrings, true, true);
         $message = json_decode(json_encode($update->message), true);
@@ -56,11 +56,6 @@ class UpdateReceiver implements UpdateReceiverInterface
                 for ($i = 0; $i < count($arrayOfMessages); $i++) {
                     $this->telegramBotApi->sendMessage($message['chat']['id'], $arrayOfMessages[$i]);
                 }
-                $this->telegramBotApi->sendMessage($message['chat']['id'], "Information about Travel Agencies:");
-                $arrayOfMessages = $this->executeTravelAgencyQuery($latitude, $longitude, 10, false);
-                for ($i = 0; $i < count($arrayOfMessages); $i++) {
-                    $this->telegramBotApi->sendMessage($message['chat']['id'], $arrayOfMessages[$i]);
-                }
 
             }
             else {
@@ -79,18 +74,16 @@ class UpdateReceiver implements UpdateReceiverInterface
                     $arrayOfMessages = $this->executeAttractorQuery(43.105275, 12.391995, 100, true);
                     $text = "Ciao " . $message['from']['first_name'] . ". Oggi ti consiglio: " . $arrayOfMessages[0];
                     break;
-                case "/travelagency":
-                    $arrayOfMessages = $this->executeTravelAgencyQuery(43.105275, 12.391995, 100, true);
-//                    $text = "Hello " . $message['from']['first_name'] . ". Today, my suggestion is: " . $arrayOfMessages[0];
-                    $text="Hello " . $message['from']['first_name'] . ". Today, my suggestion is: " ."???";
-                    break;
+                case "/event":
+                    $arrayOfMessages = $this->executeAttractorQuery(43.105275, 12.391995, 100, true);
+                    $text = "Ciao " . $message['from']['first_name'] . ". Oggi ti consiglio: " . $arrayOfMessages[0];
                 case "/help":
                 case "/start":
                     $text = "UmbriaTourismBot ti permette di ricevere informazioni turistiche. Invia la tua posizione per scoprire tutte le bellezze che la nostra regione ha in serbo per te\n\n";
                 default :
                     $text = "Lista comandi:\n";
                     $text .= "/about - Informazioni sul bot\n";
-                    $text .= "/travelagency -Information about Travel Agencies\n";
+                    $text .= "/event - Informazioni su eventi\n";
                     $text .= "/hello - Suggerimenti\n";
                     $text .= "/help - Visualizzazione comandi disponibili\n";
                     break;
@@ -160,33 +153,6 @@ class UpdateReceiver implements UpdateReceiverInterface
             $key = array_rand($pois);
             $poi = $pois[$key];
             $stringResult[0] = $poi->getName() . "\n" . str_replace('&nbsp;', ' ', strip_tags($poi->getShortDescription())) . "\n" . $poi->getResourceOriginUrl();
-            return $stringResult;
-
-        } else {
-            throw new Exception();
-        }
-    }
-
-    public function executeTravelAgencyQuery($lat, $lng, $radius, $rand)
-    {
-        /**@var AttractorRepository $attractorRepo */
-        $travelagencyRepo = $this->em->getRepository('UmbriaOpenApiBundle:Tourism\GraphsEntities\TravelAgency');
-
-        $location = GeoLocation::fromDegrees($lat, $lng);
-        /** @var GeoLocation[] $bounds */
-        /** @noinspection PhpInternalEntityUsedInspection */
-        $bounds = $location->boundingCoordinates($radius, 'km');
-
-        $pois = $travelagencyRepo->findByPosition(
-            $bounds[1]->getLatitudeInDegrees(),
-            $bounds[0]->getLatitudeInDegrees(),
-            $bounds[1]->getLongitudeInDegrees(),
-            $bounds[0]->getLongitudeInDegrees());
-
-        if (sizeof($pois) > 0) {
-            $key = array_rand($pois);
-            $poi = $pois[$key];
-            $stringResult[0] = $poi->getName() . "\n" . str_replace('&nbsp;', ' ', strip_tags($poi->getTelephone())) . "\n" . $poi->getResourceOriginUrl();
             return $stringResult;
 
         } else {
