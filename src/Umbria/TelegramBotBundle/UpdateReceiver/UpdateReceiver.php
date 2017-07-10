@@ -75,15 +75,16 @@ class UpdateReceiver implements UpdateReceiverInterface
                     $text = "Ciao " . $message['from']['first_name'] . ". Oggi ti consiglio: " . $arrayOfMessages[0];
                     break;
                 case "/travelagency":
-                    $arrayOfMessages = $this->executeAttractorQuery(43.105275, 12.391995, 100, true);
-                    $text = "Hello " . $message['from']['first_name'] . ". Oggi ti consiglio: " . $arrayOfMessages[0];
+                    $arrayOfMessages = $this->executeTravelAgencyQuery(43.105275, 12.391995, 100, true);
+                    $text = "Hello " . $message['from']['first_name'] . ". Today: " . $arrayOfMessages[0];
+                    break;
                 case "/help":
                 case "/start":
                     $text = "UmbriaTourismBot ti permette di ricevere informazioni turistiche. Invia la tua posizione per scoprire tutte le bellezze che la nostra regione ha in serbo per te\n\n";
                 default :
                     $text = "Lista comandi:\n";
                     $text .= "/about - Informazioni sul bot\n";
-                    $text .= "/travelagency - Information about Travel Agency\n";
+                    $text .= "/travelagency -Information about Travel Agencies\n";
                     $text .= "/hello - Suggerimenti\n";
                     $text .= "/help - Visualizzazione comandi disponibili\n";
                     break;
