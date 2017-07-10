@@ -76,7 +76,7 @@ class UpdateReceiver implements UpdateReceiverInterface
                     break;
                 case "/travelagency":
                     $arrayOfMessages = $this->executeTravelAgencyQuery(43.105275, 12.391995, 100, true);
-                    $text = "Hello " . $message['from']['first_name'] . ". Today, my suggestion is: ". $arrayOfMessages[0];
+                    $text = "Hello " . $message['from']['first_name'] . ". Today, my suggestion is: " $arrayOfMessages;
                     break;
                 case "/help":
                 case "/start":
@@ -172,12 +172,12 @@ class UpdateReceiver implements UpdateReceiverInterface
         /** @noinspection PhpInternalEntityUsedInspection */
         $bounds = $location->boundingCoordinates($radius, 'km');
 
-//        $pois = $proposalRepo->findByPosition(
-//            $bounds[1]->getLatitudeInDegrees(),
-//            $bounds[0]->getLatitudeInDegrees(),
-//            $bounds[1]->getLongitudeInDegrees(),
-//            $bounds[0]->getLongitudeInDegrees());
-//
+        $pois = $proposalRepo->findByPosition(
+            $bounds[1]->getLatitudeInDegrees(),
+            $bounds[0]->getLatitudeInDegrees(),
+            $bounds[1]->getLongitudeInDegrees(),
+            $bounds[0]->getLongitudeInDegrees());
+
 //        if (sizeof($pois) > 0) {
 //            $key = array_rand($pois);
 //            $poi = $pois[$key];
@@ -187,7 +187,7 @@ class UpdateReceiver implements UpdateReceiverInterface
 //        } else {
 //            return "abcdlalala";
 //        }
-        return "abcdlalala";
+        return sizeof($pois);
     }
 
 }
