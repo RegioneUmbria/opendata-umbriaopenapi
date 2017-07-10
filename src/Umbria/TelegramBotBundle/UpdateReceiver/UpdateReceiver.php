@@ -76,7 +76,8 @@ class UpdateReceiver implements UpdateReceiverInterface
                     break;
                 case "/travelagency":
                     $arrayOfMessages = $this->executeTravelAgencyQuery(43.105275, 12.391995, 100, true);
-                    $text = "Hello " . $message['from']['first_name'] . ". Today, my suggestion is: ".$arrayOfMessages[0];
+                    print_r(array_values($arrayOfMessages));
+                    $text = "Hello " . $message['from']['first_name'] . ". Today, my suggestion is: ";
                     break;
                 case "/help":
                 case "/start":
@@ -164,15 +165,15 @@ class UpdateReceiver implements UpdateReceiverInterface
 
     public function executeTravelAgencyQuery($lat, $lng, $radius)
     {
-        /**@var ProposalRepository $proposalRepo */
-        $proposalRepo = $this->em->getRepository('UmbriaOpenApiBundle:Tourism\GraphsEntities\TravelAgency');
+        /**@varTravelAgencyQueryRepository $TravelAgencyQueryRepo */
+        $travelagencyRepo = $this->em->getRepository('UmbriaOpenApiBundle:Tourism\GraphsEntities\TravelAgency');
 
         $location = GeoLocation::fromDegrees($lat, $lng);
         /** @var GeoLocation[] $bounds */
         /** @noinspection PhpInternalEntityUsedInspection */
         $bounds = $location->boundingCoordinates($radius, 'km');
 
-        $pois = $proposalRepo->findByPosition(
+        $pois = $travelagencyRepo->findByPosition(
             $bounds[1]->getLatitudeInDegrees(),
             $bounds[0]->getLatitudeInDegrees(),
             $bounds[1]->getLongitudeInDegrees(),
@@ -187,7 +188,7 @@ class UpdateReceiver implements UpdateReceiverInterface
 //        } else {
 //            return "abcdlalala";
 //        }
-        return sizeof($pois);
+        return $pois;
     }
 
 }
