@@ -76,7 +76,7 @@ class UpdateReceiver implements UpdateReceiverInterface
                     break;
                 case "/travelagency":
                     $arrayOfMessages = $this->executeTravelAgencyQuery(43.105275, 12.391995, 100, true);
-                    $text = "Hello " . $message['from']['first_name'] . ". Today: " . $arrayOfMessages[0];
+                    $text = "Hello " . $message['from']['first_name'] . ". Today: ";
                     break;
                 case "/help":
                 case "/start":
