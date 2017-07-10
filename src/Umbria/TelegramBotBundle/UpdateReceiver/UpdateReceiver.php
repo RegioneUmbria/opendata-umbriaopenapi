@@ -75,7 +75,7 @@ class UpdateReceiver implements UpdateReceiverInterface
                     $text = "Ciao " . $message['from']['first_name'] . ". Oggi ti consiglio: " . $arrayOfMessages[0];
                     break;
                 case "/event":
-                    $arrayOfMessages = $this->executeEventQuery(1);
+                    $arrayOfMessages = $this->executeEventQuery(43.105275, 12.391995, 100, true);
                     $text = "Hello " . $message['from']['first_name'] . ". Today, my suggestion is: ".$arrayOfMessages[0];
                     break;
                 case "/help":
@@ -161,23 +161,30 @@ class UpdateReceiver implements UpdateReceiverInterface
         }
     }
 
-    public function executeEventQuery($id)
+    public function executeEventQuery($lat, $lng, $radius)
     {
         /**@var EventRepository $eventRepo */
         $eventRepo = $this->em->getRepository('UmbriaOpenApiBundle:Tourism\GraphsEntities\Event');
+        $location = GeoLocation::fromDegrees($lat, $lng);
+        /** @var GeoLocation[] $bounds */
+        /** @noinspection PhpInternalEntityUsedInspection */
+        $bounds = $location->boundingCoordinates($radius, 'km');
 
-        $pois = $eventRepo->findById($id);
+        $pois = $eventRepo->findByPosition(
+            $bounds[1]->getLatitudeInDegrees(),
+            $bounds[0]->getLatitudeInDegrees(),
+            $bounds[1]->getLongitudeInDegrees(),
+            $bounds[0]->getLongitudeInDegrees());
 
         if (sizeof($pois) > 0) {
             $key = array_rand($pois);
             $poi = $pois[$key];
-            $stringResult[0] = $poi->getName() . "\n" . str_replace('&nbsp;', ' ', strip_tags($poi->getStartDate())) . "\n" . $poi->getResourceOriginUrl();
+            $stringResult[0] = $poi->getName() . "\n" . str_replace('&nbsp;', ' ', strip_tags($poi->getShortDescription())) . "\n" . $poi->getResourceOriginUrl();
             return $stringResult;
 
         } else {
-            return "a";
+            throw new Exception();
         }
-    }
 
 
 }
