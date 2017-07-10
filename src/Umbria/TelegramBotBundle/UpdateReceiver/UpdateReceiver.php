@@ -57,6 +57,12 @@ class UpdateReceiver implements UpdateReceiverInterface
                     $this->telegramBotApi->sendMessage($message['chat']['id'], $arrayOfMessages[$i]);
                 }
 
+                $this->telegramBotApi->sendMessage($message['chat']['id'], "Information about Travel Agencies:");
+                $arrayOfMessages = $this->executeTravelAgencyQuery($latitude, $longitude, 10, false);
+                for ($i = 0; $i < count($arrayOfMessages); $i++) {
+                    $this->telegramBotApi->sendMessage($message['chat']['id'], $arrayOfMessages[$i]);
+                }
+
             }
             else {
                 $arrayOfMessages = $this->executeProposalQuery(43.105275, 12.391995, 100);
@@ -76,7 +82,7 @@ class UpdateReceiver implements UpdateReceiverInterface
                     break;
                 case "/travelagency":
                     $arrayOfMessages = $this->executeTravelAgencyQuery(43.105275, 12.391995, 100, true);
-                    $text = "Hello " . $message['from']['first_name'] . ". Today: ";
+                    $text = "Hello " . $message['from']['first_name'] . ". Today: " . $arrayOfMessages[0];
                     break;
                 case "/help":
                 case "/start":
