@@ -80,7 +80,7 @@ class UpdateReceiver implements UpdateReceiverInterface
                     $text = "Ciao " . $message['from']['first_name'] . ". Oggi ti consiglio: " . $arrayOfMessages[0];
                     break;
                 case "/travelagency":
-                    $arrayOfMessages = $this->executeAttractorQuery(43.105275, 12.391995, 100, true);
+                    $arrayOfMessages = $this->executeTravelAgencyQuery(43.105275, 12.391995, 100, true);
                     $text = "Hello " . $message['from']['first_name'] . ". Today, my suggestion is: " . $arrayOfMessages[0];
                     break;
                 case "/help":
@@ -185,7 +185,7 @@ class UpdateReceiver implements UpdateReceiverInterface
         if (sizeof($pois) > 0) {
             $key = array_rand($pois);
             $poi = $pois[$key];
-            $stringResult[0] = $poi->getName() . "\n" . str_replace('&nbsp;', ' ', strip_tags($poi->getShortDescription())) . "\n" . $poi->getResourceOriginUrl();
+            $stringResult[0] = $poi->getName() . "\n" . str_replace('&nbsp;', ' ', strip_tags($poi->getTelephone())) . "\n" . $poi->getResourceOriginUrl();
             return $stringResult;
 
         } else {
