@@ -75,6 +75,8 @@ class UpdateReceiver implements UpdateReceiverInterface
                     $text = "Ciao " . $message['from']['first_name'] . ". Oggi ti consiglio: " . $arrayOfMessages[0];
                     break;
                 case "/event":
+                    $arrayOfMessages = $this->executeEventiQuery(43.105275, 12.391995, 100, true);
+                    $text = "Ciao " . $message['from']['first_name'] . ". Oggi ti consiglio: " . $arrayOfMessages[0];
                 case "/help":
                 case "/start":
                     $text = "UmbriaTourismBot ti permette di ricevere informazioni turistiche. Invia la tua posizione per scoprire tutte le bellezze che la nostra regione ha in serbo per te\n\n";
@@ -153,6 +155,42 @@ class UpdateReceiver implements UpdateReceiverInterface
             $stringResult[0] = $poi->getName() . "\n" . str_replace('&nbsp;', ' ', strip_tags($poi->getShortDescription())) . "\n" . $poi->getResourceOriginUrl();
             return $stringResult;
 
+        } else {
+            throw new Exception();
+        }
+    }
+
+    public function executeEventiQuery($lat, $lng, $radius, $rand)
+    {
+        /**@var AttractorRepository $attractorRepo */
+        $attractorRepo = $this->em->getRepository('UmbriaOpenApiBundle:Tourism\GraphsEntities\Event');
+
+        $location = GeoLocation::fromDegrees($lat, $lng);
+        /** @var GeoLocation[] $bounds */
+        /** @noinspection PhpInternalEntityUsedInspection */
+        $bounds = $location->boundingCoordinates($radius, 'km');
+
+        $pois = $attractorRepo->findByPosition(
+            $bounds[1]->getLatitudeInDegrees(),
+            $bounds[0]->getLatitudeInDegrees(),
+            $bounds[1]->getLongitudeInDegrees(),
+            $bounds[0]->getLongitudeInDegrees());
+
+        if (sizeof($pois) > 0) {
+            if ($rand) {
+                $key = array_rand($pois);
+
+                $poi = $pois[$key];
+                $stringResult[0] = $poi->getName() . "\n" . str_replace('&nbsp;', ' ', strip_tags($poi->getShortDescription())) . "\n" . $poi->getResourceOriginUrl();
+                return $stringResult;
+            } else {
+                $i = 0;
+                foreach ($pois as $poi) {
+                    $stringResult[$i] = $poi->getName() . "\n" . str_replace('&nbsp;', ' ', strip_tags($poi->getShortDescription())) . "\n" . $poi->getResourceOriginUrl();
+                    $i++;
+                }
+                return $stringResult;
+            }
         } else {
             throw new Exception();
         }
