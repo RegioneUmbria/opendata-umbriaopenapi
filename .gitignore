@@ -117,3 +117,4 @@ Temporary
 
 #ignore app dev in production branch
 /web/app_dev.php
+/xdebug-2.5.4/*

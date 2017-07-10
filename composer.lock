@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "dde0f018bba073cd58df3bcff049796c",
+    "content-hash": "989173f1c8ba27266e1f69a9f4e3a215",
     "packages": [
         {
             "name": "anthonymartin/geo-location",
@@ -2636,12 +2636,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/Shaygan/TelegramBotApiBundle.git",
-                "reference": "6a75685cdff3637f3fe60d02759678a52790bf0b"
+                "reference": "16cc358fb5910a4d2c601c0469d1733187ab5a99"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Shaygan/TelegramBotApiBundle/zipball/6a75685cdff3637f3fe60d02759678a52790bf0b",
-                "reference": "6a75685cdff3637f3fe60d02759678a52790bf0b",
+                "url": "https://api.github.com/repos/Shaygan/TelegramBotApiBundle/zipball/16cc358fb5910a4d2c601c0469d1733187ab5a99",
+                "reference": "16cc358fb5910a4d2c601c0469d1733187ab5a99",
                 "shasum": ""
             },
             "require": {
@@ -2679,7 +2679,7 @@
                 "symfony3",
                 "telegram"
             ],
-            "time": "2017-02-04 17:20:25"
+            "time": "2016-09-09 20:00:19"
         },
         {
             "name": "swiftmailer/swiftmailer",
@@ -3505,16 +3505,16 @@
         },
         {
             "name": "telegram-bot/api",
-            "version": "v2.3.1",
+            "version": "v2.3.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/TelegramBot/Api.git",
-                "reference": "8b9dc80d6e1652d4d6000ca9f85eccf96e01e485"
+                "reference": "a9b5ab45d35357a46cb5ae6c758bca34b52e0c45"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/TelegramBot/Api/zipball/8b9dc80d6e1652d4d6000ca9f85eccf96e01e485",
-                "reference": "8b9dc80d6e1652d4d6000ca9f85eccf96e01e485",
+                "url": "https://api.github.com/repos/TelegramBot/Api/zipball/a9b5ab45d35357a46cb5ae6c758bca34b52e0c45",
+                "reference": "a9b5ab45d35357a46cb5ae6c758bca34b52e0c45",
                 "shasum": ""
             },
             "require": {
@@ -3522,7 +3522,7 @@
             },
             "require-dev": {
                 "codeception/codeception": "*",
-                "phpunit/phpunit": "4.*",
+                "phpunit/phpunit": "~4.0",
                 "squizlabs/php_codesniffer": "2.*"
             },
             "type": "library",
@@ -3556,7 +3556,7 @@
                 "php",
                 "telegram"
             ],
-            "time": "2017-06-20T20:28:09+00:00"
+            "time": "2017-07-08T09:05:16+00:00"
         },
         {
             "name": "twig/twig",
