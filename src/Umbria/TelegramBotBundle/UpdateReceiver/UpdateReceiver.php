@@ -75,8 +75,8 @@ class UpdateReceiver implements UpdateReceiverInterface
                     $text = "Ciao " . $message['from']['first_name'] . ". Oggi ti consiglio: " . $arrayOfMessages[0];
                     break;
                 case "/event":
-                    $arrayOfMessages = $this->executeEventiQuery(43.105275, 12.391995, 100, true);
-                    $text = "Ciao " . $message['from']['first_name'] . ". Oggi ti consiglio: " . $arrayOfMessages[0];
+                    $arrayOfMessages = $this->executeEventQuery(43.105275, 12.391995, 100, true);
+                    $text = "Hello " . $message['from']['first_name'] . ". Today: " . $arrayOfMessages[0];
                 case "/help":
                 case "/start":
                     $text = "UmbriaTourismBot ti permette di ricevere informazioni turistiche. Invia la tua posizione per scoprire tutte le bellezze che la nostra regione ha in serbo per te\n\n";
@@ -160,7 +160,7 @@ class UpdateReceiver implements UpdateReceiverInterface
         }
     }
 
-    public function executeEventiQuery($lat, $lng, $radius, $rand)
+    public function executeEventQuery($lat, $lng, $radius, $rand)
     {
         /**@var AttractorRepository $attractorRepo */
         $attractorRepo = $this->em->getRepository('UmbriaOpenApiBundle:Tourism\GraphsEntities\Event');
@@ -179,7 +179,6 @@ class UpdateReceiver implements UpdateReceiverInterface
         if (sizeof($pois) > 0) {
             if ($rand) {
                 $key = array_rand($pois);
-
                 $poi = $pois[$key];
                 $stringResult[0] = $poi->getName() . "\n" . str_replace('&nbsp;', ' ', strip_tags($poi->getShortDescription())) . "\n" . $poi->getResourceOriginUrl();
                 return $stringResult;
