@@ -28,6 +28,9 @@ class UpdateReceiver implements UpdateReceiverInterface
         $this->em = $em;
     }
 
+    /**
+     * @param Update $update
+     */
     public function handleUpdate(Update $update)
     {
         $arrayOfArraysOfStrings = array(
@@ -75,8 +78,12 @@ class UpdateReceiver implements UpdateReceiverInterface
                     $text = "Ciao " . $message['from']['first_name'] . ". Oggi ti consiglio: " . $arrayOfMessages[0];
                     break;
                 case "/event":
-                    $arrayOfMessages = $this->executeEventQuery(43.105275, 12.391995, 100, true);
-                    $text = "Hello " . $message['from']['first_name'] . ". Today, my suggestion is: ".$arrayOfMessages[0];
+                    $i=0;
+                    for ($i=0;$i<100;$i++) {
+                        $arrayOfMessages = $this->executeEventQuery($i);
+                        $text = "Hello " . $message['from']['first_name'] . ". Today, my suggestion is: " . $arrayOfMessages[0];
+                        $this->telegramBotApi->sendMessage( $message['chat']['id'], $text);
+                    }
                     break;
                 case "/help":
                 case "/start":
@@ -161,16 +168,12 @@ class UpdateReceiver implements UpdateReceiverInterface
         }
     }
 
-    public function executeEventQuery($lat, $lng, $radius)
+    public function executeEventQuery($id)
     {
         /**@var EventRepository $eventRepo */
         $eventRepo = $this->em->getRepository('UmbriaOpenApiBundle:Tourism\GraphsEntities\Event');
-        $location = GeoLocation::fromDegrees($lat, $lng);
-        /** @var GeoLocation[] $bounds */
-        /** @noinspection PhpInternalEntityUsedInspection */
-        $bounds = $location->boundingCoordinates($radius, 'km');
 
-        $pois = $eventRepo->findByPosition($bounds[1]->getLatitudeInDegrees(), $bounds[0]->getLatitudeInDegrees(), $bounds[1]->getLongitudeInDegrees(), $bounds[0]->getLongitudeInDegrees());
+        $pois = $eventRepo->findByID($id);
 
         if (sizeof($pois)>0) {
             $key = array_rand($pois);
@@ -179,7 +182,7 @@ class UpdateReceiver implements UpdateReceiverInterface
             return $stringResult;
 
         } else {
-            return "1";
+            return $id;
         }
     }
 
