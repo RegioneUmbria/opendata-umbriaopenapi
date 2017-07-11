@@ -79,7 +79,7 @@ class UpdateReceiver implements UpdateReceiverInterface
                     break;
                 case "/event":
                     $arrayOfMessages = $this->executeEventQuery(43.105275, 12.391995, 100, true);
-                    $text = "Hello " . $message['from']['first_name'] . ". Today, my suggestion is: " . $arrayOfMessages[0];
+                    $text = "Ciao " . $message['from']['first_name'] . ". Oggi ti consiglio: " . $arrayOfMessages[0];
                     break;
                 case "/help":
                 case "/start":
@@ -189,8 +189,8 @@ class UpdateReceiver implements UpdateReceiverInterface
             return $stringResult;
 
         } else {
-            //throw new Exception();
-            return  "N";
+            throw new Exception();
+            //return  "N";
         }
     }
 
