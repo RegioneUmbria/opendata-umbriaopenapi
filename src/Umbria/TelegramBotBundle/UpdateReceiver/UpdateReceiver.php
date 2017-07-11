@@ -196,8 +196,9 @@ class UpdateReceiver implements UpdateReceiverInterface
         if (sizeof($pois)>0) {
             $key = array_rand($pois);
             $poi = $pois[$key];
-            $eventdesc = eventfindById($poi->getId());
-            $stringResult[0] = $poi->getName()."\nDescriptions : \n".str_replace('&nbsp;', ' ', strip_tags($eventdesc->getText())) ."\nUrl : \n".$poi->getResourceOriginUrl();
+            
+            $stringResult[0] = $poi->getId()."\n".$poi->getName()."\n".$poi->getResourceOriginUrl();
+            //"\nDescriptions : \n".str_replace('&nbsp;', ' ', strip_tags($eventdesc->getText())) .
             //$stringResult[0] = $poi->getStartDate()."\n".$poi->getEndDate()."\n".$poi->getName()."\n". $poi->getResourceOriginUrl();
             return $stringResult;
 
