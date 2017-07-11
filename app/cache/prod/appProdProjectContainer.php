@@ -521,13 +521,13 @@ class appProdProjectContainer extends Container
      * This service is shared.
      * This method always returns the same instance of the service.
      *
-     * @return \EntityManager595cb78ee48ca_546a8d27f194334ee012bfe64f629947b07e4919\__CG__\Doctrine\ORM\EntityManager A EntityManager595cb78ee48ca_546a8d27f194334ee012bfe64f629947b07e4919\__CG__\Doctrine\ORM\EntityManager instance
+     * @return \EntityManager596491b354b5f_546a8d27f194334ee012bfe64f629947b07e4919\__CG__\Doctrine\ORM\EntityManager A EntityManager596491b354b5f_546a8d27f194334ee012bfe64f629947b07e4919\__CG__\Doctrine\ORM\EntityManager instance
      */
     protected function getDoctrine_Orm_DefaultEntityManagerService()
     {
-        require_once (__DIR__.'/jms_diextra/doctrine/EntityManager_595cb78ee48ca.php');
+        require_once (__DIR__.'/jms_diextra/doctrine/EntityManager_596491b354b5f.php');
 
-        return $this->services['doctrine.orm.default_entity_manager'] = new \EntityManager595cb78ee48ca_546a8d27f194334ee012bfe64f629947b07e4919\__CG__\Doctrine\ORM\EntityManager($this->get('doctrine.orm.default_entity_manager.delegate'), $this);
+        return $this->services['doctrine.orm.default_entity_manager'] = new \EntityManager596491b354b5f_546a8d27f194334ee012bfe64f629947b07e4919\__CG__\Doctrine\ORM\EntityManager($this->get('doctrine.orm.default_entity_manager.delegate'), $this);
     }
 
     /*
@@ -2924,7 +2924,7 @@ class appProdProjectContainer extends Container
 
         $e = new \Symfony\Component\Security\Http\AccessMap();
 
-        return $this->services['security.firewall.map.context.main'] = new \Symfony\Bundle\SecurityBundle\Security\FirewallContext(array(0 => new \Symfony\Component\Security\Http\Firewall\ChannelListener($e, new \Symfony\Component\Security\Http\EntryPoint\RetryAuthenticationEntryPoint(80, 443), $a), 1 => new \Symfony\Component\Security\Http\Firewall\ContextListener($b, array(0 => new \Symfony\Component\Security\Core\User\InMemoryUserProvider()), 'main', $a, $this->get('event_dispatcher', ContainerInterface::NULL_ON_INVALID_REFERENCE)), 2 => new \Symfony\Component\Security\Http\Firewall\AnonymousAuthenticationListener($b, '595cb78e838cc8.23326522', $a, $c), 3 => new \Symfony\Component\Security\Http\Firewall\AccessListener($b, $this->get('security.access.decision_manager'), $e, $c)), new \Symfony\Component\Security\Http\Firewall\ExceptionListener($b, $this->get('security.authentication.trust_resolver'), new \Symfony\Component\Security\Http\HttpUtils($d, $d), 'main', NULL, NULL, NULL, $a, false));
+        return $this->services['security.firewall.map.context.main'] = new \Symfony\Bundle\SecurityBundle\Security\FirewallContext(array(0 => new \Symfony\Component\Security\Http\Firewall\ChannelListener($e, new \Symfony\Component\Security\Http\EntryPoint\RetryAuthenticationEntryPoint(80, 443), $a), 1 => new \Symfony\Component\Security\Http\Firewall\ContextListener($b, array(0 => new \Symfony\Component\Security\Core\User\InMemoryUserProvider()), 'main', $a, $this->get('event_dispatcher', ContainerInterface::NULL_ON_INVALID_REFERENCE)), 2 => new \Symfony\Component\Security\Http\Firewall\AnonymousAuthenticationListener($b, '596491b26b5953.79913728', $a, $c), 3 => new \Symfony\Component\Security\Http\Firewall\AccessListener($b, $this->get('security.access.decision_manager'), $e, $c)), new \Symfony\Component\Security\Http\Firewall\ExceptionListener($b, $this->get('security.authentication.trust_resolver'), new \Symfony\Component\Security\Http\HttpUtils($d, $d), 'main', NULL, NULL, NULL, $a, false));
     }
 
     /*
@@ -3219,7 +3219,7 @@ class appProdProjectContainer extends Container
      */
     protected function getShaygan_MyUpdateReceiverService()
     {
-        return $this->services['shaygan.my_update_receiver'] = new \Shaygan\TelegramBotApiBundle\UpdateReceiver\UpdateReceiver($this->get('shaygan.telegram_bot_api'), array('token' => '225932750:AAEAD3Z5dGgQNEjA9DYzp898_NDUV3bhbWE', 'webhook' => array('domain' => 'umbriaopenapi.regione.umbria.it', 'path_prefix' => NULL, 'update_receiver' => 'umbria_telegram_bot.my_update_receiver'), 'legacy' => true));
+        return $this->services['shaygan.my_update_receiver'] = new \Shaygan\TelegramBotApiBundle\UpdateReceiver\UpdateReceiver($this->get('shaygan.telegram_bot_api'), array('token' => '435563012:AAH_yQzxrQbL5fCT5Xuyftr645_EDdJEBd4', 'legacy' => true));
     }
 
     /*
@@ -3989,7 +3989,7 @@ class appProdProjectContainer extends Container
      */
     protected function getUmbriaTelegramBot_MyUpdateReceiverService()
     {
-        return $this->services['umbria_telegram_bot.my_update_receiver'] = new \Umbria\TelegramBotBundle\UpdateReceiver\UpdateReceiver($this->get('shaygan.telegram_bot_api'), array('token' => '225932750:AAEAD3Z5dGgQNEjA9DYzp898_NDUV3bhbWE', 'webhook' => array('domain' => 'umbriaopenapi.regione.umbria.it', 'path_prefix' => NULL, 'update_receiver' => 'umbria_telegram_bot.my_update_receiver'), 'legacy' => true), $this->get('doctrine.orm.default_entity_manager'));
+        return $this->services['umbria_telegram_bot.my_update_receiver'] = new \Umbria\TelegramBotBundle\UpdateReceiver\UpdateReceiver($this->get('shaygan.telegram_bot_api'), array('token' => '435563012:AAH_yQzxrQbL5fCT5Xuyftr645_EDdJEBd4', 'legacy' => true), $this->get('doctrine.orm.default_entity_manager'));
     }
 
     /*
@@ -4290,7 +4290,7 @@ class appProdProjectContainer extends Container
      */
     protected function getSecurity_Authentication_ManagerService()
     {
-        $this->services['security.authentication.manager'] = $instance = new \Symfony\Component\Security\Core\Authentication\AuthenticationProviderManager(array(0 => new \Symfony\Component\Security\Core\Authentication\Provider\AnonymousAuthenticationProvider('595cb78e838cc8.23326522')), true);
+        $this->services['security.authentication.manager'] = $instance = new \Symfony\Component\Security\Core\Authentication\AuthenticationProviderManager(array(0 => new \Symfony\Component\Security\Core\Authentication\Provider\AnonymousAuthenticationProvider('596491b26b5953.79913728')), true);
 
         $instance->setEventDispatcher($this->get('event_dispatcher'));
 
@@ -5230,8 +5230,8 @@ class appProdProjectContainer extends Container
             'jms_di_extra.cache_warmer.controller_file_blacklist' => array(
 
             ),
-            'jms_di_extra.doctrine_integration.entity_manager.file' => (__DIR__.'/jms_diextra/doctrine/EntityManager_595cb78ee48ca.php'),
-            'jms_di_extra.doctrine_integration.entity_manager.class' => 'EntityManager595cb78ee48ca_546a8d27f194334ee012bfe64f629947b07e4919\\__CG__\\Doctrine\\ORM\\EntityManager',
+            'jms_di_extra.doctrine_integration.entity_manager.file' => (__DIR__.'/jms_diextra/doctrine/EntityManager_596491b354b5f.php'),
+            'jms_di_extra.doctrine_integration.entity_manager.class' => 'EntityManager596491b354b5f_546a8d27f194334ee012bfe64f629947b07e4919\\__CG__\\Doctrine\\ORM\\EntityManager',
             'jms_aop.cache_dir' => (__DIR__.'/jms_aop'),
             'jms_aop.interceptor_loader.class' => 'JMS\\AopBundle\\Aop\\InterceptorLoader',
             'jms_serializer.metadata.file_locator.class' => 'Metadata\\Driver\\FileLocator',
@@ -5289,12 +5289,7 @@ class appProdProjectContainer extends Container
             'knp_paginator.template.sortable' => 'KnpPaginatorBundle:Pagination:sortable_link.html.twig',
             'knp_paginator.page_range' => 5,
             'shaygan_telegram_bot_api.config' => array(
-                'token' => '225932750:AAEAD3Z5dGgQNEjA9DYzp898_NDUV3bhbWE',
-                'webhook' => array(
-                    'domain' => 'umbriaopenapi.regione.umbria.it',
-                    'path_prefix' => NULL,
-                    'update_receiver' => 'umbria_telegram_bot.my_update_receiver',
-                ),
+                'token' => '435563012:AAH_yQzxrQbL5fCT5Xuyftr645_EDdJEBd4',
                 'legacy' => true,
             ),
             'console.command.ids' => array(
