@@ -32,32 +32,23 @@ class FacebookMessengerBotController extends BaseController
         }
 
         $input = json_decode(file_get_contents('php://input'), true);
-// Get the Senders Graph ID
+        // Get the Senders Graph ID
         $sender = $input['entry'][0]['messaging'][0]['sender']['id'];
-// Get the returned message
+        // Get the returned message
         $message = $input['entry'][0]['messaging'][0]['message']['text'];
-//API Url and Access Token, generate this token value on your Facebook App Page
+        //API Url and Access Token, generate this token value on your Facebook App Page
         $url = 'https://graph.facebook.com/v2.6/me/messages?access_token=EAADeS6lnyqoBALR7gyuSYGk5dYdkzj7r8wLFVS1AxLoAPZCg4NJG2KWOzjs8CIMp2VLApWDbPZC44cnnl0gz1e93oNeEKmZAD2qEk7khJlzVZCMGzVeVZAUOpCN5BXFInZBjJceXebMtRxqzbMjBFJddgEPNczS44qZBSH1urRurQZDZD';
-//Initiate cURL.
+        //Initiate cURL.
         $ch = curl_init($url);
-//The JSON data.
-//        $jsonData = '{
-//"recipient":{
-//"id":"' . $sender . '"
-//},
-//"message":{
-//"text":"The message you want to return"
-//}
-//}';
 
         $payload=array("recipient"=>array("id"=>$sender),"message"=>array("text"=>"Benvenuto su UmbriaOpenAPI"));
-//Tell cURL that we want to send a POST request.
+        //Tell cURL that we want to send a POST request.
         curl_setopt($ch, CURLOPT_POST, 1);
-//Attach our encoded JSON string to the POST fields.
+        //Attach our encoded JSON string to the POST fields.
         curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($payload));
-//Set the content type to application/json
+        //Set the content type to application/json
         curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json'));
-//Execute the request but first check if the message is not empty.
+        //Execute the request but first check if the message is not empty.
         if(!empty($input['entry'][0]['messaging'][0]['message'])){
             $result = curl_exec($ch);
         }
