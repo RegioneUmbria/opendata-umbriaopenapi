@@ -61,6 +61,9 @@ class FacebookMessengerBotController extends BaseController
         }
 
 
+        $logger = $this->get('logger');
+        $logger->info($jsonData);
+
         $response->setContent($jsonData);
         return $response;
 
