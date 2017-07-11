@@ -164,15 +164,6 @@ class UpdateReceiver implements UpdateReceiverInterface
         }
     }
 
-    public function eventfindById($id)
-    {
-        $qb = $this->createQueryBuilder("o");
-        $qb->where($qb->expr()->like("o.uri", "?1"));
-        $qb->setParameter(1, "%/" . $id);
-        return $qb->getQuery()->getResult();
-    }
-
-
     public function executeEventQuery($lat, $lng, $radius, $rand)
     {
         /**@var EventRepository $eventRepo */
@@ -196,9 +187,9 @@ class UpdateReceiver implements UpdateReceiverInterface
         if (sizeof($pois)>0) {
             $key = array_rand($pois);
             $poi = $pois[$key];
-            $eventdesc = eventfindById($poi->getId());
-            $eventdesciption=$eventdesc[0];
-            $stringResult[0] = sizeOf( $eventdesciption)."\n".$poi->getName()."\n".$poi->getResourceOriginUrl();
+            $eois = $eventDescRepo>findById($poi->getId());
+            $eoi = $eois[0];
+            $stringResult[0] = $eoi->getText()."\n".$poi->getName()."\n".$poi->getResourceOriginUrl();
             //"\nDescriptions : \n".str_replace('&nbsp;', ' ', strip_tags($eventdesc->getText())) .
             //$stringResult[0] = $poi->getStartDate()."\n".$poi->getEndDate()."\n".$poi->getName()."\n". $poi->getResourceOriginUrl();
             return $stringResult;
