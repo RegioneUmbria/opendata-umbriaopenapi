@@ -83,14 +83,11 @@ class UpdateReceiver implements UpdateReceiverInterface
                     $arrayOfMessages = $this->executeEventQuery(43.105275, 12.391995, 100, true);
                     $text = "Ciao " . $message['from']['first_name'] . ". Oggi ti consiglio: \n" . $arrayOfMessages[0];
                     break;
-                case "/travelagency";
+                case "/travelagency":
                     $arrayOfMessages = $this->executeTravelAgencyQuery(43.105275, 12.391995, 100, true);
                     $text = "Ciao " . $message['from']['first_name'] . ". Oggi ti consiglio: \n". $arrayOfMessages[0] ;
                     break;
-                case "testing";
-                    $keyboard = [ ["a","b"],["c","d"],];
-                    $key = array("resize_keyboard"=>true, "keyboard" => $keyboard);
-                    keyboard($key,"abc");
+                case "testing":
                     break;
                 case "/help":
                 case "/start":
