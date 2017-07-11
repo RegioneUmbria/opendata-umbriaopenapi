@@ -34,7 +34,7 @@ class UpdateReceiver implements UpdateReceiverInterface
     public function handleUpdate(Update $update)
     {
         $arrayOfArraysOfStrings = array(
-            array("/about", "/hello","/event","/help")
+            array("/about", "/hello","/event","/help",Nested)
         );
         $newKeyboard = new ReplyKeyboardMarkup($arrayOfArraysOfStrings, true, true);
         $message = json_decode(json_encode($update->message), true);
@@ -89,7 +89,19 @@ class UpdateReceiver implements UpdateReceiverInterface
                     $text .= "/about - Informazioni sul bot\n";
                     $text .= "/event - Informazioni sul eventi\n";
                     $text .= "/hello - Suggerimenti\n";
-                    $text .= "/help - Visualizzazione comandi disponibili\n";
+                    $text .= "/help - Visualizzazione comandi disponibili\n";$replyMarkup = array(
+                    'keyboard' => array(
+                        array("A", "B")
+                    )
+                );
+                    $replyMarkup = array(
+                        'keyboard' => array(
+                            array("A", "B")
+                        )
+                    );
+                    $encodedMarkup = json_encode($replyMarkup);
+                    $content = array(
+                            'chat_id' => ['chat']['id'],'reply_markup' => $encodedMarkup, 'text' => "Test");
                     break;
             }
 
