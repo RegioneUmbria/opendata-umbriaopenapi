@@ -34,7 +34,7 @@ class UpdateReceiver implements UpdateReceiverInterface
     public function handleUpdate(Update $update)
     {
         $arrayOfArraysOfStrings = array(
-            array("/about", "/hello","/event","/help",Nested)
+            array("/about", "/hello","/event","/help","/travelagency")
         );
         $newKeyboard = new ReplyKeyboardMarkup($arrayOfArraysOfStrings, true, true);
         $message = json_decode(json_encode($update->message), true);
@@ -81,6 +81,10 @@ class UpdateReceiver implements UpdateReceiverInterface
                     $arrayOfMessages = $this->executeEventQuery(43.105275, 12.391995, 100, true);
                     $text = "Ciao " . $message['from']['first_name'] . ". Oggi ti consiglio: \n" . $arrayOfMessages[0];
                     break;
+                case "/travelagency";
+                    $arrayOfMessages = $this->executeTravelAgencyQuery(43.105275, 12.391995, 100, true);
+                    $text = "Ciao " . $message['from']['first_name'] . ". Oggi ti consiglio: \n" . $arrayOfMessages[0];
+                    break;
                 case "/help":
                 case "/start":
                     $text = "UmbriaTourismBot ti permette di ricevere informazioni turistiche. Invia la tua posizione per scoprire tutte le bellezze che la nostra regione ha in serbo per te\n\n";
@@ -88,18 +92,9 @@ class UpdateReceiver implements UpdateReceiverInterface
                     $text = "Lista comandi:\n";
                     $text .= "/about - Informazioni sul bot\n";
                     $text .= "/event - Informazioni sul eventi\n";
+                    $text .= "/travelagency -  - Informazioni sul agenzia di viaggi\n";
                     $text .= "/hello - Suggerimenti\n";
                     $text .= "/help - Visualizzazione comandi disponibili\n";
-                    $inline_keyboard = [
-                        new InlineKeyboardButton(['text' => 'inline', 'switch_inline_query' => 'true']),
-                        new InlineKeyboardButton(['text' => 'callback', 'callback_data' => 'identifier']),
-                        new InlineKeyboardButton(['text' => 'open url', 'url' => 'https://github.com/akalongman/php-telegram-bot']),
-                    ];
-                    $data = [
-                        'chat_id' => ['chat']['id'],
-                        'text'    => 'inline keyboard',
-                        'reply_markup' => new InlineKeyboardMarkup(['inline_keyboard' => [$inline_keyboard]]),
-                    ];
             }
 
             $newKeyboardCond = $message['text'];
@@ -186,6 +181,44 @@ class UpdateReceiver implements UpdateReceiverInterface
         $bounds = $location->boundingCoordinates($radius, 'km');
 
         $pois = $eventRepo->findByPosition(
+            $bounds[1]->getLatitudeInDegrees(),
+            $bounds[0]->getLatitudeInDegrees(),
+            $bounds[1]->getLongitudeInDegrees(),
+            $bounds[0]->getLongitudeInDegrees());
+
+        if (sizeof($pois) > 0) {
+            if ($rand) {
+                $key = array_rand($pois);
+
+                $poi = $pois[$key];
+                $stringResult[0] = $poi->getName() . "\nDescriptions : " . str_replace('&nbsp;', ' ', strip_tags($poi->getDescriptions())) . "\n" . $poi->getResourceOriginUrl();
+                return $stringResult;
+            } else {
+                $i = 0;
+                foreach ($pois as $poi) {
+                    $stringResult[$i] = $poi->getName() . "\nDescriptions : " . str_replace('&nbsp;', ' ', strip_tags($poi->getDescriptions())) . "\n" . $poi->getResourceOriginUrl();
+                    $i++;
+                }
+                return $stringResult;
+            }
+        } else {
+            throw new Exception();
+        }
+    }
+
+    public function executeTravelAgencyQuery($lat, $lng, $radius, $rand)
+    {
+        /**@var TravelAgencyRepository $travelagencyRepo */
+        $travelagencyRepo = $this->em->getRepository('UmbriaOpenApiBundle:Tourism\GraphsEntities\TravelAgency');
+
+        //$pois = $eventRepo->findByID($id);
+
+        $location = GeoLocation::fromDegrees($lat, $lng);
+        /** @var GeoLocation[] $bounds */
+        /** @noinspection PhpInternalEntityUsedInspection */
+        $bounds = $location->boundingCoordinates($radius, 'km');
+
+        $pois = $travelagencyRepo->findByPosition(
             $bounds[1]->getLatitudeInDegrees(),
             $bounds[0]->getLatitudeInDegrees(),
             $bounds[1]->getLongitudeInDegrees(),
