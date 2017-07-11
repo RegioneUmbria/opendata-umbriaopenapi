@@ -41,18 +41,20 @@ class FacebookMessengerBotController extends BaseController
 //Initiate cURL.
         $ch = curl_init($url);
 //The JSON data.
-        $jsonData = '{
-"recipient":{
-"id":"' . $sender . '"
-},
-"message":{
-"text":"The message you want to return"
-}
-}';
+//        $jsonData = '{
+//"recipient":{
+//"id":"' . $sender . '"
+//},
+//"message":{
+//"text":"The message you want to return"
+//}
+//}';
+
+        $payload=array("recipient"=>array("id"=>$sender),"message"=>array("text"=>"Benvenuto su UmbriaOpenAPI"));
 //Tell cURL that we want to send a POST request.
         curl_setopt($ch, CURLOPT_POST, 1);
 //Attach our encoded JSON string to the POST fields.
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $jsonData);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($payload));
 //Set the content type to application/json
         curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json'));
 //Execute the request but first check if the message is not empty.
@@ -62,9 +64,9 @@ class FacebookMessengerBotController extends BaseController
 
 
         $logger = $this->get('logger');
-        $logger->info($jsonData);
+        $logger->info(json_encode($payload));
 
-        $response->setContent($jsonData);
+        $response->setContent(json_encode($payload));
         return $response;
 
 
