@@ -164,10 +164,20 @@ class UpdateReceiver implements UpdateReceiverInterface
         }
     }
 
+    public function eventfindById($id)
+    {
+        $qb = $this->createQueryBuilder("o");
+        $qb->where($qb->expr()->like("o.uri", "?1"));
+        $qb->setParameter(1, "%/" . $id);
+        return $qb->getQuery()->getResult();
+    }
+
+
     public function executeEventQuery($lat, $lng, $radius, $rand)
     {
         /**@var EventRepository $eventRepo */
         $eventRepo = $this->em->getRepository('UmbriaOpenApiBundle:Tourism\GraphsEntities\Event');
+        $eventDescRepo = $this->em->getRepository('UmbriaOpenApiBundle:Tourism\GraphsEntitiesInnerObjects\EventDescription');
 
         //$pois = $eventRepo->findByID($id);
 
@@ -182,10 +192,12 @@ class UpdateReceiver implements UpdateReceiverInterface
             $bounds[1]->getLongitudeInDegrees(),
             $bounds[0]->getLongitudeInDegrees());
 
+
         if (sizeof($pois)>0) {
             $key = array_rand($pois);
             $poi = $pois[$key];
-            $stringResult[0] = $poi->getName()."\nDescriptions : \n".str_replace('&nbsp;', ' ', strip_tags($poi->getDescriptions())) ."\nUrl : \n".$poi->getResourceOriginUrl();
+            $eventdesc = eventfindById($poi->getId());
+            $stringResult[0] = $poi->getName()."\nDescriptions : \n".str_replace('&nbsp;', ' ', strip_tags($eventdesc->getText())) ."\nUrl : \n".$poi->getResourceOriginUrl();
             //$stringResult[0] = $poi->getStartDate()."\n".$poi->getEndDate()."\n".$poi->getName()."\n". $poi->getResourceOriginUrl();
             return $stringResult;
 

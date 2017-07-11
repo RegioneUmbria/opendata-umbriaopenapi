@@ -37,15 +37,6 @@ class EventRepository extends EntityRepository
         $qb->where($qb->expr()->like("o.uri", "?1"));
         $qb->setParameter(1, "%/" . $id);
         return $qb->getQuery()->getResult();
-
-
-
-        $repository = $this->getDoctrine()
-            ->getRepository('UmbriaOpenApiBundle:Tourism\GraphsEntities\Event');
-        $qb = $repository->createQueryBuilder('a');
-        $query = $qb
-            ->where($qb->expr()->like('a.name', '?1'))
-            ->setParameter(1, '%' . $text . '%');
     }
 
     public function findByPosition($latMax, $latMin, $lngMax, $lngMin)
