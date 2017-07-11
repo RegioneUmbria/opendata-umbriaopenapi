@@ -34,10 +34,12 @@ class UpdateReceiver implements UpdateReceiverInterface
     public function handleUpdate(Update $update)
     {
         $arrayOfArraysOfStrings = array(
-            array("/about", "/hello","/event","/travelagency","/help")
+            array("/about", "/hello","/event","/travelagency","/help","testing")
         );
         $newKeyboard = new ReplyKeyboardMarkup($arrayOfArraysOfStrings, true, true);
         $message = json_decode(json_encode($update->message), true);
+
+        $abc = ArrayofArrayofInlineKeyboardButton();
 
         // LOCATION
         if (isset($message['location'])) {
@@ -84,6 +86,11 @@ class UpdateReceiver implements UpdateReceiverInterface
                 case "/travelagency";
                     $arrayOfMessages = $this->executeTravelAgencyQuery(43.105275, 12.391995, 100, true);
                     $text = "Ciao " . $message['from']['first_name'] . ". Oggi ti consiglio: \n". $arrayOfMessages[0] ;
+                    break;
+                case "testing";
+                    $keyboard = [ ["a","b"],["c","d"],];
+                    $key = array("resize_keyboard"=>true, "keyboard" => $keyboard);
+                    keyboard($key,"abc");
                     break;
                 case "/help":
                 case "/start":
