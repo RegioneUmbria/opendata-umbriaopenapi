@@ -90,29 +90,16 @@ class UpdateReceiver implements UpdateReceiverInterface
                     $text .= "/event - Informazioni sul eventi\n";
                     $text .= "/hello - Suggerimenti\n";
                     $text .= "/help - Visualizzazione comandi disponibili\n";
-                    $inline_keyboard[] = [
-                        [
-                            'text' => "inline",
-                            'switch_inline_query' => ''
-                        ],
-                        [
-                            'text' => "callback",
-                            'callback_data' => ''
-                        ]
+                    $inline_keyboard = [
+                        new InlineKeyboardButton(['text' => 'inline', 'switch_inline_query' => 'true']),
+                        new InlineKeyboardButton(['text' => 'callback', 'callback_data' => 'identifier']),
+                        new InlineKeyboardButton(['text' => 'open url', 'url' => 'https://github.com/akalongman/php-telegram-bot']),
                     ];
-                    $inline_keyboard[] = [
-                        [
-                            'text' => 'open url',
-                            'url' => ''
-                        ]
+                    $data = [
+                        'chat_id' => ['chat']['id'],
+                        'text'    => 'inline keyboard',
+                        'reply_markup' => new InlineKeyboardMarkup(['inline_keyboard' => [$inline_keyboard]]),
                     ];
-
-                    $data['reply_markup'] = new InlineKeyboardMarkup(
-                        [
-                            'inline_keyboard' => $inline_keyboard
-                        ]
-                    );
-                    break;
             }
 
             $newKeyboardCond = $message['text'];
