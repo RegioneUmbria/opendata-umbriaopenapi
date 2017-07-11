@@ -20,14 +20,12 @@ class UpdateReceiver implements UpdateReceiverInterface
      * @var \Doctrine\ORM\EntityManager
      */
     private $em;
-    private $emTwo;
 
     public function __construct(TelegramBotApi $telegramBotApi, $config, $em)
     {
         $this->telegramBotApi = $telegramBotApi;
         $this->config = $config;
         $this->em = $em;
-        $this->emTwo = $em;
     }
 
     /**
@@ -170,7 +168,6 @@ class UpdateReceiver implements UpdateReceiverInterface
     {
         /**@var EventRepository $eventRepo */
         $eventRepo = $this->em->getRepository('UmbriaOpenApiBundle:Tourism\GraphsEntities\Event');
-        $eventDescRepo = $this->emTwo->getRepository('UmbriaOpenApiBundle:Tourism\GraphsEntitiesInnerObjects\EventDescription');
 
         //$pois = $eventRepo->findByID($id);
 
@@ -185,20 +182,23 @@ class UpdateReceiver implements UpdateReceiverInterface
             $bounds[1]->getLongitudeInDegrees(),
             $bounds[0]->getLongitudeInDegrees());
 
+        if (sizeof($pois) > 0) {
+            if ($rand) {
+                $key = array_rand($pois);
 
-        if (sizeof($pois)>0) {
-            $key = array_rand($pois);
-            $poi = $pois[$key];
-            $eois = $eventDescRepo->findById($poi->getId());
-
-            $stringResult[0] = sizof($eois)."\n".$poi->getName()."\n".$poi->getResourceOriginUrl();
-            //"\nDescriptions : \n".str_replace('&nbsp;', ' ', strip_tags($eventdesc->getText())) .
-            //$stringResult[0] = $poi->getStartDate()."\n".$poi->getEndDate()."\n".$poi->getName()."\n". $poi->getResourceOriginUrl();
-            return $stringResult;
-
+                $poi = $pois[$key];
+                $stringResult[0] = $poi->getName() . "\n" . str_replace('&nbsp;', ' ', strip_tags($poi->getDescriptions())) . "\n" . $poi->getResourceOriginUrl();
+                return $stringResult;
+            } else {
+                $i = 0;
+                foreach ($pois as $poi) {
+                    $stringResult[$i] = $poi->getName() . "\n" . str_replace('&nbsp;', ' ', strip_tags($poi->getDescriptions())) . "\n" . $poi->getResourceOriginUrl();
+                    $i++;
+                }
+                return $stringResult;
+            }
         } else {
             throw new Exception();
-            //return  "N";
         }
     }
 
