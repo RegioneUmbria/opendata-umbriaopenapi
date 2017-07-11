@@ -8,7 +8,7 @@
 
 namespace Umbria\OpenApiBundle\Controller;
 
-use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Response;
 use Umbria\OpenApiBundle\Controller\Tourism\BaseController;
 
 
@@ -21,7 +21,12 @@ class FacebookMessengerBotController extends BaseController
         $challenge = $_REQUEST['hub_challenge'];
         $verify_token = $_REQUEST['hub_verify_token'];
         // Set this Verify Token Value on your Facebook App
-        return new JsonResponse( $challenge);
+        $response = new Response();
+        $response->headers->set('Content-Type', 'text/plain');
+        $response->sendHeaders();
+        $response->setContent($challenge);
+
+        return  $response;
 
 
     }
