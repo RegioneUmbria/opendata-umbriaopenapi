@@ -78,7 +78,7 @@ class UpdateReceiver implements UpdateReceiverInterface
                     $text = "Ciao " . $message['from']['first_name'] . ". Oggi ti consiglio: " . $arrayOfMessages[0];
                     break;
                 case "/event":
-                    $arrayOfMessages = $this->executeEventQuery(10253349);
+                    $arrayOfMessages = $this->executeEventQuery(43.105275, 12.391995, 100, true);
                     $text = "Hello " . $message['from']['first_name'] . ". Today, my suggestion is: " . $arrayOfMessages[0];
                     break;
                 case "/help":
@@ -164,12 +164,23 @@ class UpdateReceiver implements UpdateReceiverInterface
         }
     }
 
-    public function executeEventQuery($id)
+    public function executeEventQuery($lat, $lng, $radius, $rand)
     {
         /**@var EventRepository $eventRepo */
         $eventRepo = $this->em->getRepository('UmbriaOpenApiBundle:Tourism\GraphsEntities\Event');
 
-        $pois = $eventRepo->findByID($id);
+        //$pois = $eventRepo->findByID($id);
+
+        $location = GeoLocation::fromDegrees($lat, $lng);
+        /** @var GeoLocation[] $bounds */
+        /** @noinspection PhpInternalEntityUsedInspection */
+        $bounds = $location->boundingCoordinates($radius, 'km');
+
+        $pois = $eventRepo->findByPosition(
+            $bounds[1]->getLatitudeInDegrees(),
+            $bounds[0]->getLatitudeInDegrees(),
+            $bounds[1]->getLongitudeInDegrees(),
+            $bounds[0]->getLongitudeInDegrees());
 
         if (sizeof($pois)>0) {
             $key = array_rand($pois);
@@ -178,8 +189,8 @@ class UpdateReceiver implements UpdateReceiverInterface
             return $stringResult;
 
         } else {
-            return "N";
-
+            //throw new Exception();
+            return  "N";
         }
     }
 
