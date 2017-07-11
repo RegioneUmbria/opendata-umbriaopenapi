@@ -187,7 +187,7 @@ class UpdateReceiver implements UpdateReceiverInterface
                 $key = array_rand($pois);
 
                 $poi = $pois[$key];
-                $stringResult[0] = $poi->getName() . "\n" . str_replace('&nbsp;', ' ', strip_tags($poi->getDescriptions())) . "\n" . $poi->getResourceOriginUrl();
+                $stringResult[0] = $poi->getName() . "\nDescriptions : " . str_replace('&nbsp;', ' ', strip_tags($poi->getDescriptions())) . "\n" . $poi->getResourceOriginUrl();
                 return $stringResult;
             } else {
                 $i = 0;
