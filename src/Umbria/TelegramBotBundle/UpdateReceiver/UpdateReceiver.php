@@ -188,8 +188,8 @@ class UpdateReceiver implements UpdateReceiverInterface
             $key = array_rand($pois);
             $poi = $pois[$key];
             $eois = $eventDescRepo>findById($poi->getId());
-            $eoi = $eois[0];
-            $stringResult[0] = $eoi->getText()."\n".$poi->getName()."\n".$poi->getResourceOriginUrl();
+            
+            $stringResult[0] = "\n".$poi->getName()."\n".$poi->getResourceOriginUrl();
             //"\nDescriptions : \n".str_replace('&nbsp;', ' ', strip_tags($eventdesc->getText())) .
             //$stringResult[0] = $poi->getStartDate()."\n".$poi->getEndDate()."\n".$poi->getName()."\n". $poi->getResourceOriginUrl();
             return $stringResult;
