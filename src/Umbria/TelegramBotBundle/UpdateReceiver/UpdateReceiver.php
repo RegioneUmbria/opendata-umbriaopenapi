@@ -89,19 +89,29 @@ class UpdateReceiver implements UpdateReceiverInterface
                     $text .= "/about - Informazioni sul bot\n";
                     $text .= "/event - Informazioni sul eventi\n";
                     $text .= "/hello - Suggerimenti\n";
-                    $text .= "/help - Visualizzazione comandi disponibili\n";$replyMarkup = array(
-                    'keyboard' => array(
-                        array("A", "B")
-                    )
-                );
-                    $replyMarkup = array(
-                        'keyboard' => array(
-                            array("A", "B")
-                        )
+                    $text .= "/help - Visualizzazione comandi disponibili\n";
+                    $inline_keyboard[] = [
+                        [
+                            'text' => "inline",
+                            'switch_inline_query' => ''
+                        ],
+                        [
+                            'text' => "callback",
+                            'callback_data' => ''
+                        ]
+                    ];
+                    $inline_keyboard[] = [
+                        [
+                            'text' => 'open url',
+                            'url' => ''
+                        ]
+                    ];
+
+                    $data['reply_markup'] = new InlineKeyboardMarkup(
+                        [
+                            'inline_keyboard' => $inline_keyboard
+                        ]
                     );
-                    $encodedMarkup = json_encode($replyMarkup);
-                    $content = array(
-                            'chat_id' => ['chat']['id'],'reply_markup' => $encodedMarkup, 'text' => "Test");
                     break;
             }
 
