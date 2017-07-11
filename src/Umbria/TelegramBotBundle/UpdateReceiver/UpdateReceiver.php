@@ -79,7 +79,7 @@ class UpdateReceiver implements UpdateReceiverInterface
                     break;
                 case "/event":
                     $arrayOfMessages = $this->executeEventQuery(43.105275, 12.391995, 100, true);
-                    $text = "Ciao " . $message['from']['first_name'] . ". Oggi ti consiglio: " . $arrayOfMessages[0];
+                    $text = "Ciao " . $message['from']['first_name'] . ". Oggi ti consiglio: \n" . $arrayOfMessages[0];
                     break;
                 case "/help":
                 case "/start":
@@ -185,7 +185,7 @@ class UpdateReceiver implements UpdateReceiverInterface
         if (sizeof($pois)>0) {
             $key = array_rand($pois);
             $poi = $pois[$key];
-            $stringResult[0] = $poi->getName()."\n" . str_replace('&nbsp;', ' ', strip_tags($poi->getDescriptions())) . "\n" . $poi->getResourceOriginUrl();
+            $stringResult[0] = $poi->getName()."\n" . str_replace('&nbsp;', ' ', strip_tags($poi->getDescriptions())) . "abc\n" . $poi->getResourceOriginUrl();
             return $stringResult;
 
         } else {
