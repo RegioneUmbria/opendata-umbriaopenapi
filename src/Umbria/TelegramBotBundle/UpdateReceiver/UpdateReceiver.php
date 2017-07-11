@@ -39,6 +39,25 @@ class UpdateReceiver implements UpdateReceiverInterface
         $newKeyboard = new ReplyKeyboardMarkup($arrayOfArraysOfStrings, true, true);
         $message = json_decode(json_encode($update->message), true);
 
+        $results = array(
+            array(
+                "type" => "article",
+                "id" => "1",
+                "title" => "Title",
+                "description" => "Description",
+                "input_message_content" => array(
+                    "message_text" => "<code>Message 1</code>",
+                    "parse_mode" => "HTML"
+                )
+            )
+        );
+
+        $postData = array(
+            "inline_query_id" => $inlineQuery["id"],
+            "results" => json_encode($results),
+            "cache_time" => 0
+        );
+
         // LOCATION
         if (isset($message['location'])) {
             $latitude =$message['location']['latitude'];
@@ -191,12 +210,12 @@ class UpdateReceiver implements UpdateReceiverInterface
                 $key = array_rand($pois);
 
                 $poi = $pois[$key];
-                $stringResult[0] = $poi->getName() . "\nDescriptions : " . str_replace('&nbsp;', ' ', strip_tags($poi->getDescriptions())) . "\n" . $poi->getResourceOriginUrl();
+                $stringResult[0] = $poi->getName() . "\nDescriptions : " . str_replace('&nbsp;', ' ', strip_tags($poi->getDescriptions()->getText())) . "\n" . $poi->getResourceOriginUrl();
                 return $stringResult;
             } else {
                 $i = 0;
                 foreach ($pois as $poi) {
-                    $stringResult[$i] = $poi->getName() . "\nDescriptions : " . str_replace('&nbsp;', ' ', strip_tags($poi->getDescriptions())) . "\n" . $poi->getResourceOriginUrl();
+                    $stringResult[$i] = $poi->getName() . "\nDescriptions : " . str_replace('&nbsp;', ' ', strip_tags($poi->getDescriptions()->getText())) . "\n" . $poi->getResourceOriginUrl();
                     $i++;
                 }
                 return $stringResult;
