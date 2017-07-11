@@ -18,8 +18,11 @@ class FacebookMessengerBotController extends BaseController
 {
     public function indexAction()
     {
-        $response= array("casa1"=>"blu", "casa2"=>"rosso");
-        return new JsonResponse( $response);
+        $challenge = $_REQUEST['hub_challenge'];
+        $verify_token = $_REQUEST['hub_verify_token'];
+        // Set this Verify Token Value on your Facebook App
+        return new JsonResponse( $challenge);
+
 
     }
 
