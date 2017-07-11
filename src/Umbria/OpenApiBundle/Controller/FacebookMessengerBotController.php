@@ -61,6 +61,10 @@ class FacebookMessengerBotController extends BaseController
         }
 
 
+        $response->setContent($jsonData);
+        return $response;
+
+
     }
 
 }
