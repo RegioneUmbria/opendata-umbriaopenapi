@@ -75,6 +75,7 @@ class ComposerStaticInitf24e3e611a5ab3635a54769e7983e945
         ),
         'J' => 
         array (
+            'JMS\\Serializer\\' => 15,
             'JMS\\DiExtraBundle\\' => 18,
             'JMS\\AopBundle\\' => 14,
         ),
@@ -217,6 +218,10 @@ class ComposerStaticInitf24e3e611a5ab3635a54769e7983e945
         array (
             0 => __DIR__ . '/..' . '/knplabs/knp-paginator-bundle',
         ),
+        'JMS\\Serializer\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/jms/serializer/src',
+        ),
         'JMS\\DiExtraBundle\\' => 
         array (
             0 => __DIR__ . '/..' . '/jms/di-extra-bundle',
@@ -343,10 +348,6 @@ class ComposerStaticInitf24e3e611a5ab3635a54769e7983e945
             'JMS\\SerializerBundle' => 
             array (
                 0 => __DIR__ . '/..' . '/jms/serializer-bundle',
-            ),
-            'JMS\\Serializer' => 
-            array (
-                0 => __DIR__ . '/..' . '/jms/serializer/src',
             ),
             'JMS\\' => 
             array (

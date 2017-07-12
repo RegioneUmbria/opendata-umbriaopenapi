@@ -17,7 +17,6 @@ return array(
     'Knp\\Component' => array($vendorDir . '/knplabs/knp-components/src'),
     'JsonpCallbackValidator' => array($vendorDir . '/willdurand/jsonp-callback-validator/src'),
     'JMS\\SerializerBundle' => array($vendorDir . '/jms/serializer-bundle'),
-    'JMS\\Serializer' => array($vendorDir . '/jms/serializer/src'),
     'JMS\\' => array($vendorDir . '/jms/parser-lib/src'),
     'FOS\\RestBundle' => array($vendorDir . '/friendsofsymfony/rest-bundle'),
     'EasyRdf_' => array($vendorDir . '/easyrdf/easyrdf/lib'),

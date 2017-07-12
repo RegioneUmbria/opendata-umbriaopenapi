@@ -34,6 +34,7 @@ return array(
     'Monolog\\' => array($vendorDir . '/monolog/monolog/src/Monolog'),
     'Longman\\TelegramBot\\' => array($vendorDir . '/longman/telegram-bot/src'),
     'Knp\\Bundle\\PaginatorBundle\\' => array($vendorDir . '/knplabs/knp-paginator-bundle'),
+    'JMS\\Serializer\\' => array($vendorDir . '/jms/serializer/src'),
     'JMS\\DiExtraBundle\\' => array($vendorDir . '/jms/di-extra-bundle'),
     'JMS\\AopBundle\\' => array($vendorDir . '/jms/aop-bundle'),
     'Incenteev\\ParameterHandler\\' => array($vendorDir . '/incenteev/composer-parameter-handler'),
