@@ -80,7 +80,7 @@ class UpdateReceiver implements UpdateReceiverInterface
                     break;
                 case "/sport":
                    // $arrayOfMessages1 = $this->executeSportFacilityQuery(43.105275, 12.391995, 100, true);
-                    $text = "Ciao " . $message['from']['first_name'] . ". Oggi ti consiglio: "
+                    $text = "Ciao " . $message['from']['first_name'] . ". Oggi ti consiglio: ";
                         //. $arrayOfMessages1[0];
                     break;
 
