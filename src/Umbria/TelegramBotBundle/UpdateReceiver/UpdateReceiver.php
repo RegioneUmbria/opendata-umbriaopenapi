@@ -8,7 +8,6 @@ use Shaygan\TelegramBotApiBundle\TelegramBotApi;
 use Shaygan\TelegramBotApiBundle\Type\Update;
 use Symfony\Component\Config\Definition\Exception\Exception;
 use TelegramBot\Api\Types\ReplyKeyboardMarkup;
-use Umbria\OpenApiBundle\Entity\Tourism\GraphsEntities\SportFacility;
 use Umbria\OpenApiBundle\Repository\Tourism\GraphsEntities\AttractorRepository;
 use Umbria\OpenApiBundle\Repository\Tourism\GraphsEntities\ProposalRepository;
 
@@ -32,7 +31,7 @@ class UpdateReceiver implements UpdateReceiverInterface
     public function handleUpdate(Update $update)
     {
         $arrayOfArraysOfStrings = array(
-            array("/about", "/hello","/help","/sport")
+            array("/about", "/hello","/help")
         );
         $newKeyboard = new ReplyKeyboardMarkup($arrayOfArraysOfStrings, true, true);
         $message = json_decode(json_encode($update->message), true);
@@ -49,8 +48,6 @@ class UpdateReceiver implements UpdateReceiverInterface
 
                 $this->telegramBotApi->sendMessage($message['chat']['id'], "Vicino a te puoi trovare questa proposta di visita:");
                 $arrayOfMessages = $this->executeProposalQuery($latitude, $longitude, 10);
-//                $arrayOfMessages1 = $this->executeProposalQuery($latitude, $longitude, 10);
-
                 for ($i = 0; $i < count($arrayOfMessages); $i++) {
                     $this->telegramBotApi->sendMessage($message['chat']['id'], $arrayOfMessages[$i]);
                 }
@@ -59,7 +56,6 @@ class UpdateReceiver implements UpdateReceiverInterface
                 for ($i = 0; $i < count($arrayOfMessages); $i++) {
                     $this->telegramBotApi->sendMessage($message['chat']['id'], $arrayOfMessages[$i]);
                 }
-
 
             }
             else {
@@ -78,12 +74,6 @@ class UpdateReceiver implements UpdateReceiverInterface
                     $arrayOfMessages = $this->executeAttractorQuery(43.105275, 12.391995, 100, true);
                     $text = "Ciao " . $message['from']['first_name'] . ". Oggi ti consiglio: " . $arrayOfMessages[0];
                     break;
-//                case "/sport":
-//                   // $arrayOfMessages1 = $this->executeSportFacilityQuery(43.105275, 12.391995, 100, true);
-//                  //  $text = "Ciao " . $message['from']['first_name'] . ". Oggi ti consiglio: ";
-//                        //. $arrayOfMessages1[0];
-//                    break;
-
                 case "/help":
                 case "/start":
                     $text = "UmbriaTourismBot ti permette di ricevere informazioni turistiche. Invia la tua posizione per scoprire tutte le bellezze che la nostra regione ha in serbo per te\n\n";
@@ -92,7 +82,6 @@ class UpdateReceiver implements UpdateReceiverInterface
                     $text .= "/about - Informazioni sul bot\n";
                     $text .= "/hello - Suggerimenti\n";
                     $text .= "/help - Visualizzazione comandi disponibili\n";
-                    $text .= "/sprot - Trova impianti sportivi\n";
                     break;
             }
 
@@ -139,6 +128,7 @@ class UpdateReceiver implements UpdateReceiverInterface
             throw new Exception();
         }
     }
+
     public function executeProposalQuery($lat, $lng, $radius)
     {
         /**@var ProposalRepository $proposalRepo */

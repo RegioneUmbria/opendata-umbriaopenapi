@@ -1,6 +1,0 @@
-doctrine:
-  dbal:
-    driver: pdo_pgsql
-
-craue_geo:
-  flavor: postgresql
