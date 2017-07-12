@@ -311,8 +311,7 @@ class UpdateReceiver implements UpdateReceiverInterface
 //        /** @noinspection PhpInternalEntityUsedInspection */
 //        $bounds = $location->boundingCoordinates($radius, 'km');
 //
-//        $pois = $attractorRepo->findByPosition(
-//            $bounds[1]->getLatitudeInDegrees(),
+//        $pois = $attractorRepo-FdeInDegrees(),
 //            $bounds[0]->getLatitudeInDegrees(),
 //            $bounds[1]->getLongitudeInDegrees(),
 //            $bounds[0]->getLongitudeInDegrees());

@@ -111,4 +111,4 @@ shaygan_telegram_bot_api:
     webhook:
         domain: https://umbriaopenapi-nigel.tk
         path_prefix: ~# you can add prefix, if your web site is not on the root
-        update_receiver: Lifeumbriabot.my_update_receiver
+        update_receiver: lifebot.my_update_receiver
