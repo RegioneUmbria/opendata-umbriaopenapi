@@ -5,13 +5,9 @@
  * Date: 11/07/2017
  * Time: 10:30
  */
-
 namespace Umbria\OpenApiBundle\Controller;
-
 use Symfony\Component\HttpFoundation\Response;
 use Umbria\OpenApiBundle\Controller\Tourism\BaseController;
-
-
 class FacebookMessengerBotController extends BaseController
 {
     public function indexAction()
@@ -19,16 +15,13 @@ class FacebookMessengerBotController extends BaseController
         $response = new Response();
         $challenge = $_REQUEST['hub_challenge'];
         $verify_token = $_REQUEST['hub_verify_token'];
-
         if ($verify_token === 'testtoken') {
             // Set this Verify Token Value on your Facebook App
-
             $response->headers->set('Content-Type', 'text/plain');
             $response->sendHeaders();
             $response->setContent($challenge);
             return $response;
         }
-
         $input = json_decode(file_get_contents('php://input'), true);
         // Get the Senders Graph ID
         $sender = $input['entry'][0]['messaging'][0]['sender']['id'];
@@ -38,7 +31,6 @@ class FacebookMessengerBotController extends BaseController
         $url = 'https://graph.facebook.com/v2.6/me/messages?access_token=EAADeS6lnyqoBALR7gyuSYGk5dYdkzj7r8wLFVS1AxLoAPZCg4NJG2KWOzjs8CIMp2VLApWDbPZC44cnnl0gz1e93oNeEKmZAD2qEk7khJlzVZCMGzVeVZAUOpCN5BXFInZBjJceXebMtRxqzbMjBFJddgEPNczS44qZBSH1urRurQZDZD';
         //Initiate cURL.
         $ch = curl_init($url);
-        //Initiate cURL.
         $payload = array("recipient" => array("id" => $sender), "message" => array("text" => "Benvenuto su UmbriaOpenAPI"));
         //Tell cURL that we want to send a POST request.
         curl_setopt($ch, CURLOPT_POST, 1);
@@ -50,14 +42,9 @@ class FacebookMessengerBotController extends BaseController
         if (!empty($input['entry'][0]['messaging'][0]['message'])) {
             $result = curl_exec($ch);
         }
-
-
         $logger = $this->get('logger');
         $logger->info(json_encode($payload));
-
         $response->setContent(json_encode($payload));
         return $response;
-
-
     }
 }

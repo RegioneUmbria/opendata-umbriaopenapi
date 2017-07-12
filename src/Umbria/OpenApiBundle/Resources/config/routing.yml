@@ -38,6 +38,12 @@ umbria_open_api_entities_update:
       travel_agency: '0|1'
 
 
+facebook_webhook:
+    path: /facebook-webhook
+    defaults: { _controller: UmbriaOpenApiBundle:FacebookMessengerBot:index }
+    methods:  [GET|POST]
+
+
 # API REST
 umbria_open_api_tourism_proposal: { type: rest, resource: 'Umbria\OpenApiBundle\Controller\Tourism\ProposalController' }
 umbria_open_api_tourism_attractor: { type: rest, resource: 'Umbria\OpenApiBundle\Controller\Tourism\AttractorController' }
