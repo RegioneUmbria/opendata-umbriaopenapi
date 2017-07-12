@@ -6,10 +6,6 @@ umbria_open_api_ENhomepage:
     path:     /ENDefault
     defaults: { _controller: UmbriaOpenApiBundle:ENDefault:index }
 
-umbria_pro_loco_SportFacilitypage:
-    path:    /SportFacility
-    defaults: {_controller: UmbriaProLocoBundle:SportFacility:index}
-
 umbria_open_api_sparql_manual:
     path:     /sparql_manual
     defaults: { _controller: UmbriaOpenApiBundle:SparqlManual:index }
