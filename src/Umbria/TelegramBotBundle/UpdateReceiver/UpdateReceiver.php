@@ -59,15 +59,7 @@ class UpdateReceiver implements UpdateReceiverInterface
                 for ($i = 0; $i < count($arrayOfMessages); $i++) {
                     $this->telegramBotApi->sendMessage($message['chat']['id'], $arrayOfMessages[$i]);
                 }
-
-                for ($i = 0; $i < count($arrayOfMessages1); $i++) {
-                    $this->telegramBotApi->sendMessage($message['chat']['id'], $arrayOfMessages1[$i]);
-                }
-                $this->telegramBotApi->sendMessage($message['chat']['id'], "E i seguenti attrattori:");
-                $arrayOfMessages1 = $this->executeSportFacilityQuery($latitude, $longitude, 10, false);
-                for ($i = 0; $i < count($arrayOfMessages1); $i++) {
-                    $this->telegramBotApi->sendMessage($message['chat']['id'], $arrayOfMessages1[$i]);
-                }
+                
 
             }
             else {
@@ -99,7 +91,7 @@ class UpdateReceiver implements UpdateReceiverInterface
                     $text .= "/about - Informazioni sul bot\n";
                     $text .= "/hello - Suggerimenti\n";
                     $text .= "/help - Visualizzazione comandi disponibili\n";
-                    $text .= "/sprot -Trova impianti sportivi\n";
+                    $text .= "/sprot - Trova impianti sportivi\n";
                     break;
             }
 
