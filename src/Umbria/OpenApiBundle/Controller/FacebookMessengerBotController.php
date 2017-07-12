@@ -35,10 +35,10 @@ class FacebookMessengerBotController extends BaseController
         // Get the returned message
         $message = $input['entry'][0]['messaging'][0]['message']['text'];
         //API Url and Access Token, generate this token value on your Facebook App Page
-        $url = 'https://graph.facebook.com/v2.6/me/messages?access_token=EAADeS6lnyqoBALR7gyuSYGk5dYdkzj7r8wLFVS1AxLoAPZCg4NJG2KWOzjs8CIMp2VLApWDbPZC44cnnl0gz1e93oNeEKmZAD2qEk7khJlzVZCMGzVeVZAUOpCN5BXFInZBjJceXebMtRxqzbMjBFJddgEPNczS44qZBSH1urRurQZDZD';
+        $url = 'https://graph.facebook.com/v2.6/me/messages?access_token=EAALdAertaysBAMG0J2inyAfGbcdvyohhDkaLoj7OrdSZAB3SJtuMXzfri0hX1zH4CImCOOYUnZBseA7ZA25peCMqfyr8JQaUxtFKVDzavkPK3wSGAZAdD7K0NLbUQYUfVG9JL12ozAwS0JgwnfKBvl5IpoTCZBeC5jzVzlUyCaLGVY8rQOloYX2iu8ARNS2wZD';
         //Initiate cURL.
         $ch = curl_init($url);
-
+        //Initiate cURL.
         $payload = array("recipient" => array("id" => $sender), "message" => array("text" => "Benvenuto su UmbriaOpenAPI"));
         //Tell cURL that we want to send a POST request.
         curl_setopt($ch, CURLOPT_POST, 1);
