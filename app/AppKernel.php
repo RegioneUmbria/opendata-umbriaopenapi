@@ -27,6 +27,7 @@ class AppKernel extends Kernel
             new Umbria\OpenApiBundle\UmbriaOpenApiBundle(),
             new Umbria\ProLocoBundle\UmbriaProLocoBundle(),
             new Umbria\TelegramBotBundle\UmbriaTelegramBotBundle(),
+
         );
 
         if (in_array($this->getEnvironment(), array('dev', 'test'), true)) {
