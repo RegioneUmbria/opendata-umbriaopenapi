@@ -59,7 +59,7 @@ class UpdateReceiver implements UpdateReceiverInterface
                 for ($i = 0; $i < count($arrayOfMessages); $i++) {
                     $this->telegramBotApi->sendMessage($message['chat']['id'], $arrayOfMessages[$i]);
                 }
-                
+
 
             }
             else {
@@ -79,8 +79,9 @@ class UpdateReceiver implements UpdateReceiverInterface
                     $text = "Ciao " . $message['from']['first_name'] . ". Oggi ti consiglio: " . $arrayOfMessages[0];
                     break;
                 case "/sport":
-                    $arrayOfMessages1 = $this->executeSportFacilityQuery(43.105275, 12.391995, 100, true);
-                    $text = "Ciao " . $message['from']['first_name'] . ". Oggi ti consiglio: " . $arrayOfMessages1[0];
+                   // $arrayOfMessages1 = $this->executeSportFacilityQuery(43.105275, 12.391995, 100, true);
+                    $text = "Ciao " . $message['from']['first_name'] . ". Oggi ti consiglio: "
+                        //. $arrayOfMessages1[0];
                     break;
 
                 case "/help":
