@@ -50,3 +50,8 @@ umbria_pro_loco_suape_execute_sparql_query:
     path:     /statistiche/SUAPE/execute_sparql_query/
     defaults: {_controller: UmbriaProLocoBundle:SUAPE:executeSparqlQuery }
     methods:  [POST]
+
+facebook_webhook:
+    path: /facebook-webhook
+    defaults: { _controller: UmbriaOpenApiBundle:FacebookMessengerBot:index }
+    methods:  [GET|POST]
