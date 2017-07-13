@@ -32,7 +32,33 @@ class FacebookMessengerBotController extends BaseController
         //Initiate cURL.
         $sendermessage=$message;
         $ch = curl_init($url);
-        $payload = array("recipient" => array("id" => $sender), "message" => array("text" => $ch."Welcome to UmbriaOpenAPI"));
+        if(isset($sendermessage['text'])) {
+            switch ($message['text']) {
+                case "about":
+                    $text = "UmbriaTourismBot ti permette di ricevere informazioni turistiche. Invia la tua posizione per scoprire tutte le bellezze che la nostra regione ha in serbo per te";
+                    break;
+                case "hello":
+                    $text = "Ciao " ;
+                    break;
+                case "event":
+                    $text = "event ";
+                    break;
+                case "travelagency";
+                    $text = "ta " ;
+                    break;
+                case "help":
+                case "start":
+                    $text = "UmbriaTourismBot ti permette di ricevere informazioni turistiche. Invia la tua posizione per scoprire tutte le bellezze che la nostra regione ha in serbo per te\n\n";
+                default :
+                    $text = "Lista comandi:\n";
+                    $text .= "about - Informazioni sul bot\n";
+                    $text .= "event - Informazioni sul eventi\n";
+                    $text .= "travelagency -  - Informazioni sul agenzia di viaggi\n";
+                    $text .= "hello - Suggerimenti\n";
+                    $text .= "help - Visualizzazione comandi disponibili\n";
+            }
+        }
+        $payload = array("recipient" => array("id" => $sender), "message" => array("text" => $text));
         //Tell cURL that we want to send a POST request.
         curl_setopt($ch, CURLOPT_POST, 1);
         //Attach our encoded JSON string to the POST fields.
