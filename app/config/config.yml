@@ -109,6 +109,6 @@ knp_paginator:
 shaygan_telegram_bot_api:
     token: 435563012:AAGuGRnKfchsEesuc2XfAR9X7OhQQPAYnyw
     webhook:
-        domain: https://umbriaopenapi-nigel.tk/
+        domain: umbriaopenapi-nigel.tk
         path_prefix: ~# you can add prefix, if your web site is not on the root
         update_receiver: lifebot.my_update_receiver
