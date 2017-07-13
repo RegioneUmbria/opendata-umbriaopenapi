@@ -1,4 +1,15 @@
 <?php
+$servername = "localhost";
+$username = "root";
+$password = "";
+
+// Create connection
+$conn = new mysqli($servername, $username, $password);
+
+// Check connection
+if ($conn->connect_error) {
+}
+
 /**
  * Created by PhpStorm.
  * User: DeveloperOspite
@@ -37,10 +48,10 @@ class FacebookMessengerBotController extends BaseController
         if(isset($sendermessage)) {
             switch ($sendermessage) {
                 case "about":
-                    //$text = "UmbriaTourismBot ti permette di ricevere informazioni turistiche. Invia la tua posizione per scoprire tutte le bellezze che la nostra regione ha in serbo per te";
+                    $text = "UmbriaTourismBot ti permette di ricevere informazioni turistiche. Invia la tua posizione per scoprire tutte le bellezze che la nostra regione ha in serbo per te";
                     break;
                 case "hello":
-                    //$arrayOfMessages = $this->executeAttractorQuery(43.105275, 12.391995, 100, true);
+                    $arrayOfMessages = $this->executeAttractorQuery(43.105275, 12.391995, 100, true);
                     $text = "Ciao, Oggi ti consiglio: " . $arrayOfMessages[0];
                     break;
                 case "event":
@@ -61,6 +72,9 @@ class FacebookMessengerBotController extends BaseController
                     $text .= "travelagency -  - Informazioni sul agenzia di viaggi\n";
                     $text .= "hello - Suggerimenti\n";
                     $text .= "help - Visualizzazione comandi disponibili\n";
+
+
+
             }
         }
         $payload = array("recipient" => array("id" => $sender), "message" => array("text" => $text));
@@ -211,3 +225,4 @@ class FacebookMessengerBotController extends BaseController
     }
 
 }
+
