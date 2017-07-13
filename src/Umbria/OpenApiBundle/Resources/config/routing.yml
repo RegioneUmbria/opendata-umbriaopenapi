@@ -1,7 +1,7 @@
 umbria_open_api_homepage:
     path:     /
     defaults: { _controller: UmbriaOpenApiBundle:Default:index }
-umbria_open_api_homepage:
+umbria_open_api_ENhomepage:
     path:     /ENDefault
     defaults: { _controller: UmbriaOpenApiBundle:ENDefault:index } 
 
