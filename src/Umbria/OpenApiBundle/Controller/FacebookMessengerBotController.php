@@ -40,15 +40,15 @@ class FacebookMessengerBotController extends BaseController
                     $text = "UmbriaTourismBot ti permette di ricevere informazioni turistiche. Invia la tua posizione per scoprire tutte le bellezze che la nostra regione ha in serbo per te";
                     break;
                 case "hello":
-                    $arrayOfMessages = $this->executeAttractorQuery(43.105275, 12.391995, 100, true);
+                    $arrayOfMessages = executeAttractorQuery(43.105275, 12.391995, 100, true);
                     $text = "Ciao, Oggi ti consiglio: " . $arrayOfMessages[0];
                     break;
                 case "event":
-                    $arrayOfMessages = $this->executeEventQuery(43.105275, 12.391995, 100, true);
+                    $arrayOfMessages = executeEventQuery(43.105275, 12.391995, 100, true);
                     $text = "Ciao, Oggi ti consiglio: " . $arrayOfMessages[0];
                     break;
                 case "travelagency";
-                    $arrayOfMessages = $this->executeTravelAgencyQuery(43.105275, 12.391995, 100, true);
+                    $arrayOfMessages = executeTravelAgencyQuery(43.105275, 12.391995, 100, true);
                     $text = "Ciao, Oggi ti consiglio: " . $arrayOfMessages[0];
                     break;
                 case "help":
