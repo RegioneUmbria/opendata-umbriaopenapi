@@ -25,6 +25,7 @@ class SportFacilityController extends Controller
      */
     public function indexAction(Request $request)
     {
+
     }
 
     /**

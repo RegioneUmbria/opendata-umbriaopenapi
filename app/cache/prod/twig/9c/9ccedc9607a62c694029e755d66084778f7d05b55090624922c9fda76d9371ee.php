@@ -1,0 +1,534 @@
+<?php
+
+/* UmbriaOpenApiBundle:SparqlManual:index.html.twig */
+class __TwigTemplate_ca23b9ed8adf26b898b2955dc5a6b50d533b0d16f51f0974373f3518de673088 extends Twig_Template
+{
+    public function __construct(Twig_Environment $env)
+    {
+        parent::__construct($env);
+
+        // line 1
+        $this->parent = $this->loadTemplate("UmbriaOpenApiBundle::base.html.twig", "UmbriaOpenApiBundle:SparqlManual:index.html.twig", 1);
+        $this->blocks = array(
+            'body' => array($this, 'block_body'),
+            'javascripts' => array($this, 'block_javascripts'),
+        );
+    }
+
+    protected function doGetParent(array $context)
+    {
+        return "UmbriaOpenApiBundle::base.html.twig";
+    }
+
+    protected function doDisplay(array $context, array $blocks = array())
+    {
+        $this->parent->display($context, array_merge($this->blocks, $blocks));
+    }
+
+    // line 3
+    public function block_body($context, array $blocks = array())
+    {
+        // line 4
+        echo "
+
+
+    <nav class=\"navbar navbar-default navbar-fixed-top navbar-inverse\">
+        <div class=\"container\">
+            <div class=\"navbar-header\">
+                <button type=\"button\" class=\"navbar-toggle collapsed\" data-toggle=\"collapse\" data-target=\"#navbar\"
+                        aria-expanded=\"false\" aria-controls=\"navbar\">
+                    <span class=\"sr-only\">Toggle navigation</span>
+                    <span class=\"icon-bar\"></span>
+                    <span class=\"icon-bar\"></span>
+                    <span class=\"icon-bar\"></span>
+                </button>
+                <a class=\"navbar-brand\" href=\"";
+        // line 17
+        echo $this->env->getExtension('Symfony\Bridge\Twig\Extension\RoutingExtension')->getPath("umbria_open_api_homepage");
+        echo "\">Umbria - Open API</a>
+            </div>
+            <div id=\"navbar\" class=\"navbar-collapse collapse\">
+                <ul class=\"nav navbar-nav\">
+                    <li><a href=\"";
+        // line 21
+        echo $this->env->getExtension('Symfony\Bridge\Twig\Extension\RoutingExtension')->getPath("umbria_pro_loco_homepage");
+        echo "\">Turismo</a></li>
+                    <li><a href=\"";
+        // line 22
+        echo $this->env->getExtension('Symfony\Bridge\Twig\Extension\RoutingExtension')->getPath("umbria_pro_loco_statistiche");
+        echo "\">Statistiche SUAPE</a></li>
+                    <li><a href=\"";
+        // line 23
+        echo $this->env->getExtension('Symfony\Bridge\Twig\Extension\RoutingExtension')->getPath("nelmio_api_doc_index");
+        echo "\">API docs</a></li>
+                    <li><a href=\"";
+        // line 24
+        echo $this->env->getExtension('Symfony\Bridge\Twig\Extension\RoutingExtension')->getPath("umbria_open_api_sparql_manual");
+        echo "\">SPARQL Manual</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+
+
+    <div class=\"container\">
+        <div class=\"row\">
+            <div class=\"page-header\"><h1>Guida SPARQL Endpoint</h1></div>
+            <div class=\"col-md-4 well\">
+                Il formato proposto dal W3C per gli \"open and linked data\" è RDF.<br>
+                    Ogni dato del mondo reale viene detto risorsa e viene memorizzato ed esposto sotto forma di tripla:
+                    soggetto-predicato-oggetto<br>
+                    Il soggetto identifica la risorsa in modo univoco ed è generalmente un URI.<br>
+                    Il predicato è un URI che identifica una proprietà definita in un vocabolario (o ontologia).<br>
+                    L'oggetto può essere un valore \"literal\" (stringa, intero...) oppure nuovamente un URI che
+                    identifica
+                    un'altra risorsa.
+            </div>
+
+            <div class=\"col-md-4 well\">
+                In questo modo risorse presenti su dataset di origini diverse possono essere collegati tra di
+                    loro.<br>
+                    Questi collegamenti costituiscono quindi un grande grafo mondiale che contiene tutti i dati
+                    pubblicati
+                    secondo gli standard dei linked open data.<br>
+                    Le varie risorse costituiscono i nodi del grafo e le proprietà gli archi.<br>
+                    Una tripla rappresenta: un nodo del grafo (soggetto) collegato tramite un arco orientato (predicato)
+                    ad
+                    un'altra risorsa (oggetto).<br>
+                    Ogni organizzazione che pubblica dei dati secondo questo approccio, può definire sotto-grafi di
+                    appartenenza dei dati e offrire un endpoint grazie al quale effettuare query.
+            </div>
+
+            <div class=\"col-md-4 well\">Il linguaggio utilizzato per effettuare le query è SPARQL.<br>
+                    I risultati delle query sono degli insiemi di triple, solitamente disponibili in vari formati (RDF,
+                JSON, HTML...). <br>
+                Vediamo di seguito uno dei possibili approcci per consultare un dataset RDF attraverso uno SPARQL
+                Endpoint
+            </div>
+
+
+        </div>
+
+        <!--
+        -----------------------------------------------------------------------------------------------------------------
+        -----------------------------------------------------------------------------------------------------------------
+                                                    GRAFI
+        -----------------------------------------------------------------------------------------------------------------
+        -----------------------------------------------------------------------------------------------------------------
+        -->
+        <div class=\"page-header\"><h2>Come interrogare uno SPARQL Enpoint</h2></div>
+        <div class=\"row\">
+            <div class=\"col-md-8\">
+                    <pre><code id=\"graphsFormCode\"
+                               title=\"SPARQL query, restituisce l'insieme di tutti i grafi del portale OpenData della regione Umbria\"
+                               class=\"img-responsive img-rounded\"
+                        >
+
+
+                            SELECT DISTINCT ?graph
+                            WHERE{
+                            GRAPH ?graph {?s ?p ?o}
+                            }
+
+
+                        </code>
+<button type=\"button\" id=\"graphsFormSubmit\" class=\"btn btn-primary\">Esegui query</button></pre>
+
+            </div>
+            <div class=\"col-md-4\">
+                <h3>1 - Ricerca Grafi</h3>
+                <p>Come prima cosa chiediamo quali sono tutti i grafi disponibili. </p>
+                <p>La query restituisce l'insieme dei grafi in formato JSON.</p>
+                <p>La tabella che vedi dopo aver eseguito la query è ottenuta facendo un parsing del risultato JSON.</p>
+                <p>Seleziona un grafo dalla tabella per utilizzarlo nei prossimi step di ricerca.</p>
+
+            </div>
+
+
+            <div class=\"col-md-12\" id=\"show_result_graphs\" style=\"display: none\">
+                <span class=\"label label-primary\">Seleziona un grafo da utilizzare nei prossimi step:</span>
+                <div id=\"graphs_list\" class=\"list-group col-md-12\">
+                </div>
+            </div>
+            <div class=\"text-center col-md-12\" id=\"graphs_pagination\">
+                <nav aria-label=\"Page navigation\">
+                    <ul class=\"pagination\" id=\"graphs_pages\">
+                    </ul>
+                </nav>
+            </div>
+            <div class=\"col-md-12\">
+                <button id=\"show_json_graphs\" style=\"display: none\" class=\"label label-primary\" data-toggle=\"collapse\"
+                        data-target=\"#graphsFormResult\">Risultato JSON:
+                </button>
+                <div id=\"graphsFormResult\"
+                     title=\"Risultato SPARQL query, contiene l'insieme di tutti i grafi del portale OpenData della regione Umbria in formato JSON\"
+                     class=\"collapse well json_result\"
+                >
+                </div>
+            </div>
+
+        </div>
+        <hr>
+        <!--
+        -----------------------------------------------------------------------------------------------------------------
+        -----------------------------------------------------------------------------------------------------------------
+                                                    TIPI
+        -----------------------------------------------------------------------------------------------------------------
+        -----------------------------------------------------------------------------------------------------------------
+        -->
+        <div class=\"row\" id=\"types\">
+            <div class=\"col-md-4\">
+                <h3>2 - Ricerca Tipi</h3>
+                <p>Prima di ricercare le risorse vere è proprie è utile sapere che tipi di risorse
+                    sono presenti nel grafo che abbiamo scelto (o in tutti i grafi della
+                    Regione Umbria se non abbiamo selezionato nessun grafo dalla tabella precedente).</p>
+                <p>Selezionando un tipo di dato, tra i risultati di questa query, fai in modo che
+                    la prossima query restituisca solo le risorse del tipo scelto.</p>
+            </div>
+            <div class=\"col-md-8\">
+                <div class=\"col-md-1\">
+                    <span class=\"label label-primary\">Grafo</span>
+                </div>
+                <div class=\"col-md-11\">
+                    <input type=\"text\" id=\"sparqlQueryTypeGraph\"
+                           title=\"Grafo in cui viene eseguita la query\"
+                           class=\"form-control\"
+                           disabled
+                    />
+                </div>
+                <div class=\"col-md-12\">
+                    <pre><code id=\"sparqlTypeQuery\"
+                               title=\"SPARQL query, restituisce l'insieme di tutti i tipi di dato presenti nel grafo\"
+                               class=\"img-responsive img-rounded\"
+                        >
+
+
+                            SELECT DISTINCT ?o
+                            WHERE{
+                            ?s &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#type&gt; ?o
+                            }
+
+
+                        </code>
+<button type=\"button\" id=\"sparqlQueryTypeSubmit\" class=\"btn btn-default\">Esegui query</button></pre>
+                </div>
+            </div>
+
+
+            <div class=\"col-md-12\" id=\"show_result_types\" style=\"display: none\">
+                <span class=\"label label-primary\">Seleziona un tipo di dato da utilizzare nella ricerca delle risorse:</span>
+                <div id=\"types_list\" class=\"list-group col-md-12\">
+                </div>
+            </div>
+            <div class=\"text-center col-md-12\" id=\"types_pagination\">
+                <nav aria-label=\"Page navigation\">
+                    <ul class=\"pagination\" id=\"types_pages\">
+                    </ul>
+                </nav>
+            </div>
+            <div class=\"col-md-12\">
+                <button id=\"show_json_types\" style=\"display: none\" class=\"label label-primary\" data-toggle=\"collapse\"
+                        data-target=\"#sparqlQueryTypeResult\">Risultato JSON:
+                </button>
+                <div id=\"sparqlQueryTypeResult\"
+                     title=\"Risultato SPARQL query, contiene l'insieme di tutti i tipi di dato presenti nel grafo in formato JSON\"
+                     class=\"well json_result collapse\"
+                >
+                </div>
+            </div>
+
+        </div>
+        <hr>
+
+        <!--
+        -----------------------------------------------------------------------------------------------------------------
+        -----------------------------------------------------------------------------------------------------------------
+                                                    RISORSE
+        -----------------------------------------------------------------------------------------------------------------
+        -----------------------------------------------------------------------------------------------------------------
+        -->
+
+        <div class=\"row\" id=\"resources\">
+            <div class=\"col-md-8\">
+                <div class=\"col-md-1\">
+                    <span class=\"label label-primary\">Grafo</span>
+                </div>
+                <div class=\"col-md-11\">
+                    <input type=\"text\" id=\"sparqlQueryGraph\"
+                           title=\"Grafo in cui viene eseguita la query\"
+                           class=\"form-control\"
+                           disabled
+                    />
+                </div>
+                <div class=\"col-md-12\">
+
+
+                        <pre><code id=\"sparqlQuery\"
+                                   title=\"SPARQL query, restituisce l'insieme di tutte le triple del tipo e appartenenti al grafo selezionati\"
+                                   class=\"img-responsive img-rounded\"
+                            >
+
+
+                                SELECT DISTINCT ?s ?p ?o
+                                WHERE{
+                                ?s ?p ?o .
+                                ?s &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#type&gt; &lt;&gt;
+                                }
+                                LIMIT 50
+
+
+                            </code>
+
+<button type=\"button\" id=\"sparqlQuerySubmit\" class=\"btn btn-default\" disabled>Esegui query</button></pre>
+                    <input id=\"sparqlQueryTypeHidden\" type=\"hidden\" value=\"\">
+                </div>
+            </div>
+            <div class=\"col-md-4\">
+                <h3>3 - Ricerca Risorse</h3>
+                <p>Possiamo finalmente effettuare una query delle risorse del tipo e nel grafo selezionati in
+                    precedenza.
+                </p>
+                <p>Questa volta richiediamo tutte le triple che hanno come soggetto una risorsa del tipo scelto, il
+                    risultato sarà quindi un insieme di triple.</p>
+                <p>Soggetti, predicati e oggetti possono assumere valori <i>literal</i>, <i>blank node</i> o <i>URI</i>.
+                    Le risorse identificate da URI possiedono una rappresentazione HTML che puoi visualizzare con un
+                    semplice click.</p>
+            </div>
+
+
+            <div class=\"col-md-12\" id=\"show_result_resources\" style=\"display: none\">
+                <span class=\"label label-primary\">Seleziona un URI per visualizzarne la rappresentazione HTML:</span>
+
+                <div id=\"resources_list\" class=\"btn-group btn-group-justified\" role=\"group\">
+                    <div class=\"btn-group\" role=\"group\" id=\"resources_list_s\">
+                    </div>
+                    <div class=\"btn-group\" role=\"group\" id=\"resources_list_p\">
+                    </div>
+                    <div class=\"btn-group\" role=\"group\" id=\"resources_list_o\">
+                    </div>
+                </div>
+            </div>
+            <div class=\"text-center col-md-12\">
+                <nav aria-label=\"Page navigation\">
+                    <ul class=\"pagination\" id=\"resources_pages\">
+                    </ul>
+                </nav>
+            </div>
+
+            <div class=\"col-md-12\">
+                <button id=\"show_json_resources\" style=\"display: none\" class=\"label label-primary\"
+                        data-toggle=\"collapse\" data-target=\"#sparqlQueryResult\">Risultato JSON:
+                </button>
+                <div id=\"sparqlQueryResult\"
+                     title=\"Risultato SPARQL query, contiene l'insieme di tutte le triple del tipo e appartenenti al grafo selezionati in formato JSON\"
+                     class=\"well json_result collapse\"
+                >
+                </div>
+            </div>
+
+
+        </div>
+        <hr>
+
+        <div class=\"row\">
+            <div class=\"page-header\"><h2>Query Avanzate</h2></div>
+            <div class=\"col-md-12\">
+                <p>Vediamo ora delle query più elaborate in modo tale da comprendere la sintassi SPARQL.</p>
+                <p>Come forse avrai intuito, le variabili sono precedute dal segno ?.</p>
+                <p>Nella clausola SELECT definiamo le variabili che devono essere mostrate in output,
+                    esse quindi devono essere necessariamente definite nella clausola WHERE.</p>
+                <p>Nella clausola WHERE filtriamo le triple del nostro grafo. Di base la sintassi <i>?s ?p ?o</i>
+                    restituisce tutte le triple del grafo. <br>
+                    Il simbolo \".\" permette di concatenare le condizioni,
+                    quindi la sintassi <i>?s ?p ?o. ?s &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#type&gt; ?o</i>
+                    restituisce tutte le triple del grafo
+                    che hanno come soggetto una risorsa che possiede il predicato <i>http://www.w3.org/1999/02/22-rdf-syntax-ns#type</i>
+                </p>
+            </div>
+            <!--
+        -----------------------------------------------------------------------------------------------------------------
+        -----------------------------------------------------------------------------------------------------------------
+                                                   ATTRATTORI PERUGIA
+        -----------------------------------------------------------------------------------------------------------------
+        -----------------------------------------------------------------------------------------------------------------
+        -->
+            <div class=\"row\">
+                <div class=\"col-md-8\">
+                    <pre><code
+                                title=\"SPARQL query, restituisce i nomi di tutti gli attrattori appartenenti all'area Perugina\"
+                                class=\"img-responsive img-rounded\"
+                        >
+
+
+                            PREFIX geo: &lt;http://www.w3.org/2003/01/geo/wgs84_pos#&gt;
+
+                            SELECT ?resource_uri ?label
+                            WHERE {
+                            ?resource_uri geo:lat ?lat.
+                            ?resource_uri geo:long ?long.
+                            ?resource_uri rdfs:label ?label.
+                            FILTER(xsd:double(?lat) <= xsd:double(43.137743) &&
+                            xsd:double(?lat) >= xsd:double(43.064482) &&
+                            xsd:double(?long) <= xsd:double(12.419962) &&
+                            xsd:double(?long) >= xsd:double(12.329279)
+                            )
+                            }
+
+
+                        </code>
+<a href=\"http://dati.umbria.it/sparql?default-graph-uri=http://dati.umbria.it/graph/attrattori&qtxt=PREFIX+geo%3A+%3Chttp%3A%2F%2Fwww.w3.org%2F2003%2F01%2Fgeo%2Fwgs84_pos%23%3E%0D%0A%0D%0ASELECT+%3Fresource_uri+%3Flabel%0D%0AWHERE+%7B%0D%0A%09%3Fresource_uri+geo%3Alat+%3Flat.%0D%0A%09%3Fresource_uri+geo%3Along+%3Flong.%0D%0A%09%3Fresource_uri+rdfs%3Alabel+%3Flabel.%0D%0A%09FILTER%28xsd%3Adouble%28%3Flat%29++%3C%3D+xsd%3Adouble%2843.137743%29+%26%26%0D%0A%09%09xsd%3Adouble%28%3Flat%29+%3E%3D+xsd%3Adouble%2843.064482%29+%26%26%0D%0A%09%09xsd%3Adouble%28%3Flong%29++%3C%3D+xsd%3Adouble%2812.419962%29+%26%26%0D%0A%09%09xsd%3Adouble%28%3Flong%29++%3E%3D+xsd%3Adouble%2812.329279%29%0D%0A%09%29%0D%0A%7D%0D%0A\"
+   target=\"_blank\">
+    <button type=\"button\" class=\"btn btn-primary\">Vai a SPARQL Endpoint</button>
+</a></pre>
+
+                </div>
+                <div class=\"col-md-4\">
+                    <h3>Attrattori di Perugia</h3>
+                    <p>Vediamo come estrarre i nomi di tutti gli attrattori appartenenti all'area Perugina</p>
+                    <p>Le risorse sono filtrate in base alla longitudine e latitudine,
+                        prova a variare i valori per ottenere gli attrattori di tutta la regione Umbria.</p>
+                </div>
+
+
+            </div>
+            <hr>
+
+
+            <!-----------------------------------------------------------------------------------------------------------------
+            -----------------------------------------------------------------------------------------------------------------
+                                                        EVENTI TERNI
+            -----------------------------------------------------------------------------------------------------------------
+            -----------------------------------------------------------------------------------------------------------------
+            -->
+            <div class=\"col-md-4\">
+                <h3>Eventi di Terni</h3>
+                <p>Vediamo come estrarre gli eventi organizzati a Terni</p>
+                <p>Le risorse sono filtrate in base al nome del comune di appartenenza.</p>
+            </div>
+            <div class=\"col-md-8\">
+
+                    <pre><code
+                                title=\"SPARQL query, restituisce i nomi di tutti gli eventi organizzati a Terni\"
+                                class=\"img-responsive img-rounded\"
+                        >
+
+
+                            PREFIX dbpedia-owl: &lt;http://dbpedia.org/ontology/&gt;
+                            PREFIX dc: &lt;http://purl.org/dc/elements/1.1/&gt;
+                            PREFIX schema: &lt;http://schema.org/&gt;
+
+                            SELECT ?resource_uri ?nome_evento
+                            WHERE{
+                            ?resource_uri rdfs:label ?nome_evento.
+                            ?resource_uri rdf:type schema:Event.
+                            ?resource_uri dbpedia-owl:municipality ?municipality.
+                            FILTER regex(?municipality, \"Terni\", \"i\")
+                            }
+
+
+                        </code>
+<a href=\"http://dati.umbria.it/sparql?default-graph-uri=http://dati.umbria.it/graph/eventi&qtxt=PREFIX+dbpedia-owl%3A+%3Chttp%3A%2F%2Fdbpedia.org%2Fontology%2F%3E%0D%0APREFIX+dc%3A+%3Chttp%3A%2F%2Fpurl.org%2Fdc%2Felements%2F1.1%2F%3E%0D%0A%0D%0ASELECT+%3Fresource_uri+%3Fnome_evento%0D%0AWHERE%7B%0D%0A%09%3Fresource_uri+rdfs%3Alabel+%3Fnome_evento.%0D%0A%09%3Fresource_uri++%3Chttp%3A%2F%2Fwww.w3.org%2F1999%2F02%2F22-rdf-syntax-ns%23type%3E+%3Chttp%3A%2F%2Fschema.org%2FEvent%3E.%0D%0A%09%3Fresource_uri+dbpedia-owl%3Amunicipality+%3Fmunicipality.%0D%0A%09FILTER+regex%28%3Fmunicipality%2C+%22Terni%22%2C+%22i%22%29%0D%0A%7D\"
+   target=\"_blank\">
+    <button type=\"button\" class=\"btn btn-primary\">Vai a SPARQL Endpoint</button>
+</a></pre>
+
+            </div>
+        </div>
+        <hr>
+    </div>
+
+
+
+
+
+
+    <!-- FOOTER -->
+    <footer style=\" border-top: 20px solid #eee \">
+        <p class=\"pull-right\"><a href=\"#\">Back to top</a></p>
+        <div class=\"col-md-1\"></div>
+        <div class=\"col-md-3\">
+
+
+            <address style=\"margin: 30px\">
+                <strong><a href=\"http://www.regione.umbria.it\" target=\"_blank\">Regione Umbria</a></strong><br>
+                Corso Vannucci, 96<br>
+                06121 Perugia<br>
+                <a href=\"mailto:opendata@regione.umbria.it\">opendata@regione.umbria.it</a><br>
+                <a href=\"mailto:regione.giunta@postacert.umbria.it\">regione.giunta@postacert.umbria.it</a><br>
+                P.IVA 01212820540<br>
+            </address>
+
+
+        </div>
+        <div class=\"col-md-6\">
+            <div class=\"col-md-4\">
+                <a href=\"http://www.dps.mef.gov.it/\"><img src=\" http://dati.umbria.it/images/Logo_DPS.jpg\"
+                                                          title=\"Dipartimento per lo Sviluppo e la Coesione Economica\"
+                                                          alt=\"DPS\"></a>
+            </div>
+            <div class=\"col-md-4\">
+                <a href=\"http://www.dps.gov.it/it/politiche_e_attivita/Fondo_per_lo_Sviluppo_e_la_Coesione\"><img
+                            src=\"http://dati.umbria.it/images/FSC.jpg\" title=\"Fondo per lo Sviluppo e la Coesione\"
+                            alt=\"FSC\" style=\"
+    width: 100%;
+\"></a>
+            </div>
+            <div class=\"col-md-4\">
+                <a href=\"http://www.regione.umbria.it/che-cos-e-il-fondo-di-sviluppo-e-coesione-fsc\"><img
+                            src=\"http://dati.umbria.it/images/FSC_Umbria.jpg\"
+                            title=\"Fondo per lo Sviluppo e la Coesione Umbria\" alt=\"FSC Umbria\"></a>
+            </div>
+        </div>
+    </footer>
+
+
+
+
+
+
+";
+    }
+
+    // line 449
+    public function block_javascripts($context, array $blocks = array())
+    {
+        // line 450
+        echo "     ";
+        $this->displayParentBlock("javascripts", $context, $blocks);
+        echo "
+     <script src=\"";
+        // line 451
+        echo twig_escape_filter($this->env, $this->env->getExtension('Symfony\Bridge\Twig\Extension\AssetExtension')->getAssetUrl("js/sparql_manual.js"), "html", null, true);
+        echo "\"></script>
+ ";
+    }
+
+    public function getTemplateName()
+    {
+        return "UmbriaOpenApiBundle:SparqlManual:index.html.twig";
+    }
+
+    public function isTraitable()
+    {
+        return false;
+    }
+
+    public function getDebugInfo()
+    {
+        return array (  502 => 451,  497 => 450,  494 => 449,  66 => 24,  62 => 23,  58 => 22,  54 => 21,  47 => 17,  32 => 4,  29 => 3,  11 => 1,);
+    }
+
+    /** @deprecated since 1.27 (to be removed in 2.0). Use getSourceContext() instead */
+    public function getSource()
+    {
+        @trigger_error('The '.__METHOD__.' method is deprecated since version 1.27 and will be removed in 2.0. Use getSourceContext() instead.', E_USER_DEPRECATED);
+
+        return $this->getSourceContext()->getCode();
+    }
+
+    public function getSourceContext()
+    {
+        return new Twig_Source("", "UmbriaOpenApiBundle:SparqlManual:index.html.twig", "C:\\xampp\\htdocs\\opendata-umbriaopenapi_Nigel\\src\\Umbria\\OpenApiBundle/Resources/views/SparqlManual/index.html.twig");
+    }
+}

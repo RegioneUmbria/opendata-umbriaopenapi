@@ -60,14 +60,6 @@ class UpdateReceiver implements UpdateReceiverInterface
                     $this->telegramBotApi->sendMessage($message['chat']['id'], $arrayOfMessages[$i]);
                 }
 
-                for ($i = 0; $i < count($arrayOfMessages1); $i++) {
-                    $this->telegramBotApi->sendMessage($message['chat']['id'], $arrayOfMessages1[$i]);
-                }
-                $this->telegramBotApi->sendMessage($message['chat']['id'], "E i seguenti attrattori:");
-                $arrayOfMessages1 = $this->executeSportFacilityQuery($latitude, $longitude, 10, false);
-                for ($i = 0; $i < count($arrayOfMessages1); $i++) {
-                    $this->telegramBotApi->sendMessage($message['chat']['id'], $arrayOfMessages1[$i]);
-                }
 
             }
             else {
@@ -86,10 +78,11 @@ class UpdateReceiver implements UpdateReceiverInterface
                     $arrayOfMessages = $this->executeAttractorQuery(43.105275, 12.391995, 100, true);
                     $text = "Ciao " . $message['from']['first_name'] . ". Oggi ti consiglio: " . $arrayOfMessages[0];
                     break;
-                case "/sport":
-                    $arrayOfMessages1 = $this->executeSportFacilityQuery(43.105275, 12.391995, 100, true);
-                    $text = "Ciao " . $message['from']['first_name'] . ". Oggi ti consiglio: " . $arrayOfMessages1[0];
-                    break;
+//                case "/sport":
+//                   // $arrayOfMessages1 = $this->executeSportFacilityQuery(43.105275, 12.391995, 100, true);
+//                  //  $text = "Ciao " . $message['from']['first_name'] . ". Oggi ti consiglio: ";
+//                        //. $arrayOfMessages1[0];
+//                    break;
 
                 case "/help":
                 case "/start":
@@ -99,7 +92,7 @@ class UpdateReceiver implements UpdateReceiverInterface
                     $text .= "/about - Informazioni sul bot\n";
                     $text .= "/hello - Suggerimenti\n";
                     $text .= "/help - Visualizzazione comandi disponibili\n";
-                    $text .= "/sprot -Trova impianti sportivi\n";
+                    $text .= "/sprot - Trova impianti sportivi\n";
                     break;
             }
 
@@ -147,41 +140,41 @@ class UpdateReceiver implements UpdateReceiverInterface
         }
     }
 
-    public function executeSportFacilityQuery($lat, $lng, $radius, $rand)
-    {
-        /**@var AttractorRepository $attractorRepo */
-        $attractorRepo = $this->em->getRepository('UmbriaOpenApiBundle:Tourism\GraphsEntities\SportFacility');
-
-        $location = GeoLocation::fromDegrees($lat, $lng);
-        /** @var GeoLocation[] $bounds */
-        /** @noinspection PhpInternalEntityUsedInspection */
-        $bounds = $location->boundingCoordinates($radius, 'km');
-
-        $pois = $attractorRepo->findByPosition(
-            $bounds[1]->getLatitudeInDegrees(),
-            $bounds[0]->getLatitudeInDegrees(),
-            $bounds[1]->getLongitudeInDegrees(),
-            $bounds[0]->getLongitudeInDegrees());
-
-        if (sizeof($pois) > 0) {
-            if ($rand) {
-                $key = array_rand($pois);
-
-                $poi = $pois[$key];
-                $stringResult[0] = $poi->getName() . "\n" . str_replace('&nbsp;', ' ', strip_tags($poi->getSport())) . "\n" . $poi->getAddress();
-                return $stringResult;
-            } else {
-                $i = 0;
-                foreach ($pois as $poi) {
-                    $stringResult[$i] = $poi->getName() . "\n" . str_replace('&nbsp;', ' ', strip_tags($poi->getSport())) . "\n" . $poi->getAddress();
-                    $i++;
-                }
-                return $stringResult;
-            }
-        } else {
-            throw new Exception();
-        }
-    }
+//    public function executeSportFacilityQuery($lat, $lng, $radius, $rand)
+//    {
+//        /**@var AttractorRepository $attractorRepo */
+//        $attractorRepo = $this->em->getRepository('UmbriaOpenApiBundle:Tourism\GraphsEntities\SportFacility');
+//
+//        $location = GeoLocation::fromDegrees($lat, $lng);
+//        /** @var GeoLocation[] $bounds */
+//        /** @noinspection PhpInternalEntityUsedInspection */
+//        $bounds = $location->boundingCoordinates($radius, 'km');
+//
+//        $pois = $attractorRepo->findByPosition(
+//            $bounds[1]->getLatitudeInDegrees(),
+//            $bounds[0]->getLatitudeInDegrees(),
+//            $bounds[1]->getLongitudeInDegrees(),
+//            $bounds[0]->getLongitudeInDegrees());
+//
+//        if (sizeof($pois) > 0) {
+//            if ($rand) {
+//                $key = array_rand($pois);
+//
+//                $poi = $pois[$key];
+//                $stringResult[0] = $poi->getName() . "\n" . str_replace('&nbsp;', ' ', strip_tags($poi->getSport())) . "\n" . $poi->getAddress();
+//                return $stringResult;
+//            } else {
+//                $i = 0;
+//                foreach ($pois as $poi) {
+//                    $stringResult[$i] = $poi->getName() . "\n" . str_replace('&nbsp;', ' ', strip_tags($poi->getSport())) . "\n" . $poi->getAddress();
+//                    $i++;
+//                }
+//                return $stringResult;
+//            }
+//        } else {
+//            throw new Exception();
+//        }
+//    }
 
     public function executeProposalQuery($lat, $lng, $radius)
     {
