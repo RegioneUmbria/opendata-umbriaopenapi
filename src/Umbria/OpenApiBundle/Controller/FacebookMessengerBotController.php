@@ -32,7 +32,8 @@ class FacebookMessengerBotController extends BaseController
         //Initiate cURL.
         $sendermessage=$message;
         $ch = curl_init($url);
-        if(isset($sendermessage['text'])) {
+        $text="Welcome to UmbiraOpenApi";
+        if(isset($sendermessage)) {
             switch ($message['text']) {
                 case "about":
                     $text = "UmbriaTourismBot ti permette di ricevere informazioni turistiche. Invia la tua posizione per scoprire tutte le bellezze che la nostra regione ha in serbo per te";
