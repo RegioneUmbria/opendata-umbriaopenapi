@@ -31,7 +31,7 @@ class FacebookMessengerBotController extends BaseController
         $url = 'https://graph.facebook.com/v2.6/me/messages?access_token=EAALdAertaysBALpNZANYDu5ZBiVG4TARAExZBJ3Ndvo78CDUS7q1AqvEZBEjdm8GCz6GQIBJMGuPHjXkOkF1f3QrjXkqJCtkPzjdMpNdSR83kGpxa1XLJVG2GKNNAhwZBlHVVQ31S5pZBZAwIoqIl7KMi8ueYiwiQv7ZAgjZCtH0q62yYsHOZCeVk5ZAs5myzJNA9kZD';
         //Initiate cURL.
         if (!is_null($message)){
-            $sendermessage=$message;
+            $sendermessage=$message[1];
         }else{
             $sendermessage="Error";
         }
