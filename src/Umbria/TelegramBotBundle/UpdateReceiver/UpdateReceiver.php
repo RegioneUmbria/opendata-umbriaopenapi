@@ -34,7 +34,7 @@ class UpdateReceiver implements UpdateReceiverInterface
     public function handleUpdate(Update $update)
     {
         $arrayOfArraysOfStrings = array(
-            array("/about", "/hello","/event","/travelagency","/help","/abc")
+            array("/about", "/hello","/event","/travelagency","/help")
         );
         $newKeyboard = new ReplyKeyboardMarkup($arrayOfArraysOfStrings, true, true);
         $message = json_decode(json_encode($update->message), true);
@@ -103,9 +103,6 @@ class UpdateReceiver implements UpdateReceiverInterface
                 case "/travelagency";
                     $arrayOfMessages = $this->executeTravelAgencyQuery(43.105275, 12.391995, 100, true);
                     $text = "Ciao " . $message['from']['first_name'] . ". Oggi ti consiglio: \n". $arrayOfMessages[0] ;
-                    break;
-                case "/abc":
-                    $text =  "Hello!";
                     break;
                 case "/help":
                 case "/start":
