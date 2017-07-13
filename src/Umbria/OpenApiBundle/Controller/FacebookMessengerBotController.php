@@ -33,21 +33,22 @@ class FacebookMessengerBotController extends BaseController
         $sendermessage=$message;
         $ch = curl_init($url);
         $text="Welcome to UmbiraOpenApi";
+        $arrayOfMessages[0]="Error";
         if(isset($sendermessage)) {
             switch ($sendermessage) {
                 case "about":
-                    $text = "UmbriaTourismBot ti permette di ricevere informazioni turistiche. Invia la tua posizione per scoprire tutte le bellezze che la nostra regione ha in serbo per te";
+                   // $text = "UmbriaTourismBot ti permette di ricevere informazioni turistiche. Invia la tua posizione per scoprire tutte le bellezze che la nostra regione ha in serbo per te";
                     break;
                 case "hello":
-                    $arrayOfMessages = $this->executeAttractorQuery(43.105275, 12.391995, 100, true);
+                    //$arrayOfMessages = $this->executeAttractorQuery(43.105275, 12.391995, 100, true);
                     $text = "Ciao, Oggi ti consiglio: " . $arrayOfMessages[0];
                     break;
                 case "event":
-                    $arrayOfMessages = $this->executeEventQuery(43.105275, 12.391995, 100, true);
+                   // $arrayOfMessages = $this->executeEventQuery(43.105275, 12.391995, 100, true);
                     $text = "Ciao, Oggi ti consiglio: " . $arrayOfMessages[0];
                     break;
                 case "travelagency";
-                    $arrayOfMessages = $this->executeTravelAgencyQuery(43.105275, 12.391995, 100, true);
+                   // $arrayOfMessages = $this->executeTravelAgencyQuery(43.105275, 12.391995, 100, true);
                     $text = "Ciao, Oggi ti consiglio: " . $arrayOfMessages[0];
                     break;
                 case "help":
