@@ -33,7 +33,6 @@ umbria_open_api_entities_update:
       accomodation: '0|1'
       travel_agency: '0|1'
 
-
 facebook_webhook:
   path: /facebook-webhook
   defaults: { _controller: UmbriaOpenApiBundle:FacebookMessengerBot:index }
