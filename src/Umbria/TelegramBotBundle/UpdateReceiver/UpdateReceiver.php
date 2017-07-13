@@ -127,7 +127,7 @@ class UpdateReceiver implements UpdateReceiverInterface
     public function executeAttractorQuery($lat, $lng, $radius, $rand)
     {
         /**@var AttractorRepository $attractorRepo */
-        $attractorRepo = $this->em->getRepository('UmbriaOpenApiBundle:Tourism\GraphsEntities\Attractor');
+        $attractorRepo = getRepository('UmbriaOpenApiBundle:Tourism\GraphsEntities\Attractor');
 
         $location = GeoLocation::fromDegrees($lat, $lng);
         /** @var GeoLocation[] $bounds */
@@ -163,7 +163,7 @@ class UpdateReceiver implements UpdateReceiverInterface
     public function executeProposalQuery($lat, $lng, $radius)
     {
         /**@var ProposalRepository $proposalRepo */
-        $proposalRepo = $this->em->getRepository('UmbriaOpenApiBundle:Tourism\GraphsEntities\Proposal');
+        $proposalRepo = getRepository('UmbriaOpenApiBundle:Tourism\GraphsEntities\Proposal');
 
         $location = GeoLocation::fromDegrees($lat, $lng);
         /** @var GeoLocation[] $bounds */
@@ -190,7 +190,7 @@ class UpdateReceiver implements UpdateReceiverInterface
     public function executeEventQuery($lat, $lng, $radius, $rand)
     {
         /**@var EventRepository $eventRepo */
-        $eventRepo = $this->em->getRepository('UmbriaOpenApiBundle:Tourism\GraphsEntities\Event');
+        $eventRepo = getRepository('UmbriaOpenApiBundle:Tourism\GraphsEntities\Event');
 
         //$pois = $eventRepo->findByID($id);
 
