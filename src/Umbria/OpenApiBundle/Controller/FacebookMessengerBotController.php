@@ -2,9 +2,10 @@
 $servername = "localhost";
 $username = "root";
 $password = "";
+$dbname = "uoa";
 
 // Create connection
-$conn = new mysqli($servername, $username, $password);
+$conn = new mysqli($servername, $username, $password, $dbname);
 
 // Check connection
 if ($conn->connect_error) {
@@ -96,6 +97,7 @@ class FacebookMessengerBotController extends BaseController
 
     public function executeAttractorQuery($lat, $lng, $radius, $rand)
     {
+        $stringResult="^_^";
         /**@var AttractorRepository $attractorRepo */
         $attractorRepo = $this->em->getRepository('UmbriaOpenApiBundle:Tourism\GraphsEntities\Attractor');
 
@@ -127,7 +129,9 @@ class FacebookMessengerBotController extends BaseController
             }
         } else {
             throw new Exception();
+            return $stringResult; 
         }
+
     }
 
     public function executeProposalQuery($lat, $lng, $radius)
