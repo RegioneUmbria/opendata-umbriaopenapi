@@ -2,10 +2,6 @@ umbria_open_api_homepage:
     path:     /
     defaults: { _controller: UmbriaOpenApiBundle:Default:index }
 
-umbria_open_api_ENhomepage:
-    path:     /ENDefault
-    defaults: { _controller: UmbriaOpenApiBundle:ENDefault:index }
-
 umbria_open_api_sparql_manual:
     path:     /sparql_manual
     defaults: { _controller: UmbriaOpenApiBundle:SparqlManual:index }
@@ -25,7 +21,7 @@ umbria_open_api_sparql_manual_query_data:
 umbria_open_api_entities_update:
     path:     /entities_update/{attractor}/{consortium}/{event}/{iat}/{sport_facility}/{profession}/{proposal}/{accomodation}/{travel_agency}/
     defaults: { _controller: UmbriaOpenApiBundle:EntitiesUpdate:index }
-    methods:  [GET]
+    methods:  [PUT]
     requirements:
       attractor: '0|1'
       consortium: '0|1'
@@ -37,10 +33,11 @@ umbria_open_api_entities_update:
       accomodation: '0|1'
       travel_agency: '0|1'
 
+
 facebook_webhook:
-    path: /facebook-webhook
-    defaults: { _controller: UmbriaOpenApiBundle:FacebookMessengerBot:index }
-    methods:  [GET|POST]
+  path: /facebook-webhook
+  defaults: { _controller: UmbriaOpenApiBundle:FacebookMessengerBot:index }
+  methods:  [GET|POST]
 
 
 # API REST
@@ -53,4 +50,3 @@ umbria_open_api_tourism_profession: { type: rest, resource: 'Umbria\OpenApiBundl
 umbria_open_api_tourism_iat: { type: rest, resource: 'Umbria\OpenApiBundle\Controller\Tourism\IatController' }
 umbria_open_api_tourism_accomodation: { type: rest, resource: 'Umbria\OpenApiBundle\Controller\Tourism\AccomodationController' }
 umbria_open_api_tourism_sport_facility: { type: rest, resource: 'Umbria\OpenApiBundle\Controller\Tourism\SportFacilityController' }
-
