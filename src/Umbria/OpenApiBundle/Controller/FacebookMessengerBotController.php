@@ -40,15 +40,15 @@ class FacebookMessengerBotController extends BaseController
                     $text = "UmbriaTourismBot ti permette di ricevere informazioni turistiche. Invia la tua posizione per scoprire tutte le bellezze che la nostra regione ha in serbo per te";
                     break;
                 case "hello":
-                    $arrayOfMessages = executeAttractorQuery(43.105275, 12.391995, 100, true);
+                    //$arrayOfMessages = $this->executeAttractorQuery(43.105275, 12.391995, 100, true);
                     $text = "Ciao, Oggi ti consiglio: " . $arrayOfMessages[0];
                     break;
                 case "event":
-                    $arrayOfMessages = executeEventQuery(43.105275, 12.391995, 100, true);
+                   // $arrayOfMessages = $this->executeEventQuery(43.105275, 12.391995, 100, true);
                     $text = "Ciao, Oggi ti consiglio: " . $arrayOfMessages[0];
                     break;
                 case "travelagency";
-                    $arrayOfMessages = executeTravelAgencyQuery(43.105275, 12.391995, 100, true);
+                   // $arrayOfMessages = $this->executeTravelAgencyQuery(43.105275, 12.391995, 100, true);
                     $text = "Ciao, Oggi ti consiglio: " . $arrayOfMessages[0];
                     break;
                 case "help":
@@ -83,7 +83,7 @@ class FacebookMessengerBotController extends BaseController
     public function executeAttractorQuery($lat, $lng, $radius, $rand)
     {
         /**@var AttractorRepository $attractorRepo */
-        $attractorRepo = getRepository('UmbriaOpenApiBundle:Tourism\GraphsEntities\Attractor');
+        $attractorRepo = $this->em->getRepository('UmbriaOpenApiBundle:Tourism\GraphsEntities\Attractor');
 
         $location = GeoLocation::fromDegrees($lat, $lng);
         /** @var GeoLocation[] $bounds */
@@ -119,7 +119,7 @@ class FacebookMessengerBotController extends BaseController
     public function executeProposalQuery($lat, $lng, $radius)
     {
         /**@var ProposalRepository $proposalRepo */
-        $proposalRepo = getRepository('UmbriaOpenApiBundle:Tourism\GraphsEntities\Proposal');
+        $proposalRepo = $this->em->getRepository('UmbriaOpenApiBundle:Tourism\GraphsEntities\Proposal');
 
         $location = GeoLocation::fromDegrees($lat, $lng);
         /** @var GeoLocation[] $bounds */
@@ -184,7 +184,7 @@ class FacebookMessengerBotController extends BaseController
     public function executeTravelAgencyQuery($lat, $lng, $radius, $rand)
     {
         /**@var TravelAgencyRepository $travelagencyRepo */
-        $travelagencyRepo = getRepository('UmbriaOpenApiBundle:Tourism\GraphsEntities\TravelAgency');
+        $travelagencyRepo = $this->em->getRepository('UmbriaOpenApiBundle:Tourism\GraphsEntities\TravelAgency');
 
         //$pois = $eventRepo->findByID($id);
 
