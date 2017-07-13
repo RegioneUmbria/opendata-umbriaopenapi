@@ -39,13 +39,16 @@ class FacebookMessengerBotController extends BaseController
                     $text = "UmbriaTourismBot ti permette di ricevere informazioni turistiche. Invia la tua posizione per scoprire tutte le bellezze che la nostra regione ha in serbo per te";
                     break;
                 case "hello":
-                    $text = "Ciao " ;
+                    $arrayOfMessages = $this->executeAttractorQuery(43.105275, 12.391995, 100, true);
+                    $text = "Ciao, Oggi ti consiglio: " . $arrayOfMessages[0];
                     break;
                 case "event":
-                    $text = "event ";
+                    $arrayOfMessages = $this->executeEventQuery(43.105275, 12.391995, 100, true);
+                    $text = "Ciao, Oggi ti consiglio: " . $arrayOfMessages[0];
                     break;
                 case "travelagency";
-                    $text = "ta " ;
+                    $arrayOfMessages = $this->executeTravelAgencyQuery(43.105275, 12.391995, 100, true);
+                    $text = "Ciao, Oggi ti consiglio: " . $arrayOfMessages[0];
                     break;
                 case "help":
                 case "start":
@@ -59,7 +62,7 @@ class FacebookMessengerBotController extends BaseController
                     $text .= "help - Visualizzazione comandi disponibili\n";
             }
         }
-        $payload = array("recipient" => array("id" => $sender), "message" => array("text" => $sender."\n".$text));
+        $payload = array("recipient" => array("id" => $sender), "message" => array("text" => $text));
         //Tell cURL that we want to send a POST request.
         curl_setopt($ch, CURLOPT_POST, 1);
         //Attach our encoded JSON string to the POST fields.
@@ -75,4 +78,135 @@ class FacebookMessengerBotController extends BaseController
         $response->setContent(json_encode($payload));
         return $response;
     }
+
+    public function executeAttractorQuery($lat, $lng, $radius, $rand)
+    {
+        /**@var AttractorRepository $attractorRepo */
+        $attractorRepo = $this->em->getRepository('UmbriaOpenApiBundle:Tourism\GraphsEntities\Attractor');
+
+        $location = GeoLocation::fromDegrees($lat, $lng);
+        /** @var GeoLocation[] $bounds */
+        /** @noinspection PhpInternalEntityUsedInspection */
+        $bounds = $location->boundingCoordinates($radius, 'km');
+
+        $pois = $attractorRepo->findByPosition(
+            $bounds[1]->getLatitudeInDegrees(),
+            $bounds[0]->getLatitudeInDegrees(),
+            $bounds[1]->getLongitudeInDegrees(),
+            $bounds[0]->getLongitudeInDegrees());
+
+        if (sizeof($pois) > 0) {
+            if ($rand) {
+                $key = array_rand($pois);
+
+                $poi = $pois[$key];
+                $stringResult[0] = $poi->getName() . "\n" . str_replace('&nbsp;', ' ', strip_tags($poi->getShortDescription())) . "\n" . $poi->getResourceOriginUrl();
+                return $stringResult;
+            } else {
+                $i = 0;
+                foreach ($pois as $poi) {
+                    $stringResult[$i] = $poi->getName() . "\n" . str_replace('&nbsp;', ' ', strip_tags($poi->getShortDescription())) . "\n" . $poi->getResourceOriginUrl();
+                    $i++;
+                }
+                return $stringResult;
+            }
+        } else {
+            throw new Exception();
+        }
+    }
+
+    public function executeProposalQuery($lat, $lng, $radius)
+    {
+        /**@var ProposalRepository $proposalRepo */
+        $proposalRepo = $this->em->getRepository('UmbriaOpenApiBundle:Tourism\GraphsEntities\Proposal');
+
+        $location = GeoLocation::fromDegrees($lat, $lng);
+        /** @var GeoLocation[] $bounds */
+        /** @noinspection PhpInternalEntityUsedInspection */
+        $bounds = $location->boundingCoordinates($radius, 'km');
+
+        $pois = $proposalRepo->findByPosition(
+            $bounds[1]->getLatitudeInDegrees(),
+            $bounds[0]->getLatitudeInDegrees(),
+            $bounds[1]->getLongitudeInDegrees(),
+            $bounds[0]->getLongitudeInDegrees());
+
+        if (sizeof($pois) > 0) {
+            $key = array_rand($pois);
+            $poi = $pois[$key];
+            $stringResult[0] = $poi->getName() . "\n" . str_replace('&nbsp;', ' ', strip_tags($poi->getShortDescription())) . "\n" . $poi->getResourceOriginUrl();
+            return $stringResult;
+
+        } else {
+            throw new Exception();
+        }
+    }
+
+    public function executeEventQuery($lat, $lng, $radius, $rand)
+    {
+        /**@var EventRepository $eventRepo */
+        $eventRepo = $this->em->getRepository('UmbriaOpenApiBundle:Tourism\GraphsEntities\Event');
+
+        //$pois = $eventRepo->findByID($id);
+
+        $location = GeoLocation::fromDegrees($lat, $lng);
+        /** @var GeoLocation[] $bounds */
+        /** @noinspection PhpInternalEntityUsedInspection */
+        $bounds = $location->boundingCoordinates($radius, 'km');
+
+        $pois = $eventRepo->findByPosition(
+            $bounds[1]->getLatitudeInDegrees(),
+            $bounds[0]->getLatitudeInDegrees(),
+            $bounds[1]->getLongitudeInDegrees(),
+            $bounds[0]->getLongitudeInDegrees());
+
+        if (sizeof($pois) > 0) {
+            if ($rand) {
+                $key = array_rand($pois);
+
+                $poi = $pois[$key];
+                $stringResult[0] = $poi->getName() . "\nDescriptions : " . str_replace('&nbsp;', ' ', strip_tags($poi->getDescriptions())) . "\n" . $poi->getResourceOriginUrl();
+                return $stringResult;
+            } else {
+                $i = 0;
+                foreach ($pois as $poi) {
+                    $stringResult[$i] = $poi->getName() . "\nDescriptions : " . str_replace('&nbsp;', ' ', strip_tags($poi->getDescriptions())) . "\n" . $poi->getResourceOriginUrl();
+                    $i++;
+                }
+                return $stringResult;
+            }
+        } else {
+            throw new Exception();
+        }
+    }
+
+    public function executeTravelAgencyQuery($lat, $lng, $radius, $rand)
+    {
+        /**@var TravelAgencyRepository $travelagencyRepo */
+        $travelagencyRepo = $this->em->getRepository('UmbriaOpenApiBundle:Tourism\GraphsEntities\TravelAgency');
+
+        //$pois = $eventRepo->findByID($id);
+
+        $location = GeoLocation::fromDegrees($lat, $lng);
+        /** @var GeoLocation[] $bounds */
+        /** @noinspection PhpInternalEntityUsedInspection */
+        $bounds = $location->boundingCoordinates($radius, 'km');
+
+        $pois = $travelagencyRepo->findByPosition(
+            $bounds[1]->getLatitudeInDegrees(),
+            $bounds[0]->getLatitudeInDegrees(),
+            $bounds[1]->getLongitudeInDegrees(),
+            $bounds[0]->getLongitudeInDegrees());
+
+        if (sizeof($pois) > 0) {
+            $key = array_rand($pois);
+            $poi = $pois[$key];
+            $stringResult[0] = $poi->getName() . "\n" . $poi->getResourceOriginUrl();
+            return $stringResult;
+
+        } else {
+            throw new Exception();
+        }
+    }
+
 }
