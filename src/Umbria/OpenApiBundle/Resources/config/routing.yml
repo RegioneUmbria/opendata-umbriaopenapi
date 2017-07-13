@@ -1,6 +1,9 @@
 umbria_open_api_homepage:
     path:     /
     defaults: { _controller: UmbriaOpenApiBundle:Default:index }
+umbria_open_api_homepage:
+    path:     /ENDefault
+    defaults: { _controller: UmbriaOpenApiBundle:ENDefault:index } 
 
 umbria_open_api_sparql_manual:
     path:     /sparql_manual
