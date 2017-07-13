@@ -1,15 +1,4 @@
 <?php
-$servername = "localhost";
-$username = "root";
-$password = "";
-$dbname = "uoa";
-
-// Create connection
-$conn = new mysqli($servername, $username, $password, $dbname);
-
-// Check connection
-if ($conn->connect_error) {
-}
 
 /**
  * Created by PhpStorm.
@@ -98,39 +87,9 @@ class FacebookMessengerBotController extends BaseController
     public function executeAttractorQuery($lat, $lng, $radius, $rand)
     {
         $stringResult="^_^";
-        /**@var AttractorRepository $attractorRepo */
-        $attractorRepo = $this->em->getRepository('UmbriaOpenApiBundle:Tourism\GraphsEntities\Attractor');
 
-        $location = GeoLocation::fromDegrees($lat, $lng);
-        /** @var GeoLocation[] $bounds */
-        /** @noinspection PhpInternalEntityUsedInspection */
-        $bounds = $location->boundingCoordinates($radius, 'km');
+            return $stringResult;
 
-        $pois = $attractorRepo->findByPosition(
-            $bounds[1]->getLatitudeInDegrees(),
-            $bounds[0]->getLatitudeInDegrees(),
-            $bounds[1]->getLongitudeInDegrees(),
-            $bounds[0]->getLongitudeInDegrees());
-
-        if (sizeof($pois) > 0) {
-            if ($rand) {
-                $key = array_rand($pois);
-
-                $poi = $pois[$key];
-                $stringResult[0] = $poi->getName() . "\n" . str_replace('&nbsp;', ' ', strip_tags($poi->getShortDescription())) . "\n" . $poi->getResourceOriginUrl();
-                return $stringResult;
-            } else {
-                $i = 0;
-                foreach ($pois as $poi) {
-                    $stringResult[$i] = $poi->getName() . "\n" . str_replace('&nbsp;', ' ', strip_tags($poi->getShortDescription())) . "\n" . $poi->getResourceOriginUrl();
-                    $i++;
-                }
-                return $stringResult;
-            }
-        } else {
-            throw new Exception();
-            return $stringResult; 
-        }
 
     }
 
