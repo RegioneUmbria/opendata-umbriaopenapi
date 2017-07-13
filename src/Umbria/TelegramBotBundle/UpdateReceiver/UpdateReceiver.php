@@ -105,7 +105,9 @@ class UpdateReceiver implements UpdateReceiverInterface
                     $text = "Ciao " . $message['from']['first_name'] . ". Oggi ti consiglio: \n". $arrayOfMessages[0] ;
                     break;
                 case "/help":
-                case "case" :
+                case "abc" :
+                    $text = "Good Morning " . $message['from']['first_name'];
+                    break;
                 case "/start":
                     $text = "UmbriaTourismBot ti permette di ricevere informazioni turistiche. Invia la tua posizione per scoprire tutte le bellezze che la nostra regione ha in serbo per te\n\n";
                 default :
