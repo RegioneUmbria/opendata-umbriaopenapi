@@ -817,3 +817,5 @@
 [2017-07-13 14:45:06] security.INFO: Populated the TokenStorage with an anonymous Token. [] []
 [2017-07-13 14:52:55] request.INFO: Matched route "umbria_open_api_sparql_manual". {"route_parameters":{"_controller":"Umbria\\OpenApiBundle\\Controller\\SparqlManualController::indexAction","_route":"umbria_open_api_sparql_manual"},"request_uri":"http://localhost/opendata-umbriaopenapi_nigel/web/sparql_manual"} []
 [2017-07-13 14:52:55] security.INFO: Populated the TokenStorage with an anonymous Token. [] []
+[2017-07-13 15:42:25] request.INFO: Matched route "umbria_open_api_homepage". {"route_parameters":{"_controller":"Umbria\\OpenApiBundle\\Controller\\DefaultController::indexAction","_route":"umbria_open_api_homepage"},"request_uri":"http://localhost/opendata-umbriaopenapi_nigel/web/"} []
+[2017-07-13 15:42:25] security.INFO: Populated the TokenStorage with an anonymous Token. [] []
