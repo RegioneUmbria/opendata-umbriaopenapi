@@ -24,6 +24,10 @@ class appProdProjectContainerUrlGenerator extends Symfony\Component\Routing\Gene
         if (null === self::$declaredRoutes) {
             self::$declaredRoutes = array(
         'umbria_open_api_homepage' => array (  0 =>   array (  ),  1 =>   array (    '_controller' => 'Umbria\\OpenApiBundle\\Controller\\DefaultController::indexAction',  ),  2 =>   array (  ),  3 =>   array (    0 =>     array (      0 => 'text',      1 => '/',    ),  ),  4 =>   array (  ),  5 =>   array (  ),),
+<<<<<<< HEAD
+=======
+        'umbria_open_api_ENhomepage' => array (  0 =>   array (  ),  1 =>   array (    '_controller' => 'Umbria\\OpenApiBundle\\Controller\\ENDefaultController::indexAction',  ),  2 =>   array (  ),  3 =>   array (    0 =>     array (      0 => 'text',      1 => '/ENDefault',    ),  ),  4 =>   array (  ),  5 =>   array (  ),),
+>>>>>>> 99e5209c200d78805072d113d67e00b8677baa75
         'umbria_open_api_sparql_manual' => array (  0 =>   array (  ),  1 =>   array (    '_controller' => 'Umbria\\OpenApiBundle\\Controller\\SparqlManualController::indexAction',  ),  2 =>   array (  ),  3 =>   array (    0 =>     array (      0 => 'text',      1 => '/sparql_manual',    ),  ),  4 =>   array (  ),  5 =>   array (  ),),
         'umbria_open_api_sparql_manual_query_graphs' => array (  0 =>   array (  ),  1 =>   array (    '_controller' => 'Umbria\\OpenApiBundle\\Controller\\SparqlManualController::sparqlQueryGraphsAction',  ),  2 =>   array (  ),  3 =>   array (    0 =>     array (      0 => 'text',      1 => '/sparql_manual/sparql_query_graphs',    ),  ),  4 =>   array (  ),  5 =>   array (  ),),
         'umbria_open_api_sparql_manual_query_types' => array (  0 =>   array (    0 => 'graph',  ),  1 =>   array (    '_controller' => 'Umbria\\OpenApiBundle\\Controller\\SparqlManualController::sparqlQueryTypesAction',  ),  2 =>   array (  ),  3 =>   array (    0 =>     array (      0 => 'variable',      1 => '/',      2 => '[^/]++',      3 => 'graph',    ),    1 =>     array (      0 => 'text',      1 => '/sparql_manual/sparql_query_types',    ),  ),  4 =>   array (  ),  5 =>   array (  ),),

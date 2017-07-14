@@ -25,7 +25,11 @@ class appProdProjectContainer extends Container
     public function __construct()
     {
         $dir = __DIR__;
+<<<<<<< HEAD
         for ($i = 1; $i <= 5; ++$i) {
+=======
+        for ($i = 1; $i <= 4; ++$i) {
+>>>>>>> 99e5209c200d78805072d113d67e00b8677baa75
             $this->targetDirs[$i] = $dir = dirname($dir);
         }
         $this->parameters = $this->getDefaultParameters();
@@ -179,7 +183,10 @@ class appProdProjectContainer extends Container
             'knp_paginator.subscriber.sliding_pagination' => 'getKnpPaginator_Subscriber_SlidingPaginationService',
             'knp_paginator.subscriber.sortable' => 'getKnpPaginator_Subscriber_SortableService',
             'knp_paginator.twig.extension.pagination' => 'getKnpPaginator_Twig_Extension_PaginationService',
+<<<<<<< HEAD
             'lifeumriabot.my_update_receiver' => 'getLifeumriabot_MyUpdateReceiverService',
+=======
+>>>>>>> 99e5209c200d78805072d113d67e00b8677baa75
             'locale_listener' => 'getLocaleListenerService',
             'logger' => 'getLoggerService',
             'monolog.handler.console' => 'getMonolog_Handler_ConsoleService',
@@ -305,6 +312,10 @@ class appProdProjectContainer extends Container
             'twig.profile' => 'getTwig_ProfileService',
             'twig.translation.extractor' => 'getTwig_Translation_ExtractorService',
             'umbria_open_api.filter_bag' => 'getUmbriaOpenApi_FilterBagService',
+<<<<<<< HEAD
+=======
+            'umbria_telegram_bot.my_update_receiver' => 'getUmbriaTelegramBot_MyUpdateReceiverService',
+>>>>>>> 99e5209c200d78805072d113d67e00b8677baa75
             'uri_signer' => 'getUriSignerService',
             'validate_request_listener' => 'getValidateRequestListenerService',
             'validator' => 'getValidatorService',
@@ -521,6 +532,7 @@ class appProdProjectContainer extends Container
      * This service is shared.
      * This method always returns the same instance of the service.
      *
+<<<<<<< HEAD
      * @return \EntityManager59679bf633111_546a8d27f194334ee012bfe64f629947b07e4919\__CG__\Doctrine\ORM\EntityManager A EntityManager59679bf633111_546a8d27f194334ee012bfe64f629947b07e4919\__CG__\Doctrine\ORM\EntityManager instance
      */
     protected function getDoctrine_Orm_DefaultEntityManagerService()
@@ -528,6 +540,15 @@ class appProdProjectContainer extends Container
         require_once (__DIR__.'/jms_diextra/doctrine/EntityManager_59679bf633111.php');
 
         return $this->services['doctrine.orm.default_entity_manager'] = new \EntityManager59679bf633111_546a8d27f194334ee012bfe64f629947b07e4919\__CG__\Doctrine\ORM\EntityManager($this->get('doctrine.orm.default_entity_manager.delegate'), $this);
+=======
+     * @return \EntityManager596880822da53_546a8d27f194334ee012bfe64f629947b07e4919\__CG__\Doctrine\ORM\EntityManager A EntityManager596880822da53_546a8d27f194334ee012bfe64f629947b07e4919\__CG__\Doctrine\ORM\EntityManager instance
+     */
+    protected function getDoctrine_Orm_DefaultEntityManagerService()
+    {
+        require_once (__DIR__.'/jms_diextra/doctrine/EntityManager_596880822da53.php');
+
+        return $this->services['doctrine.orm.default_entity_manager'] = new \EntityManager596880822da53_546a8d27f194334ee012bfe64f629947b07e4919\__CG__\Doctrine\ORM\EntityManager($this->get('doctrine.orm.default_entity_manager.delegate'), $this);
+>>>>>>> 99e5209c200d78805072d113d67e00b8677baa75
     }
 
     /*
@@ -607,7 +628,11 @@ class appProdProjectContainer extends Container
     {
         $this->services['doctrine_cache.providers.doctrine.orm.default_metadata_cache'] = $instance = new \Doctrine\Common\Cache\ArrayCache();
 
+<<<<<<< HEAD
         $instance->setNamespace('sf2orm_default_c91a1ebf8f9f1ee3116e8f8ecd9029646ddeaf76cba06d73a18e6fbd3443612b');
+=======
+        $instance->setNamespace('sf2orm_default_3a1f3fb5b5c6aa2c5fddb959bb757c23f655bb79f77bca88af40573faf56fe65');
+>>>>>>> 99e5209c200d78805072d113d67e00b8677baa75
 
         return $instance;
     }
@@ -624,7 +649,11 @@ class appProdProjectContainer extends Container
     {
         $this->services['doctrine_cache.providers.doctrine.orm.default_query_cache'] = $instance = new \Doctrine\Common\Cache\ArrayCache();
 
+<<<<<<< HEAD
         $instance->setNamespace('sf2orm_default_c91a1ebf8f9f1ee3116e8f8ecd9029646ddeaf76cba06d73a18e6fbd3443612b');
+=======
+        $instance->setNamespace('sf2orm_default_3a1f3fb5b5c6aa2c5fddb959bb757c23f655bb79f77bca88af40573faf56fe65');
+>>>>>>> 99e5209c200d78805072d113d67e00b8677baa75
 
         return $instance;
     }
@@ -641,7 +670,11 @@ class appProdProjectContainer extends Container
     {
         $this->services['doctrine_cache.providers.doctrine.orm.default_result_cache'] = $instance = new \Doctrine\Common\Cache\ArrayCache();
 
+<<<<<<< HEAD
         $instance->setNamespace('sf2orm_default_c91a1ebf8f9f1ee3116e8f8ecd9029646ddeaf76cba06d73a18e6fbd3443612b');
+=======
+        $instance->setNamespace('sf2orm_default_3a1f3fb5b5c6aa2c5fddb959bb757c23f655bb79f77bca88af40573faf56fe65');
+>>>>>>> 99e5209c200d78805072d113d67e00b8677baa75
 
         return $instance;
     }
@@ -1916,7 +1949,11 @@ class appProdProjectContainer extends Container
      */
     protected function getJmsSerializer_DatetimeHandlerService()
     {
+<<<<<<< HEAD
         return $this->services['jms_serializer.datetime_handler'] = new \JMS\Serializer\Handler\DateHandler('Y-m-d\\TH:i:sO', 'UTC', true);
+=======
+        return $this->services['jms_serializer.datetime_handler'] = new \JMS\Serializer\Handler\DateHandler('Y-m-d\\TH:i:sO', 'Europe/Berlin', true);
+>>>>>>> 99e5209c200d78805072d113d67e00b8677baa75
     }
 
     /*
@@ -2027,7 +2064,11 @@ class appProdProjectContainer extends Container
      */
     protected function getJmsSerializer_MetadataDriverService()
     {
+<<<<<<< HEAD
         $a = new \Metadata\Driver\FileLocator(array('Symfony\\Bundle\\FrameworkBundle' => ($this->targetDirs[3].'/vendor/symfony/symfony/src/Symfony/Bundle/FrameworkBundle/Resources/config/serializer'), 'Symfony\\Bundle\\SecurityBundle' => ($this->targetDirs[3].'/vendor/symfony/symfony/src/Symfony/Bundle/SecurityBundle/Resources/config/serializer'), 'Symfony\\Bundle\\TwigBundle' => ($this->targetDirs[3].'/vendor/symfony/symfony/src/Symfony/Bundle/TwigBundle/Resources/config/serializer'), 'Symfony\\Bundle\\MonologBundle' => ($this->targetDirs[3].'/vendor/symfony/monolog-bundle/Resources/config/serializer'), 'Symfony\\Bundle\\SwiftmailerBundle' => ($this->targetDirs[3].'/vendor/symfony/swiftmailer-bundle/Resources/config/serializer'), 'Doctrine\\Bundle\\DoctrineBundle' => ($this->targetDirs[3].'/vendor/doctrine/doctrine-bundle/Resources/config/serializer'), 'Sensio\\Bundle\\FrameworkExtraBundle' => ($this->targetDirs[3].'/vendor/sensio/framework-extra-bundle/Resources/config/serializer'), 'Nelmio\\ApiDocBundle' => ($this->targetDirs[3].'/vendor/nelmio/api-doc-bundle/Nelmio/ApiDocBundle/Resources/config/serializer'), 'FOS\\RestBundle' => ($this->targetDirs[3].'/vendor/friendsofsymfony/rest-bundle/FOS/RestBundle/Resources/config/serializer'), 'JMS\\DiExtraBundle' => ($this->targetDirs[3].'/vendor/jms/di-extra-bundle/Resources/config/serializer'), 'JMS\\AopBundle' => ($this->targetDirs[3].'/vendor/jms/aop-bundle/Resources/config/serializer'), 'JMS\\SerializerBundle' => ($this->targetDirs[3].'/vendor/jms/serializer-bundle/JMS/SerializerBundle/Resources/config/serializer'), 'Knp\\Bundle\\PaginatorBundle' => ($this->targetDirs[3].'/vendor/knplabs/knp-paginator-bundle/Resources/config/serializer'), 'Shaygan\\TelegramBotApiBundle' => ($this->targetDirs[3].'/vendor/shaygan/telegram-bot-api-bundle/Shaygan/TelegramBotApiBundle/Resources/config/serializer'), 'Craue\\GeoBundle' => ($this->targetDirs[3].'/vendor/craue/geo-bundle/Resources/config/serializer'), 'Umbria\\OpenApiBundle' => ($this->targetDirs[3].'/src/Umbria/OpenApiBundle/Resources/config/serializer'), 'Umbria\\ProLocoBundle' => ($this->targetDirs[3].'/src/Umbria/ProLocoBundle/Resources/config/serializer'), 'Umbria\\TelegramBotBundle' => ($this->targetDirs[3].'/src/Umbria/TelegramBotBundle/Resources/config/serializer')));
+=======
+        $a = new \Metadata\Driver\FileLocator(array('Symfony\\Bundle\\FrameworkBundle' => ($this->targetDirs[3].'\\vendor\\symfony\\symfony\\src\\Symfony\\Bundle\\FrameworkBundle/Resources/config/serializer'), 'Symfony\\Bundle\\SecurityBundle' => ($this->targetDirs[3].'\\vendor\\symfony\\symfony\\src\\Symfony\\Bundle\\SecurityBundle/Resources/config/serializer'), 'Symfony\\Bundle\\TwigBundle' => ($this->targetDirs[3].'\\vendor\\symfony\\symfony\\src\\Symfony\\Bundle\\TwigBundle/Resources/config/serializer'), 'Symfony\\Bundle\\MonologBundle' => ($this->targetDirs[3].'\\vendor\\symfony\\monolog-bundle/Resources/config/serializer'), 'Symfony\\Bundle\\SwiftmailerBundle' => ($this->targetDirs[3].'\\vendor\\symfony\\swiftmailer-bundle/Resources/config/serializer'), 'Doctrine\\Bundle\\DoctrineBundle' => ($this->targetDirs[3].'\\vendor\\doctrine\\doctrine-bundle/Resources/config/serializer'), 'Sensio\\Bundle\\FrameworkExtraBundle' => ($this->targetDirs[3].'\\vendor\\sensio\\framework-extra-bundle/Resources/config/serializer'), 'Nelmio\\ApiDocBundle' => ($this->targetDirs[3].'\\vendor\\nelmio\\api-doc-bundle\\Nelmio\\ApiDocBundle/Resources/config/serializer'), 'FOS\\RestBundle' => ($this->targetDirs[3].'\\vendor\\friendsofsymfony\\rest-bundle\\FOS\\RestBundle/Resources/config/serializer'), 'JMS\\DiExtraBundle' => ($this->targetDirs[3].'\\vendor\\jms\\di-extra-bundle/Resources/config/serializer'), 'JMS\\AopBundle' => ($this->targetDirs[3].'\\vendor\\jms\\aop-bundle/Resources/config/serializer'), 'JMS\\SerializerBundle' => ($this->targetDirs[3].'\\vendor\\jms\\serializer-bundle\\JMS\\SerializerBundle/Resources/config/serializer'), 'Knp\\Bundle\\PaginatorBundle' => ($this->targetDirs[3].'\\vendor\\knplabs\\knp-paginator-bundle/Resources/config/serializer'), 'Shaygan\\TelegramBotApiBundle' => ($this->targetDirs[3].'\\vendor\\shaygan\\telegram-bot-api-bundle\\Shaygan\\TelegramBotApiBundle/Resources/config/serializer'), 'Craue\\GeoBundle' => ($this->targetDirs[3].'\\vendor\\craue\\geo-bundle/Resources/config/serializer'), 'Umbria\\OpenApiBundle' => ($this->targetDirs[3].'\\src\\Umbria\\OpenApiBundle/Resources/config/serializer'), 'Umbria\\ProLocoBundle' => ($this->targetDirs[3].'\\src\\Umbria\\ProLocoBundle/Resources/config/serializer'), 'Umbria\\TelegramBotBundle' => ($this->targetDirs[3].'\\src\\Umbria\\TelegramBotBundle/Resources/config/serializer')));
+>>>>>>> 99e5209c200d78805072d113d67e00b8677baa75
 
         return $this->services['jms_serializer.metadata_driver'] = new \JMS\Serializer\Metadata\Driver\DoctrineTypeDriver(new \Metadata\Driver\DriverChain(array(0 => new \JMS\Serializer\Metadata\Driver\YamlDriver($a), 1 => new \JMS\Serializer\Metadata\Driver\XmlDriver($a), 2 => new \JMS\Serializer\Metadata\Driver\PhpDriver($a), 3 => new \JMS\Serializer\Metadata\Driver\AnnotationDriver($this->get('annotation_reader')))), $this->get('doctrine'));
     }
@@ -2266,6 +2307,7 @@ class appProdProjectContainer extends Container
     }
 
     /*
+<<<<<<< HEAD
      * Gets the 'lifeumriabot.my_update_receiver' service.
      *
      * This service is shared.
@@ -2279,6 +2321,8 @@ class appProdProjectContainer extends Container
     }
 
     /*
+=======
+>>>>>>> 99e5209c200d78805072d113d67e00b8677baa75
      * Gets the 'locale_listener' service.
      *
      * This service is shared.
@@ -2337,7 +2381,11 @@ class appProdProjectContainer extends Container
      */
     protected function getMonolog_Handler_MainService()
     {
+<<<<<<< HEAD
         $this->services['monolog.handler.main'] = $instance = new \Monolog\Handler\StreamHandler(($this->targetDirs[2].'/logs/prod.log'), 200, true, NULL);
+=======
+        $this->services['monolog.handler.main'] = $instance = new \Monolog\Handler\StreamHandler(($this->targetDirs[2].'\\logs/prod.log'), 200, true, NULL);
+>>>>>>> 99e5209c200d78805072d113d67e00b8677baa75
 
         $instance->pushProcessor($this->get('monolog.processor.psr_log_message'));
 
@@ -2937,7 +2985,11 @@ class appProdProjectContainer extends Container
 
         $e = new \Symfony\Component\Security\Http\AccessMap();
 
+<<<<<<< HEAD
         return $this->services['security.firewall.map.context.main'] = new \Symfony\Bundle\SecurityBundle\Security\FirewallContext(array(0 => new \Symfony\Component\Security\Http\Firewall\ChannelListener($e, new \Symfony\Component\Security\Http\EntryPoint\RetryAuthenticationEntryPoint(80, 443), $a), 1 => new \Symfony\Component\Security\Http\Firewall\ContextListener($b, array(0 => new \Symfony\Component\Security\Core\User\InMemoryUserProvider()), 'main', $a, $this->get('event_dispatcher', ContainerInterface::NULL_ON_INVALID_REFERENCE)), 2 => new \Symfony\Component\Security\Http\Firewall\AnonymousAuthenticationListener($b, '59679bf617ef52.87703059', $a, $c), 3 => new \Symfony\Component\Security\Http\Firewall\AccessListener($b, $this->get('security.access.decision_manager'), $e, $c)), new \Symfony\Component\Security\Http\Firewall\ExceptionListener($b, $this->get('security.authentication.trust_resolver'), new \Symfony\Component\Security\Http\HttpUtils($d, $d), 'main', NULL, NULL, NULL, $a, false));
+=======
+        return $this->services['security.firewall.map.context.main'] = new \Symfony\Bundle\SecurityBundle\Security\FirewallContext(array(0 => new \Symfony\Component\Security\Http\Firewall\ChannelListener($e, new \Symfony\Component\Security\Http\EntryPoint\RetryAuthenticationEntryPoint(80, 443), $a), 1 => new \Symfony\Component\Security\Http\Firewall\ContextListener($b, array(0 => new \Symfony\Component\Security\Core\User\InMemoryUserProvider()), 'main', $a, $this->get('event_dispatcher', ContainerInterface::NULL_ON_INVALID_REFERENCE)), 2 => new \Symfony\Component\Security\Http\Firewall\AnonymousAuthenticationListener($b, '5968808195f344.66819683', $a, $c), 3 => new \Symfony\Component\Security\Http\Firewall\AccessListener($b, $this->get('security.access.decision_manager'), $e, $c)), new \Symfony\Component\Security\Http\Firewall\ExceptionListener($b, $this->get('security.authentication.trust_resolver'), new \Symfony\Component\Security\Http\HttpUtils($d, $d), 'main', NULL, NULL, NULL, $a, false));
+>>>>>>> 99e5209c200d78805072d113d67e00b8677baa75
     }
 
     /*
@@ -3232,7 +3284,11 @@ class appProdProjectContainer extends Container
      */
     protected function getShaygan_MyUpdateReceiverService()
     {
+<<<<<<< HEAD
         return $this->services['shaygan.my_update_receiver'] = new \Shaygan\TelegramBotApiBundle\UpdateReceiver\UpdateReceiver($this->get('shaygan.telegram_bot_api'), array('token' => '435563012:AAGuGRnKfchsEesuc2XfAR9X7OhQQPAYnyw'));
+=======
+        return $this->services['shaygan.my_update_receiver'] = new \Shaygan\TelegramBotApiBundle\UpdateReceiver\UpdateReceiver($this->get('shaygan.telegram_bot_api'), array('token' => '435563012:AAGuGRnKfchsEesuc2XfAR9X7OhQQPAYnyw', 'webhook' => array('domain' => 'umbriaopenapi-nigel.tk', 'path_prefix' => NULL, 'update_receiver' => 'umbria_telegram_bot.my_update_receiver')));
+>>>>>>> 99e5209c200d78805072d113d67e00b8677baa75
     }
 
     /*
@@ -3937,6 +3993,7 @@ class appProdProjectContainer extends Container
     {
         $this->services['twig.loader'] = $instance = new \Symfony\Bundle\TwigBundle\Loader\FilesystemLoader($this->get('templating.locator'), $this->get('templating.name_parser'));
 
+<<<<<<< HEAD
         $instance->addPath(($this->targetDirs[3].'/vendor/symfony/symfony/src/Symfony/Bundle/FrameworkBundle/Resources/views'), 'Framework');
         $instance->addPath(($this->targetDirs[3].'/vendor/symfony/symfony/src/Symfony/Bundle/SecurityBundle/Resources/views'), 'Security');
         $instance->addPath(($this->targetDirs[3].'/vendor/symfony/symfony/src/Symfony/Bundle/TwigBundle/Resources/views'), 'Twig');
@@ -3949,6 +4006,20 @@ class appProdProjectContainer extends Container
         $instance->addPath(($this->targetDirs[3].'/src/Umbria/OpenApiBundle/Resources/views'), 'UmbriaOpenApi');
         $instance->addPath(($this->targetDirs[3].'/src/Umbria/ProLocoBundle/Resources/views'), 'UmbriaProLoco');
         $instance->addPath(($this->targetDirs[3].'/vendor/symfony/symfony/src/Symfony/Bridge/Twig/Resources/views/Form'));
+=======
+        $instance->addPath(($this->targetDirs[3].'\\vendor\\symfony\\symfony\\src\\Symfony\\Bundle\\FrameworkBundle/Resources/views'), 'Framework');
+        $instance->addPath(($this->targetDirs[3].'\\vendor\\symfony\\symfony\\src\\Symfony\\Bundle\\SecurityBundle/Resources/views'), 'Security');
+        $instance->addPath(($this->targetDirs[3].'\\vendor\\symfony\\symfony\\src\\Symfony\\Bundle\\TwigBundle/Resources/views'), 'Twig');
+        $instance->addPath(($this->targetDirs[3].'\\vendor\\symfony\\swiftmailer-bundle/Resources/views'), 'Swiftmailer');
+        $instance->addPath(($this->targetDirs[3].'\\vendor\\doctrine\\doctrine-bundle/Resources/views'), 'Doctrine');
+        $instance->addPath(($this->targetDirs[2].'/Resources/NelmioApiDocBundle/views'), 'NelmioApiDoc');
+        $instance->addPath(($this->targetDirs[3].'\\vendor\\nelmio\\api-doc-bundle\\Nelmio\\ApiDocBundle/Resources/views'), 'NelmioApiDoc');
+        $instance->addPath(($this->targetDirs[3].'\\vendor\\knplabs\\knp-paginator-bundle/Resources/views'), 'KnpPaginator');
+        $instance->addPath(($this->targetDirs[3].'\\vendor\\shaygan\\telegram-bot-api-bundle\\Shaygan\\TelegramBotApiBundle/Resources/views'), 'ShayganTelegramBotApi');
+        $instance->addPath(($this->targetDirs[3].'\\src\\Umbria\\OpenApiBundle/Resources/views'), 'UmbriaOpenApi');
+        $instance->addPath(($this->targetDirs[3].'\\src\\Umbria\\ProLocoBundle/Resources/views'), 'UmbriaProLoco');
+        $instance->addPath(($this->targetDirs[3].'\\vendor\\symfony\\symfony\\src\\Symfony\\Bridge\\Twig/Resources/views/Form'));
+>>>>>>> 99e5209c200d78805072d113d67e00b8677baa75
 
         return $instance;
     }
@@ -3993,6 +4064,22 @@ class appProdProjectContainer extends Container
     }
 
     /*
+<<<<<<< HEAD
+=======
+     * Gets the 'umbria_telegram_bot.my_update_receiver' service.
+     *
+     * This service is shared.
+     * This method always returns the same instance of the service.
+     *
+     * @return \Umbria\TelegramBotBundle\UpdateReceiver\UpdateReceiver A Umbria\TelegramBotBundle\UpdateReceiver\UpdateReceiver instance
+     */
+    protected function getUmbriaTelegramBot_MyUpdateReceiverService()
+    {
+        return $this->services['umbria_telegram_bot.my_update_receiver'] = new \Umbria\TelegramBotBundle\UpdateReceiver\UpdateReceiver($this->get('shaygan.telegram_bot_api'), array('token' => '435563012:AAGuGRnKfchsEesuc2XfAR9X7OhQQPAYnyw', 'webhook' => array('domain' => 'umbriaopenapi-nigel.tk', 'path_prefix' => NULL, 'update_receiver' => 'umbria_telegram_bot.my_update_receiver')), $this->get('doctrine.orm.default_entity_manager'));
+    }
+
+    /*
+>>>>>>> 99e5209c200d78805072d113d67e00b8677baa75
      * Gets the 'uri_signer' service.
      *
      * This service is shared.
@@ -4046,7 +4133,11 @@ class appProdProjectContainer extends Container
         $instance->setConstraintValidatorFactory(new \Symfony\Bundle\FrameworkBundle\Validator\ConstraintValidatorFactory($this, array('validator.expression' => 'validator.expression', 'Symfony\\Component\\Validator\\Constraints\\ExpressionValidator' => 'validator.expression', 'Symfony\\Component\\Validator\\Constraints\\EmailValidator' => 'validator.email', 'security.validator.user_password' => 'security.validator.user_password', 'Symfony\\Component\\Security\\Core\\Validator\\Constraints\\UserPasswordValidator' => 'security.validator.user_password', 'doctrine.orm.validator.unique' => 'doctrine.orm.validator.unique', 'Symfony\\Bridge\\Doctrine\\Validator\\Constraints\\UniqueEntityValidator' => 'doctrine.orm.validator.unique')));
         $instance->setTranslator($this->get('translator'));
         $instance->setTranslationDomain('validators');
+<<<<<<< HEAD
         $instance->addXmlMappings(array(0 => ($this->targetDirs[3].'/vendor/symfony/symfony/src/Symfony/Component/Form/Resources/config/validation.xml')));
+=======
+        $instance->addXmlMappings(array(0 => ($this->targetDirs[3].'\\vendor\\symfony\\symfony\\src\\Symfony\\Component\\Form/Resources/config/validation.xml')));
+>>>>>>> 99e5209c200d78805072d113d67e00b8677baa75
         $instance->enableAnnotationMapping($this->get('annotation_reader'));
         $instance->addMethodMapping('loadValidatorMetadata');
         $instance->addObjectInitializers(array(0 => $this->get('doctrine.orm.validator_initializer')));
@@ -4115,13 +4206,21 @@ class appProdProjectContainer extends Container
     {
         $a = $this->get('annotation_reader');
 
+<<<<<<< HEAD
         $b = new \Doctrine\ORM\Mapping\Driver\AnnotationDriver($a, array(0 => ($this->targetDirs[3].'/vendor/craue/geo-bundle/Entity'), 1 => ($this->targetDirs[3].'/src/Umbria/OpenApiBundle/Entity'), 2 => ($this->targetDirs[3].'/src/Umbria/ProLocoBundle/Entity')));
+=======
+        $b = new \Doctrine\ORM\Mapping\Driver\AnnotationDriver($a, array(0 => ($this->targetDirs[3].'\\vendor\\craue\\geo-bundle\\Entity'), 1 => ($this->targetDirs[3].'\\src\\Umbria\\OpenApiBundle\\Entity'), 2 => ($this->targetDirs[3].'\\src\\Umbria\\ProLocoBundle\\Entity')));
+>>>>>>> 99e5209c200d78805072d113d67e00b8677baa75
 
         $c = new \Doctrine\Common\Persistence\Mapping\Driver\MappingDriverChain();
         $c->addDriver($b, 'Craue\\GeoBundle\\Entity');
         $c->addDriver($b, 'Umbria\\OpenApiBundle\\Entity');
         $c->addDriver($b, 'Umbria\\ProLocoBundle\\Entity');
+<<<<<<< HEAD
         $c->addDriver(new \Doctrine\ORM\Mapping\Driver\XmlDriver(new \Doctrine\Common\Persistence\Mapping\Driver\SymfonyFileLocator(array(($this->targetDirs[3].'/vendor/craue/geo-bundle/Resources/config/doctrine-mapping') => 'Craue\\GeoBundle\\Entity'), '.orm.xml')), 'Craue\\GeoBundle\\Entity');
+=======
+        $c->addDriver(new \Doctrine\ORM\Mapping\Driver\XmlDriver(new \Doctrine\Common\Persistence\Mapping\Driver\SymfonyFileLocator(array(($this->targetDirs[3].'\\vendor\\craue\\geo-bundle\\Resources\\config\\doctrine-mapping') => 'Craue\\GeoBundle\\Entity'), '.orm.xml')), 'Craue\\GeoBundle\\Entity');
+>>>>>>> 99e5209c200d78805072d113d67e00b8677baa75
 
         $d = new \Doctrine\ORM\Configuration();
         $d->setEntityNamespaces(array('CraueGeoBundle' => 'Craue\\GeoBundle\\Entity', 'UmbriaOpenApiBundle' => 'Umbria\\OpenApiBundle\\Entity', 'UmbriaProLocoBundle' => 'Umbria\\ProLocoBundle\\Entity'));
@@ -4290,7 +4389,11 @@ class appProdProjectContainer extends Container
      */
     protected function getSecurity_Authentication_ManagerService()
     {
+<<<<<<< HEAD
         $this->services['security.authentication.manager'] = $instance = new \Symfony\Component\Security\Core\Authentication\AuthenticationProviderManager(array(0 => new \Symfony\Component\Security\Core\Authentication\Provider\AnonymousAuthenticationProvider('59679bf617ef52.87703059')), true);
+=======
+        $this->services['security.authentication.manager'] = $instance = new \Symfony\Component\Security\Core\Authentication\AuthenticationProviderManager(array(0 => new \Symfony\Component\Security\Core\Authentication\Provider\AnonymousAuthenticationProvider('5968808195f344.66819683')), true);
+>>>>>>> 99e5209c200d78805072d113d67e00b8677baa75
 
         $instance->setEventDispatcher($this->get('event_dispatcher'));
 
@@ -4473,7 +4576,11 @@ class appProdProjectContainer extends Container
             'kernel.debug' => false,
             'kernel.name' => 'app',
             'kernel.cache_dir' => __DIR__,
+<<<<<<< HEAD
             'kernel.logs_dir' => ($this->targetDirs[2].'/logs'),
+=======
+            'kernel.logs_dir' => ($this->targetDirs[2].'\\logs'),
+>>>>>>> 99e5209c200d78805072d113d67e00b8677baa75
             'kernel.bundles' => array(
                 'FrameworkBundle' => 'Symfony\\Bundle\\FrameworkBundle\\FrameworkBundle',
                 'SecurityBundle' => 'Symfony\\Bundle\\SecurityBundle\\SecurityBundle',
@@ -4497,92 +4604,164 @@ class appProdProjectContainer extends Container
             'kernel.bundles_metadata' => array(
                 'FrameworkBundle' => array(
                     'parent' => NULL,
+<<<<<<< HEAD
                     'path' => ($this->targetDirs[3].'/vendor/symfony/symfony/src/Symfony/Bundle/FrameworkBundle'),
+=======
+                    'path' => ($this->targetDirs[3].'\\vendor\\symfony\\symfony\\src\\Symfony\\Bundle\\FrameworkBundle'),
+>>>>>>> 99e5209c200d78805072d113d67e00b8677baa75
                     'namespace' => 'Symfony\\Bundle\\FrameworkBundle',
                 ),
                 'SecurityBundle' => array(
                     'parent' => NULL,
+<<<<<<< HEAD
                     'path' => ($this->targetDirs[3].'/vendor/symfony/symfony/src/Symfony/Bundle/SecurityBundle'),
+=======
+                    'path' => ($this->targetDirs[3].'\\vendor\\symfony\\symfony\\src\\Symfony\\Bundle\\SecurityBundle'),
+>>>>>>> 99e5209c200d78805072d113d67e00b8677baa75
                     'namespace' => 'Symfony\\Bundle\\SecurityBundle',
                 ),
                 'TwigBundle' => array(
                     'parent' => NULL,
+<<<<<<< HEAD
                     'path' => ($this->targetDirs[3].'/vendor/symfony/symfony/src/Symfony/Bundle/TwigBundle'),
+=======
+                    'path' => ($this->targetDirs[3].'\\vendor\\symfony\\symfony\\src\\Symfony\\Bundle\\TwigBundle'),
+>>>>>>> 99e5209c200d78805072d113d67e00b8677baa75
                     'namespace' => 'Symfony\\Bundle\\TwigBundle',
                 ),
                 'MonologBundle' => array(
                     'parent' => NULL,
+<<<<<<< HEAD
                     'path' => ($this->targetDirs[3].'/vendor/symfony/monolog-bundle'),
+=======
+                    'path' => ($this->targetDirs[3].'\\vendor\\symfony\\monolog-bundle'),
+>>>>>>> 99e5209c200d78805072d113d67e00b8677baa75
                     'namespace' => 'Symfony\\Bundle\\MonologBundle',
                 ),
                 'SwiftmailerBundle' => array(
                     'parent' => NULL,
+<<<<<<< HEAD
                     'path' => ($this->targetDirs[3].'/vendor/symfony/swiftmailer-bundle'),
+=======
+                    'path' => ($this->targetDirs[3].'\\vendor\\symfony\\swiftmailer-bundle'),
+>>>>>>> 99e5209c200d78805072d113d67e00b8677baa75
                     'namespace' => 'Symfony\\Bundle\\SwiftmailerBundle',
                 ),
                 'DoctrineBundle' => array(
                     'parent' => NULL,
+<<<<<<< HEAD
                     'path' => ($this->targetDirs[3].'/vendor/doctrine/doctrine-bundle'),
+=======
+                    'path' => ($this->targetDirs[3].'\\vendor\\doctrine\\doctrine-bundle'),
+>>>>>>> 99e5209c200d78805072d113d67e00b8677baa75
                     'namespace' => 'Doctrine\\Bundle\\DoctrineBundle',
                 ),
                 'SensioFrameworkExtraBundle' => array(
                     'parent' => NULL,
+<<<<<<< HEAD
                     'path' => ($this->targetDirs[3].'/vendor/sensio/framework-extra-bundle'),
+=======
+                    'path' => ($this->targetDirs[3].'\\vendor\\sensio\\framework-extra-bundle'),
+>>>>>>> 99e5209c200d78805072d113d67e00b8677baa75
                     'namespace' => 'Sensio\\Bundle\\FrameworkExtraBundle',
                 ),
                 'NelmioApiDocBundle' => array(
                     'parent' => NULL,
+<<<<<<< HEAD
                     'path' => ($this->targetDirs[3].'/vendor/nelmio/api-doc-bundle/Nelmio/ApiDocBundle'),
+=======
+                    'path' => ($this->targetDirs[3].'\\vendor\\nelmio\\api-doc-bundle\\Nelmio\\ApiDocBundle'),
+>>>>>>> 99e5209c200d78805072d113d67e00b8677baa75
                     'namespace' => 'Nelmio\\ApiDocBundle',
                 ),
                 'FOSRestBundle' => array(
                     'parent' => NULL,
+<<<<<<< HEAD
                     'path' => ($this->targetDirs[3].'/vendor/friendsofsymfony/rest-bundle/FOS/RestBundle'),
+=======
+                    'path' => ($this->targetDirs[3].'\\vendor\\friendsofsymfony\\rest-bundle\\FOS\\RestBundle'),
+>>>>>>> 99e5209c200d78805072d113d67e00b8677baa75
                     'namespace' => 'FOS\\RestBundle',
                 ),
                 'JMSDiExtraBundle' => array(
                     'parent' => NULL,
+<<<<<<< HEAD
                     'path' => ($this->targetDirs[3].'/vendor/jms/di-extra-bundle'),
+=======
+                    'path' => ($this->targetDirs[3].'\\vendor\\jms\\di-extra-bundle'),
+>>>>>>> 99e5209c200d78805072d113d67e00b8677baa75
                     'namespace' => 'JMS\\DiExtraBundle',
                 ),
                 'JMSAopBundle' => array(
                     'parent' => NULL,
+<<<<<<< HEAD
                     'path' => ($this->targetDirs[3].'/vendor/jms/aop-bundle'),
+=======
+                    'path' => ($this->targetDirs[3].'\\vendor\\jms\\aop-bundle'),
+>>>>>>> 99e5209c200d78805072d113d67e00b8677baa75
                     'namespace' => 'JMS\\AopBundle',
                 ),
                 'JMSSerializerBundle' => array(
                     'parent' => NULL,
+<<<<<<< HEAD
                     'path' => ($this->targetDirs[3].'/vendor/jms/serializer-bundle/JMS/SerializerBundle'),
+=======
+                    'path' => ($this->targetDirs[3].'\\vendor\\jms\\serializer-bundle\\JMS\\SerializerBundle'),
+>>>>>>> 99e5209c200d78805072d113d67e00b8677baa75
                     'namespace' => 'JMS\\SerializerBundle',
                 ),
                 'KnpPaginatorBundle' => array(
                     'parent' => NULL,
+<<<<<<< HEAD
                     'path' => ($this->targetDirs[3].'/vendor/knplabs/knp-paginator-bundle'),
+=======
+                    'path' => ($this->targetDirs[3].'\\vendor\\knplabs\\knp-paginator-bundle'),
+>>>>>>> 99e5209c200d78805072d113d67e00b8677baa75
                     'namespace' => 'Knp\\Bundle\\PaginatorBundle',
                 ),
                 'ShayganTelegramBotApiBundle' => array(
                     'parent' => NULL,
+<<<<<<< HEAD
                     'path' => ($this->targetDirs[3].'/vendor/shaygan/telegram-bot-api-bundle/Shaygan/TelegramBotApiBundle'),
+=======
+                    'path' => ($this->targetDirs[3].'\\vendor\\shaygan\\telegram-bot-api-bundle\\Shaygan\\TelegramBotApiBundle'),
+>>>>>>> 99e5209c200d78805072d113d67e00b8677baa75
                     'namespace' => 'Shaygan\\TelegramBotApiBundle',
                 ),
                 'CraueGeoBundle' => array(
                     'parent' => NULL,
+<<<<<<< HEAD
                     'path' => ($this->targetDirs[3].'/vendor/craue/geo-bundle'),
+=======
+                    'path' => ($this->targetDirs[3].'\\vendor\\craue\\geo-bundle'),
+>>>>>>> 99e5209c200d78805072d113d67e00b8677baa75
                     'namespace' => 'Craue\\GeoBundle',
                 ),
                 'UmbriaOpenApiBundle' => array(
                     'parent' => NULL,
+<<<<<<< HEAD
                     'path' => ($this->targetDirs[3].'/src/Umbria/OpenApiBundle'),
+=======
+                    'path' => ($this->targetDirs[3].'\\src\\Umbria\\OpenApiBundle'),
+>>>>>>> 99e5209c200d78805072d113d67e00b8677baa75
                     'namespace' => 'Umbria\\OpenApiBundle',
                 ),
                 'UmbriaProLocoBundle' => array(
                     'parent' => NULL,
+<<<<<<< HEAD
                     'path' => ($this->targetDirs[3].'/src/Umbria/ProLocoBundle'),
+=======
+                    'path' => ($this->targetDirs[3].'\\src\\Umbria\\ProLocoBundle'),
+>>>>>>> 99e5209c200d78805072d113d67e00b8677baa75
                     'namespace' => 'Umbria\\ProLocoBundle',
                 ),
                 'UmbriaTelegramBotBundle' => array(
                     'parent' => NULL,
+<<<<<<< HEAD
                     'path' => ($this->targetDirs[3].'/src/Umbria/TelegramBotBundle'),
+=======
+                    'path' => ($this->targetDirs[3].'\\src\\Umbria\\TelegramBotBundle'),
+>>>>>>> 99e5209c200d78805072d113d67e00b8677baa75
                     'namespace' => 'Umbria\\TelegramBotBundle',
                 ),
             ),
@@ -5230,8 +5409,13 @@ class appProdProjectContainer extends Container
             'jms_di_extra.cache_warmer.controller_file_blacklist' => array(
 
             ),
+<<<<<<< HEAD
             'jms_di_extra.doctrine_integration.entity_manager.file' => (__DIR__.'/jms_diextra/doctrine/EntityManager_59679bf633111.php'),
             'jms_di_extra.doctrine_integration.entity_manager.class' => 'EntityManager59679bf633111_546a8d27f194334ee012bfe64f629947b07e4919\\__CG__\\Doctrine\\ORM\\EntityManager',
+=======
+            'jms_di_extra.doctrine_integration.entity_manager.file' => (__DIR__.'/jms_diextra/doctrine/EntityManager_596880822da53.php'),
+            'jms_di_extra.doctrine_integration.entity_manager.class' => 'EntityManager596880822da53_546a8d27f194334ee012bfe64f629947b07e4919\\__CG__\\Doctrine\\ORM\\EntityManager',
+>>>>>>> 99e5209c200d78805072d113d67e00b8677baa75
             'jms_aop.cache_dir' => (__DIR__.'/jms_aop'),
             'jms_aop.interceptor_loader.class' => 'JMS\\AopBundle\\Aop\\InterceptorLoader',
             'jms_serializer.metadata.file_locator.class' => 'Metadata\\Driver\\FileLocator',
@@ -5290,6 +5474,14 @@ class appProdProjectContainer extends Container
             'knp_paginator.page_range' => 5,
             'shaygan_telegram_bot_api.config' => array(
                 'token' => '435563012:AAGuGRnKfchsEesuc2XfAR9X7OhQQPAYnyw',
+<<<<<<< HEAD
+=======
+                'webhook' => array(
+                    'domain' => 'umbriaopenapi-nigel.tk',
+                    'path_prefix' => NULL,
+                    'update_receiver' => 'umbria_telegram_bot.my_update_receiver',
+                ),
+>>>>>>> 99e5209c200d78805072d113d67e00b8677baa75
             ),
             'console.command.ids' => array(
 

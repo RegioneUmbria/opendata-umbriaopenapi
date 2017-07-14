@@ -36,6 +36,14 @@ class appProdProjectContainerUrlMatcher extends Symfony\Bundle\FrameworkBundle\R
             return array (  '_controller' => 'Umbria\\OpenApiBundle\\Controller\\DefaultController::indexAction',  '_route' => 'umbria_open_api_homepage',);
         }
 
+<<<<<<< HEAD
+=======
+        // umbria_open_api_ENhomepage
+        if ($pathinfo === '/ENDefault') {
+            return array (  '_controller' => 'Umbria\\OpenApiBundle\\Controller\\ENDefaultController::indexAction',  '_route' => 'umbria_open_api_ENhomepage',);
+        }
+
+>>>>>>> 99e5209c200d78805072d113d67e00b8677baa75
         if (0 === strpos($pathinfo, '/sparql_manual')) {
             // umbria_open_api_sparql_manual
             if ($pathinfo === '/sparql_manual') {

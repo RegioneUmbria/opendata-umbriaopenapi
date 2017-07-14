@@ -51,4 +51,8 @@ umbria_open_api_tourism_consortium: { type: rest, resource: 'Umbria\OpenApiBundl
 umbria_open_api_tourism_profession: { type: rest, resource: 'Umbria\OpenApiBundle\Controller\Tourism\ProfessionController' }
 umbria_open_api_tourism_iat: { type: rest, resource: 'Umbria\OpenApiBundle\Controller\Tourism\IatController' }
 umbria_open_api_tourism_accomodation: { type: rest, resource: 'Umbria\OpenApiBundle\Controller\Tourism\AccomodationController' }
+<<<<<<< HEAD
 umbria_open_api_tourism_sport_facility: { type: rest, resource: 'Umbria\OpenApiBundle\Controller\Tourism\SportFacilityController' }
+=======
+umbria_open_api_tourism_sport_facility: { type: rest, resource: 'Umbria\OpenApiBundle\Controller\Tourism\SportFacilityController' }
+>>>>>>> 99e5209c200d78805072d113d67e00b8677baa75
