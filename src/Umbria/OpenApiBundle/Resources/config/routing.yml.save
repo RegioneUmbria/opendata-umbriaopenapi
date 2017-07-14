@@ -1,0 +1,55 @@
+
+umbria_open_api_homepage:
+    path:     /
+    defaults: { _controller: UmbriaOpenApiBundle:Default:index }
+umbria_open_api_homepage:
+    path:     /ENDefault
+    defaults: { _controller: UmbriaOpenApiBundle:ENDefault:index } 
+
+umbria_open_api_sparql_manual:
+    path:     /sparql_manual
+    defaults: { _controller: UmbriaOpenApiBundle:SparqlManual:index }
+
+umbria_open_api_sparql_manual_query_graphs:
+    path:     /sparql_manual/sparql_query_graphs
+    defaults: {_controller: UmbriaOpenApiBundle:SparqlManual:sparqlQueryGraphs }
+
+umbria_open_api_sparql_manual_query_types:
+    path:     /sparql_manual/sparql_query_types/{graph}
+    defaults: {_controller: UmbriaOpenApiBundle:SparqlManual:sparqlQueryTypes }
+
+umbria_open_api_sparql_manual_query_data:
+    path:     /sparql_manual/sparql_query_data/{graph}/{type}
+    defaults: {_controller: UmbriaOpenApiBundle:SparqlManual:sparqlQueryData }
+
+umbria_open_api_entities_update:
+    path:     /entities_update/{attractor}/{consortium}/{event}/{iat}/{sport_facility}/{profession}/{proposal}/{accomodation}/{travel_agency}/
+    defaults: { _controller: UmbriaOpenApiBundle:EntitiesUpdate:index }
+    methods:  [PUT]
+    requirements:
+      attractor: '0|1'
+      consortium: '0|1'
+      event: '0|1'
+      iat: '0|1'
+      sport_facility: '0|1'
+      profession: '0|1'
+      proposal: '0|1'
+      accomodation: '0|1'
+      travel_agency: '0|1'
+
+facebook_webhook:
+  path: /facebook-webhook
+  defaults: { _controller: UmbriaOpenApiBundle:FacebookMessengerBot:index }
+  methods:  [GET|POST]
+
+
+# API REST
+umbria_open_api_tourism_proposal: { type: rest, resource: 'Umbria\OpenApiBundle\Controller\Tourism\ProposalController' }
+umbria_open_api_tourism_attractor: { type: rest, resource: 'Umbria\OpenApiBundle\Controller\Tourism\AttractorController' }
+umbria_open_api_tourism_event: { type: rest, resource: 'Umbria\OpenApiBundle\Controller\Tourism\EventController' }
+umbria_open_api_tourism_travel_agency: { type: rest, resource: 'Umbria\OpenApiBundle\Controller\Tourism\TravelAgencyController' }
+umbria_open_api_tourism_consortium: { type: rest, resource: 'Umbria\OpenApiBundle\Controller\Tourism\ConsortiumController' }
+umbria_open_api_tourism_profession: { type: rest, resource: 'Umbria\OpenApiBundle\Controller\Tourism\ProfessionController' }
+umbria_open_api_tourism_iat: { type: rest, resource: 'Umbria\OpenApiBundle\Controller\Tourism\IatController' }
+umbria_open_api_tourism_accomodation: { type: rest, resource: 'Umbria\OpenApiBundle\Controller\Tourism\AccomodationController' }
+umbria_open_api_tourism_sport_facility: { type: rest, resource: 'Umbria\OpenApiBundle\Controller\Tourism\SportFacilityController' }
