@@ -53,8 +53,7 @@ class FacebookMessengerBotController extends BaseController
                 case "about":
                     $text = "UmbriaTourismBot ti permette di ricevere informazioni turistiche. Invia la tua posizione per scoprire tutte le bellezze che la nostra regione ha in serbo per te";
                     break;
-                case "hello":
-                    //$arrayOfMessages = $this->executeAttractorQuery(43.105275, 12.391995, 100, true);
+                case "hello";
                     $text = "Ciao, Oggi ti consiglio: ";
                     $sql="SELECT name,shortDescription,resourceOriginUrl FROM tourism_attractor ORDER BY RAND()LIMIT 1";
                     $result = mysqli_query($conn,$sql);
@@ -62,16 +61,31 @@ class FacebookMessengerBotController extends BaseController
                         $aname=$row['name'];
                         $ashortDescription=$row['shortDescription'];
                         $aresourceOriginUrl=$row['resourceOriginUrl'];
-                        $text=$text."\nName : ".$aname."\n Description : ".$ashortDescription."\n".$aresourceOriginUrl;
+                        $text=$text."\nNome : ".$aname."\nDescrizione : ".$ashortDescription."\n".$aresourceOriginUrl;
                     }
                     break;
                 case "event":
-                   // $arrayOfMessages = $this->executeEventQuery(43.105275, 12.391995, 100, true);
-                    $text = "Ciao, Oggi ti consiglio: " . $arrayOfMessages[0];
+                    $text = "Ciao, Oggi ti consiglio: ";
+                    $sql="SELECT name,resourceOriginUrl FROM tourism_event ORDER BY RAND()LIMIT 1";
+                    $result = mysqli_query($conn,$sql);
+                    while ($row =mysqli_fetch_array($result)){
+                        $ename=$row['name'];
+                        //$eshortDescription=$row['shortDescription'];
+                        $eresourceOriginUrl=$row['resourceOriginUrl'];
+                        $text=$text."\nNome : ".$ename."\nDescrizione : \n".$eresourceOriginUrl;
+                    }
                     break;
                 case "travelagency";
-                   // $arrayOfMessages = $this->executeTravelAgencyQuery(43.105275, 12.391995, 100, true);
-                    $text = "Ciao, Oggi ti consiglio: " . $arrayOfMessages[0];
+                    $text = "Ciao, Oggi ti consiglio: " ;
+                    $sql="SELECT name,telephone,email,resourceOriginUrl FROM tourism_travelagency ORDER BY RAND()LIMIT 1";
+                    $result = mysqli_query($conn,$sql);
+                    while ($row =mysqli_fetch_array($result)){
+                        $taname=$row['name'];
+                        $tatelephone=$row['telephone'];
+                        $taemail=$row['email'];
+                        $taresourceOriginUrl=$row['resourceOriginUrl'];
+                        $text=$text."\nNome : ".$taname."\nTelefono : ".$tatelephone."\ne-mail".$taemail."\n".$taresourceOriginUrl;
+                    }
                     break;
                 case "help":
                 case "start":
