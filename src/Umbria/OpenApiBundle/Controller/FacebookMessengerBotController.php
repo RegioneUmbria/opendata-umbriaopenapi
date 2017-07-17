@@ -12,6 +12,12 @@ class FacebookMessengerBotController extends BaseController
 {
     public function indexAction()
     {
+        $servername = "46.101.205.168";
+        $username = "root";
+        $password = "";
+
+        // Create connection
+        $conn = mysqli_connect($servername, $username, $password,"uoa");
         $response = new Response();
         $challenge = $_REQUEST['hub_challenge'];
         $verify_token = $_REQUEST['hub_verify_token'];
