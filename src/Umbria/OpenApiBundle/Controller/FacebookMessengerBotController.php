@@ -59,7 +59,7 @@ class FacebookMessengerBotController extends BaseController
                         $aresourceOriginUrl=$row['resourceOriginUrl'];
                         $text=$text."/n".$aname."/n".$ashortDescription."/n".$aresourceOriginUrl;
                     }
-                    $text=$text.$result;
+                    $text=$text.$result."ASdasdas";
                     break;
                 case "event":
                    // $arrayOfMessages = $this->executeEventQuery(43.105275, 12.391995, 100, true);
