@@ -39,25 +39,6 @@ class UpdateReceiver implements UpdateReceiverInterface
         $newKeyboard = new ReplyKeyboardMarkup($arrayOfArraysOfStrings, true, true);
         $message = json_decode(json_encode($update->message), true);
 
-        $results = array(
-            array(
-                "type" => "article",
-                "id" => "1",
-                "title" => "Title",
-                "description" => "Description",
-                "input_message_content" => array(
-                    "message_text" => "<code>Message 1</code>",
-                    "parse_mode" => "HTML"
-                )
-            )
-        );
-
-        $postData = array(
-            "inline_query_id" => $inlineQuery["id"],
-            "results" => json_encode($results),
-            "cache_time" => 0
-        );
-
         // LOCATION
         if (isset($message['location'])) {
             $latitude =$message['location']['latitude'];
