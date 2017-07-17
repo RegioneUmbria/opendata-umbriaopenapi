@@ -15,7 +15,7 @@ class FacebookMessengerBotController extends BaseController
      */
     public function indexAction()
     {
-        $servername = "46.101.205.168";
+        $servername = "localhost";
         $username = "root";
         $password = "";
 
