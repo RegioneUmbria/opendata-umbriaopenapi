@@ -56,7 +56,14 @@ class FacebookMessengerBotController extends BaseController
                 case "hello":
                     //$arrayOfMessages = $this->executeAttractorQuery(43.105275, 12.391995, 100, true);
                     $text = "Ciao, Oggi ti consiglio: ";
-                    $text=$text.$a;
+                    $sql="SELECT name,shortDescription,resourceOriginUrl FROM tourism_attractor limit 1";
+                    $result = mysqli_query($conn,$sql);
+                    while ($row =mysqli_fetch_array($result)){
+                        $aname=$row['name'];
+                        $ashortDescription=$row['shortDescription'];
+                        $aresourceOriginUrl=$row['resourceOriginUrl'];
+                        $text=$text."/n".$aname."/n".$ashortDescription."/n".$aresourceOriginUrl;
+                    }
                     break;
                 case "event":
                    // $arrayOfMessages = $this->executeEventQuery(43.105275, 12.391995, 100, true);
