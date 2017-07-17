@@ -8,6 +8,21 @@
 namespace Umbria\OpenApiBundle\Controller;
 use Symfony\Component\HttpFoundation\Response;
 use Umbria\OpenApiBundle\Controller\Tourism\BaseController;
+
+$servername = "46.101.205.168";
+$username = "root";
+$password = "";
+
+try {
+    $conn = new PDO("mysql:host=$servername;dbname=uoa", $username, $password);
+    // set the PDO error mode to exception
+    $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    echo "Connected successfully";
+}
+catch(PDOException $e)
+{
+    echo "Connection failed: " . $e->getMessage();
+}
 class FacebookMessengerBotController extends BaseController
 {
     public function indexAction()
@@ -37,7 +52,7 @@ class FacebookMessengerBotController extends BaseController
         if(isset($sendermessage)) {
             switch ($sendermessage) {
                 case "about":
-                    //$text = "UmbriaTourismBot ti permette di ricevere informazioni turistiche. Invia la tua posizione per scoprire tutte le bellezze che la nostra regione ha in serbo per te";
+                    $text = "UmbriaTourismBot ti permette di ricevere informazioni turistiche. Invia la tua posizione per scoprire tutte le bellezze che la nostra regione ha in serbo per te";
                     break;
                 case "hello":
                     //$arrayOfMessages = $this->executeAttractorQuery(43.105275, 12.391995, 100, true);
