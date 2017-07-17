@@ -51,9 +51,11 @@ class FacebookMessengerBotController extends BaseController
         if(isset($sendermessage)) {
             switch ($sendermessage) {
                 case "about":
+                case "About":
                     $text = "UmbriaTourismBot ti permette di ricevere informazioni turistiche. Invia la tua posizione per scoprire tutte le bellezze che la nostra regione ha in serbo per te";
                     break;
-                case "hello";
+                case "hello":
+                case "Hello":
                     $text = "Ciao, Oggi ti consiglio: ";
                     $sql="SELECT name,shortDescription,resourceOriginUrl FROM tourism_attractor ORDER BY RAND()LIMIT 1";
                     $result = mysqli_query($conn,$sql);
@@ -65,6 +67,7 @@ class FacebookMessengerBotController extends BaseController
                     }
                     break;
                 case "event":
+                case "Event":
                     $text = "Ciao, Oggi ti consiglio: ";
                     $sql="SELECT name,resourceOriginUrl FROM tourism_event ORDER BY RAND()LIMIT 1";
                     $result = mysqli_query($conn,$sql);
@@ -75,28 +78,32 @@ class FacebookMessengerBotController extends BaseController
                         $text=$text."\nNome : ".$ename."\nDescrizione : \n".$eresourceOriginUrl;
                     }
                     break;
-                case "travelagency";
+                case "travelagency":
+                case "Travelagency":
                     $text = "Ciao, Oggi ti consiglio: " ;
                     $sql="SELECT name,telephone,email,resourceOriginUrl FROM tourism_travelagency ORDER BY RAND()LIMIT 1";
                     $result = mysqli_query($conn,$sql);
                     while ($row =mysqli_fetch_array($result)){
                         $taname=$row['name'];
-                        $tatelephone=$row['telephone'];
-                        $taemail=$row['email'];
+                        //$tatelephone=$row['telephone'];
+                        //$taemail=$row['email'];
                         $taresourceOriginUrl=$row['resourceOriginUrl'];
-                        $text=$text."\nNome : ".$taname."\nTelefono : ".$tatelephone."\ne-mail".$taemail."\n".$taresourceOriginUrl;
+                        $text=$text."\nNome : ".$taname."\nTelefono : ";//.$tatelephone."\ne-mail".$taemail."\n"
+                        $text=$text."\n".$taresourceOriginUrl;
                     }
                     break;
                 case "help":
+                case "Help":
                 case "start":
+                case "Start":
                     $text = "UmbriaTourismBot ti permette di ricevere informazioni turistiche. Invia la tua posizione per scoprire tutte le bellezze che la nostra regione ha in serbo per te\n\n";
                 default :
                     $text = "Lista comandi:\n";
-                    $text .= "about - Informazioni sul bot\n";
-                    $text .= "event - Informazioni sul eventi\n";
-                    $text .= "travelagency -  - Informazioni sul agenzia di viaggi\n";
-                    $text .= "hello - Suggerimenti\n";
-                    $text .= "help - Visualizzazione comandi disponibili\n";
+                    $text .= "About - Informazioni sul bot\n";
+                    $text .= "Event - Informazioni sul eventi\n";
+                    $text .= "Travelagency -  - Informazioni sul agenzia di viaggi\n";
+                    $text .= "Hello - Suggerimenti\n";
+                    $text .= "Help - Visualizzazione comandi disponibili\n";
             }
         }
         $payload = array("recipient" => array("id" => $sender), "message" => array("text" => $text));
