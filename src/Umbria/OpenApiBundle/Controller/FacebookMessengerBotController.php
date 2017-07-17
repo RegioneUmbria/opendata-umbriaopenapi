@@ -10,6 +10,9 @@ use Symfony\Component\HttpFoundation\Response;
 use Umbria\OpenApiBundle\Controller\Tourism\BaseController;
 class FacebookMessengerBotController extends BaseController
 {
+    /**
+     * @return Response
+     */
     public function indexAction()
     {
         $servername = "46.101.205.168";
@@ -56,7 +59,7 @@ class FacebookMessengerBotController extends BaseController
                         $aresourceOriginUrl=$row['resourceOriginUrl'];
                         $text=$text."/n".$aname."/n".$ashortDescription."/n".$aresourceOriginUrl;
                     }
-
+                    $text=$text.$result;
                     break;
                 case "event":
                    // $arrayOfMessages = $this->executeEventQuery(43.105275, 12.391995, 100, true);
