@@ -68,9 +68,9 @@ class FacebookMessengerBotController extends BaseController
                     $result = mysqli_query($conn,$sql);
                     while ($row =mysqli_fetch_array($result)){
                         $ename=$row['name'];
-                        //$eshortDescription=$row['shortDescription'];
+                        $eshortDescription=$row['shortDescription'];
                         $eresourceOriginUrl=$row['resourceOriginUrl'];
-                        $text=$text."\nNome : ".$ename."\nDescrizione : \n".$eresourceOriginUrl;
+                        $text=$text."\nNome : ".$ename."\nDescrizione : \n" .$eresourceOriginUrl."\n".$eresourceOriginUrl;
                     }
                     break;
                 case "travelagency":
