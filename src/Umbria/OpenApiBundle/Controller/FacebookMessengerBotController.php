@@ -22,7 +22,7 @@ class FacebookMessengerBotController extends BaseController
         // Create connection
         $conn = mysqli_connect($servername, $username, $password,"uoa");
         if(! $conn ) {
-            $a='Could not connect: ' . mysql_error();
+            $a='Could not connect: ' ;
         }else {
             $a = 'Connected successfully';
         }
