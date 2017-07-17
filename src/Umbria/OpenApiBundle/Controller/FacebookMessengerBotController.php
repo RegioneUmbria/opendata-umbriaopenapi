@@ -21,6 +21,11 @@ class FacebookMessengerBotController extends BaseController
 
         // Create connection
         $conn = mysqli_connect($servername, $username, $password,"uoa");
+        if(! $conn ) {
+           $a='Could not connect: ' . mysql_error();
+        }else {
+            $a = 'Connected successfully';
+        }
         $response = new Response();
         $challenge = $_REQUEST['hub_challenge'];
         $verify_token = $_REQUEST['hub_verify_token'];
@@ -59,7 +64,7 @@ class FacebookMessengerBotController extends BaseController
                         $aresourceOriginUrl=$row['resourceOriginUrl'];
                         $text=$text."/n".$aname."/n".$ashortDescription."/n".$aresourceOriginUrl;
                     }
-                    $text=$text.$result."ASdasdas";
+                    $text=$text.$result."@@@@@@".$a;
                     break;
                 case "event":
                    // $arrayOfMessages = $this->executeEventQuery(43.105275, 12.391995, 100, true);
