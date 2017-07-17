@@ -86,6 +86,7 @@ class UpdateReceiver implements UpdateReceiverInterface
                     $text .= "/about - Informazioni sul bot\n";
                     $text .= "/hello - Suggerimenti\n";
                     $text .= "/help - Visualizzazione comandi disponibili\n";
+                    $text .= "/sprot - Trova impianti sportivi\n";
                     break;
             }
 
