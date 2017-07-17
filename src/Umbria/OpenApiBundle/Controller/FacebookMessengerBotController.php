@@ -62,7 +62,7 @@ class FacebookMessengerBotController extends BaseController
                         $aname=$row['name'];
                         $ashortDescription=$row['shortDescription'];
                         $aresourceOriginUrl=$row['resourceOriginUrl'];
-                        $text=$text."\n".$aname."\n".$ashortDescription."\n".$aresourceOriginUrl;
+                        $text=$text."\nName : ".$aname."\n Description : ".$ashortDescription."\n".$aresourceOriginUrl;
                     }
                     break;
                 case "event":
