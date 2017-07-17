@@ -88,7 +88,7 @@ class FacebookMessengerBotController extends BaseController
                         //$tatelephone=$row['telephone'];
                         //$taemail=$row['email'];
                         $taresourceOriginUrl=$row['resourceOriginUrl'];
-                        $text=$text."\nNome : ".$taname."\nTelefono : ";//.$tatelephone."\ne-mail".$taemail."\n"
+                        $text=$text."\nNome : ".$taname;//."\nTelefono : ";//.$tatelephone."\ne-mail".$taemail."\n"
                         $text=$text."\n".$taresourceOriginUrl;
                     }
                     break;
