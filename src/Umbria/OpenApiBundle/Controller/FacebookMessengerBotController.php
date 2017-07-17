@@ -49,7 +49,7 @@ class FacebookMessengerBotController extends BaseController
                     //$arrayOfMessages = $this->executeAttractorQuery(43.105275, 12.391995, 100, true);
                     $text = "Ciao, Oggi ti consiglio: ";
                     $sql="SELECT name,shortDescription,resourceOriginUrl FROM tourism_attractor limit 1";
-                    $result = mysqli_query($sql);
+                    $result = mysqli_query($conn,$sql);
                     while ($row =mysqli_fetch_array($result)){
                         $aname=$row['name'];
                         $ashortDescription=$row['shortDescription'];
