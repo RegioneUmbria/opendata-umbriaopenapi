@@ -8,6 +8,12 @@
 namespace Umbria\OpenApiBundle\Controller;
 use Symfony\Component\HttpFoundation\Response;
 use Umbria\OpenApiBundle\Controller\Tourism\BaseController;
+$servername = "localhost";
+$username = "root";
+$password = "";
+
+// Create connection
+$conn = mysqli_connect($servername, $username, $password,"uoa");
 class FacebookMessengerBotController extends BaseController
 {
     /**
@@ -15,17 +21,6 @@ class FacebookMessengerBotController extends BaseController
      */
     public function indexAction()
     {
-        $servername = "localhost";
-        $username = "root";
-        $password = "";
-
-        // Create connection
-        $conn = mysqli_connect($servername, $username, $password,"uoa");
-        if(! $conn ) {
-            $a='Could not connect: ' ;
-        }else {
-            $a = 'Connected successfully';
-        }
         $response = new Response();
         $challenge = $_REQUEST['hub_challenge'];
         $verify_token = $_REQUEST['hub_verify_token'];
