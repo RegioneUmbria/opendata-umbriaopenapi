@@ -70,7 +70,7 @@ class FacebookMessengerBotController extends BaseController
                         $ename=$row['name'];
                         $eshortDescription=$row['shortDescription'];
                         $eresourceOriginUrl=$row['resourceOriginUrl'];
-                        $text=$text."\nNome : ".$ename."\nDescrizione : \n".strip_tags(str_replace("&nbsp"," ",$eshortDescription)).$eresourceOriginUrl;
+                        $text=$text."\nNome : ".$ename."\nDescrizione : \n".strip_tags(preg_replace("&nbsp"," ",$eshortDescription)).$eresourceOriginUrl;
                     }
                     break;
                 case "travelagency":
