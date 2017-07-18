@@ -160,7 +160,8 @@ class FacebookMessengerBotController extends BaseController
                 return sizeof($pois);
             }
         } else {
-            throw new Exception();
+            //throw new Exception();
+            return sizeof($pois);
         }
     }
 
