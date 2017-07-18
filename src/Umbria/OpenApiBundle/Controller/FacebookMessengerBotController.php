@@ -8,6 +8,13 @@
 namespace Umbria\OpenApiBundle\Controller;
 use Symfony\Component\HttpFoundation\Response;
 use Umbria\OpenApiBundle\Controller\Tourism\BaseController;
+use AnthonyMartin\GeoLocation\GeoLocation;
+use JMS\DiExtraBundle\Annotation as DI;
+use Symfony\Component\Config\Definition\Exception\Exception;
+use Umbria\OpenApiBundle\Repository\Tourism\GraphsEntities\AttractorRepository;
+use Umbria\OpenApiBundle\Repository\Tourism\GraphsEntities\ProposalRepository;
+use Umbria\OpenApiBundle\Repository\Tourism\GraphsEntities\EventRepository;
+use Umbria\OpenApiBundle\Repository\Tourism\GraphsEntities\TravelAgencyRepository;
 class FacebookMessengerBotController extends BaseController
 {
     /**
@@ -135,7 +142,8 @@ class FacebookMessengerBotController extends BaseController
                 $bounds[0]->getLatitudeInDegrees(),
                 $bounds[1]->getLongitudeInDegrees(),
                 $bounds[0]->getLongitudeInDegrees());
-
+        
+        $stringResult = "Error";
         if (sizeof($pois) > 0) {
             if ($rand) {
                 $key = array_rand($pois);
