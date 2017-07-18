@@ -43,6 +43,7 @@ class FacebookMessengerBotController extends BaseController
         $ch = curl_init($url);
         // --------------------------------------------@20170718--------------------------------------------
         $sendermessage=$message;
+        $image="https://www.umbriatourism.it/documents/10184/87075/gubbiosummerfestival_pic2/b8ac0245-2609-4437-b6eb-37563d69ebd8?t=1496910819999";
         $text="Welcome to UmbiraOpenApi";
         if(isset($sendermessage)) {
             switch ($sendermessage) {
@@ -80,9 +81,8 @@ class FacebookMessengerBotController extends BaseController
             }
         }
         //--------------------------------------------------------------------------------------------------
-        $url="https://www.apple.com/ac/structured-data/images/knowledge_graph_logo.png?201703170823";
         $payload = array("recipient" => array("id" => $sender), "message" => array("text" => $text));
-        $payload_image = array("recipient" => array("id" => $sender), "message" => array("attachment" => array("type"=>"image","payload"=>array("url"=>$url,"is_reusable"=>true,))));
+        $payload_image = array("recipient" => array("id" => $sender), "message" => array("attachment" => array("type"=>"image","payload"=>array("url"=>$image,"is_reusable"=>true,))));
 
         //Tell cURL that we want to send a POST request.
         curl_setopt($ch, CURLOPT_POST, 1);
@@ -96,7 +96,7 @@ class FacebookMessengerBotController extends BaseController
         }
         $logger = $this->get('logger');
         $logger->info(json_encode($payload));
-        $response->setContent(json_encode($payload));
+        $response->setContent(json_encode($payload,$payload_image));
         return $response;
     }
 
