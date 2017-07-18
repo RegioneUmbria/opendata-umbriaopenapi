@@ -23,6 +23,7 @@ class FacebookMessengerBotController extends BaseController
     public function indexAction()
     {
         $response = new Response();
+        $response_image = new Response();
         $challenge = $_REQUEST['hub_challenge'];
         $verify_token = $_REQUEST['hub_verify_token'];
         if ($verify_token === 'testtoken') {
@@ -43,7 +44,7 @@ class FacebookMessengerBotController extends BaseController
         $ch = curl_init($url);
         // --------------------------------------------@20170718--------------------------------------------
         $sendermessage=$message;
-        $image="https://www.apple.com/ac/structured-data/images/knowledge_graph_logo.png?201703170823";
+        $image="https://www.umbriatourism.it/documents/10184/87075/gubbiosummerfestival_pic2/b8ac0245-2609-4437-b6eb-37563d69ebd8?t=1496910819999";
         $text="Welcome to UmbiraOpenApi";
         if(isset($sendermessage)) {
             switch ($sendermessage) {
@@ -87,7 +88,7 @@ class FacebookMessengerBotController extends BaseController
         //Tell cURL that we want to send a POST request.
         curl_setopt($ch, CURLOPT_POST, 1);
         //Attach our encoded JSON string to the POST fields.
-        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($payload,$payload_image));
+        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($payload));
         //Set the content type to application/json
         curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json'));
         //Execute the request but first check if the message is not empty.
@@ -95,8 +96,23 @@ class FacebookMessengerBotController extends BaseController
             $result = curl_exec($ch);
         }
         $logger = $this->get('logger');
-        $logger->info(json_encode($payload,$payload_image));
-        $response->setContent(json_encode($payload,$payload_image));
+        $logger->info(json_encode($payload));
+        $response->setContent(json_encode($payload));
+
+
+        //Tell cURL that we want to send a POST request.
+        curl_setopt($ch, CURLOPT_POST, 1);
+        //Attach our encoded JSON string to the POST fields.
+        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($payload_image));
+        //Set the content type to application/json
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json'));
+        //Execute the request but first check if the message is not empty.
+        if (!empty($input['entry'][0]['messaging'][0]['message'])) {
+            $result = curl_exec($ch);
+        }
+        $logger_image = $this->get('logger');
+        $logger_image->info(json_encode($payload_image));
+        $response_image->setContent(json_encode($payload_image));
         return $response;
     }
 
