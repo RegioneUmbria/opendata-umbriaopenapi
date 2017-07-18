@@ -45,7 +45,7 @@ class FacebookMessengerBotController extends BaseController
 
         // --------------------------------------------@20170718--------------------------------------------
         $sendermessage = $message;
-        $image = "@";
+        $image = "https://www.google.it/imgres?imgurl=https://www.apple.com/ac/structured-data/images/knowledge_graph_logo.png%3F201609060830&imgrefurl=https://www.apple.com/&h=302&w=302&tbnid=-TtEc9M5pE7LPM:&tbnh=151&tbnw=151&usg=__NdCHZ3cXDTWZ8LIMElAOsuFElD0=&vet=1&docid=xEELJvdODsw35M&itg=1&hl=zh-TW&sa=X&ved=0ahUKEwiwyP-rxpLVAhVGSRoKHUUoA_QQ_B0IsQEwDA";
         $text = "Welcome to UmbiraOpenApi";
         if (isset($sendermessage)) {
             switch ($sendermessage) {
@@ -103,7 +103,8 @@ class FacebookMessengerBotController extends BaseController
         $logger->info(json_encode($payload));
         $response->setContent(json_encode($payload));
 
-
+        //For the Image Part ...
+        if (strcmp($image,"@")!=0) {
             $payload_image = array("recipient" => array("id" => $sender), "message" => array("attachment" => array("type" => "image", "payload" => array("url" => $image, "is_reusable" => true,))));
             //Attach our encoded JSON string to the POST fields.
             curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($payload_image));
@@ -112,7 +113,7 @@ class FacebookMessengerBotController extends BaseController
             $logger = $this->get('logger');
             $logger->info(json_encode($payload_image));
             $response_image->setContent(json_encode($payload_image));
-
+        }
 
         return $response;
     }
