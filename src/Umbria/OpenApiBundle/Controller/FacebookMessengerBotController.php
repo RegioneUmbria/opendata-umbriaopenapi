@@ -22,6 +22,7 @@ class FacebookMessengerBotController extends BaseController
      */
     public function indexAction()
     {
+        $todayDate=date("Y-m-d");
         $response = new Response();
         $challenge = $_REQUEST['hub_challenge'];
         $verify_token = $_REQUEST['hub_verify_token'];
@@ -57,7 +58,7 @@ class FacebookMessengerBotController extends BaseController
                 case "event":
                 case "Event":
                     $arrayOfMessages = $this->executeEventQuery(43.105275, 12.391995, 100, true);
-                    $text = "Ciao, Oggi ti consiglio: ".$arrayOfMessages[0];
+                    $text =  $todayDate."Ciao, Oggi ti consiglio: ".$arrayOfMessages[0];
                     break;
                 case "travelagency":
                 case "Travelagency":
@@ -176,23 +177,19 @@ class FacebookMessengerBotController extends BaseController
             $bounds[1]->getLongitudeInDegrees(),
             $bounds[0]->getLongitudeInDegrees());
 
-        $todayDate=date("Y-m-d");
-
-
-
         if (sizeof($pois) > 0) {
             if ($rand) {
                 $key = array_rand($pois);
                 $poi = $pois[$key];
                 $stringResult[0] = $poi->getName() . "\nDescriptions : " . str_replace('&nbsp;', ' ', strip_tags($poi->getDescriptions())) . "\n" . $poi->getResourceOriginUrl();
-                return $todayDate;
+                return $stringResult;
             } else {
                 $i = 0;
                 foreach ($pois as $poi) {
                     $stringResult[$i] = $poi->getName() . "\nDescriptions : " . str_replace('&nbsp;', ' ', strip_tags($poi->getDescriptions())) . "\n" . $poi->getResourceOriginUrl();
                     $i++;
                 }
-                return $todayDate;
+                return $stringResult;
             }
         } else {
             throw new Exception();
