@@ -112,7 +112,7 @@ class FacebookMessengerBotController extends BaseController
             $logger_logger = $this->get('logger');
             $logger_logger->info(json_encode($payload_image));
             $response_image->setContent(json_encode($payload_image));
-    
+
 
         return $response;
     }
