@@ -73,7 +73,7 @@ class FacebookMessengerBotController extends BaseController
 //Tell cURL that we want to send a POST request.
         curl_setopt($ch, CURLOPT_POST, 1);
 //Attach our encoded JSON string to the POST fields.
-        //curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($payload));
+        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($answer));
         curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($response));
 //Set the content type to application/json
         curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json'));
