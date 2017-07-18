@@ -187,12 +187,12 @@ class FacebookMessengerBotController extends BaseController
                 $key = array_rand($pois);
                 $poi = $pois[$key];
 
-                $stringResult[0] = $poi->getName() . "\nDescriptions : " . str_replace('&nbsp;', ' ', strip_tags($poi->getDescriptions())) . "\n" . $poi->getResourceOriginUrl(). "\n" . $poi->getImages();
+                $stringResult[0] = $poi->getName() . "\nDescriptions : " . str_replace('&nbsp;', ' ', strip_tags($poi->getDescriptions())) . "\n" . $poi->getResourceOriginUrl(). "\n" . $poi->getImages()[0];
                 return $stringResult;
             } else {
                 $i = 0;
                 foreach ($pois as $poi) {
-                    $stringResult[$i] = $poi->getName() . "\nDescriptions : " . str_replace('&nbsp;', ' ', strip_tags($poi->getDescriptions())) . "\n" . $poi->getResourceOriginUrl(). "\n" . $poi->getImages();
+                    $stringResult[$i] = $poi->getName() . "\nDescriptions : " . str_replace('&nbsp;', ' ', strip_tags($poi->getDescriptions())) . "\n" . $poi->getResourceOriginUrl(). "\n" . $poi->getImages()[0];
                     $i++;
                 }
                 return $stringResult;
