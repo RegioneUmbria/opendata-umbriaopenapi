@@ -58,7 +58,7 @@ class FacebookMessengerBotController extends BaseController
                 case "event":
                 case "Event":
                     $arrayOfMessages = $this->executeEventQuery(43.105275, 12.391995, 100, true);
-                    $text =  $todayDate."Ciao, Oggi ti consiglio: ".$arrayOfMessages[0];
+                    $text = "Ciao, Oggi ti consiglio: ".$arrayOfMessages[0];
                     break;
                 case "travelagency":
                 case "Travelagency":
