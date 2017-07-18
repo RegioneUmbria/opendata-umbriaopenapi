@@ -59,10 +59,6 @@ class FacebookMessengerBotController extends BaseController
                 case "Hello":
                     $arrayOfMessages = $this->executeAttractorQuery(43.105275, 12.391995, 100, true);
                     $text ="Ciao " .". Oggi ti consiglio: ".$arrayOfMessages[0];
-                   /* for ($i=0;$i<sizeof( $arrayOfMessages);$i++){
-                        $text= $text.$arrayOfMessages[$i];
-                    }*/
-
 //                    $sql="SELECT name,shortDescription,resourceOriginUrl FROM tourism_attractor ORDER BY RAND()LIMIT 1";
 //                    $result = mysqli_query($conn,$sql);
 //                    while ($row =mysqli_fetch_array($result)){
@@ -75,7 +71,7 @@ class FacebookMessengerBotController extends BaseController
                 case "event":
                 case "Event":
                 $arrayOfMessages = $this->executeEventQuery(43.105275, 12.391995, 100, true);
-                $text = "Ciao, Oggi ti consiglio: ";
+                $text = "Ciao, Oggi ti consiglio: ".$arrayOfMessages[0];
 //                    $sql="SELECT name,resourceOriginUrl FROM tourism_event ORDER BY RAND()LIMIT 1";
 //                    $result = mysqli_query($conn,$sql);
 //                    while ($row =mysqli_fetch_array($result)){
@@ -87,7 +83,8 @@ class FacebookMessengerBotController extends BaseController
                     break;
                 case "travelagency":
                 case "Travelagency":
-                    $text = "Ciao, Oggi ti consiglio: " ;
+                    $arrayOfMessages = $this->executeTravelAgencyQuery(43.105275, 12.391995, 100, true);
+                    $text = "Ciao " .". Oggi ti consiglio: \n". $arrayOfMessages[0] ;
 //                    $sql="SELECT name,telephone,email,resourceOriginUrl FROM tourism_travelagency ORDER BY RAND()LIMIT 1";
 //                    $result = mysqli_query($conn,$sql);
 //                    while ($row =mysqli_fetch_array($result)){
@@ -166,5 +163,98 @@ class FacebookMessengerBotController extends BaseController
         }
     }
 
+    public function executeProposalQuery($lat, $lng, $radius)
+    {
+        /**@var ProposalRepository $proposalRepo */
+        $proposalRepo = $this->getDoctrine()->getRepository('UmbriaOpenApiBundle:Tourism\GraphsEntities\Proposal');
+
+        $location = GeoLocation::fromDegrees($lat, $lng);
+        /** @var GeoLocation[] $bounds */
+        /** @noinspection PhpInternalEntityUsedInspection */
+        $bounds = $location->boundingCoordinates($radius, 'km');
+
+        $pois = $proposalRepo->findByPosition(
+            $bounds[1]->getLatitudeInDegrees(),
+            $bounds[0]->getLatitudeInDegrees(),
+            $bounds[1]->getLongitudeInDegrees(),
+            $bounds[0]->getLongitudeInDegrees());
+
+        if (sizeof($pois) > 0) {
+            $key = array_rand($pois);
+            $poi = $pois[$key];
+            $stringResult[0] = $poi->getName() . "\n" . str_replace('&nbsp;', ' ', strip_tags($poi->getShortDescription())) . "\n" . $poi->getResourceOriginUrl();
+            return $stringResult;
+
+        } else {
+            throw new Exception();
+        }
+    }
+
+    public function executeEventQuery($lat, $lng, $radius, $rand)
+    {
+        /**@var EventRepository $eventRepo */
+        $eventRepo = $this->getDoctrine()->getRepository('UmbriaOpenApiBundle:Tourism\GraphsEntities\Event');
+
+        //$pois = $eventRepo->findByID($id);
+
+        $location = GeoLocation::fromDegrees($lat, $lng);
+        /** @var GeoLocation[] $bounds */
+        /** @noinspection PhpInternalEntityUsedInspection */
+        $bounds = $location->boundingCoordinates($radius, 'km');
+
+        $pois = $eventRepo->findByPosition(
+            $bounds[1]->getLatitudeInDegrees(),
+            $bounds[0]->getLatitudeInDegrees(),
+            $bounds[1]->getLongitudeInDegrees(),
+            $bounds[0]->getLongitudeInDegrees());
+
+        if (sizeof($pois) > 0) {
+            if ($rand) {
+                $key = array_rand($pois);
+
+                $poi = $pois[$key];
+                $stringResult[0] = $poi->getName() . "\nDescriptions : " . str_replace('&nbsp;', ' ', strip_tags($poi->getDescriptions())) . "\n" . $poi->getResourceOriginUrl();
+                return $stringResult;
+            } else {
+                $i = 0;
+                foreach ($pois as $poi) {
+                    $stringResult[$i] = $poi->getName() . "\nDescriptions : " . str_replace('&nbsp;', ' ', strip_tags($poi->getDescriptions())) . "\n" . $poi->getResourceOriginUrl();
+                    $i++;
+                }
+                return $stringResult;
+            }
+        } else {
+            throw new Exception();
+        }
+    }
+
+    public function executeTravelAgencyQuery($lat, $lng, $radius, $rand)
+    {
+        /**@var TravelAgencyRepository $travelagencyRepo */
+        $travelagencyRepo = $this->getDoctrine()->getRepository('UmbriaOpenApiBundle:Tourism\GraphsEntities\TravelAgency');
+
+        //$pois = $eventRepo->findByID($id);
+
+        $location = GeoLocation::fromDegrees($lat, $lng);
+        /** @var GeoLocation[] $bounds */
+        /** @noinspection PhpInternalEntityUsedInspection */
+        $bounds = $location->boundingCoordinates($radius, 'km');
+
+        $pois = $travelagencyRepo->findByPosition(
+            $bounds[1]->getLatitudeInDegrees(),
+            $bounds[0]->getLatitudeInDegrees(),
+            $bounds[1]->getLongitudeInDegrees(),
+            $bounds[0]->getLongitudeInDegrees());
+
+        if (sizeof($pois) > 0) {
+            $key = array_rand($pois);
+            $poi = $pois[$key];
+            $stringResult[0] = $poi->getName() . "\n" . $poi->getResourceOriginUrl();
+            return $stringResult;
+
+        } else {
+            throw new Exception();
+        }
+    }
 
 }
