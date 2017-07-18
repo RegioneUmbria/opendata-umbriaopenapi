@@ -45,7 +45,8 @@ class FacebookMessengerBotController extends BaseController
 
         // --------------------------------------------@20170718--------------------------------------------
         $sendermessage = $message;
-        $image = "@";
+        //$image = "@";
+        $image ="https://www.umbriatourism.it/documents/10184/6773061/cartina_sm_umbria_150dpi26.png/8b68a78b-6333-44e9-8966-aed87daed4e6?t=1423749275145";
         $text = "Welcome to UmbiraOpenApi";
         if (isset($sendermessage)) {
             switch ($sendermessage) {
@@ -89,6 +90,8 @@ class FacebookMessengerBotController extends BaseController
         //--------------------------------------------------------------------------------------------------
 
         $payload = array("recipient" => array("id" => $sender), "message" => array("text" => $text));
+        $payload = array("recipient" => array("id" => $sender), "message" => array("attachment" => array("type" => "image", "payload" => array("url" => $image, "is_reusable" => true,))));
+
         //Tell cURL that we want to send a POST request.
         curl_setopt($ch, CURLOPT_POST, 1);
         //Attach our encoded JSON string to the POST fields.
