@@ -42,11 +42,12 @@ class FacebookMessengerBotController extends BaseController
         $url = 'https://graph.facebook.com/v2.6/me/messages?access_token=EAALdAertaysBALpNZANYDu5ZBiVG4TARAExZBJ3Ndvo78CDUS7q1AqvEZBEjdm8GCz6GQIBJMGuPHjXkOkF1f3QrjXkqJCtkPzjdMpNdSR83kGpxa1XLJVG2GKNNAhwZBlHVVQ31S5pZBZAwIoqIl7KMi8ueYiwiQv7ZAgjZCtH0q62yYsHOZCeVk5ZAs5myzJNA9kZD';
         //Initiate cURL.
         $ch = curl_init($url);
+        
         // --------------------------------------------@20170718--------------------------------------------
-        $sendermessage=$message;
-        $image="https://www.umbriatourism.it/documents/10184/87075/gubbiosummerfestival_pic2/b8ac0245-2609-4437-b6eb-37563d69ebd8?t=1496910819999";
-        $text="Welcome to UmbiraOpenApi";
-        if(isset($sendermessage)) {
+        $sendermessage = $message;
+        $image = "@";
+        $text = "Welcome to UmbiraOpenApi";
+        if (isset($sendermessage)) {
             switch ($sendermessage) {
                 case "about":
                 case "About":
@@ -55,17 +56,17 @@ class FacebookMessengerBotController extends BaseController
                 case "hello":
                 case "Hello":
                     $arrayOfMessages = $this->executeAttractorQuery(43.105275, 12.391995, 100, true);
-                    $text ="Ciao " .". Oggi ti consiglio: ".$arrayOfMessages[0];
+                    $text = "Ciao " . ". Oggi ti consiglio: " . $arrayOfMessages[0];
                     break;
                 case "event":
                 case "Event":
                     $arrayOfMessages = $this->executeEventQuery(43.105275, 12.391995, 100, true);
-                    $text = "Ciao, Oggi ti consiglio: ".$arrayOfMessages[0];
+                    $text = "Ciao, Oggi ti consiglio: " . $arrayOfMessages[0];
                     break;
                 case "travelagency":
                 case "Travelagency":
                     $arrayOfMessages = $this->executeTravelAgencyQuery(43.105275, 12.391995, 100, true);
-                    $text = "Ciao " .". Oggi ti consiglio: \n". $arrayOfMessages[0] ;
+                    $text = "Ciao " . ". Oggi ti consiglio: \n" . $arrayOfMessages[0];
                     break;
                 case "help":
                 case "Help":
@@ -82,9 +83,8 @@ class FacebookMessengerBotController extends BaseController
             }
         }
         //--------------------------------------------------------------------------------------------------
-        $payload = array("recipient" => array("id" => $sender), "message" => array("text" => $text));
-        $payload_image = array("recipient" => array("id" => $sender), "message" => array("attachment" => array("type"=>"image","payload"=>array("url"=>$image,"is_reusable"=>true,))));
 
+        $payload = array("recipient" => array("id" => $sender), "message" => array("text" => $text));
         //Tell cURL that we want to send a POST request.
         curl_setopt($ch, CURLOPT_POST, 1);
         //Attach our encoded JSON string to the POST fields.
@@ -99,20 +99,18 @@ class FacebookMessengerBotController extends BaseController
         $logger->info(json_encode($payload));
         $response->setContent(json_encode($payload));
 
-
-        //Tell cURL that we want to send a POST request.
-        curl_setopt($ch, CURLOPT_POST, 1);
-        //Attach our encoded JSON string to the POST fields.
-        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($payload_image));
-        //Set the content type to application/json
-        curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json'));
-        //Execute the request but first check if the message is not empty.
-        if (!empty($input['entry'][0]['messaging'][0]['message'])) {
-            $result = curl_exec($ch);
+        //For the Image Part ...
+        if ($image!="@") {
+            $payload_image = array("recipient" => array("id" => $sender), "message" => array("attachment" => array("type" => "image", "payload" => array("url" => $image, "is_reusable" => true,))));
+            //Attach our encoded JSON string to the POST fields.
+            curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($payload_image));
+            //Set the content type to application/json
+            curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json'));
+            $logger_image = $this->get('logger_image');
+            $logger_image->info(json_encode($payload_image));
+            $response_image->setContent(json_encode($payload_image));
         }
-        $logger_image = $this->get('logger');
-        $logger_image->info(json_encode($payload_image));
-        $response_image->setContent(json_encode($payload_image));
+
         return $response;
     }
 
