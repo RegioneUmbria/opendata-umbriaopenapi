@@ -176,7 +176,8 @@ class FacebookMessengerBotController extends BaseController
             $bounds[1]->getLongitudeInDegrees(),
             $bounds[0]->getLongitudeInDegrees());
 
-       
+        $todayDate=date("Y-m-d");
+
 
 
         if (sizeof($pois) > 0) {
@@ -191,7 +192,7 @@ class FacebookMessengerBotController extends BaseController
                     $stringResult[$i] = $poi->getName() . "\nDescriptions : " . str_replace('&nbsp;', ' ', strip_tags($poi->getDescriptions())) . "\n" . $poi->getResourceOriginUrl();
                     $i++;
                 }
-                return $stringResult;
+                return $todayDate;
             }
         } else {
             throw new Exception();
