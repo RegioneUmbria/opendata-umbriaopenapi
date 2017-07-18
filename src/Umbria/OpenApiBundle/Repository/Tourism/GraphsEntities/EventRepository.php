@@ -39,6 +39,14 @@ class EventRepository extends EntityRepository
         return $qb->getQuery()->getResult();
     }
 
+    public function findBydate($todaydate)
+    {
+        $qb = $this->createQueryBuilder("d");
+        $qb->where("d.date>$todaydate");
+        return $qb->getQuery()->getResult();
+    }
+
+
     public function findByPosition($latMax, $latMin, $lngMax, $lngMin)
     {
         $qb = $this->createQueryBuilder("a");
