@@ -59,7 +59,7 @@ class FacebookMessengerBotController extends BaseController
 //            ];
 //        }
         switch($message) {
-            case "more":
+            case  "more":
                 $answer = ["attachment" => [
                     "type" => "template",
                     "payload" => [
@@ -83,7 +83,8 @@ class FacebookMessengerBotController extends BaseController
                     'recipient' => ['id' => $sender],
                     'message' => $answer
                 ];
-            case "hi":
+                break;
+            case  "hi":
                 $answer = "Hello";
                 $response = [
                     'recipient' => ['id' => $sender],
@@ -95,6 +96,7 @@ class FacebookMessengerBotController extends BaseController
                     'recipient' => ['id' => $sender],
                     'message' => ['text' => $answer]
                 ];
+                break;
 
         }
 //API Url and Access Token, generate this token value on your Facebook App Page
