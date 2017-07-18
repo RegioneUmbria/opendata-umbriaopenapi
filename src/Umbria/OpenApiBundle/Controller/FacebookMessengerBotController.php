@@ -176,6 +176,17 @@ class FacebookMessengerBotController extends BaseController
             $bounds[1]->getLongitudeInDegrees(),
             $bounds[0]->getLongitudeInDegrees());
 
+        $todayDate=date("Y-m-d");
+
+        $query = $eventRepo->createQueryBuilder('a')
+            ->where('e.startDate > :todayDate')
+            ->setParameter('todayDate', $todayDate)
+            ->orderBy('e.startDate', 'ASC')
+            ->getQuery();
+
+        $pois = $query->getResult();
+
+
         if (sizeof($pois) > 0) {
             if ($rand) {
                 $key = array_rand($pois);
@@ -185,7 +196,7 @@ class FacebookMessengerBotController extends BaseController
             } else {
                 $i = 0;
                 foreach ($pois as $poi) {
-                    $stringResult[$i] = $poi->getName() . getStartDate()."\nDescriptions : " . str_replace('&nbsp;', ' ', strip_tags($poi->getDescriptions())) . "\n" . $poi->getResourceOriginUrl();
+                    $stringResult[$i] = $poi->getName() . "\nDescriptions : " . str_replace('&nbsp;', ' ', strip_tags($poi->getDescriptions())) . "\n" . $poi->getResourceOriginUrl();
                     $i++;
                 }
                 return $stringResult;
