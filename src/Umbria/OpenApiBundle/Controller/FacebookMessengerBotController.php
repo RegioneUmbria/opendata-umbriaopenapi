@@ -5,9 +5,12 @@
  * Date: 11/07/2017
  * Time: 10:30
  */
+
 namespace Umbria\OpenApiBundle\Controller;
+
 use Symfony\Component\HttpFoundation\Response;
 use Umbria\OpenApiBundle\Controller\Tourism\BaseController;
+
 class FacebookMessengerBotController extends BaseController
 {
     public function indexAction()
@@ -29,39 +32,32 @@ class FacebookMessengerBotController extends BaseController
 // Get the returned message
         $message = $input['entry'][0]['messaging'][0]['message']['text'];
 
-        $response = null;
-        if ($message == "hi") {
-            $answer = "Hello";
-        $response = [
-            'recipient' => ['id' => $sender],
-            'message' => ['text' => $answer]
-        ];
-    }
-    else if($message == "more") {
-        $answer = ["attachment"=>[
-            "type"=>"template",
-            "payload"=>[
-                "template_type"=>"button",
-                "text"=>"What do you want to do next?",
-                "buttons"=>[
-                    [
-                        "type"=>"web_url",
-                        "url"=>"https://umbriaopenapi-nigel.tk/",
-                        "title"=>"Show Website"
-                    ],
-                    [
-                        "type"=>"postback",
-                        "title"=>"Start Chatting",
-                        "payload"=>"USER_DEFINED_PAYLOAD"
+//        $response = null;
+       if ($message == "more") {
+            $answer = ["attachment" => [
+                "type" => "template",
+                "payload" => [
+                    "template_type" => "button",
+                    "text" => "What do you want to do next?",
+                    "buttons" => [
+                        [
+                            "type" => "web_url",
+                            "url" => "https://umbriaopenapi-nigel.tk/",
+                            "title" => "Show Website"
+                        ],
+                        [
+                            "type" => "postback",
+                            "title" => "Start Chatting",
+                            "payload" => "USER_DEFINED_PAYLOAD"
+                        ]
                     ]
                 ]
-            ]
-        ]];
-        $response = [
-            'recipient' => [ 'id' => $sender],
-            'message' => $answer
-        ];
-    }
+            ]];
+            $response = [
+                'recipient' => ['id' => $sender],
+                'message' => $answer
+            ];
+        }
 
 //API Url and Access Token, generate this token value on your Facebook App Page
         //$url = 'https://graph.facebook.com/v2.6/me/messages?access_token=EAADeS6lnyqoBALR7gyuSYGk5dYdkzj7r8wLFVS1AxLoAPZCg4NJG2KWOzjs8CIMp2VLApWDbPZC44cnnl0gz1e93oNeEKmZAD2qEk7khJlzVZCMGzVeVZAUOpCN5BXFInZBjJceXebMtRxqzbMjBFJddgEPNczS44qZBSH1urRurQZDZD';
@@ -69,7 +65,7 @@ class FacebookMessengerBotController extends BaseController
 
 //Initiate cURL.
         $ch = curl_init($url);
-       // $payload = array("recipient" => array("id" => $sender), "message" => array("text" => "Benvenuto su UmbriaOpenAPI"));
+        // $payload = array("recipient" => array("id" => $sender), "message" => array("text" => "Benvenuto su UmbriaOpenAPI"));
 //Tell cURL that we want to send a POST request.
         curl_setopt($ch, CURLOPT_POST, 1);
 //Attach our encoded JSON string to the POST fields.
@@ -86,7 +82,6 @@ class FacebookMessengerBotController extends BaseController
         $response->setContent(json_encode($answer));
         return $response;
 
-        
 
     }
 
