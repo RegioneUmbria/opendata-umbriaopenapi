@@ -81,8 +81,8 @@ class FacebookMessengerBotController extends BaseController
         if (!empty($input['entry'][0]['messaging'][0]['message'])) {
             $result = curl_exec($ch);
         }
-        $logger = $this->get('logger');
-        $logger->info(json_encode($answer));
+//        $logger = $this->get('logger');
+//        $logger->info(json_encode($answer));
         $response->setContent(json_encode($answer));
         return $response;
 
