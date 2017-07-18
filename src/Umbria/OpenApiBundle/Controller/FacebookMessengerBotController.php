@@ -63,8 +63,8 @@ class FacebookMessengerBotController extends BaseController
                 case "event":
                 case "Event":
                     $arrayOfMessages = $this->executeEventQuery(43.105275, 12.391995, 100, true);
-                    $text = "Ciao, Oggi ti consiglio: " . $arrayOfMessages[0]."\n".$arrayOfMessages[1];
-                    $image = "@";
+                    $text = "Ciao, Oggi ti consiglio: " . $arrayOfMessages[0];
+                    $image = $arrayOfMessages[1];
                     break;
                 case "travelagency":
                 case "Travelagency":
@@ -104,7 +104,7 @@ class FacebookMessengerBotController extends BaseController
         $response->setContent(json_encode($payload));
 
         //For the Image Part ...
-        if ($image!="@") {
+        if (strcmp($image,"@")!=0) {
             $payload_image = array("recipient" => array("id" => $sender), "message" => array("attachment" => array("type" => "image", "payload" => array("url" => $image, "is_reusable" => true,))));
             //Attach our encoded JSON string to the POST fields.
             curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($payload_image));
