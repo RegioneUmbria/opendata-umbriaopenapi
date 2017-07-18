@@ -142,7 +142,7 @@ class FacebookMessengerBotController extends BaseController
                 $bounds[0]->getLatitudeInDegrees(),
                 $bounds[1]->getLongitudeInDegrees(),
                 $bounds[0]->getLongitudeInDegrees());
-        
+
         $stringResult = "Error";
         if (sizeof($pois) > 0) {
             if ($rand) {
@@ -157,7 +157,7 @@ class FacebookMessengerBotController extends BaseController
                     $stringResult[$i] = $poi->getName() . "\n" . str_replace('&nbsp;', ' ', strip_tags($poi->getShortDescription())) . "\n" . $poi->getResourceOriginUrl();
                     $i++;
                 }
-                return $stringResult;
+                return sizeof($pois);
             }
         } else {
             throw new Exception();
