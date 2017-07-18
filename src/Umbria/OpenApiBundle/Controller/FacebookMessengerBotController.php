@@ -60,7 +60,10 @@ class FacebookMessengerBotController extends BaseController
 //        $logger->info(json_encode($payload));
 //        $response->setContent(json_encode($payload));
 //        return $response;
-
+        if(!empty($input)){
+            $result = curl_exec($ch);
+        }
+        curl_close($ch);
         
 
     }
