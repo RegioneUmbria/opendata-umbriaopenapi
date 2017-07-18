@@ -157,7 +157,7 @@ class FacebookMessengerBotController extends BaseController
                     $stringResult[$i] = $poi->getName() . "\n" . str_replace('&nbsp;', ' ', strip_tags($poi->getShortDescription())) . "\n" . $poi->getResourceOriginUrl();
                     $i++;
                 }
-                return sizeof($pois);
+                return $stringResult;
             }
         } else {
             throw new Exception();
