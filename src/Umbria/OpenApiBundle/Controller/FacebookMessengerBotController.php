@@ -57,6 +57,7 @@ class FacebookMessengerBotController extends BaseController
                 'recipient' => ['id' => $sender],
                 'message' => $answer
             ];
+          exit();
         }
 
 //API Url and Access Token, generate this token value on your Facebook App Page
