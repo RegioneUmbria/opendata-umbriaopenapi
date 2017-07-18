@@ -143,8 +143,8 @@ class FacebookMessengerBotController extends BaseController
                 $bounds[0]->getLongitudeInDegrees());
 
         $stringResult = "Error";
-        $stringResult = $pois[0];
-        return $stringResult;
+        return sizeof($pois);
+        
     }
 
 
