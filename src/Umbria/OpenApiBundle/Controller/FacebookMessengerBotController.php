@@ -146,17 +146,16 @@ class FacebookMessengerBotController extends BaseController
         if (sizeof($pois) > 0) {
             if ($rand) {
                 $key = array_rand($pois);
-
                 $poi = $pois[$key];
                 $stringResult[0] = $poi->getName() . "\n" . str_replace('&nbsp;', ' ', strip_tags($poi->getShortDescription())) . "\n" . $poi->getResourceOriginUrl();
-                return $key;
+                return sizeof($pois);
             } else {
                 $i = 0;
                 foreach ($pois as $poi) {
                     $stringResult[$i] = $poi->getName() . "\n" . str_replace('&nbsp;', ' ', strip_tags($poi->getShortDescription())) . "\n" . $poi->getResourceOriginUrl();
                     $i++;
                 }
-                return $stringResult;
+                return sizeof($pois);
             }
         } else {
             throw new Exception();
