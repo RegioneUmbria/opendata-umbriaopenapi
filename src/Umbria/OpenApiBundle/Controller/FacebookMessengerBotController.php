@@ -40,8 +40,9 @@ class FacebookMessengerBotController extends BaseController
         //API Url and Access Token, generate this token value on your Facebook App Page
         $url = 'https://graph.facebook.com/v2.6/me/messages?access_token=EAALdAertaysBALpNZANYDu5ZBiVG4TARAExZBJ3Ndvo78CDUS7q1AqvEZBEjdm8GCz6GQIBJMGuPHjXkOkF1f3QrjXkqJCtkPzjdMpNdSR83kGpxa1XLJVG2GKNNAhwZBlHVVQ31S5pZBZAwIoqIl7KMi8ueYiwiQv7ZAgjZCtH0q62yYsHOZCeVk5ZAs5myzJNA9kZD';
         //Initiate cURL.
-        $sendermessage=$message;
         $ch = curl_init($url);
+        // --------------------------------------------@20170718--------------------------------------------
+        $sendermessage=$message;
         $text="Welcome to UmbiraOpenApi";
         if(isset($sendermessage)) {
             switch ($sendermessage) {
@@ -78,7 +79,8 @@ class FacebookMessengerBotController extends BaseController
                     $text .= "Help - Visualizzazione comandi disponibili\n";
             }
         }
-        $payload = array("recipient" => array("id" => $sender), "message" => array("text" => $text));
+        //--------------------------------------------------------------------------------------------------
+        $payload = array("recipient" => array("id" => $sender), "message" => array("text" => $text, "attachment"=>["type"=>"image","payload"=>[ "url"=>"https://ae01.alicdn.com/kf/HTB1FW1QNFXXXXahaXXXq6xXFXXXv/My-font-b-ABC-b-font-Alphabet-Learn-font-b-table-b-font-Fabric-poster-32.jpg", "is_reusable"=>true ]]));
         //Tell cURL that we want to send a POST request.
         curl_setopt($ch, CURLOPT_POST, 1);
         //Attach our encoded JSON string to the POST fields.
@@ -181,6 +183,7 @@ class FacebookMessengerBotController extends BaseController
             if ($rand) {
                 $key = array_rand($pois);
                 $poi = $pois[$key];
+
                 $stringResult[0] = $poi->getName() . "\nDescriptions : " . str_replace('&nbsp;', ' ', strip_tags($poi->getDescriptions())) . "\n" . $poi->getResourceOriginUrl();
                 return $stringResult;
             } else {
