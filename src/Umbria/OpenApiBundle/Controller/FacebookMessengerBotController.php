@@ -97,7 +97,7 @@ class FacebookMessengerBotController extends BaseController
             }
             //--------------------------------------------------------------------------------------------------
 
-            $payload = array("recipient" => array("id" => $sender), "message" => array("attachment" => array("type" => "template", "payload" => array("template_type" => "list", "elements"=>array("title"=>$title,"image_url"=>$imageurl,"subtitle"=>$subtitle,"default_action"=>array("type"=> "web_url", "url"=>$ResourceOriginUrl,"messenger_extensions"=>true,"webview_height_ratio"=> "tall",),"buttons"=>array("title"=> "View","type"=> "web_url","url"=>$ResourceOriginUrl,"messenger_extensions"=> true,))))));
+            $payload = array("recipient" => array("id" => $sender), "message" => array("attachment" => array("type" => "template", "payload" => array("template_type" => "list", "elements"=>array(array("title"=>$title,"image_url"=>$imageurl,"subtitle"=>$subtitle,"default_action"=>array("type"=> "web_url", "url"=>$ResourceOriginUrl,"messenger_extensions"=>true,"webview_height_ratio"=> "tall",),"buttons"=>array("title"=> "View","type"=> "web_url","url"=>$ResourceOriginUrl,"messenger_extensions"=> true,)))))));
             //Tell cURL that we want to send a POST request.
             curl_setopt($ch, CURLOPT_POST, 1);
             //Attach our encoded JSON string to the POST fields.
