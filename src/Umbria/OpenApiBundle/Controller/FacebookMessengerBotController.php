@@ -49,7 +49,6 @@ class FacebookMessengerBotController extends BaseController
         $sendermessage=$message;
         $ch = curl_init($url);
         $text="Welcome to UmbiraOpenApi";
-        $arrayOfMessages[0]="Error";
         if(isset($sendermessage)) {
             switch ($sendermessage) {
                 case "about":
@@ -59,7 +58,7 @@ class FacebookMessengerBotController extends BaseController
                 case "hello":
                 case "Hello":
                     $arrayOfMessages = $this->executeAttractorQuery(43.105275, 12.391995, 100, true);
-                    $text ="Ciao " .". Oggi ti consiglio: " . $arrayOfMessages;
+                    $text ="Ciao " .". Oggi ti consiglio: " . $arrayOfMessages[0];
 
 //                    $sql="SELECT name,shortDescription,resourceOriginUrl FROM tourism_attractor ORDER BY RAND()LIMIT 1";
 //                    $result = mysqli_query($conn,$sql);
