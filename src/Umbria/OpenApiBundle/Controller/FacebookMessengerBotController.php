@@ -58,7 +58,10 @@ class FacebookMessengerBotController extends BaseController
                 case "hello":
                 case "Hello":
                     $arrayOfMessages = $this->executeAttractorQuery(43.105275, 12.391995, 100, true);
-                    $text ="Ciao " .sizeof($arrayOfMessages).". Oggi ti consiglio: " . $arrayOfMessages[0];
+                    $text ="Ciao " .". Oggi ti consiglio: ";
+                    for ($i=0;$i<sizeof( $arrayOfMessages);$i++){
+                        $text= $text.$arrayOfMessages[$i];
+                    }
 
 //                    $sql="SELECT name,shortDescription,resourceOriginUrl FROM tourism_attractor ORDER BY RAND()LIMIT 1";
 //                    $result = mysqli_query($conn,$sql);
@@ -144,7 +147,7 @@ class FacebookMessengerBotController extends BaseController
 
         $stringResult = "Error";
         return sizeof($pois);
-        
+
     }
 
 
