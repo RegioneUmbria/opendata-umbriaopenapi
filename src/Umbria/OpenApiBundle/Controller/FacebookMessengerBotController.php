@@ -110,8 +110,8 @@ class FacebookMessengerBotController extends BaseController
             curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($payload_image));
             //Set the content type to application/json
             curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json'));
-            $logger_image = $this->get('logger_image');
-            $logger_image->info(json_encode($payload_image));
+            $logger = $this->get('logger');
+            $logger->info(json_encode($payload_image));
             $response_image->setContent(json_encode($payload_image));
         }
 
