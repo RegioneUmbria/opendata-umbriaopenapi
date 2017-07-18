@@ -45,66 +45,75 @@ class FacebookMessengerBotController extends BaseController
 
         // --------------------------------------------@20170718--------------------------------------------
         $sendermessage = $message;
-        $image = "@";
-        $text = "Welcome to UmbiraOpenApi";
-        if (isset($sendermessage)) {
-            switch ($sendermessage) {
-                case "about":
-                case "About":
-                    $text = "UmbriaTourismBot ti permette di ricevere informazioni turistiche. Invia la tua posizione per scoprire tutte le bellezze che la nostra regione ha in serbo per te";
-                    $image = "@";
-                    break;
-                case "hello":
-                case "Hello":
-                    $arrayOfMessages = $this->executeAttractorQuery(43.105275, 12.391995, 100, true);
-                    $text = "Ciao " . ". Oggi ti consiglio: " . $arrayOfMessages[0];
-                    $image = "@";
-                    break;
-                case "event":
-                case "Event":
-                    $arrayOfMessages = $this->executeEventQuery(43.105275, 12.391995, 100, true);
-                    $text = "Ciao, Oggi ti consiglio: " . $arrayOfMessages[0];
-                    $image = $arrayOfMessages[1];
-                    break;
-                case "travelagency":
-                case "Travelagency":
-                    $arrayOfMessages = $this->executeTravelAgencyQuery(43.105275, 12.391995, 100, true);
-                    $text = "Ciao " . ". Oggi ti consiglio: \n" . $arrayOfMessages[0];
-                    $image = "@";
-                    break;
-                case "help":
-                case "Help":
-                case "start":
-                case "Start":
-                    $text = "UmbriaTourismBot ti permette di ricevere informazioni turistiche. Invia la tua posizione per scoprire tutte le bellezze che la nostra regione ha in serbo per te\n\n";
-                default :
-                    $text = "Lista comandi:\n";
-                    $text .= "About - Informazioni sul bot\n";
-                    $text .= "Event - Informazioni sul eventi\n";
-                    $text .= "Travelagency -  - Informazioni sul agenzia di viaggi\n";
-                    $text .= "Hello - Suggerimenti\n";
-                    $text .= "Help - Visualizzazione comandi disponibili\n";
+        $title= "a";
+        $imageurl="b";
+        $subtitle="c";
+        $ResourceOriginUrl="c";
+        if ($message) {
+            $image = "@";
+            $text = "Welcome to UmbiraOpenApi";
+            if (isset($sendermessage)) {
+                switch ($sendermessage) {
+                    case "about":
+                    case "About":
+                        $text = "UmbriaTourismBot ti permette di ricevere informazioni turistiche. Invia la tua posizione per scoprire tutte le bellezze che la nostra regione ha in serbo per te";
+                        $image = "@";
+                        break;
+                    case "hello":
+                    case "Hello":
+                        $arrayOfMessages = $this->executeAttractorQuery(43.105275, 12.391995, 100, true);
+                        $text = "Ciao " . ". Oggi ti consiglio: " . $arrayOfMessages[0];
+                        $image = "@";
+                        break;
+                    case "event":
+                    case "Event":
+                        $arrayOfMessages = $this->executeEventQuery(43.105275, 12.391995, 100, true);
+                        /*$text = "Ciao, Oggi ti consiglio: " . $arrayOfMessages[0];
+                        $image = $arrayOfMessages[1];*/
+                        $title= $arrayOfMessages[0];
+                        $imageurl=$arrayOfMessages[1];
+                        $subtitle=$arrayOfMessages[2];
+                        $ResourceOriginUrl=$arrayOfMessages[3];
+                        break;
+                    case "travelagency":
+                    case "Travelagency":
+                        $arrayOfMessages = $this->executeTravelAgencyQuery(43.105275, 12.391995, 100, true);
+                        $text = "Ciao " . ". Oggi ti consiglio: \n" . $arrayOfMessages[0];
+                        $image = "@";
+                        break;
+                    case "help":
+                    case "Help":
+                    case "start":
+                    case "Start":
+                        $text = "UmbriaTourismBot ti permette di ricevere informazioni turistiche. Invia la tua posizione per scoprire tutte le bellezze che la nostra regione ha in serbo per te\n\n";
+                    default :
+                        $text = "Lista comandi:\n";
+                        $text .= "About - Informazioni sul bot\n";
+                        $text .= "Event - Informazioni sul eventi\n";
+                        $text .= "Travelagency -  - Informazioni sul agenzia di viaggi\n";
+                        $text .= "Hello - Suggerimenti\n";
+                        $text .= "Help - Visualizzazione comandi disponibili\n";
+                }
             }
+            //--------------------------------------------------------------------------------------------------
+
+            $payload = array("recipient" => array("id" => $sender), "message" => array("attachment" => array("type" => "template", "payload" => array("template_type" => "list", "elements"=>array("title"=>$title,"image_url"=>$imageurl,"subtitle"=>$subtitle,"default_action"=>array("type"=> "web_url", "url"=>$ResourceOriginUrl,"messenger_extensions"=>true,"webview_height_ratio"=> "tall",),"buttons"=>array("title"=> "View","type"=> "web_url","url"=>$ResourceOriginUrl,"messenger_extensions"=> true,))))));
+            //Tell cURL that we want to send a POST request.
+            curl_setopt($ch, CURLOPT_POST, 1);
+            //Attach our encoded JSON string to the POST fields.
+            curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($payload));
+            //Set the content type to application/json
+            curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json'));
+            //Execute the request but first check if the message is not empty.
+            if (!empty($input['entry'][0]['messaging'][0]['message'])) {
+                $result = curl_exec($ch);
+            }
+            $logger = $this->get('logger');
+            $logger->info(json_encode($payload));
+            $response->setContent(json_encode($payload));
+
+            return $response;
         }
-        //--------------------------------------------------------------------------------------------------
-
-        $payload = array("recipient" => array("id" => $sender), "message" => array("text" => $text,"attachment" => array("type" => "image", "payload" => array("url" => $image, "is_reusable" => true,))));
-        //Tell cURL that we want to send a POST request.
-        curl_setopt($ch, CURLOPT_POST, 1);
-        //Attach our encoded JSON string to the POST fields.
-        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($payload));
-        //Set the content type to application/json
-        curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json'));
-        //Execute the request but first check if the message is not empty.
-        if (!empty($input['entry'][0]['messaging'][0]['message'])) {
-            $result = curl_exec($ch);
-        }
-        $logger = $this->get('logger');
-        $logger->info(json_encode($payload));
-        $response->setContent(json_encode($payload));
-
-
-        return $response;
     }
 
     public function executeAttractorQuery($lat, $lng, $radius, $rand)
@@ -193,9 +202,11 @@ class FacebookMessengerBotController extends BaseController
             if ($rand) {
                 $key = array_rand($pois);
                 $poi = $pois[$key];
-                $stringResult[0] = $poi->getName() . "\nDescriptions : " . str_replace('&nbsp;', ' ', strip_tags($poi->getDescriptions())) . "\n" . $poi->getResourceOriginUrl();
-                $stringResult[1]=$poi->getImages()[0];
-                $stringResult[2]=$poi->getImages()[1];
+                //$stringResult[0] = $poi->getName() . "\nDescriptions : " . str_replace('&nbsp;', ' ', strip_tags($poi->getDescriptions())) . "\n" . $poi->getResourceOriginUrl();
+                $stringResult[0] = $poi->getName();
+                $stringResult[1] = $poi->getImages()[0];
+                $stringResult[2] = $poi->str_replace('&nbsp;', ' ', strip_tags($poi->getDescriptions())) ;
+                $stringResult[3] = $poi->getResourceOriginUrl();
                 return $stringResult;
             }
         } else {
