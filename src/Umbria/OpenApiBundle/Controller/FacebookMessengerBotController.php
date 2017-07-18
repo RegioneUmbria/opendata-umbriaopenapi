@@ -43,7 +43,7 @@ class FacebookMessengerBotController extends BaseController
         $ch = curl_init($url);
         // --------------------------------------------@20170718--------------------------------------------
         $sendermessage=$message;
-        $image="https://www.umbriatourism.it/documents/10184/87075/gubbiosummerfestival_pic2/b8ac0245-2609-4437-b6eb-37563d69ebd8?t=1496910819999";
+        $image="https://www.apple.com/ac/structured-data/images/knowledge_graph_logo.png?201703170823";
         $text="Welcome to UmbiraOpenApi";
         if(isset($sendermessage)) {
             switch ($sendermessage) {
