@@ -73,7 +73,7 @@ class FacebookMessengerBotController extends BaseController
                         $title= $arrayOfMessages[0];
                         $imageurl=$arrayOfMessages[1];
                         $subtitle=$arrayOfMessages[2];
-                        $ResourceOriginUrl="google.com.hk";
+                        $ResourceOriginUrl="";
                         break;
                     case "travelagency":
                     case "Travelagency":
