@@ -31,41 +31,13 @@ class FacebookMessengerBotController extends BaseController
 
         $response = null;
         if($message == "hi") {
-            $answer = "Ciao";
-            $response = [
-                'recipient' => ['id' => $sender],
-                'message' => ['text' => $answer]
-            ];
-            return $response;
+            $answer = "Hello";
         }
+        $response = [
+            'recipient' => [ 'id' => $sender ],
+            'message' => [ 'text' => $answer ]
+        ];
 
-        else if($message == "website"){
-            $answer = ["attachment"=>[
-                "type"=>"template",
-                "payload"=>[
-                    "template_type"=>"generic",
-                    "elements"=>[
-                        [
-                            "title"=>"Welcome to UmbriaDigitale\'s Website",
-                            "item_url"=>"https://umbriaopenapi-nigel.tk/",
-                            "image_url"=>"https://goo.gl/images/PLZ9Mg",
-                            "subtitle"=>"We\'ve got the right hat for everyone.",
-                            "buttons"=>[
-                                [
-                                    "type"=>"web_url",
-                                    "url"=>"https://umbriaopenapi-nigel.tk/",
-                                    "title"=>"View Website"
-                                ]
-                            ]
-                        ]
-                    ]
-                ]
-            ]];
-            $response = [
-                'recipient' => [ 'id' => $sender ],
-                'message' => $answer
-            ];
-            return $response;}
 //API Url and Access Token, generate this token value on your Facebook App Page
         //$url = 'https://graph.facebook.com/v2.6/me/messages?access_token=EAADeS6lnyqoBALR7gyuSYGk5dYdkzj7r8wLFVS1AxLoAPZCg4NJG2KWOzjs8CIMp2VLApWDbPZC44cnnl0gz1e93oNeEKmZAD2qEk7khJlzVZCMGzVeVZAUOpCN5BXFInZBjJceXebMtRxqzbMjBFJddgEPNczS44qZBSH1urRurQZDZD';
         $url = 'https://graph.facebook.com/v2.6/me/messages?access_token=EAAEWX2RC5XoBABm2kTFBeACAB8LfaWC7UHbTU273UobfN1vNzoj8qj1idjIjHC0LJytwfzZCC4ZCJ8OqQcKOmN3K3xr4o1bwYmWYWZA0BCV7B2ZCUgJmse7M1SwwE7sCVz0MKpv2YA3U052rLuZCbwbbVBD8y90rzntENprWDUQZDZD';
@@ -89,10 +61,7 @@ class FacebookMessengerBotController extends BaseController
 //        $response->setContent(json_encode($payload));
 //        return $response;
 
-        if(!empty($input)){
-            $result = curl_exec($ch);
-        }
-        curl_close($ch);
+        
 
     }
 
