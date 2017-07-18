@@ -58,10 +58,10 @@ class FacebookMessengerBotController extends BaseController
                 case "hello":
                 case "Hello":
                     $arrayOfMessages = $this->executeAttractorQuery(43.105275, 12.391995, 100, true);
-                    $text ="Ciao " .". Oggi ti consiglio: ";
-                    for ($i=0;$i<sizeof( $arrayOfMessages);$i++){
+                    $text ="Ciao " .". Oggi ti consiglio: ".$arrayOfMessages[0];
+                   /* for ($i=0;$i<sizeof( $arrayOfMessages);$i++){
                         $text= $text.$arrayOfMessages[$i];
-                    }
+                    }*/
 
 //                    $sql="SELECT name,shortDescription,resourceOriginUrl FROM tourism_attractor ORDER BY RAND()LIMIT 1";
 //                    $result = mysqli_query($conn,$sql);
@@ -74,7 +74,8 @@ class FacebookMessengerBotController extends BaseController
                       break;
                 case "event":
                 case "Event":
-                    $text = "Ciao, Oggi ti consiglio: ";
+                $arrayOfMessages = $this->executeEventQuery(43.105275, 12.391995, 100, true);
+                $text = "Ciao, Oggi ti consiglio: ";
 //                    $sql="SELECT name,resourceOriginUrl FROM tourism_event ORDER BY RAND()LIMIT 1";
 //                    $result = mysqli_query($conn,$sql);
 //                    while ($row =mysqli_fetch_array($result)){
@@ -150,12 +151,12 @@ class FacebookMessengerBotController extends BaseController
                 $key = array_rand($pois);
 
                 $poi = $pois[$key];
-                $stringResult[0] = $poi->getName() . "\n" . str_replace('&nbsp;', ' ', strip_tags($poi->getShortDescription())) . "\n" . $poi->getResourceOriginUrl();
+                $stringResult[0] = "\nNome : ".$poi->getName() . "\nDescrizione : \n" . str_replace('&nbsp;', ' ', strip_tags($poi->getShortDescription())) . "\n" . $poi->getResourceOriginUrl();
                 return $stringResult;
             } else {
                 $i = 0;
                 foreach ($pois as $poi) {
-                    $stringResult[$i] = $poi->getName() . "\n" . str_replace('&nbsp;', ' ', strip_tags($poi->getShortDescription())) . "\n" . $poi->getResourceOriginUrl();
+                    $stringResult[$i] = "\nNome : ".$poi->getName() . "\nDescrizione : \n" . str_replace('&nbsp;', ' ', strip_tags($poi->getShortDescription())) . "\n" . $poi->getResourceOriginUrl();
                     $i++;
                 }
                 return $stringResult;
