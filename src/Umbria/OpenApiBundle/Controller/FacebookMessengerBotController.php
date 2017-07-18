@@ -45,10 +45,6 @@ class FacebookMessengerBotController extends BaseController
 
         // --------------------------------------------@20170718--------------------------------------------
         $sendermessage = $message;
-        $title= "a";
-        $imageurl="b";
-        $subtitle="c";
-        $ResourceOriginUrl="c";
         if ($message) {
             $image = "@";
             $text = "Welcome to UmbiraOpenApi";
@@ -68,12 +64,8 @@ class FacebookMessengerBotController extends BaseController
                     case "event":
                     case "Event":
                         $arrayOfMessages = $this->executeEventQuery(43.105275, 12.391995, 100, true);
-                        /*$text = "Ciao, Oggi ti consiglio: " . $arrayOfMessages[0];
-                        $image = $arrayOfMessages[1];*/
-                        $title= $arrayOfMessages[0];
-                        $imageurl=$arrayOfMessages[1];
-                        $subtitle=$arrayOfMessages[2];
-                        $ResourceOriginUrl="";
+                        $text = "Ciao, Oggi ti consiglio: " . $arrayOfMessages[0];
+                        $image = $arrayOfMessages[1];
                         break;
                     case "travelagency":
                     case "Travelagency":
@@ -97,11 +89,7 @@ class FacebookMessengerBotController extends BaseController
             }
             //--------------------------------------------------------------------------------------------------
 
-            $payload = array("recipient" => array("id" => $sender), "message" => array("attachment" => array("type" => "template", "payload" => array("template_type" => "list", "elements"=>array(array("title"=>$title,"image_url"=>$imageurl,"subtitle"=>$subtitle,"default_action"=>array("type"=> "web_url", "url"=>$ResourceOriginUrl,"messenger_extensions"=>true,"webview_height_ratio"=> "tall","fallback_url"=> "https://peterssendreceiveapp.ngrok.io/"),"buttons"=>array(array("title"=> "View","type"=> "web_url","url"=>$ResourceOriginUrl,"messenger_extensions"=> true,"webview_height_ratio"=> "tall",
-                "fallback_url"=>"https://peterssendreceiveapp.ngrok.io/"
-            ))),array("title"=>$title,"image_url"=>$imageurl,"subtitle"=>$subtitle,"default_action"=>array("type"=> "web_url", "url"=>$ResourceOriginUrl,"messenger_extensions"=>true,"webview_height_ratio"=> "tall","fallback_url"=> "https://peterssendreceiveapp.ngrok.io/"),"buttons"=>array(array("title"=> "View","type"=> "web_url","url"=>$ResourceOriginUrl,"messenger_extensions"=> true,"webview_height_ratio"=> "tall",
-                "fallback_url"=>"https://peterssendreceiveapp.ngrok.io/"
-            ))))))));
+            $payload = array("recipient" => array("id" => $sender), "message" => array( "text"=>$text));
             //Tell cURL that we want to send a POST request.
             curl_setopt($ch, CURLOPT_POST, 1);
             //Attach our encoded JSON string to the POST fields.
@@ -206,11 +194,9 @@ class FacebookMessengerBotController extends BaseController
             if ($rand) {
                 $key = array_rand($pois);
                 $poi = $pois[$key];
-                //$stringResult[0] = $poi->getName() . "\nDescriptions : " . str_replace('&nbsp;', ' ', strip_tags($poi->getDescriptions())) . "\n" . $poi->getResourceOriginUrl();
-                $stringResult[0] = $poi->getName();
-                $stringResult[1] = $poi->getImages()[0];
-                $stringResult[2] = str_replace('&nbsp;', ' ', strip_tags($poi->getDescriptions())) ;
-                $stringResult[3] = $poi->getResourceOriginUrl();
+                $stringResult[0] = $poi->getName() . "\nDescriptions : " . str_replace('&nbsp;', ' ', strip_tags($poi->getDescriptions())) . "\n" . $poi->getResourceOriginUrl();
+                $stringResult[1]=$poi->getImages()[0];
+                $stringResult[2]=$poi->getImages()[1];
                 return $stringResult;
             }
         } else {
