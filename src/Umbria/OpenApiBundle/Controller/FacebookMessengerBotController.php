@@ -81,8 +81,9 @@ class FacebookMessengerBotController extends BaseController
         }
         //--------------------------------------------------------------------------------------------------
         $url="https://www.apple.com/ac/structured-data/images/knowledge_graph_logo.png?201703170823";
-        $payload = array("recipient" => array("id" => $sender), "message" => array("attachment" => array("type"=>"image","payload"=>array("url"=>$url,"is_reusable"=>true,))));
-        //$payload = array("recipient" => array("id" => $sender), "message" => array("text" => $text));
+        $payload = array("recipient" => array("id" => $sender), "message" => array("text" => $text));
+        $payload_image = array("recipient" => array("id" => $sender), "message" => array("attachment" => array("type"=>"image","payload"=>array("url"=>$url,"is_reusable"=>true,))));
+
         //Tell cURL that we want to send a POST request.
         curl_setopt($ch, CURLOPT_POST, 1);
         //Attach our encoded JSON string to the POST fields.
@@ -186,12 +187,12 @@ class FacebookMessengerBotController extends BaseController
                 $key = array_rand($pois);
                 $poi = $pois[$key];
 
-                $stringResult[0] = $poi->getName() . "\nDescriptions : " . str_replace('&nbsp;', ' ', strip_tags($poi->getDescriptions())) . "\n" . $poi->getResourceOriginUrl();
+                $stringResult[0] = $poi->getName() . "\nDescriptions : " . str_replace('&nbsp;', ' ', strip_tags($poi->getDescriptions())) . "\n" . $poi->getResourceOriginUrl(). "\n" . $poi->getImages();
                 return $stringResult;
             } else {
                 $i = 0;
                 foreach ($pois as $poi) {
-                    $stringResult[$i] = $poi->getName() . "\nDescriptions : " . str_replace('&nbsp;', ' ', strip_tags($poi->getDescriptions())) . "\n" . $poi->getResourceOriginUrl();
+                    $stringResult[$i] = $poi->getName() . "\nDescriptions : " . str_replace('&nbsp;', ' ', strip_tags($poi->getDescriptions())) . "\n" . $poi->getResourceOriginUrl(). "\n" . getImages();
                     $i++;
                 }
                 return $stringResult;
