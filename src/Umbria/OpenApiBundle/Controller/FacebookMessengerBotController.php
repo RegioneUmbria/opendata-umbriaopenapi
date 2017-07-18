@@ -33,33 +33,70 @@ class FacebookMessengerBotController extends BaseController
         $message = $input['entry'][0]['messaging'][0]['message']['text'];
 
 //        $response = null;
-       if ($message == "more") {
-            $answer = ["attachment" => [
-                "type" => "template",
-                "payload" => [
-                    "template_type" => "button",
-                    "text" => "What do you want to do next?",
-                    "buttons" => [
-                        [
-                            "type" => "web_url",
-                            "url" => "https://umbriaopenapi-nigel.tk/",
-                            "title" => "Show Website"
-                        ],
-                        [
-                            "type" => "postback",
-                            "title" => "Start Chatting",
-                            "payload" => "USER_DEFINED_PAYLOAD"
+//       if ($message == "more") {
+//            $answer = ["attachment" => [
+//                "type" => "template",
+//                "payload" => [
+//                    "template_type" => "button",
+//                    "text" => "What do you want to do next?",
+//                    "buttons" => [
+//                        [
+//                            "type" => "web_url",
+//                            "url" => "https://umbriaopenapi-nigel.tk/",
+//                            "title" => "Show Website"
+//                        ],
+//                        [
+//                            "type" => "postback",
+//                            "title" => "Start Chatting",
+//                            "payload" => "USER_DEFINED_PAYLOAD"
+//                        ]
+//                    ]
+//                ]
+//            ]];
+//            $response = [
+//                'recipient' => ['id' => $sender],
+//                'message' => $answer
+//            ];
+//        }
+        switch($message) {
+            case "more":
+                $answer = ["attachment" => [
+                    "type" => "template",
+                    "payload" => [
+                        "template_type" => "button",
+                        "text" => "What do you want to do next?",
+                        "buttons" => [
+                            [
+                                "type" => "web_url",
+                                "url" => "https://umbriaopenapi-nigel.tk/",
+                                "title" => "Show Website"
+                            ],
+                            [
+                                "type" => "postback",
+                                "title" => "Start Chatting",
+                                "payload" => "USER_DEFINED_PAYLOAD"
+                            ]
                         ]
                     ]
-                ]
-            ]];
-            $response = [
-                'recipient' => ['id' => $sender],
-                'message' => $answer
-            ];
-          exit();
-        }
+                ]];
+                $response = [
+                    'recipient' => ['id' => $sender],
+                    'message' => $answer
+                ];
+            case "hi":
+                $answer = "Hello";
+                $response = [
+                    'recipient' => ['id' => $sender],
+                    'message' => ['text' => $answer]
+                ];
+            default:
+                $answer = "choose command";
+                $response = [
+                    'recipient' => ['id' => $sender],
+                    'message' => ['text' => $answer]
+                ];
 
+        }
 //API Url and Access Token, generate this token value on your Facebook App Page
         //$url = 'https://graph.facebook.com/v2.6/me/messages?access_token=EAADeS6lnyqoBALR7gyuSYGk5dYdkzj7r8wLFVS1AxLoAPZCg4NJG2KWOzjs8CIMp2VLApWDbPZC44cnnl0gz1e93oNeEKmZAD2qEk7khJlzVZCMGzVeVZAUOpCN5BXFInZBjJceXebMtRxqzbMjBFJddgEPNczS44qZBSH1urRurQZDZD';
         $url = 'https://graph.facebook.com/v2.6/me/messages?access_token=EAAEWX2RC5XoBABm2kTFBeACAB8LfaWC7UHbTU273UobfN1vNzoj8qj1idjIjHC0LJytwfzZCC4ZCJ8OqQcKOmN3K3xr4o1bwYmWYWZA0BCV7B2ZCUgJmse7M1SwwE7sCVz0MKpv2YA3U052rLuZCbwbbVBD8y90rzntENprWDUQZDZD';
