@@ -16,7 +16,7 @@ class FacebookMessengerBotController extends BaseController
     public function indexAction()
     {
 
-
+        $answer = null;
         $hubVerifyToken = 'testtoken';
         $accessToken = "EAAEWX2RC5XoBABm2kTFBeACAB8LfaWC7UHbTU273UobfN1vNzoj8qj1idjIjHC0LJytwfzZCC4ZCJ8OqQcKOmN3K3xr4o1bwYmWYWZA0BCV7B2ZCUgJmse7M1SwwE7sCVz0MKpv2YA3U052rLuZCbwbbVBD8y90rzntENprWDUQZDZD";
 // check token at setup
@@ -46,7 +46,7 @@ class FacebookMessengerBotController extends BaseController
         curl_setopt($ch, CURLOPT_POST, 1);
         curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($response));
         curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
-        if (!empty($input)) {
+        if (!empty($message)) {
             $result = curl_exec($ch);
         }
         curl_close($ch);
