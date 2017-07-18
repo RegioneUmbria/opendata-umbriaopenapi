@@ -170,14 +170,12 @@ class FacebookMessengerBotController extends BaseController
         /** @noinspection PhpInternalEntityUsedInspection */
         $bounds = $location->boundingCoordinates($radius, 'km');
 
-//        $pois = $eventRepo->findByPosition(
-//            $bounds[1]->getLatitudeInDegrees(),
-//            $bounds[0]->getLatitudeInDegrees(),
-//            $bounds[1]->getLongitudeInDegrees(),
-//            $bounds[0]->getLongitudeInDegrees());
+        $pois = $eventRepo->findByPosition(
+            $bounds[1]->getLatitudeInDegrees(),
+            $bounds[0]->getLatitudeInDegrees(),
+            $bounds[1]->getLongitudeInDegrees(),
+            $bounds[0]->getLongitudeInDegrees());
 
-        $todayDate=date("Y-m-d");
-        $pois = $eventRepo->findBydate($todayDate);
 
         if (sizeof($pois) > 0) {
             if ($rand) {
