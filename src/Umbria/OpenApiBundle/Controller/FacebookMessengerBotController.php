@@ -45,8 +45,7 @@ class FacebookMessengerBotController extends BaseController
 
         // --------------------------------------------@20170718--------------------------------------------
         $sendermessage = $message;
-        //$image = "@";
-        $image ="https://www.umbriatourism.it/documents/10184/6773061/cartina_sm_umbria_150dpi26.png/8b68a78b-6333-44e9-8966-aed87daed4e6?t=1423749275145";
+        $image = "@";
         $text = "Welcome to UmbiraOpenApi";
         if (isset($sendermessage)) {
             switch ($sendermessage) {
@@ -90,8 +89,6 @@ class FacebookMessengerBotController extends BaseController
         //--------------------------------------------------------------------------------------------------
 
         $payload = array("recipient" => array("id" => $sender), "message" => array("text" => $text));
-        $payload = array("recipient" => array("id" => $sender), "message" => array("attachment" => array("type" => "image", "payload" => array("url" => $image, "is_reusable" => true,))));
-
         //Tell cURL that we want to send a POST request.
         curl_setopt($ch, CURLOPT_POST, 1);
         //Attach our encoded JSON string to the POST fields.
@@ -107,7 +104,7 @@ class FacebookMessengerBotController extends BaseController
         $response->setContent(json_encode($payload));
 
         //For the Image Part ...
-       /* if (strcmp($image,"@")!=0) {
+       if (strcmp($image,"@")!=0) {
             $payload_image = array("recipient" => array("id" => $sender), "message" => array("attachment" => array("type" => "image", "payload" => array("url" => $image, "is_reusable" => true,))));
             //Attach our encoded JSON string to the POST fields.
             curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($payload_image));
@@ -116,7 +113,7 @@ class FacebookMessengerBotController extends BaseController
             $logger = $this->get('logger');
             $logger->info(json_encode($payload_image));
             $response->setContent(json_encode($payload_image));
-        }*/
+        }
 
         return $response;
     }
@@ -208,7 +205,8 @@ class FacebookMessengerBotController extends BaseController
                 $key = array_rand($pois);
                 $poi = $pois[$key];
                 $stringResult[0] = $poi->getName() . "\nDescriptions : " . str_replace('&nbsp;', ' ', strip_tags($poi->getDescriptions())) . "\n" . $poi->getResourceOriginUrl();
-                $stringResult[1]="\n" . $poi->getImages()[array_rand($poi->getImages())];
+                $stringResult[1]=$poi->getImages()[0];
+                $stringResult[2]=$poi->getImages()[1];
                 return $stringResult;
             }
         } else {
