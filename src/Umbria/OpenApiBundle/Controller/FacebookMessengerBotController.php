@@ -30,29 +30,33 @@ class FacebookMessengerBotController extends BaseController
         $message = $input['entry'][0]['messaging'][0]['message']['text'];
 
         $response = null;
-        if($message == "hi") {
-            $answer = "Ciao";
-            $response = [
-                'recipient' => ['id' => $sender],
-                'message' => ['text' => $answer]
-            ];
-            return $response;
-        }
-        else if($message == "website"){
+//        if($message == "hi") {
+//            $answer = "Ciao";
+//            $response = [
+//                'recipient' => ['id' => $sender],
+//                'message' => ['text' => $answer]
+//            ];
+//            return $response;
+//        }
+
+
+        if($message == "more") {
             $answer = ["attachment"=>[
                 "type"=>"template",
                 "payload"=>[
-                    "template_type"=>"generic",
-                    "elements"=>[
-                            "title"=>"Welcome to UmbriaDigitale\'s Website",
-                            "item_url"=>"https://umbriaopenapi-nigel.tk/",
-                            "image_url"=>"https://goo.gl/images/PLZ9Mg",
-                            "subtitle"=>"We\'ve got the right hat for everyone.",
-                            "button"=>[
-                                    "type"=>"web_url",
-                                    "url"=>"https://umbriaopenapi-nigel.tk/",
-                                    "title"=>"View Website"
-                            ]
+                    "template_type"=>"button",
+                    "text"=>"What do you want to do next?",
+                    "buttons"=>[
+                        [
+                            "type"=>"web_url",
+                            "url"=>"https://umbriaopenapi-nigel.tk/",
+                            "title"=>"Show Website"
+                        ],
+                        [
+                            "type"=>"postback",
+                            "title"=>"Start Chatting",
+                            "payload"=>"USER_DEFINED_PAYLOAD"
+                        ]
                     ]
                 ]
             ]];
@@ -60,7 +64,6 @@ class FacebookMessengerBotController extends BaseController
                 'recipient' => [ 'id' => $sender],
                 'message' => $answer
             ];
-            return $response;
         }
 //API Url and Access Token, generate this token value on your Facebook App Page
         //$url = 'https://graph.facebook.com/v2.6/me/messages?access_token=EAADeS6lnyqoBALR7gyuSYGk5dYdkzj7r8wLFVS1AxLoAPZCg4NJG2KWOzjs8CIMp2VLApWDbPZC44cnnl0gz1e93oNeEKmZAD2qEk7khJlzVZCMGzVeVZAUOpCN5BXFInZBjJceXebMtRxqzbMjBFJddgEPNczS44qZBSH1urRurQZDZD';
