@@ -24,7 +24,7 @@ class FacebookMessengerBotController extends BaseController
             $response->headers->set('Content-Type', 'text/plain');
             $response->sendHeaders();
             $response->setContent($challenge);
-//            return $response;
+            return $response;
         }
         $input = json_decode(file_get_contents('php://input'), true);
 // Get the Senders Graph ID
