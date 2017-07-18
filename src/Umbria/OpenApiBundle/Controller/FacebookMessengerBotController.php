@@ -39,8 +39,27 @@ class FacebookMessengerBotController extends BaseController
             // Make request to Time API
             ini_set('user_agent','Mozilla/4.0 (compatible; MSIE 6.0)');
             $result = file_get_contents("http://www.timeapi.org/utc/now?format=%25a%20%25b%20%25d%20%25I:%25M:%25S%20%25Y");
-            if($result != '') {
-                $message_to_reply = $result;
+            if($result == 'more') {
+//                $message_to_reply = $result;
+                $message_to_reply = ["attachment" => [
+                    "type" => "template",
+                    "payload" => [
+                        "template_type" => "button",
+                        "text" => "What do you want to do next?",
+                        "buttons" => [
+                            [
+                                "type" => "web_url",
+                                "url" => "https://umbriaopenapi-nigel.tk/",
+                                "title" => "Show Website"
+                            ],
+                            [
+                                "type" => "postback",
+                                "title" => "Start Chatting",
+                                "payload" => "USER_DEFINED_PAYLOAD"
+                            ]
+                        ]
+                    ]
+                ]];
             }
         } else {
             $message_to_reply = 'Huh! what do you mean?';
@@ -52,7 +71,7 @@ class FacebookMessengerBotController extends BaseController
 
 //Initiate cURL.
         $ch = curl_init($url);
-        
+
         //The JSON data.
         $jsonData = '{
     "recipient":{
