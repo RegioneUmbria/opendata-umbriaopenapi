@@ -140,14 +140,29 @@ class FacebookMessengerBotController extends BaseController
         $bounds = $location->boundingCoordinates($radius, 'km');
 
         $pois = $attractorRepo->findByPosition(
-                $bounds[1]->getLatitudeInDegrees(),
-                $bounds[0]->getLatitudeInDegrees(),
-                $bounds[1]->getLongitudeInDegrees(),
-                $bounds[0]->getLongitudeInDegrees());
+            $bounds[1]->getLatitudeInDegrees(),
+            $bounds[0]->getLatitudeInDegrees(),
+            $bounds[1]->getLongitudeInDegrees(),
+            $bounds[0]->getLongitudeInDegrees());
 
-        $stringResult = "Error";
-        return sizeof($pois);
+        if (sizeof($pois) > 0) {
+            if ($rand) {
+                $key = array_rand($pois);
 
+                $poi = $pois[$key];
+                $stringResult[0] = $poi->getName() . "\n" . str_replace('&nbsp;', ' ', strip_tags($poi->getShortDescription())) . "\n" . $poi->getResourceOriginUrl();
+                return $stringResult;
+            } else {
+                $i = 0;
+                foreach ($pois as $poi) {
+                    $stringResult[$i] = $poi->getName() . "\n" . str_replace('&nbsp;', ' ', strip_tags($poi->getShortDescription())) . "\n" . $poi->getResourceOriginUrl();
+                    $i++;
+                }
+                return $stringResult;
+            }
+        } else {
+            throw new Exception();
+        }
     }
 
 
