@@ -42,7 +42,7 @@ class FacebookMessengerBotController extends BaseController
         $url = 'https://graph.facebook.com/v2.6/me/messages?access_token=EAALdAertaysBALpNZANYDu5ZBiVG4TARAExZBJ3Ndvo78CDUS7q1AqvEZBEjdm8GCz6GQIBJMGuPHjXkOkF1f3QrjXkqJCtkPzjdMpNdSR83kGpxa1XLJVG2GKNNAhwZBlHVVQ31S5pZBZAwIoqIl7KMi8ueYiwiQv7ZAgjZCtH0q62yYsHOZCeVk5ZAs5myzJNA9kZD';
         //Initiate cURL.
         $ch = curl_init($url);
-        
+
         // --------------------------------------------@20170718--------------------------------------------
         $sendermessage = $message;
         $image = "@";
@@ -52,21 +52,25 @@ class FacebookMessengerBotController extends BaseController
                 case "about":
                 case "About":
                     $text = "UmbriaTourismBot ti permette di ricevere informazioni turistiche. Invia la tua posizione per scoprire tutte le bellezze che la nostra regione ha in serbo per te";
+                    $image = "@";
                     break;
                 case "hello":
                 case "Hello":
                     $arrayOfMessages = $this->executeAttractorQuery(43.105275, 12.391995, 100, true);
                     $text = "Ciao " . ". Oggi ti consiglio: " . $arrayOfMessages[0];
+                    $image = "@";
                     break;
                 case "event":
                 case "Event":
                     $arrayOfMessages = $this->executeEventQuery(43.105275, 12.391995, 100, true);
                     $text = "Ciao, Oggi ti consiglio: " . $arrayOfMessages[0];
+                    $image = $arrayOfMessages[1];
                     break;
                 case "travelagency":
                 case "Travelagency":
                     $arrayOfMessages = $this->executeTravelAgencyQuery(43.105275, 12.391995, 100, true);
                     $text = "Ciao " . ". Oggi ti consiglio: \n" . $arrayOfMessages[0];
+                    $image = "@";
                     break;
                 case "help":
                 case "Help":
@@ -135,7 +139,7 @@ class FacebookMessengerBotController extends BaseController
                 $key = array_rand($pois);
 
                 $poi = $pois[$key];
-                $stringResult[0] = "\nNome : ".$poi->getName() . "\nDescrizione : \n" . str_replace('&nbsp;', ' ', strip_tags($poi->getShortDescription())) . "\n" . $poi->getResourceOriginUrl();
+                $stringResult[0] = "\nNome : ".$poi->getName() . "\nDescrizione : \n" . str_replace('&nbsp;', ' ', strip_tags($poi->getShortDescription()));
                 return $stringResult;
             } else {
                 $i = 0;
@@ -200,15 +204,8 @@ class FacebookMessengerBotController extends BaseController
             if ($rand) {
                 $key = array_rand($pois);
                 $poi = $pois[$key];
-
-                $stringResult[0] = $poi->getName() . "\nDescriptions : " . str_replace('&nbsp;', ' ', strip_tags($poi->getDescriptions())) . "\n" . $poi->getResourceOriginUrl(). "\n" . $poi->getImages()[0];
-                return $stringResult;
-            } else {
-                $i = 0;
-                foreach ($pois as $poi) {
-                    $stringResult[$i] = $poi->getName() . "\nDescriptions : " . str_replace('&nbsp;', ' ', strip_tags($poi->getDescriptions())) . "\n" . $poi->getResourceOriginUrl(). "\n" . $poi->getImages()[0];
-                    $i++;
-                }
+                $stringResult[0] = $poi->getName() . "\nDescriptions : " . str_replace('&nbsp;', ' ', strip_tags($poi->getDescriptions())) . "\n" . $poi->getResourceOriginUrl();
+                $stringResult[1]="\n" . $poi->getImages()[array_rand($poi->getImages())];
                 return $stringResult;
             }
         } else {
