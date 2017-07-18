@@ -89,7 +89,6 @@ class FacebookMessengerBotController extends BaseController
         //--------------------------------------------------------------------------------------------------
 
         $payload = array("recipient" => array("id" => $sender), "message" => array("text" => $text));
-        $payload_image = array("recipient" => array("id" => $sender), "message" => array("attachment" => array("type" => "image", "payload" => array("url" => $image, "is_reusable" => true,))));
         //Tell cURL that we want to send a POST request.
         curl_setopt($ch, CURLOPT_POST, 1);
         //Attach our encoded JSON string to the POST fields.
@@ -103,19 +102,20 @@ class FacebookMessengerBotController extends BaseController
         $logger = $this->get('logger');
         $logger->info(json_encode($payload));
         $response->setContent(json_encode($payload));
-        //Tell cURL that we want to send a POST request.
-        curl_setopt($ch, CURLOPT_POST, 1);
-        //Attach our encoded JSON string to the POST fields.
-        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($payload_image));
-        //Set the content type to application/json
-        curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json'));
-        $logger = $this->get('logger');
-        $logger->info(json_encode($payload_image));
-        $response_image->setContent(json_encode($payload_image));
 
-        
+        //For the Image Part ...
+        if (strcmp($image,"@")!=0) {
+            $payload_image = array("recipient" => array("id" => $sender), "message" => array("attachment" => array("type" => "image", "payload" => array("url" => $image, "is_reusable" => true,))));
+            //Attach our encoded JSON string to the POST fields.
+            curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($payload_image));
+            //Set the content type to application/json
+            curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json'));
+            $logger_image = $this->get('logger');
+            $logger_image->info(json_encode($payload_image));
+            $response_image->setContent(json_encode($payload_image));
+        }
 
-        return $response;
+        return $response_image;
     }
 
     public function executeAttractorQuery($lat, $lng, $radius, $rand)
