@@ -58,7 +58,7 @@ class FacebookMessengerBotController extends BaseController
                 case "hello":
                 case "Hello":
                     $arrayOfMessages = $this->executeAttractorQuery(43.105275, 12.391995, 100, true);
-                    $text ="Ciao " .". Oggi ti consiglio: " . $arrayOfMessages[0];
+                    $text ="Ciao " .". Oggi ti consiglio: " . sizeof($arrayOfMessages);
 
 //                    $sql="SELECT name,shortDescription,resourceOriginUrl FROM tourism_attractor ORDER BY RAND()LIMIT 1";
 //                    $result = mysqli_query($conn,$sql);
@@ -148,14 +148,14 @@ class FacebookMessengerBotController extends BaseController
                 $key = array_rand($pois);
                 $poi = $pois[$key];
                 $stringResult[0] = $poi->getName() . "\n" . str_replace('&nbsp;', ' ', strip_tags($poi->getShortDescription())) . "\n" . $poi->getResourceOriginUrl();
-                return sizeof($pois);
+                return $stringResult;
             } else {
                 $i = 0;
                 foreach ($pois as $poi) {
                     $stringResult[$i] = $poi->getName() . "\n" . str_replace('&nbsp;', ' ', strip_tags($poi->getShortDescription())) . "\n" . $poi->getResourceOriginUrl();
                     $i++;
                 }
-                return sizeof($pois);
+                return $stringResult;
             }
         } else {
             throw new Exception();
