@@ -176,15 +176,7 @@ class FacebookMessengerBotController extends BaseController
             $bounds[1]->getLongitudeInDegrees(),
             $bounds[0]->getLongitudeInDegrees());
 
-        $todayDate=date("Y-m-d");
-
-        $query = $eventRepo->createQueryBuilder('a')
-            ->where('e.startDate > :todayDate')
-            ->setParameter('todayDate', $todayDate)
-            ->orderBy('e.startDate', 'ASC')
-            ->getQuery();
-
-        $pois = $query->getResult();
+       
 
 
         if (sizeof($pois) > 0) {
