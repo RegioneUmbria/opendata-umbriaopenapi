@@ -113,7 +113,7 @@ class FacebookMessengerBotController extends BaseController
         $logger_image = $this->get('logger');
         $logger_image->info(json_encode($payload_image));
         $response_image->setContent(json_encode($payload_image));
-        return;
+        return $response;
     }
 
     public function executeAttractorQuery($lat, $lng, $radius, $rand)
