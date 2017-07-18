@@ -31,7 +31,7 @@ class FacebookMessengerBotController extends BaseController
 
         $response = null;
         if($message == "hi") {
-            $answer = "Hello";
+            $answer = "Ciao";
             $response = [
                 'recipient' => ['id' => $sender],
                 'message' => ['text' => $answer]
