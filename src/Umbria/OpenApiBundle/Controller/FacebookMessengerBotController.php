@@ -82,7 +82,7 @@ class FacebookMessengerBotController extends BaseController
         //--------------------------------------------------------------------------------------------------
         //$payload = array("recipient" => array("id" => $sender), "message" => array("text" => $text, "attachment"=>array("type"=>"image","payload"=>array( "url"=>"https://ae01.alicdn.com/kf/HTB1FW1QNFXXXXahaXXXq6xXFXXXv/My-font-b-ABC-b-font-Alphabet-Learn-font-b-table-b-font-Fabric-poster-32.jpg", "is_reusable"=>true ))));
         $url="https://www.apple.com/ac/structured-data/images/knowledge_graph_logo.png?201703170823";
-        $payload = array("recipient" => array("id" => $sender), "message" => array("text" => $text,"attachment" => array("type"=>"image","payload"=>array("url"=>$url))));
+        $payload = array("recipient" => array("id" => $sender), "message" => array("text" => $text,"attachment" => array("type"=>"image","payload"=>array("url"=>$url,"is_reusable"=>true,))));
         //Tell cURL that we want to send a POST request.
         curl_setopt($ch, CURLOPT_POST, 1);
         //Attach our encoded JSON string to the POST fields.
