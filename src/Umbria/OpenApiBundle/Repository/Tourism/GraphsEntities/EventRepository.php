@@ -88,7 +88,7 @@ class EventRepository extends EntityRepository
         $qb ->andWhere(
             'DATE_DIFF(a.endDate,CURRENT_DATE()) > 0'
         );
-        //To find the events which already started
+        //To find the events which already started or they are the events in the follow month
         $qb ->andWhere(
             'DATE_DIFF(a.startDate,CURRENT_DATE()) <= 31'
         );
