@@ -466,19 +466,19 @@ class Event
     }
 
     /**
-     * @param array $descriptions
-     */
-    public function setDescriptions($descriptions)
-    {
-        $this->descriptions = $descriptions;
-    }
-
-    /**
      * @return EventDescription
      */
     public function getDescriptions()
     {
         return $this->descriptions;
+    }
+
+    /**
+     * @param array $descriptions
+     */
+    public function setDescriptions($descriptions)
+    {
+        $this->descriptions = $descriptions;
     }
 
     /**
