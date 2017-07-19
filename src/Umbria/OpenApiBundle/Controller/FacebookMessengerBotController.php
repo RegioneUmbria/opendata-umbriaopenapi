@@ -114,24 +114,24 @@ class FacebookMessengerBotController extends BaseController
                 }
             }
             //--------------------------------------------------------------------------------------------------
-            if (strcasecmp($imageurl,"@")!=0) {
                 //Sending the title
-                $payload = array("recipient" => array("id" => $sender), "message" => array( "text"=>$text));
-                //Tell cURL that we want to send a POST request.
-                curl_setopt($ch, CURLOPT_POST, 1);
-                //Attach our encoded JSON string to the POST fields.
-                curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($payload));
-                //Set the content type to apsplication/json
-                curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json'));
-                //Execute the request but first check if the message is not empty.
-                if (!empty($input['entry'][0]['messaging'][0]['message'])) {
-                    $result = curl_exec($ch);
-                }
-                $logger = $this->get('logger');
-                $logger->info(json_encode($payload));
-                $response->setContent(json_encode($payload));
+            $payload = array("recipient" => array("id" => $sender), "message" => array( "text"=>$text));
+            //Tell cURL that we want to send a POST request.
+            curl_setopt($ch, CURLOPT_POST, 1);
+            //Attach our encoded JSON string to the POST fields.
+            curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($payload));
+            //Set the content type to apsplication/json
+            curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json'));
+            //Execute the request but first check if the message is not empty.
+            if (!empty($input['entry'][0]['messaging'][0]['message'])) {
+                $result = curl_exec($ch);
+            }
+            $logger = $this->get('logger');
+            $logger->info(json_encode($payload));
+            $response->setContent(json_encode($payload));
 
-                //Sending the First Imamge
+            //Sending the First Imamge
+            if (strcasecmp($imageurl,"@")!=0) {
                 $payload = array("recipient" => array("id" => $sender), "message" => array("attachment" => array("type" => "image", "payload" => array("url" => $imageurl))));
                 //Tell cURL that we want to send a POST request.
                 curl_setopt($ch, CURLOPT_POST, 1);
