@@ -83,8 +83,12 @@ class FacebookMessengerBotController extends BaseController
                         $imageurl=$arrayOfMessages[1];
                         $subtitle=$arrayOfMessages[2];
                         $ResourceOriginUrl=$arrayOfMessages[3];
+                        $telephone=$arrayOfMessages[4];
+                        $fax=$arrayOfMessages[5];
+                        $email=$arrayOfMessages[6];
+                        $address=$arrayOfMessages[7];
                         $text = "Ciao, Oggi ti consiglio: " . "\n".$title;
-                        $content = "Descrizione : \n".$subtitle."\n".$ResourceOriginUrl;
+                        $content = "Descrizione : \n\tTelephone : ".$telephone."\n\tFax : ".$fax."\n\temail : ".$email."\n\tAddress".$address."\n".$ResourceOriginUrl;
                         break;
                     case "help":
                     case "Help":
@@ -95,7 +99,7 @@ class FacebookMessengerBotController extends BaseController
                         $text = "Lista comandi:\n";
                         $text .= "About - Informazioni sul bot\n";
                         $text .= "Event - Informazioni sul eventi\n";
-                        $text .= "Travelagency -  - Informazioni sul agenzia di viaggi\n";
+                        $text .= "Travelagency - Informazioni sul agenzia di viaggi\n";
                         $text .= "Hello - Suggerimenti\n";
                         $text .= "Help - Visualizzazione comandi disponibili\n";
                 }
@@ -248,8 +252,8 @@ class FacebookMessengerBotController extends BaseController
                 $stringResult[1] = $poi->getImages()[0];
                 $stringResult[2] = str_replace('&nbsp;', ' ', strip_tags($poi->getDescriptions())) ;
                 $stringResult[3] = $poi->getResourceOriginUrl();
-                $stringResult[4] = date_format($poi-> getStartDate(),"d/m");
-                $stringResult[5] = date_format($poi-> getEndDate(),"d/m");
+                $stringResult[4] = date_format($poi-> getStartDate(),"d-m-Y");
+                $stringResult[5] = date_format($poi-> getEndDate(),"d-m-Y");
                 return $stringResult;
             }
         } else {
@@ -280,6 +284,10 @@ class FacebookMessengerBotController extends BaseController
                 $stringResult[1] = "@";
                 $stringResult[2] = "";
                 $stringResult[3] = $poi->getResourceOriginUrl();
+                $stringResult[4] = $poi->getTelephone();
+                $stringResult[5] = $poi->getFax();
+                $stringResult[6] = $poi->getEmail();
+                $stringResult[7] = $poi->getAddress();
                 return $stringResult;
             }
         } else {
