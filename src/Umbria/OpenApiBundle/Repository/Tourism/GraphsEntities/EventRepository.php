@@ -90,7 +90,7 @@ class EventRepository extends EntityRepository
         );
         //To find the events which already started
         $qb ->andWhere(
-            'DATE_DIFF(a.startDate,DATE_ADD(CURRENT_DATE(),date_interval_create_from_date_string("31 days"))) <= 0'
+            'DATE_DIFF(a.startDate,CURRENT_DATE()) <= 31'
         );
         return $qb->getQuery()->getResult();
     }
