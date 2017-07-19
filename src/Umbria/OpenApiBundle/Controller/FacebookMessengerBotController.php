@@ -75,7 +75,7 @@ class FacebookMessengerBotController extends BaseController
                         $startDate=$arrayOfMessages[4];
                         $endDate=$arrayOfMessages[5];
                         $text = "Ciao, Oggi ti consiglio: " . "\n".$title;
-                        $content = "Durata : dal ".$startDate." al ".$endDate."\n"."Descrizione : \n";//.$subtitle.
+                        $content = "Durata : dal ".$startDate." al ".$endDate."\n"."Descrizione : ";//.$subtitle.
                         $content = $content."\n".$ResourceOriginUrl;
                         break;
                     case "travelagency":
