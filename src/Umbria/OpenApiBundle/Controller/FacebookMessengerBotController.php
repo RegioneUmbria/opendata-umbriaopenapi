@@ -87,7 +87,17 @@ class FacebookMessengerBotController extends BaseController
                         $fax=$arrayOfMessages[5];
                         $email=$arrayOfMessages[6];
                         $text = "Ciao, Oggi ti consiglio: " . "\n".$title;
-                        $content = "Descrizione : \n\tTelephone : ".$telephone."\n\tFax : ".$fax."\n\temail : ".$email."\n".$ResourceOriginUrl;
+                        $content = "Descrizione : \n";
+                        if (!is_null($telephone)){
+                            $content=$content."\tTelephone : ".$telephone;
+                        }
+                        if (!is_null($fax)){
+                            $content=$content."\n\tFax : ".$fax;
+                        }
+                        if (!is_null($email)){
+                            $content=$content."\n\temail : ".$email;
+                        }
+                        $content =$content."\n".$ResourceOriginUrl;
                         break;
                     case "help":
                     case "Help":
@@ -283,9 +293,9 @@ class FacebookMessengerBotController extends BaseController
                 $stringResult[1] = "@";
                 $stringResult[2] = "";
                 $stringResult[3] = $poi->getResourceOriginUrl();
-                $stringResult[4] = $poi->getTelephone();
-                $stringResult[5] = $poi->getFax();
-                $stringResult[6] = $poi->getEmail();
+                $stringResult[4] = $poi->getTelephone()[0];
+                $stringResult[5] = $poi->getFax()[0];
+                $stringResult[6] = $poi->getEmail()[0];
                 return $stringResult;
             }
         } else {
