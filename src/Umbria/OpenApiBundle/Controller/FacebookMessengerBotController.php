@@ -71,8 +71,10 @@ class FacebookMessengerBotController extends BaseController
                         $imageurl=$arrayOfMessages[1];
                         $subtitle=$arrayOfMessages[2];
                         $ResourceOriginUrl=$arrayOfMessages[3];
+                        $startDate=$arrayOfMessages[4];
+                        $endDate=$arrayOfMessages[5];
                         $text = "Ciao, Oggi ti consiglio: " . "\n".$title;
-                        $content = "Descrizione : \n".$subtitle."\n".$ResourceOriginUrl;
+                        $content = "Durata : dal ".$startDate." al ".$endDate."\n"."Descrizione : \n".$subtitle."\n".$ResourceOriginUrl;
                         break;
                     case "travelagency":
                     case "Travelagency":
@@ -245,7 +247,9 @@ class FacebookMessengerBotController extends BaseController
                 $stringResult[0] = $poi->getName();
                 $stringResult[1] = $poi->getImages()[0];
                 $stringResult[2] = str_replace('&nbsp;', ' ', strip_tags($poi->getDescriptions())) ;
-                $stringResult[3] = date_format($poi-> getStartDate(),"Y-m-d");
+                $stringResult[3] = $poi->getResourceOriginUrl();
+                $stringResult[4] = date_format($poi-> getStartDate(),"d/m");
+                $stringResult[5] = date_format($poi-> getEndDate(),"d/m");
                 return $stringResult;
             }
         } else {
