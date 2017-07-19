@@ -46,35 +46,43 @@ class FacebookMessengerBotController extends BaseController
         // --------------------------------------------@20170718--------------------------------------------
         $sendermessage = $message;
         if ($message) {
-            $image = "@";
+            $imageurl = "@";
             $text = "Welcome to UmbiraOpenApi";
             if (isset($sendermessage)) {
                 switch ($sendermessage) {
                     case "about":
                     case "About":
                         $text = "UmbriaTourismBot ti permette di ricevere informazioni turistiche. Invia la tua posizione per scoprire tutte le bellezze che la nostra regione ha in serbo per te";
-                        $imageurl = "@";
                         break;
                     case "hello":
                     case "Hello":
                         $arrayOfMessages = $this->executeAttractorQuery(43.105275, 12.391995, 100, true);
-                        $text = "Ciao " . ". Oggi ti consiglio: " . $arrayOfMessages[0];
-                        $imageurl = "@";
-                        break;
-                    case "event":
-                    case "Event":
-                        $arrayOfMessages = $this->executeEventQuery(43.105275, 12.391995, 100, true);
-                        $text = "Ciao, Oggi ti consiglio: " . $arrayOfMessages[0];
                         $title= $arrayOfMessages[0];
                         $imageurl=$arrayOfMessages[1];
                         $subtitle=$arrayOfMessages[2];
                         $ResourceOriginUrl=$arrayOfMessages[3];
+                        $text = "Ciao, Oggi ti consiglio: " . "\n".$title;
+                        $content = "Descrizione : \n".$subtitle."\n".$ResourceOriginUrl;
+                        break;
+                    case "event":
+                    case "Event":
+                        $arrayOfMessages = $this->executeEventQuery(43.105275, 12.391995, 100, true);
+                        $title= $arrayOfMessages[0];
+                        $imageurl=$arrayOfMessages[1];
+                        $subtitle=$arrayOfMessages[2];
+                        $ResourceOriginUrl=$arrayOfMessages[3];
+                        $text = "Ciao, Oggi ti consiglio: " . "\n".$title;
+                        $content = "Descrizione : \n".$subtitle."\n".$ResourceOriginUrl;
                         break;
                     case "travelagency":
                     case "Travelagency":
                         $arrayOfMessages = $this->executeTravelAgencyQuery(43.105275, 12.391995, 100, true);
-                        $text = "Ciao " . ". Oggi ti consiglio: \n" . $arrayOfMessages[0];
-                        $imageurl = "@";
+                        $title= $arrayOfMessages[0];
+                        $imageurl=$arrayOfMessages[1];
+                        $subtitle=$arrayOfMessages[2];
+                        $ResourceOriginUrl=$arrayOfMessages[3];
+                        $text = "Ciao, Oggi ti consiglio: " . "\n".$title;
+                        $content = "Descrizione : \n".$subtitle."\n".$ResourceOriginUrl;
                         break;
                     case "help":
                     case "Help":
@@ -92,6 +100,7 @@ class FacebookMessengerBotController extends BaseController
             }
             //--------------------------------------------------------------------------------------------------
 
+            //Sending the title
             $payload = array("recipient" => array("id" => $sender), "message" => array( "text"=>$text));
             //Tell cURL that we want to send a POST request.
             curl_setopt($ch, CURLOPT_POST, 1);
@@ -107,7 +116,26 @@ class FacebookMessengerBotController extends BaseController
             $logger->info(json_encode($payload));
             $response->setContent(json_encode($payload));
 
-            $payload = array("recipient" => array("id" => $sender), "message" => array( "attachment"=>array("type"=>"image","payload"=>array("url"=>$imageurl))));
+            //Sending the First Imamge
+            if (strcasecmp($imageurl,"@")!=0) {
+                $payload = array("recipient" => array("id" => $sender), "message" => array("attachment" => array("type" => "image", "payload" => array("url" => $imageurl))));
+                //Tell cURL that we want to send a POST request.
+                curl_setopt($ch, CURLOPT_POST, 1);
+                //Attach our encoded JSON string to the POST fields.
+                curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($payload));
+                //Set the content type to apsplication/json
+                curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json'));
+                //Execute the request but first check if the message is not empty.
+                if (!empty($input['entry'][0]['messaging'][0]['message'])) {
+                    $result = curl_exec($ch);
+                }
+                $logger = $this->get('logger');
+                $logger->info(json_encode($payload));
+                $response->setContent(json_encode($payload));
+            }
+
+            //Sending the Description and the ResourceOriginUrl
+            $payload = array("recipient" => array("id" => $sender), "message" => array( "text"=>$content));
             //Tell cURL that we want to send a POST request.
             curl_setopt($ch, CURLOPT_POST, 1);
             //Attach our encoded JSON string to the POST fields.
@@ -145,16 +173,12 @@ class FacebookMessengerBotController extends BaseController
         if (sizeof($pois) > 0) {
             if ($rand) {
                 $key = array_rand($pois);
-
                 $poi = $pois[$key];
-                $stringResult[0] = "\nNome : ".$poi->getName() . "\nDescrizione : \n" . str_replace('&nbsp;', ' ', strip_tags($poi->getShortDescription()));
-                return $stringResult;
-            } else {
-                $i = 0;
-                foreach ($pois as $poi) {
-                    $stringResult[$i] = "\nNome : ".$poi->getName() . "\nDescrizione : \n" . str_replace('&nbsp;', ' ', strip_tags($poi->getShortDescription())) . "\n" . $poi->getResourceOriginUrl();
-                    $i++;
-                }
+                //$stringResult[0] = $poi->getName() . "\nDescriptions : " . str_replace('&nbsp;', ' ', strip_tags($poi->getDescriptions())) . "\n" . $poi->getResourceOriginUrl();
+                $stringResult[0] = $poi->getName();
+                $stringResult[1] = $poi->getImages()[0];
+                $stringResult[2] = str_replace('&nbsp;', ' ', strip_tags($poi->getShortDescription())) ;
+                $stringResult[3] = $poi->getResourceOriginUrl();
                 return $stringResult;
             }
         } else {
@@ -162,7 +186,7 @@ class FacebookMessengerBotController extends BaseController
         }
     }
 
-    public function executeProposalQuery($lat, $lng, $radius)
+    public function executeProposalQuery($lat, $lng, $radius,$rand)
     {
         /**@var ProposalRepository $proposalRepo */
         $proposalRepo = $this->getDoctrine()->getRepository('UmbriaOpenApiBundle:Tourism\GraphsEntities\Proposal');
@@ -179,11 +203,16 @@ class FacebookMessengerBotController extends BaseController
             $bounds[0]->getLongitudeInDegrees());
 
         if (sizeof($pois) > 0) {
-            $key = array_rand($pois);
-            $poi = $pois[$key];
-            $stringResult[0] = $poi->getName() . "\n" . str_replace('&nbsp;', ' ', strip_tags($poi->getShortDescription())) . "\n" . $poi->getResourceOriginUrl();
-            return $stringResult;
-
+            if ($rand) {
+                $key = array_rand($pois);
+                $poi = $pois[$key];
+                //$stringResult[0] = $poi->getName() . "\nDescriptions : " . str_replace('&nbsp;', ' ', strip_tags($poi->getDescriptions())) . "\n" . $poi->getResourceOriginUrl();
+                $stringResult[0] = $poi->getName();
+                $stringResult[1] = $poi->getImages()[0];
+                $stringResult[2] = str_replace('&nbsp;', ' ', strip_tags($poi->getshortDescription())) ;
+                $stringResult[3] = $poi->getResourceOriginUrl();
+                return $stringResult;
+            }
         } else {
             throw new Exception();
         }
@@ -236,18 +265,19 @@ class FacebookMessengerBotController extends BaseController
         /** @noinspection PhpInternalEntityUsedInspection */
         $bounds = $location->boundingCoordinates($radius, 'km');
 
-        $pois = $travelagencyRepo->findByPosition(
-            $bounds[1]->getLatitudeInDegrees(),
-            $bounds[0]->getLatitudeInDegrees(),
-            $bounds[1]->getLongitudeInDegrees(),
-            $bounds[0]->getLongitudeInDegrees());
+        $pois = $travelagencyRepo->findByPosition($bounds[1]->getLatitudeInDegrees(), $bounds[0]->getLatitudeInDegrees(), $bounds[1]->getLongitudeInDegrees(), $bounds[0]->getLongitudeInDegrees());
 
         if (sizeof($pois) > 0) {
-            $key = array_rand($pois);
-            $poi = $pois[$key];
-            $stringResult[0] = $poi->getName() . "\n" . $poi->getResourceOriginUrl();
-            return $stringResult;
-
+            if ($rand) {
+                $key = array_rand($pois);
+                $poi = $pois[$key];
+                //$stringResult[0] = $poi->getName() . "\nDescriptions : " . str_replace('&nbsp;', ' ', strip_tags($poi->getDescriptions())) . "\n" . $poi->getResourceOriginUrl();
+                $stringResult[0] = $poi->getName();
+                $stringResult[1] = "@";
+                $stringResult[2] = "";
+                $stringResult[3] = $poi->getResourceOriginUrl();
+                return $stringResult;
+            }
         } else {
             throw new Exception();
         }
