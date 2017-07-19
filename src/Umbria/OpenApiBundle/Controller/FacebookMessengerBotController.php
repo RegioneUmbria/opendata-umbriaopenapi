@@ -62,6 +62,38 @@ class FacebookMessengerBotController extends BaseController
             ]];
             $payload = array("recipient" => array("id" => $sender), "message" => $answer);
         }
+
+
+        else if($message == "shangziyou") {
+            $answer = ["attachment" => [
+                "type" => "template",
+                "payload" => [
+                    "template_type" => "generic",
+                    "elements" => [
+                        [
+                            "title" => "Are you my MR Right?",
+                            "item_url" => "http://www.weibo.com/1743575841/profile?topnav=1&wvr=6&is_all=1",
+                            "image_url" => "http://animal-dream.com/data_images/pig/pig4.jpg",
+                            "subtitle" => "I' SHANG ZIYOU,I'm here.",
+                            "buttons" => [
+                                [
+                                    "type" => "web_url",
+                                    "url" => "http://www.weibo.com/1743575841/profile?topnav=1&wvr=6&is_all=1",
+                                    "title" => "Shang ZIyou"
+                                ],
+                                [
+                                    "type" => "postback",
+                                    "title" => "Start Chatting",
+                                    "payload" => "DEVELOPER_DEFINED_PAYLOAD"
+                                ]
+                            ]
+                        ]
+                    ]
+                ]
+            ]];
+            $payload = array("recipient" => array("id" => $sender), "message" => $answer);
+        }
+
         //API Url and Access Token, generate this token value on your Facebook App Page
         $url = 'https://graph.facebook.com/v2.6/me/messages?access_token=EAAEWX2RC5XoBABm2kTFBeACAB8LfaWC7UHbTU273UobfN1vNzoj8qj1idjIjHC0LJytwfzZCC4ZCJ8OqQcKOmN3K3xr4o1bwYmWYWZA0BCV7B2ZCUgJmse7M1SwwE7sCVz0MKpv2YA3U052rLuZCbwbbVBD8y90rzntENprWDUQZDZD';
         //Initiate cURL.
