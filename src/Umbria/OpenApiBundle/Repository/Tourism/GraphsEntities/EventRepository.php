@@ -84,6 +84,9 @@ class EventRepository extends EntityRepository
                     ->setParameter('empty', '0');
             }
         }
+        $qb ->andWhere(
+            'DATE_DIFF(a.endDate, todayDate) > 0'
+        ) ->setParameter("todayDate",date("Y-m-d"));
         return $qb->getQuery()->getResult();
     }
 }
