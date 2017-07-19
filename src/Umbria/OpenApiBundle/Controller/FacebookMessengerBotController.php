@@ -39,8 +39,9 @@ class FacebookMessengerBotController extends BaseController
             curl_close($ch0);
             $obj = json_decode($uname,true);
             $s2 =  implode(',',$obj);
-            $answer = "Hello";
-            $payload = array("recipient" => array("id" => $sender), "message" => array("text" => $answer. ' '.$s2));
+            echo $s2;
+//            $answer = "Hello";
+//            $payload = array("recipient" => array("id" => $sender), "message" => array("text" => $answer. ' '.$s2));
         }
         else if($message == "website") {
             $answer = ["attachment" => [
