@@ -50,7 +50,8 @@ class FacebookMessengerBotController extends BaseController
             $text = "Welcome to UmbiraOpenApi";
             if (isset($sendermessage)) {
                 switch ($sendermessage) {
-                    case "about"||"About":
+                    case "about":
+                    case "About":
                         $text = "UmbriaTourismBot ti permette di ricevere informazioni turistiche. Invia la tua posizione per scoprire tutte le bellezze che la nostra regione ha in serbo per te";
                         break;
                     case "hello":
@@ -77,8 +78,6 @@ class FacebookMessengerBotController extends BaseController
                         break;
                     case "travelagency":
                     case "Travelagency":
-                    case "Travel agency":
-                    case "travel agency":
                         $arrayOfMessages = $this->executeTravelAgencyQuery(43.105275, 12.391995, 100, true);
                         $title= $arrayOfMessages[0];
                         $imageurl=$arrayOfMessages[1];
