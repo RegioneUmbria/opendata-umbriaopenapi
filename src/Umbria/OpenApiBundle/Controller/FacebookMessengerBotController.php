@@ -60,10 +60,6 @@ class FacebookMessengerBotController extends BaseController
                     ]
                 ]
             ]];
-            $response = [
-                'recipient' => [ 'id' => $sender ],
-                'message' => $answer
-                ];
             $payload = array("recipient" => array("id" => $sender), "message" => $answer);
         }
         //API Url and Access Token, generate this token value on your Facebook App Page
