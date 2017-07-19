@@ -50,12 +50,10 @@ class FacebookMessengerBotController extends BaseController
             $text = "Welcome to UmbiraOpenApi";
             if (isset($sendermessage)) {
                 switch ($sendermessage) {
-                    case "about":
-                    case "About":
+                    case "about"||"About":
                         $text = "UmbriaTourismBot ti permette di ricevere informazioni turistiche. Invia la tua posizione per scoprire tutte le bellezze che la nostra regione ha in serbo per te";
                         break;
-                    case "hello":
-                    case "Hello":
+                    case "hello"||"Hello":
                         $arrayOfMessages = $this->executeAttractorQuery(43.105275, 12.391995, 100, true);
                         $title= $arrayOfMessages[0];
                         $imageurl=$arrayOfMessages[1];
@@ -64,8 +62,7 @@ class FacebookMessengerBotController extends BaseController
                         $text = "Ciao, Oggi ti consiglio: " . "\n".$title;
                         $content = "Descrizione : \n".$subtitle."\n".$ResourceOriginUrl;
                         break;
-                    case "event":
-                    case "Event":
+                    case "event"||"Event":
                         $arrayOfMessages = $this->executeEventQuery(43.105275, 12.391995, 100, true);
                         $title= $arrayOfMessages[0];
                         $imageurl=$arrayOfMessages[1];
@@ -76,7 +73,7 @@ class FacebookMessengerBotController extends BaseController
                         $text = "Ciao, Oggi ti consiglio: " . "\n".$title;
                         $content = "Durata : dal ".$startDate." al ".$endDate."\n"."Descrizione : \n".$subtitle."\n".$ResourceOriginUrl;
                         break;
-                    case "travelagency"||"Travelagency":
+                    case "travelagency"||"Travelagency"||"Travel agency"||"travel agency":
                         $arrayOfMessages = $this->executeTravelAgencyQuery(43.105275, 12.391995, 100, true);
                         $title= $arrayOfMessages[0];
                         $imageurl=$arrayOfMessages[1];
@@ -98,10 +95,8 @@ class FacebookMessengerBotController extends BaseController
                         }
                         $content =$content."\n".$ResourceOriginUrl;
                         break;
-                    case "help":
-                    case "Help":
-                    case "start":
-                    case "Start":
+                    case "help"||"Help":
+                    case "start"||"Start":
                         $text = "UmbriaTourismBot ti permette di ricevere informazioni turistiche. Invia la tua posizione per scoprire tutte le bellezze che la nostra regione ha in serbo per te\n\n";
                     default :
                         $text = "Lista comandi:\n";
