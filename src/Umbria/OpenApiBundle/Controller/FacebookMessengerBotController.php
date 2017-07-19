@@ -41,7 +41,7 @@ class FacebookMessengerBotController extends BaseController
             $s2 =  implode(',',$obj);
 //            $fname = $obj['first_name'];
             $answer = "Hello";
-            $payload = array("recipient" => array("id" => $sender), "message" => array("text" => $answer. ' '.$s2SS));
+            $payload = array("recipient" => array("id" => $sender), "message" => array("text" => $answer. ' '.$s2));
         }
         else if($message == "website") {
             $answer = ["attachment" => [
