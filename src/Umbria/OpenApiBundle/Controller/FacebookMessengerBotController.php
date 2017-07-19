@@ -76,8 +76,7 @@ class FacebookMessengerBotController extends BaseController
                         $text = "Ciao, Oggi ti consiglio: " . "\n".$title;
                         $content = "Durata : dal ".$startDate." al ".$endDate."\n"."Descrizione : \n".$subtitle."\n".$ResourceOriginUrl;
                         break;
-                    case "travelagency":
-                    case "Travelagency":
+                    case "travelagency"||"Travelagency":
                         $arrayOfMessages = $this->executeTravelAgencyQuery(43.105275, 12.391995, 100, true);
                         $title= $arrayOfMessages[0];
                         $imageurl=$arrayOfMessages[1];
@@ -116,23 +115,22 @@ class FacebookMessengerBotController extends BaseController
             //--------------------------------------------------------------------------------------------------
                 //Sending the title
             if (strcasecmp($imageurl,"@")!=0) {
-            $payload = array("recipient" => array("id" => $sender), "message" => array( "text"=>$text));
-            //Tell cURL that we want to send a POST request.
-            curl_setopt($ch, CURLOPT_POST, 1);
-            //Attach our encoded JSON string to the POST fields.
-            curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($payload));
-            //Set the content type to apsplication/json
-            curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json'));
-            //Execute the request but first check if the message is not empty.
-            if (!empty($input['entry'][0]['messaging'][0]['message'])) {
-                $result = curl_exec($ch);
-            }
-            $logger = $this->get('logger');
-            $logger->info(json_encode($payload));
-            $response->setContent(json_encode($payload));
+                $payload = array("recipient" => array("id" => $sender), "message" => array( "text"=>$text));
+                //Tell cURL that we want to send a POST request.
+                curl_setopt($ch, CURLOPT_POST, 1);
+                //Attach our encoded JSON string to the POST fields.
+                curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($payload));
+                //Set the content type to apsplication/json
+                curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json'));
+                //Execute the request but first check if the message is not empty.
+                if (!empty($input['entry'][0]['messaging'][0]['message'])) {
+                    $result = curl_exec($ch);
+                }
+                $logger = $this->get('logger');
+                $logger->info(json_encode($payload));
+                $response->setContent(json_encode($payload));
 
-            //Sending the First Imamge
-
+                //Sending the First Imamge
                 $payload = array("recipient" => array("id" => $sender), "message" => array("attachment" => array("type" => "image", "payload" => array("url" => $imageurl))));
                 //Tell cURL that we want to send a POST request.
                 curl_setopt($ch, CURLOPT_POST, 1);
@@ -154,8 +152,6 @@ class FacebookMessengerBotController extends BaseController
                 $payload = array("recipient" => array("id" => $sender), "message" => array( "text"=>$text."\n".$content));
             }
 
-            //Sending the Description and the ResourceOriginUrl
-            //$payload = array("recipient" => array("id" => $sender), "message" => array( "text"=>$content));
             //Tell cURL that we want to send a POST request.
             curl_setopt($ch, CURLOPT_POST, 1);
             //Attach our encoded JSON string to the POST fields.
