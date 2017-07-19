@@ -53,25 +53,28 @@ class FacebookMessengerBotController extends BaseController
                     case "about":
                     case "About":
                         $text = "UmbriaTourismBot ti permette di ricevere informazioni turistiche. Invia la tua posizione per scoprire tutte le bellezze che la nostra regione ha in serbo per te";
-                        $image = "@";
+                        $imageurl = "@";
                         break;
                     case "hello":
                     case "Hello":
                         $arrayOfMessages = $this->executeAttractorQuery(43.105275, 12.391995, 100, true);
                         $text = "Ciao " . ". Oggi ti consiglio: " . $arrayOfMessages[0];
-                        $image = "@";
+                        $imageurl = "@";
                         break;
                     case "event":
                     case "Event":
                         $arrayOfMessages = $this->executeEventQuery(43.105275, 12.391995, 100, true);
                         $text = "Ciao, Oggi ti consiglio: " . $arrayOfMessages[0];
-                        $image = $arrayOfMessages[1];
+                        $title= $arrayOfMessages[0];
+                        $imageurl=$arrayOfMessages[1];
+                        $subtitle=$arrayOfMessages[2];
+                        $ResourceOriginUrl=$arrayOfMessages[3];
                         break;
                     case "travelagency":
                     case "Travelagency":
                         $arrayOfMessages = $this->executeTravelAgencyQuery(43.105275, 12.391995, 100, true);
                         $text = "Ciao " . ". Oggi ti consiglio: \n" . $arrayOfMessages[0];
-                        $image = "@";
+                        $imageurl = "@";
                         break;
                     case "help":
                     case "Help":
@@ -89,24 +92,27 @@ class FacebookMessengerBotController extends BaseController
             }
             //--------------------------------------------------------------------------------------------------
 
-            $payload = '{
-  "recipient":{
-    "id":"USER_ID"
-  },
-  "message":{
-    "attachment":{
-      "type":"image",
-      "payload":{
-        "url":"https://petersapparel.com/img/shirt.png"
-      }
-    }
-  }
-} https://graph.facebook.com/v2.6/me/messages?access_token=EAALdAertaysBALpNZANYDu5ZBiVG4TARAExZBJ3Ndvo78CDUS7q1AqvEZBEjdm8GCz6GQIBJMGuPHjXkOkF1f3QrjXkqJCtkPzjdMpNdSR83kGpxa1XLJVG2GKNNAhwZBlHVVQ31S5pZBZAwIoqIl7KMi8ueYiwiQv7ZAgjZCtH0q62yYsHOZCeVk5ZAs5myzJNA9kZD';
+            $payload = array("recipient" => array("id" => $sender), "message" => array( "text"=>$text));
             //Tell cURL that we want to send a POST request.
             curl_setopt($ch, CURLOPT_POST, 1);
             //Attach our encoded JSON string to the POST fields.
             curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($payload));
-            //Set the content type to application/json
+            //Set the content type to apsplication/json
+            curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json'));
+            //Execute the request but first check if the message is not empty.
+            if (!empty($input['entry'][0]['messaging'][0]['message'])) {
+                $result = curl_exec($ch);
+            }
+            $logger = $this->get('logger');
+            $logger->info(json_encode($payload));
+            $response->setContent(json_encode($payload));
+
+            $payload = array("recipient" => array("id" => $sender), "message" => array( "attachment"=>array("type"=>"image","payload"=>array("url"=>$imageurl))));
+            //Tell cURL that we want to send a POST request.
+            curl_setopt($ch, CURLOPT_POST, 1);
+            //Attach our encoded JSON string to the POST fields.
+            curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($payload));
+            //Set the content type to apsplication/json
             curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json'));
             //Execute the request but first check if the message is not empty.
             if (!empty($input['entry'][0]['messaging'][0]['message'])) {
@@ -206,9 +212,11 @@ class FacebookMessengerBotController extends BaseController
             if ($rand) {
                 $key = array_rand($pois);
                 $poi = $pois[$key];
-                $stringResult[0] = $poi->getName() . "\nDescriptions : " . str_replace('&nbsp;', ' ', strip_tags($poi->getDescriptions())) . "\n" . $poi->getResourceOriginUrl();
-                $stringResult[1]=$poi->getImages()[0];
-                $stringResult[2]=$poi->getImages()[1];
+                //$stringResult[0] = $poi->getName() . "\nDescriptions : " . str_replace('&nbsp;', ' ', strip_tags($poi->getDescriptions())) . "\n" . $poi->getResourceOriginUrl();
+                $stringResult[0] = $poi->getName();
+                $stringResult[1] = $poi->getImages()[0];
+                $stringResult[2] = str_replace('&nbsp;', ' ', strip_tags($poi->getDescriptions())) ;
+                $stringResult[3] = $poi->getResourceOriginUrl();
                 return $stringResult;
             }
         } else {
