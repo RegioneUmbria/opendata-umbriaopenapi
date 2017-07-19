@@ -31,6 +31,7 @@ class FacebookMessengerBotController extends BaseController
         //set Message
         if ($message == "hi") {
             $answer = "Hello";
+            $payload = array("recipient" => array("id" => $sender), "message" => array("text" => $answer));
         }
         else if($message == "website") {
             $answer = ["attachment" => [
@@ -59,12 +60,17 @@ class FacebookMessengerBotController extends BaseController
                     ]
                 ]
             ]];
+            $response = [
+                'recipient' => [ 'id' => $sender ],
+                'message' => $answer
+                ];
+            $payload = array("recipient" => array("id" => $sender), "message" => $answer);
         }
         //API Url and Access Token, generate this token value on your Facebook App Page
         $url = 'https://graph.facebook.com/v2.6/me/messages?access_token=EAAEWX2RC5XoBABm2kTFBeACAB8LfaWC7UHbTU273UobfN1vNzoj8qj1idjIjHC0LJytwfzZCC4ZCJ8OqQcKOmN3K3xr4o1bwYmWYWZA0BCV7B2ZCUgJmse7M1SwwE7sCVz0MKpv2YA3U052rLuZCbwbbVBD8y90rzntENprWDUQZDZD';
         //Initiate cURL.
         $ch = curl_init($url);
-        $payload = array("recipient" => array("id" => $sender), "message" => array("text" => $answer));
+//        $payload = array("recipient" => array("id" => $sender), "message" => array("text" => $answer));
         //Tell cURL that we want to send a POST request.
         curl_setopt($ch, CURLOPT_POST, 1);
         //Attach our encoded JSON string to the POST fields.
