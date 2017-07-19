@@ -470,7 +470,7 @@ class Event
      */
     public function getDescriptions()
     {
-        return $this->descriptions;
+        return strval($this->descriptions);
     }
 
     /**
