@@ -470,7 +470,7 @@ class Event
      */
     public function getDescriptions()
     {
-        return "asdas";
+        return "@ ".$this->descriptions." @";
     }
 
     /**
