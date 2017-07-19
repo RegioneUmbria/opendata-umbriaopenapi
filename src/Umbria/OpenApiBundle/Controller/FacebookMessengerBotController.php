@@ -245,7 +245,7 @@ class FacebookMessengerBotController extends BaseController
                 $stringResult[0] = $poi->getName();
                 $stringResult[1] = $poi->getImages()[0];
                 $stringResult[2] = str_replace('&nbsp;', ' ', strip_tags($poi->getDescriptions())) ;
-                $stringResult[3] = $poi-> getStartDate();
+                $stringResult[3] = date_format($poi-> getStartDate(),"Y-m-d");
                 return $stringResult;
             }
         } else {
