@@ -28,7 +28,7 @@ class FacebookMessengerBotController extends BaseController
         $sender = $input['entry'][0]['messaging'][0]['sender']['id'];
         // Get the returned message
         $message = $input['entry'][0]['messaging'][0]['message']['text'];
-        $location = $input['entry'][0]['messaging'][0]['message']['attachments'][0]['payload']['coordinates'];
+//        $location = $input['entry'][0]['messaging'][0]['message']['attachments'][0]['payload']['coordinates'];
         //set Message
         if ($message == "hi") {
             $url0 = 'https://graph.facebook.com/v2.6/me/messages?access_token=EAAEWX2RC5XoBABm2kTFBeACAB8LfaWC7UHbTU273UobfN1vNzoj8qj1idjIjHC0LJytwfzZCC4ZCJ8OqQcKOmN3K3xr4o1bwYmWYWZA0BCV7B2ZCUgJmse7M1SwwE7sCVz0MKpv2YA3U052rLuZCbwbbVBD8y90rzntENprWDUQZDZD';
@@ -74,7 +74,7 @@ class FacebookMessengerBotController extends BaseController
             $payload = array("recipient" => array("id" => $sender), "message" => $answer);
         }
         //If input contains coordinates data, do something with it
-        else if (!empty($location)) {
+        else if ($message == "location") {
            //The Latitude of the location sent
             $userLat = $input['entry'][0]['messaging'][0]['message']['attachments'][0]['payload']['coordinates']['lat'];
            //The Longitude of the location sent
