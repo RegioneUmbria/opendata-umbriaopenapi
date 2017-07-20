@@ -48,7 +48,6 @@ class FacebookMessengerBotController extends BaseController
         $sendermessage = $message;
         if ($message) {
             $imageurl = "@";
-            $content = "@";
             $text = "Welcome to UmbiraOpenApi";
             if (isset($sendermessage)) {
                 switch ($sendermessage) {
