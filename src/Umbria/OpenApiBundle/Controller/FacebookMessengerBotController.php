@@ -83,6 +83,7 @@ class FacebookMessengerBotController extends BaseController
 //            $userCity = $json['results'][0]['address_components'][2]['long_name'];
 //            $locationinfo = var_dump($json);
             $payload = array("recipient" => array("id" => $sender), "message" => array("text" =>$json));
+            $payload = array("recipient" => array("id" => $sender), "message" => $json);
         }
 
         //API Url and Access Token, generate this token value on your Facebook App Page
