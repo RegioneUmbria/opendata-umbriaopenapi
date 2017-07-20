@@ -82,7 +82,7 @@ class FacebookMessengerBotController extends BaseController
             $json = json_decode($content, true);
             $userCity = $json['results'][0]['address_components'][2]['long_name'];
             var_dump($json);
-            $payload = array("recipient" => array("id" => $sender), "message" => array("text" =>$locationinfo));
+            $payload = array("recipient" => array("id" => $sender), "message" => array("text" =>$json));
 //            $payload = array("recipient" => array("id" => $sender), "message" => $locationinfo);
         }
 
