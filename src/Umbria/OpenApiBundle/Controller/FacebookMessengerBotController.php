@@ -45,116 +45,79 @@ class FacebookMessengerBotController extends BaseController
         //Initiate cURL.
         $ch = curl_init($url);
         // --------------------------------------------@20170718--------------------------------------------
-        if ($message) {
-            $imageurl = "@";
-            $text = "Welcome to UmbiraOpenApi";
-            if (isset($message)) {
-                switch ($message) {
-                    case "about":
-                    case "About":
-                        $text = "UmbriaTourismBot ti permette di ricevere informazioni turistiche. Invia la tua posizione per scoprire tutte le bellezze che la nostra regione ha in serbo per te";
-                        break;
-                    case "hello":
-                    case "Hello":
-                        $arrayOfMessages = $this->executeAttractorQuery(43.105275, 12.391995, 100, true);
-                        $title = $arrayOfMessages[0];
-                        $imageurl = $arrayOfMessages[1];
-                        $subtitle = $arrayOfMessages[2];
-                        $ResourceOriginUrl = $arrayOfMessages[3];
-                        $text = "Ciao, Oggi ti consiglio: " . "\n" . $title;
-                        $content = "Descrizione : \n" . $subtitle . "\n" . $ResourceOriginUrl;
-                        break;
-                    case "event":
-                    case "Event":
-                        $arrayOfMessages = $this->executeEventQuery(43.105275, 12.391995, 100, true);
-                        $title = $arrayOfMessages[0];
-                        $imageurl = $arrayOfMessages[1];
-                        $subtitle = $arrayOfMessages[2];
-                        $ResourceOriginUrl = $arrayOfMessages[3];
-                        $startDate = $arrayOfMessages[4];
-                        $endDate = $arrayOfMessages[5];
-                        $text = "Ciao, Oggi ti consiglio: " . "\n" . $title;
-                        $content = "Durata : dal " . $startDate . " al " . $endDate . "\n" . "Descrizione : ";//.$subtitle.
-                        $content = $content . "\n" . $ResourceOriginUrl;
-                        break;
-                    case "travelagency":
-                    case "Travelagency":
-                        $arrayOfMessages = $this->executeTravelAgencyQuery(43.105275, 12.391995, 100, true);
-                        $title = $arrayOfMessages[0];
-                        $imageurl = $arrayOfMessages[1];
-                        $subtitle = $arrayOfMessages[2];
-                        $ResourceOriginUrl = $arrayOfMessages[3];
-                        $telephone = $arrayOfMessages[4];
-                        $fax = $arrayOfMessages[5];
-                        $email = $arrayOfMessages[6];
-                        $text = "Ciao, Oggi ti consiglio: " . "\n" . $title;
-                        $content = "Descrizione : \n";
-                        if (!is_null($telephone)) {
-                            $content = $content . "\tTelephone : " . $telephone;
-                        }
-                        if (!is_null($fax)) {
-                            $content = $content . "\n\tFax : " . $fax;
-                        }
-                        if (!is_null($email)) {
-                            $content = $content . "\n\temail : " . $email;
-                        }
-                        $content = $content . "\n" . $ResourceOriginUrl;
-                        break;
-                    case "help":
-                    case "Help":
-                    case "start":
-                    case "Start":
-                        $text = "UmbriaTourismBot ti permette di ricevere informazioni turistiche. Invia la tua posizione per scoprire tutte le bellezze che la nostra regione ha in serbo per te\n\n";
-                        break;
-                    default :
-                        $text = "Lista comandi:\n";
-                        $text .= "About - Informazioni sul bot\n";
-                        $text .= "Event - Informazioni sul eventi\n";
-                        $text .= "Travelagency - Informazioni sul agenzia di viaggi\n";
-                        $text .= "Hello - Suggerimenti\n";
-                        $text .= "Help - Visualizzazione comandi disponibili\n";
-                }
+        $imageurl = "@";
+        $text = "Welcome to UmbiraOpenApi";
+        if (isset($message)) {
+            switch ($message) {
+                case "about":
+                case "About":
+                    $text = "UmbriaTourismBot ti permette di ricevere informazioni turistiche. Invia la tua posizione per scoprire tutte le bellezze che la nostra regione ha in serbo per te";
+                    break;
+                case "hello":
+                case "Hello":
+                    $arrayOfMessages = $this->executeAttractorQuery(43.105275, 12.391995, 100, true);
+                    $title = $arrayOfMessages[0];
+                    $imageurl = $arrayOfMessages[1];
+                    $subtitle = $arrayOfMessages[2];
+                    $ResourceOriginUrl = $arrayOfMessages[3];
+                    $text = "Ciao, Oggi ti consiglio: " . "\n" . $title;
+                    $content = "Descrizione : \n" . $subtitle . "\n" . $ResourceOriginUrl;
+                    break;
+                case "event":
+                case "Event":
+                    $arrayOfMessages = $this->executeEventQuery(43.105275, 12.391995, 100, true);
+                    $title = $arrayOfMessages[0];
+                    $imageurl = $arrayOfMessages[1];
+                    $subtitle = $arrayOfMessages[2];
+                    $ResourceOriginUrl = $arrayOfMessages[3];
+                    $startDate = $arrayOfMessages[4];
+                    $endDate = $arrayOfMessages[5];
+                    $text = "Ciao, Oggi ti consiglio: " . "\n" . $title;
+                    $content = "Durata : dal " . $startDate . " al " . $endDate . "\n" . "Descrizione : ";//.$subtitle.
+                    $content = $content . "\n" . $ResourceOriginUrl;
+                    break;
+                case "travelagency":
+                case "Travelagency":
+                    $arrayOfMessages = $this->executeTravelAgencyQuery(43.105275, 12.391995, 100, true);
+                    $title = $arrayOfMessages[0];
+                    $imageurl = $arrayOfMessages[1];
+                    $subtitle = $arrayOfMessages[2];
+                    $ResourceOriginUrl = $arrayOfMessages[3];
+                    $telephone = $arrayOfMessages[4];
+                    $fax = $arrayOfMessages[5];
+                    $email = $arrayOfMessages[6];
+                    $text = "Ciao, Oggi ti consiglio: " . "\n" . $title;
+                    $content = "Descrizione : \n";
+                    if (!is_null($telephone)) {
+                        $content = $content . "\tTelephone : " . $telephone;
+                    }
+                    if (!is_null($fax)) {
+                        $content = $content . "\n\tFax : " . $fax;
+                    }
+                    if (!is_null($email)) {
+                        $content = $content . "\n\temail : " . $email;
+                    }
+                    $content = $content . "\n" . $ResourceOriginUrl;
+                    break;
+                case "help":
+                case "Help":
+                case "start":
+                case "Start":
+                    $text = "UmbriaTourismBot ti permette di ricevere informazioni turistiche. Invia la tua posizione per scoprire tutte le bellezze che la nostra regione ha in serbo per te\n\n";
+                    break;
+                default :
+                    $text = "Lista comandi:\n";
+                    $text .= "About - Informazioni sul bot\n";
+                    $text .= "Event - Informazioni sul eventi\n";
+                    $text .= "Travelagency - Informazioni sul agenzia di viaggi\n";
+                    $text .= "Hello - Suggerimenti\n";
+                    $text .= "Help - Visualizzazione comandi disponibili\n";
             }
-            //--------------------------------------------------------------------------------------------------
-            //Sending the title
-            if (strcasecmp($imageurl, "@") != 0) {
-                $payload = array("recipient" => array("id" => $sender), "message" => array("text" => $text));
-                //Tell cURL that we want to send a POST request.
-                curl_setopt($ch, CURLOPT_POST, 1);
-                //Attach our encoded JSON string to the POST fields.
-                curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($payload));
-                //Set the content type to apsplication/json
-                curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json'));
-                //Execute the request but first check if the message is not empty.
-                if (!empty($input['entry'][0]['messaging'][0]['message'])) {
-                    $result = curl_exec($ch);
-                }
-                $logger = $this->get('logger');
-                $logger->info(json_encode($payload));
-                $response->setContent(json_encode($payload));
-
-                //Sending the First Imamge
-                $payload = array("recipient" => array("id" => $sender), "message" => array("attachment" => array("type" => "image", "payload" => array("url" => $imageurl))));
-                //Tell cURL that we want to send a POST request.
-                curl_setopt($ch, CURLOPT_POST, 1);
-                //Attach our encoded JSON string to the POST fields.
-                curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($payload));
-                //Set the content type to apsplication/json
-                curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json'));
-                //Execute the request but first check if the message is not empty.
-                if (!empty($input['entry'][0]['messaging'][0]['message'])) {
-                    $result = curl_exec($ch);
-                }
-                $logger = $this->get('logger');
-                $logger->info(json_encode($payload));
-                $response->setContent(json_encode($payload));
-                //Sending the Description and the ResourceOriginUrl
-                $payload = array("recipient" => array("id" => $sender), "message" => array("text" => $content));
-            } else {
-                //Sending the Description and the ResourceOriginUrl
-                $payload = array("recipient" => array("id" => $sender), "message" => array("text" => $text . "\n" . $content));
-            }
-
+        }
+        //--------------------------------------------------------------------------------------------------
+        //Sending the title
+        if (strcasecmp($imageurl, "@") != 0) {
+            $payload = array("recipient" => array("id" => $sender), "message" => array("text" => $text));
             //Tell cURL that we want to send a POST request.
             curl_setopt($ch, CURLOPT_POST, 1);
             //Attach our encoded JSON string to the POST fields.
@@ -169,15 +132,13 @@ class FacebookMessengerBotController extends BaseController
             $logger->info(json_encode($payload));
             $response->setContent(json_encode($payload));
 
-            return $response;
-
-        }else{
-            $payload = array("recipient" => array("id" => $sender), "message" => array("text" => "Benvenuto su UmbriaOpenAPI"));
+            //Sending the First Imamge
+            $payload = array("recipient" => array("id" => $sender), "message" => array("attachment" => array("type" => "image", "payload" => array("url" => $imageurl))));
             //Tell cURL that we want to send a POST request.
             curl_setopt($ch, CURLOPT_POST, 1);
             //Attach our encoded JSON string to the POST fields.
             curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($payload));
-            //Set the content type to application/json
+            //Set the content type to apsplication/json
             curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json'));
             //Execute the request but first check if the message is not empty.
             if (!empty($input['entry'][0]['messaging'][0]['message'])) {
@@ -186,8 +147,29 @@ class FacebookMessengerBotController extends BaseController
             $logger = $this->get('logger');
             $logger->info(json_encode($payload));
             $response->setContent(json_encode($payload));
-            return $response;
+            //Sending the Description and the ResourceOriginUrl
+            $payload = array("recipient" => array("id" => $sender), "message" => array("text" => $content));
+        } else {
+            //Sending the Description and the ResourceOriginUrl
+            $payload = array("recipient" => array("id" => $sender), "message" => array("text" => $text . "\n" . $content));
         }
+
+        //Tell cURL that we want to send a POST request.
+        curl_setopt($ch, CURLOPT_POST, 1);
+        //Attach our encoded JSON string to the POST fields.
+        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($payload));
+        //Set the content type to apsplication/json
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json'));
+        //Execute the request but first check if the message is not empty.
+        if (!empty($input['entry'][0]['messaging'][0]['message'])) {
+            $result = curl_exec($ch);
+        }
+        $logger = $this->get('logger');
+        $logger->info(json_encode($payload));
+        $response->setContent(json_encode($payload));
+
+        return $response;
+
     }
 
     public function executeAttractorQuery($lat, $lng, $radius, $rand)
