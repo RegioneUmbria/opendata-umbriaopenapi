@@ -23,6 +23,7 @@ class FacebookMessengerBotController extends BaseController
      */
     public function indexAction()
     {
+        try {
         $response = new Response();
         $response_image = new Response();
         $challenge = $_REQUEST['hub_challenge'];
@@ -48,7 +49,7 @@ class FacebookMessengerBotController extends BaseController
         // --------------------------------------------@20170718--------------------------------------------
         $sendermessage = $message;
         if ($message) {
-            try {
+
                 $imageurl = "@";
                 $text = "Welcome to UmbiraOpenApi";
                 if (isset($sendermessage)) {
@@ -174,24 +175,24 @@ class FacebookMessengerBotController extends BaseController
 
                 return $response;
 
-            } catch (Exception $e) {
-                $text= "Error";
-                $payload = array("recipient" => array("id" => $sender), "message" => array("text" => $text . "\n" . $text));
-                //Tell cURL that we want to send a POST request.
-                curl_setopt($ch, CURLOPT_POST, 1);
-                //Attach our encoded JSON string to the POST fields.
-                curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($payload));
-                //Set the content type to apsplication/json
-                curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json'));
-                //Execute the request but first check if the message is not empty.
-                if (!empty($input['entry'][0]['messaging'][0]['message'])) {
-                    $result = curl_exec($ch);
-                }
-                $logger = $this->get('logger');
-                $logger->info(json_encode($payload));
-                $response->setContent(json_encode($payload));
-                return $response;
             }
+        }catch (InvalidArgumentException $e) {
+            $text= "Error";
+            $payload = array("recipient" => array("id" => $sender), "message" => array("text" => $text . "\n" . $text));
+            //Tell cURL that we want to send a POST request.
+            curl_setopt($ch, CURLOPT_POST, 1);
+            //Attach our encoded JSON string to the POST fields.
+            curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($payload));
+            //Set the content type to apsplication/json
+            curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json'));
+            //Execute the request but first check if the message is not empty.
+            if (!empty($input['entry'][0]['messaging'][0]['message'])) {
+                $result = curl_exec($ch);
+            }
+            $logger = $this->get('logger');
+            $logger->info(json_encode($payload));
+            $response->setContent(json_encode($payload));
+            return $response;
         }
     }
 
