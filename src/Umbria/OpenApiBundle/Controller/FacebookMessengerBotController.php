@@ -108,6 +108,7 @@ class FacebookMessengerBotController extends BaseController
                     case "Start":
                         $text = "UmbriaTourismBot ti permette di ricevere informazioni turistiche. Invia la tua posizione per scoprire tutte le bellezze che la nostra regione ha in serbo per te\n\n";
                         break;
+                    case"":
                     default :
                         $text = "Lista comandi:\n";
                         $text .= "About - Informazioni sul bot\n";
