@@ -80,8 +80,7 @@ class FacebookMessengerBotController extends BaseController
             $url = 'https://maps.googleapis.com/maps/api/geocode/json?&latlng=' . $userLat . ',' . $userLong;
             $content = file_get_contents($url);
             $json = json_decode($content, true);
-//            $userCity = $json['results'][0]['address_components'][2]['long_name'];
-            $userCity = $json['results'][0]['address_components'][2];
+            $userCity = $json['results'][0]['address_components'][2]['long_name'];
             $payload = array("recipient" => array("id" => $sender), "message" => array("text" =>$userCity));
     }
 
