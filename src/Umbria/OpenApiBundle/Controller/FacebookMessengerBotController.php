@@ -44,9 +44,20 @@ class FacebookMessengerBotController extends BaseController
         //$url = 'https://graph.facebook.com/v2.6/me/messages?access_token=EAALdAertaysBAE4TLVKCiIsZBeJMhOl4dq0i7XT9QIy7Xfir87JIjC5ldDNulS8ZAhilEzoq7JZAmGTK1e3ZCPG9Lyv5EmJnrIekeJJD3eZB37M2TUaSoZAH53wdOuCJTdF2m6QZA5ZBoZB6RNPdXll5M6DGCEZAzqhwZCvVZCWRlAhtWK0xWd3ApwMXr5qf0ALo90UZD';
         //Initiate cURL.
         $ch = curl_init($url);
-        // --------------------------------------------@20170718--------------------------------------------
+
+        //====================================================Response of the Bot======================================================
+        //===========================Default Image=============================
         $imageurl = "@";
+        //===========================Default Response==========================
         $text = "Welcome to UmbiraOpenApi";
+        //========================The manuel of the Bot========================
+        $description ="Lista comandi:\n";
+        $description .= "About - Informazioni sul bot\n";
+        $description .= "Event - Informazioni sul eventi\n";
+        $description .= "Travelagency - Informazioni sul agenzia di viaggi\n";
+        $description .= "Hello - Suggerimenti\n";
+        $description .= "Help - Visualizzazione comandi disponibili\n";
+        //=====================================================================
         if (isset($message)) {
             switch ($message) {
                 case "about":
@@ -104,18 +115,15 @@ class FacebookMessengerBotController extends BaseController
                 case "start":
                 case "Start":
                     $text = "UmbriaTourismBot ti permette di ricevere informazioni turistiche. Invia la tua posizione per scoprire tutte le bellezze che la nostra regione ha in serbo per te\n\n";
+                    $text .=$description;
                     break;
                 default :
-                    $text = "Lista comandi:\n";
-                    $text .= "About - Informazioni sul bot\n";
-                    $text .= "Event - Informazioni sul eventi\n";
-                    $text .= "Travelagency - Informazioni sul agenzia di viaggi\n";
-                    $text .= "Hello - Suggerimenti\n";
-                    $text .= "Help - Visualizzazione comandi disponibili\n";
+                    $text = $description;
             }
         }
-        //--------------------------------------------------------------------------------------------------
-        //Sending the title
+        //============================================================================================================
+        //================================Sending the title and Image (if any) =======================================
+        //Check any image is included
         if (strcasecmp($imageurl, "@") != 0) {
             $payload = array("recipient" => array("id" => $sender), "message" => array("text" => $text));
             //Tell cURL that we want to send a POST request.
@@ -132,7 +140,7 @@ class FacebookMessengerBotController extends BaseController
             $logger->info(json_encode($payload));
             $response->setContent(json_encode($payload));
 
-            //Sending the First Imamge
+            //Sending the Imamge
             $payload = array("recipient" => array("id" => $sender), "message" => array("attachment" => array("type" => "image", "payload" => array("url" => $imageurl))));
             //Tell cURL that we want to send a POST request.
             curl_setopt($ch, CURLOPT_POST, 1);
@@ -147,13 +155,14 @@ class FacebookMessengerBotController extends BaseController
             $logger = $this->get('logger');
             $logger->info(json_encode($payload));
             $response->setContent(json_encode($payload));
-            //Sending the Description and the ResourceOriginUrl
+            //Set the Description and the ResourceOriginUrl
             $payload = array("recipient" => array("id" => $sender), "message" => array("text" => $content));
         } else {
-            //Sending the Description and the ResourceOriginUrl
+            //Set the Description and the ResourceOriginUrl
             $payload = array("recipient" => array("id" => $sender), "message" => array("text" => $text . "\n" . $content));
         }
-
+        //============================================================================================================
+        //======================Sending the Description and the ResourceOriginUrl (if any) ===========================
         //Tell cURL that we want to send a POST request.
         curl_setopt($ch, CURLOPT_POST, 1);
         //Attach our encoded JSON string to the POST fields.
@@ -167,7 +176,8 @@ class FacebookMessengerBotController extends BaseController
         $logger = $this->get('logger');
         $logger->info(json_encode($payload));
         $response->setContent(json_encode($payload));
-
+        //============================================================================================================
+        // =======================================================The End  ==========================================================
         return $response;
 
     }
