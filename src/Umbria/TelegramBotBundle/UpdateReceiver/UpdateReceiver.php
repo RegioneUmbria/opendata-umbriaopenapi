@@ -59,6 +59,15 @@ class UpdateReceiver implements UpdateReceiverInterface
                 for ($i = 0; $i < count($arrayOfMessages); $i++) {
                     $this->telegramBotApi->sendMessage($message['chat']['id'], $arrayOfMessages[$i]);
                 }
+                //sportfacility
+                for ($i = 0; $i < count($arrayOfMessages1); $i++) {
+                    $this->telegramBotApi->sendMessage($message['chat']['id'], $arrayOfMessages1[$i]);
+                }
+                $this->telegramBotApi->sendMessage($message['chat']['id'], "E i seguenti attrattori:");
+                $arrayOfMessages1 = $this->executeSportFacilityQuery($latitude, $longitude, 10, false);
+                for ($i = 0; $i < count($arrayOfMessages1); $i++) {
+                    $this->telegramBotApi->sendMessage($message['chat']['id'], $arrayOfMessages1[$i]);
+                }
 
 
             }
@@ -66,6 +75,10 @@ class UpdateReceiver implements UpdateReceiverInterface
                 $arrayOfMessages = $this->executeProposalQuery(43.105275, 12.391995, 100);
                 $text = "Ciao " . $message['from']['first_name'] . ". Sei troppo lontano dall'Umbria. Da noi puoi trovare: " . $arrayOfMessages[0];
                 $this->telegramBotApi->sendMessage($message['chat']['id'], $text);
+                //sportfacility
+                $arrayOfMessages1 = $this->executeProposalQuery(43.105275, 12.391995, 100);
+                $text1 = "Ciao " . $message['from']['first_name'] . ". Sei troppo lontano dall'Umbria. Da noi puoi trovare: " . $arrayOfMessages1[0];
+                $this->telegramBotApi->sendMessage($message['chat']['id'], $text1);
             }
 
         } else if (isset($message['text'])) {
@@ -132,6 +145,10 @@ class UpdateReceiver implements UpdateReceiverInterface
         } else {
             throw new Exception();
         }
+    }
+    public function executeSportFacilityQuery($lat, $lng, $radius, $rand)
+    {
+
     }
     public function executeProposalQuery($lat, $lng, $radius)
     {
