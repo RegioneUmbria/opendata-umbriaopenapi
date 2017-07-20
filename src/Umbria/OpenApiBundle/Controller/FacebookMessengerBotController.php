@@ -39,8 +39,8 @@ class FacebookMessengerBotController extends BaseController
         // Get the returned message
         $message = $input['entry'][0]['messaging'][0]['message']['text'];
         //API Url and Access Token, generate this token value on your Facebook App Page
-        //$url = 'https://graph.facebook.com/v2.6/me/messages?access_token=EAALdAertaysBALpNZANYDu5ZBiVG4TARAExZBJ3Ndvo78CDUS7q1AqvEZBEjdm8GCz6GQIBJMGuPHjXkOkF1f3QrjXkqJCtkPzjdMpNdSR83kGpxa1XLJVG2GKNNAhwZBlHVVQ31S5pZBZAwIoqIl7KMi8ueYiwiQv7ZAgjZCtH0q62yYsHOZCeVk5ZAs5myzJNA9kZD';
-        $url = 'https://graph.facebook.com/v2.6/me/messages?access_token=EAALdAertaysBAE4TLVKCiIsZBeJMhOl4dq0i7XT9QIy7Xfir87JIjC5ldDNulS8ZAhilEzoq7JZAmGTK1e3ZCPG9Lyv5EmJnrIekeJJD3eZB37M2TUaSoZAH53wdOuCJTdF2m6QZA5ZBoZB6RNPdXll5M6DGCEZAzqhwZCvVZCWRlAhtWK0xWd3ApwMXr5qf0ALo90UZD';
+        $url = 'https://graph.facebook.com/v2.6/me/messages?access_token=EAALdAertaysBALpNZANYDu5ZBiVG4TARAExZBJ3Ndvo78CDUS7q1AqvEZBEjdm8GCz6GQIBJMGuPHjXkOkF1f3QrjXkqJCtkPzjdMpNdSR83kGpxa1XLJVG2GKNNAhwZBlHVVQ31S5pZBZAwIoqIl7KMi8ueYiwiQv7ZAgjZCtH0q62yYsHOZCeVk5ZAs5myzJNA9kZD';
+        //$url = 'https://graph.facebook.com/v2.6/me/messages?access_token=EAALdAertaysBAE4TLVKCiIsZBeJMhOl4dq0i7XT9QIy7Xfir87JIjC5ldDNulS8ZAhilEzoq7JZAmGTK1e3ZCPG9Lyv5EmJnrIekeJJD3eZB37M2TUaSoZAH53wdOuCJTdF2m6QZA5ZBoZB6RNPdXll5M6DGCEZAzqhwZCvVZCWRlAhtWK0xWd3ApwMXr5qf0ALo90UZD';
         //Initiate cURL.
         $ch = curl_init($url);
 
