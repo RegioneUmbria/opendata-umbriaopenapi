@@ -81,10 +81,10 @@ class FacebookMessengerBotController extends BaseController
             $content = file_get_contents($url);
             $json = json_decode($content, true);
 //            $userCity = $json['results'][0]['address_components'][2]['long_name'];
-//            $locationinfo = var_dump($json);
-            $payload = array("recipient" => array("id" => $sender), "message" => array("text" =>$json));
+            $userCity = $json['results'][0]['address_components'];
+//            $payload = array("recipient" => array("id" => $sender), "message" => array("text" =>$json));
             $payload = array("recipient" => array("id" => $sender), "message" => $json);
-        }
+    }
 
         //API Url and Access Token, generate this token value on your Facebook App Page
         $url = 'https://graph.facebook.com/v2.6/me/messages?access_token=EAAEWX2RC5XoBABm2kTFBeACAB8LfaWC7UHbTU273UobfN1vNzoj8qj1idjIjHC0LJytwfzZCC4ZCJ8OqQcKOmN3K3xr4o1bwYmWYWZA0BCV7B2ZCUgJmse7M1SwwE7sCVz0MKpv2YA3U052rLuZCbwbbVBD8y90rzntENprWDUQZDZD';
