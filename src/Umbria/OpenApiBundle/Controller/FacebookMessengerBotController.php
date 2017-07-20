@@ -52,7 +52,7 @@ class FacebookMessengerBotController extends BaseController
             $text = "Welcome to UmbiraOpenApi";
             if (isset($sendermessage)) {
                 switch ($sendermessage) {
-                    /*case "about":
+                    case "about":
                     case "About":
                         $text = "UmbriaTourismBot ti permette di ricevere informazioni turistiche. Invia la tua posizione per scoprire tutte le bellezze che la nostra regione ha in serbo per te";
                         break;
@@ -106,7 +106,8 @@ class FacebookMessengerBotController extends BaseController
                     case "Help":
                     case "start":
                     case "Start":
-                        $text = "UmbriaTourismBot ti permette di ricevere informazioni turistiche. Invia la tua posizione per scoprire tutte le bellezze che la nostra regione ha in serbo per te\n\n";*/
+                        $text = "UmbriaTourismBot ti permette di ricevere informazioni turistiche. Invia la tua posizione per scoprire tutte le bellezze che la nostra regione ha in serbo per te\n\n";
+                        break;
                     default :
                         $text = "Lista comandi:\n";
                         $text .= "About - Informazioni sul bot\n";
