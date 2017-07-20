@@ -31,8 +31,8 @@ class FacebookMessengerBotController extends BaseController
 //        $location = $input['entry'][0]['messaging'][0]['message']['attachments'][0]['payload']['coordinates'];
         //set Message
         if ($message == "hi") {
-            $url0 = 'https://graph.facebook.com/v2.6/me/messages?access_token=EAAEWX2RC5XoBABm2kTFBeACAB8LfaWC7UHbTU273UobfN1vNzoj8qj1idjIjHC0LJytwfzZCC4ZCJ8OqQcKOmN3K3xr4o1bwYmWYWZA0BCV7B2ZCUgJmse7M1SwwE7sCVz0MKpv2YA3U052rLuZCbwbbVBD8y90rzntENprWDUQZDZD';
-            $ch0 = curl_init($url0);
+//            $url0 = 'https://graph.facebook.com/v2.6/me/messages?access_token=EAAEWX2RC5XoBABm2kTFBeACAB8LfaWC7UHbTU273UobfN1vNzoj8qj1idjIjHC0LJytwfzZCC4ZCJ8OqQcKOmN3K3xr4o1bwYmWYWZA0BCV7B2ZCUgJmse7M1SwwE7sCVz0MKpv2YA3U052rLuZCbwbbVBD8y90rzntENprWDUQZDZD';
+            $ch0 = curl_init();
             curl_setopt($ch0, CURLOPT_SSL_VERIFYPEER, false);
             curl_setopt($ch0, CURLOPT_RETURNTRANSFER, true);
             curl_setopt($ch0, CURLOPT_URL, 'https://graph.facebook.com/v2.6/<?php echo $sender; ?>?fields=first_name,last_name&access_token=EAAEWX2RC5XoBABm2kTFBeACAB8LfaWC7UHbTU273UobfN1vNzoj8qj1idjIjHC0LJytwfzZCC4ZCJ8OqQcKOmN3K3xr4o1bwYmWYWZA0BCV7B2ZCUgJmse7M1SwwE7sCVz0MKpv2YA3U052rLuZCbwbbVBD8y90rzntENprWDUQZDZD');
@@ -42,7 +42,7 @@ class FacebookMessengerBotController extends BaseController
 //            $s2 =  implode(',',$obj);
 //            $fname = $obj['first_name'];
             $answer = "Hello";
-            $payload = array("recipient" => array("id" => $sender), "message" => array("text" =>$answer.''. $obj['from']['first_name']));
+            $payload = array("recipient" => array("id" => $sender), "message" => array("text" =>$answer.''. $obj['first_name']));
         }
         else if($message == "website") {
             $answer = ["attachment" => [
