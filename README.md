@@ -36,6 +36,12 @@ Make sure to place the project under a directory your web server is configured t
 
 Check if your environment satisfy Symfony requirements ([see](https://symfony.com/doc/current/reference/requirements.html))
 
+Install project dependencies with [Composer](https://getcomposer.org/):
+
+```cd /var/www/opendata-umbriaopenapi``` 
+
+```composer install``` 
+
 Create the database:  
 
 ```php app/console doctrine:database:create``` 
