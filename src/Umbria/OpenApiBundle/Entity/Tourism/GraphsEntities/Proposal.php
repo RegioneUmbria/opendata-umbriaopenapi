@@ -67,7 +67,7 @@ class Proposal
     /**
      * @var string
      *
-     * @ORM\Column(name="shortDescription", type="string", length=255, nullable=true)
+     * @ORM\Column(name="shortDescription", type="string", length=1024, nullable=true)
      */
     private $shortDescription;
 
