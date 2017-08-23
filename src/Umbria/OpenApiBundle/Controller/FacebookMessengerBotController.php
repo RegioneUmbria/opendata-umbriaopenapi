@@ -56,7 +56,7 @@ class FacebookMessengerBotController extends BaseController
         $description .= "Info - Informazioni sul bot\n";
         $description .= "Eventi - Informazioni su eventi\n";
         $description .= "Agenzie di viaggio - Informazioni su agenzie di viaggi\n";
-        $description .= "Attrattori - Suggerimenti\n";
+        $description .= "Attrattori - Suggerimenti su attrattori da visitare\n";
         $description .= "Aiuto - Visualizzazione comandi disponibili\n";
         //=====================================================================
         if (isset($message)) {
