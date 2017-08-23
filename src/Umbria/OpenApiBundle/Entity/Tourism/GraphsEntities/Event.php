@@ -478,7 +478,7 @@ class Event
      */
     public function setDescriptions($descriptions)
     {
-        $this->descriptions = getText();
+        $this->descriptions = $descriptions;
     }
 
     /**
