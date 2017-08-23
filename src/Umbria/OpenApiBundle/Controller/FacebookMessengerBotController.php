@@ -50,13 +50,13 @@ class FacebookMessengerBotController extends BaseController
         //===========================Default Image=============================
         $imageurl = "@";
         //===========================Default Response==========================
-        $text = "Welcome to UmbiraOpenApi";
+        $text = "Benvenuto su UmbriaOpenApi";
         //========================The manuel of the Bot========================
         $description ="Lista comandi:\n";
         $description .= "Info - Informazioni sul bot\n";
         $description .= "Eventi - Informazioni su eventi\n";
         $description .= "Agenzie di viaggio - Informazioni su agenzie di viaggi\n";
-        $description .= "Ciao - Suggerimenti\n";
+        $description .= "Attrattori - Suggerimenti\n";
         $description .= "Aiuto - Visualizzazione comandi disponibili\n";
         //=====================================================================
         if (isset($message)) {
@@ -65,8 +65,8 @@ class FacebookMessengerBotController extends BaseController
                 case "Info":
                     $text = "UmbriaTourismBot ti permette di ricevere informazioni turistiche. Invia la tua posizione per scoprire tutte le bellezze che la nostra regione ha in serbo per te";
                     break;
-                case "ciao":
-                case "Ciao":
+                case "attrattori":
+                case "Attrattori":
                     $arrayOfMessages = $this->executeAttractorQuery(43.105275, 12.391995, 100, true);
                     $title = $arrayOfMessages[0];
                     $imageurl = $arrayOfMessages[1];
