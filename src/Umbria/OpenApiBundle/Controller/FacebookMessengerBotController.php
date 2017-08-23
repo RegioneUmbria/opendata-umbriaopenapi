@@ -41,7 +41,7 @@ class FacebookMessengerBotController extends BaseController
         // Get the returned message
         $message = $input['entry'][0]['messaging'][0]['message']['text'];
         //API Url and Access Token, generate this token value on your Facebook App Page
-        $url = 'https://graph.facebook.com/v2.6/me/messages?access_token=EAADeS6lnyqoBALR7gyuSYGk5dYdkzj7r8wLFVS1AxLoAPZCg4NJG2KWOzjs8CIMp2VLApWDbPZC44cnnl0gz1e93oNeEKmZAD2qEk7khJlzVZCMGzVeVZAUOpCN5BXFInZBjJceXebMtRxqzbMjBFJddgEPNczS44qZBSH1urRurQZDZD';
+        $url = 'https://graph.facebook.com/v2.6/me/messages?access_token={token}';
         //Initiate cURL.
         //Initiate cURL.
         $ch = curl_init($url);
