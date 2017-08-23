@@ -60,7 +60,7 @@ class Proposal
     /**
      * @var string
      *
-     * @ORM\Column(name="resourceOriginUrl", type="string", length=255, nullable=true)
+     * @ORM\Column(name="resourceOriginUrl", type="string", length=1024, nullable=true)
      */
     private $resourceOriginUrl;
 
