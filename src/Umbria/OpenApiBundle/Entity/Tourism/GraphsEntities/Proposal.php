@@ -124,7 +124,7 @@ class Proposal
     /**
      * @var string
      *
-     * @ORM\Column(name="comment", type="string", length=255, nullable=true)
+     * @ORM\Column(name="comment", type="string", length=1024, nullable=true)
      */
     private $comment;
 
