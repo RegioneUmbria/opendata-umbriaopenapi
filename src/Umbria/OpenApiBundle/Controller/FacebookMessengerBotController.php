@@ -53,20 +53,20 @@ class FacebookMessengerBotController extends BaseController
         $text = "Welcome to UmbiraOpenApi";
         //========================The manuel of the Bot========================
         $description ="Lista comandi:\n";
-        $description .= "About - Informazioni sul bot\n";
-        $description .= "Event - Informazioni sul eventi\n";
-        $description .= "Travelagency - Informazioni sul agenzia di viaggi\n";
-        $description .= "Hello - Suggerimenti\n";
-        $description .= "Help - Visualizzazione comandi disponibili\n";
+        $description .= "Info - Informazioni sul bot\n";
+        $description .= "Eventi - Informazioni su eventi\n";
+        $description .= "Agenzie di viaggio - Informazioni su agenzie di viaggi\n";
+        $description .= "Ciao - Suggerimenti\n";
+        $description .= "Aiuto - Visualizzazione comandi disponibili\n";
         //=====================================================================
         if (isset($message)) {
             switch ($message) {
-                case "about":
-                case "About":
+                case "info":
+                case "Info":
                     $text = "UmbriaTourismBot ti permette di ricevere informazioni turistiche. Invia la tua posizione per scoprire tutte le bellezze che la nostra regione ha in serbo per te";
                     break;
-                case "hello":
-                case "Hello":
+                case "ciao":
+                case "Ciao":
                     $arrayOfMessages = $this->executeAttractorQuery(43.105275, 12.391995, 100, true);
                     $title = $arrayOfMessages[0];
                     $imageurl = $arrayOfMessages[1];
@@ -75,8 +75,8 @@ class FacebookMessengerBotController extends BaseController
                     $text = "Ciao, Oggi ti consiglio: " . "\n" . $title;
                     $content = "Descrizione : \n" . $subtitle . "\n" . $ResourceOriginUrl;
                     break;
-                case "event":
-                case "Event":
+                case "eventi":
+                case "Eventi":
                     $arrayOfMessages = $this->executeEventQuery(43.105275, 12.391995, 100, true);
                     $title = $arrayOfMessages[0];
                     $imageurl = $arrayOfMessages[1];
@@ -88,8 +88,8 @@ class FacebookMessengerBotController extends BaseController
                     $content = "Durata : dal " . $startDate . " al " . $endDate . "\n" . "Descrizione : ";//.$subtitle.
                     $content = $content . "\n" . $ResourceOriginUrl;
                     break;
-                case "travelagency":
-                case "Travelagency":
+                case "agenzie di viaggio":
+                case "Agenzie di viaggio":
                     $arrayOfMessages = $this->executeTravelAgencyQuery(43.105275, 12.391995, 100, true);
                     $title = $arrayOfMessages[0];
                     $imageurl = $arrayOfMessages[1];
@@ -111,8 +111,8 @@ class FacebookMessengerBotController extends BaseController
                     }
                     $content = $content . "\n" . $ResourceOriginUrl;
                     break;
-                case "help":
-                case "Help":
+                case "aiuto":
+                case "Aiuto":
                 case "start":
                 case "Start":
                     $text = "UmbriaTourismBot ti permette di ricevere informazioni turistiche. Invia la tua posizione per scoprire tutte le bellezze che la nostra regione ha in serbo per te\n\n";
