@@ -20,7 +20,7 @@ class Event
     /**
      * @var string
      *
-     * @ORM\Column(name="uri", type="string", length=1024, unique=true)
+     * @ORM\Column(name="uri", type="string", length=255, unique=true)
      *
      * @ORM\Id
      */
