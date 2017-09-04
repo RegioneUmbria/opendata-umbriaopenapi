@@ -60,6 +60,65 @@ Download RDF data and persist them performing a PUT request at ```http://localho
 Consult routing rule *umbria_open_api_entities_update* [here](src/Umbria/OpenApiBundle/Resources/config/routing.yml) to better understand how to call this service. Note it may be a large time consuming task.
 This service can be called periodically (with cronjobs) to ensure data is always up to date.
 
+## Run with Docker
+Install [Docker](https://docs.docker.com/engine/installation/#server) and [Docker Compose](https://docs.docker.com/compose/install/#master-builds).
+
+**NOTE** if you'are using docker with Windows:
+ * place this project in a folder under your user's home directory
+ * set the environment variable COMPOSE_CONVERT_WINDOWS_PATHS to 1 and restart docker.
+ 
+From the root directory of this project create and run the environment:
+
+``` docker-compose build```
+
+``` docker-compose up -d```
+
+Check if docker containers are running:
+
+``` docker ps```
+
+The output should be something like this:
+
+```
+CONTAINER ID        IMAGE                       COMMAND                  CREATED             STATUS              PORTS                    NAMES
+0bf0274d3f59        opendataumbriaopenapi_php   "docker-php-entryp..."   21 minutes ago      Up 21 minutes       0.0.0.0:8888->80/tcp     php
+a56f13aed63b        mysql                       "docker-entrypoint..."   About an hour ago   Up 21 minutes       0.0.0.0:3306->3306/tcp   mysql
+```
+
+Run bash in docker web service container:
+
+``` docker exec -it web bash```
+
+Install project dependencies, create database and set logs and cache folders permissions:
+
+``` 
+composer install
+``` 
+
+``` 
+mkdir app/logs 
+mkdir app/cache 
+chown www-data:www-data app/logs/
+chown www-data:www-data app/cache/
+
+php app/console doctrine:database:create
+php app/console doctrine:schema:update --force
+
+exit
+```
+
+Map in your local host the IP address of the host where you installed docker with the umbriaopenapi.it domain. 
+Example (docker running on your local host):
+``` 
+# /etc/hosts
+
+127.0.0.1 umbriaopenapi.it
+``` 
+
+Open your browser and check if everything works at [http://umbriaopenapi.it:8888](http://umbriaopenapi.it:8888)
+
+It's possible to debug on 9000 port with a Xdubug client.
+
 ## Built With
 
 * PHP language with [Symfony framework version 2.8.11](https://symfony.com/).
