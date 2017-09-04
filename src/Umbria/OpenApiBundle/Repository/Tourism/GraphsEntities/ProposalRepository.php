@@ -44,7 +44,7 @@ class ProposalRepository extends EntityRepository
      * @param $latMax
      * @param $latMin
      * @param $lngMax
-     * @param $lngMin
+     * @param $lngMinz
      * @return Proposal[]
      */
     public function findByPosition($latMax, $latMin, $lngMax, $lngMin)

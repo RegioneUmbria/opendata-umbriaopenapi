@@ -20,7 +20,7 @@ class Event
     /**
      * @var string
      *
-     * @ORM\Column(name="uri", type="string", length=255, unique=true)
+     * @ORM\Column(name="uri", type="string", length=1024, unique=true)
      *
      * @ORM\Id
      */
@@ -59,7 +59,7 @@ class Event
     /**
      * @var string
      *
-     * @ORM\Column(name="resourceOriginUrl", type="string", length=255, nullable=true)
+     * @ORM\Column(name="resourceOriginUrl", type="string", length=1024, nullable=true)
      */
     private $resourceOriginUrl;
 
@@ -87,7 +87,7 @@ class Event
     /**
      * @var string
      *
-     * @ORM\Column(name="municipality", type="string", length=255, nullable=true)
+     * @ORM\Column(name="municipality", type="string", length=1024, nullable=true)
      */
     private $municipality;
 
@@ -116,7 +116,7 @@ class Event
     /**
      * @var string
      *
-     * @ORM\Column(name="comment", type="string", length=255, nullable=true)
+     * @ORM\Column(name="comment", type="string", length=1024, nullable=true)
      */
     private $comment;
 

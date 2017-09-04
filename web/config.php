@@ -28,8 +28,8 @@ $symfonyRequirements = new SymfonyRequirements();
 
 $majorProblems = $symfonyRequirements->getFailedRequirements();
 $minorProblems = $symfonyRequirements->getFailedRecommendations();
-$hasMajorProblems = (bool)count($majorProblems);
-$hasMinorProblems = (bool)count($minorProblems);
+$hasMajorProblems = (bool) count($majorProblems);
+$hasMinorProblems = (bool) count($minorProblems);
 
 ?>
 <!DOCTYPE html>
@@ -98,7 +98,6 @@ $hasMinorProblems = (bool)count($minorProblems);
             .sf-reset .ko {
                 background-color: #d66;
             }
-
             .sf-reset p.help {
                 padding: 12px 16px;
                 word-break: break-word;
@@ -176,8 +175,7 @@ $hasMinorProblems = (bool)count($minorProblems);
                         <?php if ($hasMinorProblems): ?>
                             <h2>Recommendations</h2>
                             <p>
-                                <?php if ($hasMajorProblems): ?>Additionally, to<?php else: ?>To<?php endif; ?> enhance
-                                your Symfony experience,
+                                <?php if ($hasMajorProblems): ?>Additionally, to<?php else: ?>To<?php endif; ?> enhance your Symfony experience,
                                 it’s recommended that you fix the following:
                             </p>
                             <ol>
