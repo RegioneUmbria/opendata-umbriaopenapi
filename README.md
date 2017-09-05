@@ -66,6 +66,7 @@ Install [Docker](https://docs.docker.com/engine/installation/#server) and [Docke
 **NOTE** if you'are using docker with Windows:
  * place this project in a folder under your user's home directory
  * set the environment variable COMPOSE_CONVERT_WINDOWS_PATHS to 1 and restart docker.
+ * get docker virtual machine IP address with ```docker-machine ls```
  
 From the root directory of this project create and run the environment:
 
@@ -89,21 +90,10 @@ Run bash in docker web service container:
 
 ``` docker exec -it web bash```
 
-Install project dependencies, create database and set logs and cache folders permissions:
+Install project dependencies and create database with:
 
 ``` 
-composer install
-``` 
-
-``` 
-mkdir app/logs 
-mkdir app/cache 
-chown www-data:www-data app/logs/
-chown www-data:www-data app/cache/
-
-php app/console doctrine:database:create
-php app/console doctrine:schema:update --force
-
+./install.sh
 exit
 ```
 
@@ -115,7 +105,7 @@ Example (docker running on your local host):
 127.0.0.1 umbriaopenapi.it
 ``` 
 
-Open your browser and check if everything works at [http://umbriaopenapi.it:8888](http://umbriaopenapi.it:8888)
+Open your browser and check if it works at [http://umbriaopenapi.it](http://umbriaopenapi.it)
 
 It's possible to debug on 9000 port with a Xdubug client.
 

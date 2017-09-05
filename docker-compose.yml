@@ -9,8 +9,8 @@ services:
       MYSQL_PASSWORD:
     ports:
       - 3306:3306
-    expose:
-      - 3306
+    volumes:
+      - ./.database:/var/lib/mysql
   web:
     build: ./
     depends_on:
@@ -19,7 +19,7 @@ services:
     links:
       - mysql:mysql
     ports:
-      - 8888:80
+      - 80:80
     volumes:
       - .:/var/www/html/
 
