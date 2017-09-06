@@ -5,10 +5,6 @@ COPY docker/php.ini /usr/local/etc/php/
 COPY ./ /var/www/html/
 
 WORKDIR /var/www/html/
-RUN mkdir -p app/logs
-RUN mkdir -p app/cache
-RUN chown www-data:www-data app/logs/
-RUN chown www-data:www-data app/cache/
 
 COPY ./docker/umbriaopenapi_vh.conf /etc/apache2/sites-available/
 RUN a2ensite umbriaopenapi_vh.conf
