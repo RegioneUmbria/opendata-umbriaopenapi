@@ -160,14 +160,8 @@ class FacebookMessengerBotController extends BaseController
         $logger = $this->get('logger');
         $logger->info($payload);
         //Execute the request but first check if the message is not empty.
-        if (!empty($input['entry'][0]['messaging'][0]['message'])) {
-            $result = curl_exec($ch);
-            $logger->info("Risposta facebook: " . $result);
-        } else {
-            $logger->error("Messaggio vuoto");
-        }
-
-        $logger->info(json_encode($payload));
+        $result = curl_exec($ch);
+        $logger->info("Risposta facebook: " . $result);
         $response->setContent($response->setContent . json_encode($payload));
     }
 
