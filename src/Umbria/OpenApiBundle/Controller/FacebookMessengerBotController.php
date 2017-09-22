@@ -35,6 +35,8 @@ class FacebookMessengerBotController extends BaseController
         }
 
         $input = json_decode(file_get_contents('php://input'), true);
+        $logger = $this->get('logger');
+        $logger->info(file_get_contents('php://input'));
         // Get the Senders Graph ID
         $sender = $input['entry'][0]['messaging'][0]['sender']['id'];
         // Get the returned message
@@ -44,17 +46,17 @@ class FacebookMessengerBotController extends BaseController
         (strpos($message, "eventi") != false ||
             strpos($message, "evento") != false
         )
-            ? array_push($keywords, "events") : null;
+            ? $keywords[] = "events" : null;
 
         (strpos($message, "attrattori") != false ||
             strpos($message, "attrattore") != false ||
             strpos($message, "attrazione") != false ||
             strpos($message, "attrazioni") != false
-        ) ? array_push($keywords, "attractors") : null;
+        ) ? $keywords[] = "attractors" : null;
 
         (strpos($message, "agenzie") != false ||
             strpos($message, "agenzia") != false
-        ) ? array_push($keywords, "travel_agencies") : null;
+        ) ? $keywords[] = "travel_agencies" : null;
 
 
         //====================================================Response of the Bot=======================================================
@@ -71,6 +73,7 @@ class FacebookMessengerBotController extends BaseController
         //=====================================================================
 
         if (count($keywords) > 0) {
+            $logger->info("ciao");
             foreach ($keywords as $keyword) {
                 $arrayOfMessages = array();
 
