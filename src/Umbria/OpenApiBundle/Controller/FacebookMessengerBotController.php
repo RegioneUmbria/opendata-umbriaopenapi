@@ -156,11 +156,15 @@ class FacebookMessengerBotController extends BaseController
         curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($payload));
         //Set the content type to apsplication/json
         curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json'));
+        $logger = $this->get('logger');
         //Execute the request but first check if the message is not empty.
         if (!empty($input['entry'][0]['messaging'][0]['message'])) {
             $result = curl_exec($ch);
+            $logger->info("Risposta facebook: " . $result);
+        } else {
+            $logger->error("Messaggio vuoto");
         }
-        $logger = $this->get('logger');
+
         $logger->info(json_encode($payload));
         $response->setContent($response->setContent . json_encode($payload));
     }
