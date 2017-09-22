@@ -144,6 +144,7 @@ class FacebookMessengerBotController extends BaseController
 
     private function sendResponse($payload, $response)
     {
+
         //API Url and Access Token, generate this token value on your Facebook App Page
         $url = 'https://graph.facebook.com/v2.6/me/messages?access_token=EAAcCBY9TweYBAP1NeBu61c7hxv6wa1yMYFGSKJ3YffbatUJ6eYy2jIn7deTc4noiIGubZAJA8UhEa5keA3fGohlMO8SZBWpDfnHEQvaYi4YfO8ErW9p6YBZBkUXqIrSMjdXTuhfiiW42Jb3EWmqWTHXyLhVuYFeuQZAqzgVNEAZDZD';
 
@@ -157,6 +158,7 @@ class FacebookMessengerBotController extends BaseController
         //Set the content type to apsplication/json
         curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json'));
         $logger = $this->get('logger');
+        $logger->info($payload);
         //Execute the request but first check if the message is not empty.
         if (!empty($input['entry'][0]['messaging'][0]['message'])) {
             $result = curl_exec($ch);
