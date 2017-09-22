@@ -1,0 +1,28 @@
+version: "2"
+services:
+  mysql:
+    image: mysql
+    container_name: mysql
+    environment:
+      MYSQL_ALLOW_EMPTY_PASSWORD: 1
+      MYSQL_USER: root
+      MYSQL_PASSWORD:
+    ports:
+      - 3306:3306
+    volumes:
+      - ./.database:/var/lib/mysql
+  web:
+    build: ./
+    depends_on:
+      - mysql
+    container_name: web
+    links:
+      - mysql:mysql
+    ports:
+      - 80:80
+    volumes:
+      - .:/var/www/html/
+
+
+
+
