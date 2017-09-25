@@ -58,7 +58,7 @@ class FacebookMessengerBotController extends BaseController
         $messageEntity->setTimeStamp($input['entry'][0]['time']);
         $em = $this->getDoctrine()->getManager();
         $em->persist($messageEntity);
-        $this->em->flush();
+        $em->flush();
         $logger->info("Salvato: " . json_decode(json_encode($messageEntity)));
 
         $keywords = array();
