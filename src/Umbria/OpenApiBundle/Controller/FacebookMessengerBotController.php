@@ -45,20 +45,29 @@ class FacebookMessengerBotController extends BaseController
 
         $keywords = array();
         if (isset($nlpEntities["events"])) {
-            if ($nlpEntities["events"]["confidence"] > 0.9) {
-                $keywords[] = ["events"];
+            foreach ($nlpEntities["events"] as $eventEntity) {
+                if ($eventEntity["confidence"] > 0.9) {
+                    $keywords[] = ["events"];
+                    break;
+                }
             }
         }
 
         if (isset($nlpEntities["attractors"])) {
-            if ($nlpEntities["attractors"]["confidence"] > 0.9) {
-                $keywords[] = ["attractors"];
+            foreach ($nlpEntities["attractors"] as $attractorEntity) {
+                if ($attractorEntity["confidence"] > 0.9) {
+                    $keywords[] = ["attractors"];
+                    break;
+                }
             }
         }
 
         if (isset($nlpEntities["travel_agencies"])) {
-            if ($nlpEntities["travel_agencies"]["confidence"] > 0.9) {
-                $keywords[] = ["travel_agencies"];
+            foreach ($nlpEntities["travel_agencies"] as $taEntity) {
+                if ($taEntity["confidence"] > 0.9) {
+                    $keywords[] = ["travel_agencies"];
+                    break;
+                }
             }
         }
         $logger->info(json_encode($keywords));
