@@ -74,7 +74,6 @@ class FacebookMessengerBotController extends BaseController
         //=====================================================================
 
         if (count($keywords) > 0) {
-            $logger->info("ciao");
             foreach ($keywords as $keyword) {
                 $arrayOfMessages = array();
 
@@ -162,10 +161,10 @@ class FacebookMessengerBotController extends BaseController
         //Set the content type to apsplication/json
         curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json'));
         $logger = $this->get('logger');
-        $logger->info($payload);
+        $logger->info("Payload: " . json_encode($payload));
         //Execute the request but first check if the message is not empty.
         $result = curl_exec($ch);
-        $logger->info("Risposta facebook: " . $result);
+        $logger->info("Risposta facebook: " . json_encode($result));
         $response->setContent($response->setContent . json_encode($payload));
     }
 
