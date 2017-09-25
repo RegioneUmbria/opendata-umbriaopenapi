@@ -44,19 +44,19 @@ class FacebookMessengerBotController extends BaseController
         $nlpEntities = $input['entry'][0]['messaging'][0]['message']['nlp']['entities'];
 
         $keywords = array();
-        if (!isNull($nlpEntities["events"])) {
+        if (isset($nlpEntities["events"])) {
             if ($nlpEntities["events"]["confidence"] > 0.9) {
                 $keywords[] = ["events"];
             }
         }
 
-        if (!isNull($nlpEntities["attractors"])) {
+        if (isset($nlpEntities["attractors"])) {
             if ($nlpEntities["attractors"]["confidence"] > 0.9) {
                 $keywords[] = ["attractors"];
             }
         }
 
-        if (!isNull($nlpEntities["travel_agencies"])) {
+        if (isset($nlpEntities["travel_agencies"])) {
             if ($nlpEntities["travel_agencies"]["confidence"] > 0.9) {
                 $keywords[] = ["travel_agencies"];
             }
