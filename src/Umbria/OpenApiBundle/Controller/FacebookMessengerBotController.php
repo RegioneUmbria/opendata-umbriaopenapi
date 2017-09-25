@@ -24,23 +24,6 @@ use JMS\DiExtraBundle\Annotation as DI;
 class FacebookMessengerBotController extends BaseController
 {
 
-    /**@var FacebookUsersMessagesRepository messagesRepo */
-    private $messagesRepo;
-    /**@var EntityManager em */
-    private $em;
-
-    /**
-     * @DI\InjectParams({
-     *      "em" = @DI\Inject("doctrine.orm.entity_manager"),
-     * })
-     * @param $em EntityManager
-     */
-    public function __construct($em)
-    {
-        parent::__construct($em);
-        $this->em = $em;
-        $this->messagesRepo = $em->getRepository('UmbriaOpenApiBundle:FacebookUsersMessages');
-    }
 
     /**
      * @return Response
@@ -73,7 +56,8 @@ class FacebookMessengerBotController extends BaseController
         $messageEntity->setEntry($input['entry']);
         $messageEntity->setSender($sender);
         $messageEntity->setTimeStamp($input['entry'][0]['time']);
-        $this->em->persist($messageEntity);
+        $em = $this->getDoctrine()->getManager();
+        $em->persist($messageEntity);
         $logger->info("Salvato: " . json_encode($messageEntity));
 
         $keywords = array();
