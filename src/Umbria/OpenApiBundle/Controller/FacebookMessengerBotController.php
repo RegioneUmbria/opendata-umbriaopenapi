@@ -41,26 +41,22 @@ class FacebookMessengerBotController extends BaseController
         $sender = $input['entry'][0]['messaging'][0]['sender']['id'];
         // Get the returned message
         $message = strtolower($input['entry'][0]['messaging'][0]['message']['text']);
-        $bo = (strpos($message, "attrattori") != false ||
-            strpos($message, "attrattore") != false ||
-            strpos($message, "attrazione") != false ||
-            strpos($message, "attrazioni") != false
-        ) ? "ci stanno" : "non ci stanno";
-        $logger->info("Messaggio " . $bo);
         $keywords = array();
-        (strpos($message, "eventi") != false ||
-            strpos($message, "evento") != false
+
+
+        (strpos($message, "eventi") !== false ||
+            strpos($message, "evento") !== false
         )
             ? $keywords[] = "events" : null;
 
-        (strpos($message, "attrattori") != false ||
-            strpos($message, "attrattore") != false ||
-            strpos($message, "attrazione") != false ||
-            strpos($message, "attrazioni") != false
+        (strpos($message, "attrattori") !== false ||
+            strpos($message, "attrattore") !== false ||
+            strpos($message, "attrazione") !== false ||
+            strpos($message, "attrazioni") !== false
         ) ? $keywords[] = "attractors" : null;
 
-        (strpos($message, "agenzie") != false ||
-            strpos($message, "agenzia") != false
+        (strpos($message, "agenzie") !== false ||
+            strpos($message, "agenzia") !== false
         ) ? $keywords[] = "travel_agencies" : null;
         $logger->info(json_encode($keywords));
 
