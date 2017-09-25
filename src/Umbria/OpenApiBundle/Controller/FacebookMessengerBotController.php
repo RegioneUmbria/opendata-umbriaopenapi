@@ -41,23 +41,14 @@ class FacebookMessengerBotController extends BaseController
         $sender = $input['entry'][0]['messaging'][0]['sender']['id'];
         // Get the returned message
         $message = strtolower($input['entry'][0]['messaging'][0]['message']['text']);
+        $nlpIntents = $input['entry'][0]['messaging'][0]['message']['nlp']['entities']['intent'];
+
         $keywords = array();
-
-
-        (strpos($message, "eventi") !== false ||
-            strpos($message, "evento") !== false
-        )
-            ? $keywords[] = "events" : null;
-
-        (strpos($message, "attrattori") !== false ||
-            strpos($message, "attrattore") !== false ||
-            strpos($message, "attrazione") !== false ||
-            strpos($message, "attrazioni") !== false
-        ) ? $keywords[] = "attractors" : null;
-
-        (strpos($message, "agenzie") !== false ||
-            strpos($message, "agenzia") !== false
-        ) ? $keywords[] = "travel_agencies" : null;
+        foreach ($nlpIntents as $nlpIntent) {
+            if ($nlpIntent["confidence"] == 1) {
+                $keywords[] = $nlpIntent["value"];
+            }
+        }
         $logger->info(json_encode($keywords));
 
         //====================================================Response of the Bot=======================================================
