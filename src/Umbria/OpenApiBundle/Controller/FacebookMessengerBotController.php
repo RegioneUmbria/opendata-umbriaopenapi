@@ -47,7 +47,7 @@ class FacebookMessengerBotController extends BaseController
         if (isset($nlpEntities["events"])) {
             foreach ($nlpEntities["events"] as $eventEntity) {
                 if ($eventEntity["confidence"] > 0.9) {
-                    $keywords[] = ["events"];
+                    $keywords[] = "events";
                     break;
                 }
             }
@@ -56,7 +56,7 @@ class FacebookMessengerBotController extends BaseController
         if (isset($nlpEntities["attractors"])) {
             foreach ($nlpEntities["attractors"] as $attractorEntity) {
                 if ($attractorEntity["confidence"] > 0.9) {
-                    $keywords[] = ["attractors"];
+                    $keywords[] = "attractors";
                     break;
                 }
             }
@@ -65,7 +65,7 @@ class FacebookMessengerBotController extends BaseController
         if (isset($nlpEntities["travel_agencies"])) {
             foreach ($nlpEntities["travel_agencies"] as $taEntity) {
                 if ($taEntity["confidence"] > 0.9) {
-                    $keywords[] = ["travel_agencies"];
+                    $keywords[] = "travel_agencies";
                     break;
                 }
             }
@@ -95,6 +95,7 @@ class FacebookMessengerBotController extends BaseController
                 $telephone = null;
                 $fax = null;
                 $email = null;
+
                 switch ($keyword) {
                     case "attractors":
                         $arrayOfMessages = $this->executeAttractorQuery(43.105275, 12.391995, 100, true);
