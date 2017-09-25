@@ -7,21 +7,45 @@
  */
 
 namespace Umbria\OpenApiBundle\Controller;
+
+use Doctrine\ORM\EntityManager;
 use Symfony\Component\HttpFoundation\Response;
 use Umbria\OpenApiBundle\Controller\Tourism\BaseController;
 use AnthonyMartin\GeoLocation\GeoLocation;
 use Symfony\Component\Config\Definition\Exception\Exception;
+use Umbria\OpenApiBundle\Entity\FacebookUsersMessages;
+use Umbria\OpenApiBundle\Repository\FacebookUsersMessagesRepository;
 use Umbria\OpenApiBundle\Repository\Tourism\GraphsEntities\AttractorRepository;
 use Umbria\OpenApiBundle\Repository\Tourism\GraphsEntities\ProposalRepository;
 use Umbria\OpenApiBundle\Repository\Tourism\GraphsEntities\EventRepository;
 use Umbria\OpenApiBundle\Repository\Tourism\GraphsEntities\TravelAgencyRepository;
 class FacebookMessengerBotController extends BaseController
 {
+
+    /**@var FacebookUsersMessagesRepository messagesRepo */
+    private $messagesRepo;
+    /**@var EntityManager em */
+    private $em;
+
+    /**
+     * @DI\InjectParams({
+     *      "em" = @DI\Inject("doctrine.orm.entity_manager"),
+     * })
+     * @param $em EntityManager
+     */
+    public function __construct($em)
+    {
+        parent::__construct($em);
+        $this->em = $em;
+        $this->messagesRepo = $em->getRepository('UmbriaOpenApiBundle:FacebookUsersMessages');
+    }
+
     /**
      * @return Response
      */
     public function indexAction()
     {
+
         $response = new Response();
         $challenge = $_REQUEST['hub_challenge'];
         $verify_token = $_REQUEST['hub_verify_token'];
@@ -42,6 +66,13 @@ class FacebookMessengerBotController extends BaseController
         // Get the returned message
         $message = strtolower($input['entry'][0]['messaging'][0]['message']['text']);
         $nlpEntities = $input['entry'][0]['messaging'][0]['message']['nlp']['entities'];
+
+        $messageEntity = new FacebookUsersMessages();
+        $messageEntity->setEntry($input['entry']);
+        $messageEntity->setSender($sender);
+        $messageEntity->setTimeStamp($input['entry'][0]['time']);
+        $this->em->persist($messageEntity);
+        $logger->info("Salvato: " . json_encode($messageEntity));
 
         $keywords = array();
         if (isset($nlpEntities["events"])) {
