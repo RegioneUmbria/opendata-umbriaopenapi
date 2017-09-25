@@ -57,7 +57,7 @@ class FacebookMessengerBotController extends BaseController
         (strpos($message, "agenzie") != false ||
             strpos($message, "agenzia") != false
         ) ? $keywords[] = "travel_agencies" : null;
-
+        $logger->info(json_encode($keywords));
 
         //====================================================Response of the Bot=======================================================
         //===========================Default Image=============================
