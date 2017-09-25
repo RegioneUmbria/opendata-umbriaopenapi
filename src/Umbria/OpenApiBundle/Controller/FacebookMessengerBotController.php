@@ -41,7 +41,7 @@ class FacebookMessengerBotController extends BaseController
         $sender = $input['entry'][0]['messaging'][0]['sender']['id'];
         // Get the returned message
         $message = strtolower($input['entry'][0]['messaging'][0]['message']['text']);
-
+        $logger->info("Messaggio" . $message);
         $keywords = array();
         (strpos($message, "eventi") != false ||
             strpos($message, "evento") != false
