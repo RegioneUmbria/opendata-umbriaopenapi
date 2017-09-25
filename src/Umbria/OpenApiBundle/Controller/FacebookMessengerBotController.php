@@ -19,6 +19,8 @@ use Umbria\OpenApiBundle\Repository\Tourism\GraphsEntities\AttractorRepository;
 use Umbria\OpenApiBundle\Repository\Tourism\GraphsEntities\ProposalRepository;
 use Umbria\OpenApiBundle\Repository\Tourism\GraphsEntities\EventRepository;
 use Umbria\OpenApiBundle\Repository\Tourism\GraphsEntities\TravelAgencyRepository;
+use JMS\DiExtraBundle\Annotation as DI;
+
 class FacebookMessengerBotController extends BaseController
 {
 
