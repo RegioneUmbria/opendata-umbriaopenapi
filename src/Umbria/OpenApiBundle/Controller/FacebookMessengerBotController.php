@@ -202,7 +202,8 @@ class FacebookMessengerBotController extends BaseController
             }
         } else {
             if ($isGreeting || $isUserFirstMessageToday) {
-                $payload = array("recipient" => array("id" => $sender), "message" => array("text" => $welcomeText . $descriptionText), "quick_replies" => array(array("content_type" => "location")));
+                $payload = array("recipient" => array("id" => $sender), "message" => array("text" => $welcomeText . $descriptionText, "quick_replies" => array(array("content_type" => "location"))));
+
             } else {
                 if (!$refuseRepeatOldQuery) {
                     $text = $notRecognizedQuery . $descriptionText;
