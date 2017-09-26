@@ -58,6 +58,7 @@ class FacebookMessengerBotController extends BaseController
         $isValidQuery = false;
         $repeatOldQuery = false;
         $refuseRepeatOldQuery = false;
+        $isConfirm = false;
 
         $this->response = new Response();
         $challenge = $_REQUEST['hub_challenge'];
@@ -100,6 +101,7 @@ class FacebookMessengerBotController extends BaseController
             }
 
             if ($this->getIntent($input) === "confirm") {
+                $isConfirm = true;
                 $oldKeywords = $this->getKeywords($lastSavedMessage->getEntry());
                 if (count($oldKeywords) > 0) {
                     $repeatOldQuery = true;
@@ -200,7 +202,11 @@ class FacebookMessengerBotController extends BaseController
                 $payload = array("recipient" => array("id" => $sender), "message" => array("text" => $welcomeText . $descriptionText));
             } else {
                 if (!$refuseRepeatOldQuery) {
-                    $payload = array("recipient" => array("id" => $sender), "message" => array("text" => $notRecognizedQuery . $descriptionText));
+                    $text = $notRecognizedQuery . $descriptionText;
+                    if ($isConfirm) {
+                        $text = $descriptionText;
+                    }
+                    $payload = array("recipient" => array("id" => $sender), "message" => array("text" => $text));
                 } else {
                     $payload = array("recipient" => array("id" => $sender), "message" => array("text" => "Va bene, per qualsiasi altra richiesta siamo sempre a sua disposizione."));
                 }
