@@ -56,6 +56,7 @@ class FacebookMessengerBotController extends BaseController
         $isUserFirstMessageToday = true;
         $isValidQuery = false;
         $repeatOldQuery = false;
+        $refuseRepeatOldQuery = false;
 
         $this->response = new Response();
         $challenge = $_REQUEST['hub_challenge'];
@@ -94,12 +95,12 @@ class FacebookMessengerBotController extends BaseController
             }
 
             if ($this->getIntent($input) === "confirm") {
-                $logger->info("confirm");
                 $oldKeywords = $this->getKeywords($lastSavedMessage->getEntry());
                 if (count($oldKeywords) > 0) {
-                    $logger->info("old");
-                    $repeatOldQuery = false;
+                    $repeatOldQuery = true;
                 }
+            } else if ($this->getIntent($input) === "refuse") {
+                $refuseRepeatOldQuery = true;
             }
 
         }
@@ -194,7 +195,11 @@ class FacebookMessengerBotController extends BaseController
             if ($isUserFirstMessageToday) {
                 $payload = array("recipient" => array("id" => $sender), "message" => array("text" => $welcomeText . $descriptionText));
             } else {
-                $payload = array("recipient" => array("id" => $sender), "message" => array("text" => $notRecognizedQuery . $descriptionText));
+                if (!$refuseRepeatOldQuery) {
+                    $payload = array("recipient" => array("id" => $sender), "message" => array("text" => $notRecognizedQuery . $descriptionText));
+                } else {
+                    $payload = array("recipient" => array("id" => $sender), "message" => array("text" => "Va bene, per qualsiasi altra richiesta siamo sempre a sua disposizione."));
+                }
             }
             $this->sendResponse($payload);
         }
