@@ -35,6 +35,14 @@ class FacebookMessengerBotController extends BaseController
         if ($lastSavedMessage !== null) {
             $logger = $this->get('logger');
             $logger->info("Saved message time:" . $lastSavedMessage->getTimeStamp()->format('Y-m-d H:i:s'));
+
+
+            $messageEntity = new FacebookUsersMessages();
+            $messageEntity->setEntry(json_encode($lastSavedMessage->getEntry()));
+            $messageEntity->setSender($lastSavedMessage->getEntry()[0]['messaging'][0]['sender']['id']);
+            $messageEntity->setTimeStamp($lastSavedMessage->getTimeStamp());
+            $em->persist($messageEntity);
+            $em->flush();
         }
     }
 
