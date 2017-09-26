@@ -57,7 +57,7 @@ class FacebookMessengerBotController extends BaseController
         $messageEntity->setEntry($input['entry']);
         $messageEntity->setSender($sender);
         $date = new DateTime();
-        $date->setTimestamp($input['entry'][0]['time']);
+        $date->setTimestamp(substr($input['entry'][0]['time'], 0, 10));
         $logger->info("Ora1: " . $input['entry'][0]['time']);
         $logger->info("Ora2: " . $date->format('Y-m-d H:i:s'));
         $messageEntity->setTimeStamp($date);
