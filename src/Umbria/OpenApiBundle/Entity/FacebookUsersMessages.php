@@ -35,7 +35,7 @@ class FacebookUsersMessages
     private $sender;
 
     /**
-     * @ORM\Column(type="time")
+     * @ORM\Column(type="datetime")
      */
     private $timeStamp;
 

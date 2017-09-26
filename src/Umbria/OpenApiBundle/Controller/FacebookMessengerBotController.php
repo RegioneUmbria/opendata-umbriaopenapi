@@ -8,6 +8,7 @@
 
 namespace Umbria\OpenApiBundle\Controller;
 
+use DateTime;
 use Doctrine\ORM\EntityManager;
 use Symfony\Component\HttpFoundation\Response;
 use Umbria\OpenApiBundle\Controller\Tourism\BaseController;
@@ -55,7 +56,9 @@ class FacebookMessengerBotController extends BaseController
         $messageEntity = new FacebookUsersMessages();
         $messageEntity->setEntry($input['entry']);
         $messageEntity->setSender($sender);
-        $messageEntity->setTimeStamp($input['entry'][0]['time']);
+        $date = new DateTime();
+        $date->setTimestamp($input['entry'][0]['time']);
+        $messageEntity->setTimeStamp($date);
         $em = $this->getDoctrine()->getManager();
         $em->persist($messageEntity);
         $em->flush();
