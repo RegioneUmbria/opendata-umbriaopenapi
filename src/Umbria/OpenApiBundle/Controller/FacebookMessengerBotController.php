@@ -53,23 +53,30 @@ class FacebookMessengerBotController extends BaseController
         $message = strtolower($input['entry'][0]['messaging'][0]['message']['text']);
         $nlpEntities = $input['entry'][0]['messaging'][0]['message']['nlp']['entities'];
 
+        /*retrieve last user's message from db*/
+        $em = $this->getDoctrine()->getManager();
+        /**@var FacebookUsersMessagesRepository $messagesRepo */
+        $messagesRepo = $em->getRepository("FacebookUsersMessages");
+        $lastSavedMessage = $messagesRepo->findLastUserMessage($sender);
+        if ($lastSavedMessage !== null) {
+            $logger->info("Saved message time:" . $lastSavedMessage->getTimeStamp()->format('Y-m-d H:i:s'));
+        }
+
+        /*save received user's message*/
         $messageEntity = new FacebookUsersMessages();
         $messageEntity->setEntry($input['entry']);
         $messageEntity->setSender($sender);
         $date = new DateTime();
         $date->setTimestamp(substr($input['entry'][0]['time'], 0, 10));
-        $logger->info("Ora1: " . $input['entry'][0]['time']);
-        $logger->info("Ora2: " . $date->format('Y-m-d H:i:s'));
         $messageEntity->setTimeStamp($date);
-        $em = $this->getDoctrine()->getManager();
         $em->persist($messageEntity);
         $em->flush();
-        //$logger->info("Salvato: " . json_decode(json_encode($messageEntity)));
+
 
         $keywords = array();
         if (isset($nlpEntities["events"])) {
             foreach ($nlpEntities["events"] as $eventEntity) {
-                if ($eventEntity["confidence"] > 0.9) {
+                if ($eventEntity["confidence"] > 0.8) {
                     $keywords[] = "events";
                     break;
                 }
@@ -78,7 +85,7 @@ class FacebookMessengerBotController extends BaseController
 
         if (isset($nlpEntities["attractors"])) {
             foreach ($nlpEntities["attractors"] as $attractorEntity) {
-                if ($attractorEntity["confidence"] > 0.9) {
+                if ($attractorEntity["confidence"] > 0.8) {
                     $keywords[] = "attractors";
                     break;
                 }
@@ -87,7 +94,7 @@ class FacebookMessengerBotController extends BaseController
 
         if (isset($nlpEntities["travel_agencies"])) {
             foreach ($nlpEntities["travel_agencies"] as $taEntity) {
-                if ($taEntity["confidence"] > 0.9) {
+                if ($taEntity["confidence"] > 0.8) {
                     $keywords[] = "travel_agencies";
                     break;
                 }
