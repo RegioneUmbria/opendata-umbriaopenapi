@@ -238,7 +238,7 @@ class FacebookMessengerBotController extends BaseController
         //Execute the request but first check if the message is not empty.
         $result = curl_exec($ch);
         $logger->info("Risposta facebook: " . json_encode($result));
-        $response->setContent($response->setContent . json_encode($payload));
+        $response->setContent($response->getContent() . json_encode($payload));
     }
 
     public function executeAttractorQuery($lat, $lng, $radius, $rand)
