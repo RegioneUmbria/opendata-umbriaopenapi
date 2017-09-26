@@ -129,7 +129,7 @@ class FacebookMessengerBotController extends BaseController
         //===========================Default Image=============================
         $imageurl = null;
         //===========================Default Response==========================
-        $welcomeText = "Benvenuto su Umbria Digitale Open API. \n " .
+        $welcomeText = "Benvenuto su Umbria Digitale Open API. \n" .
 
         $descriptionText = "Vuole conoscere le attrazioni da vedere, i prossimi eventi o le agenzie turistiche?";
         $notRecognizedQuery = "Scusi, ma non ho capito la sua richiesta. \n";
