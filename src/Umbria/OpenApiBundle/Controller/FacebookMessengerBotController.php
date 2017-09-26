@@ -175,7 +175,7 @@ class FacebookMessengerBotController extends BaseController
                 $subtitle = $arrayOfMessages[2];
                 $ResourceOriginUrl = $arrayOfMessages[3];
                 $text = $title . "\n";
-                $content = "Descrizione : \n" . $subtitle . "\n";
+                $content = $subtitle != null ? "Descrizione : \n" . $subtitle . "\n" : "Descrizione:  \n";
                 if (!is_null($telephone)) {
                     $content .= "\tTelephone : " . $telephone;
                 }
@@ -186,7 +186,7 @@ class FacebookMessengerBotController extends BaseController
                     $content .= "\n\tEmail : " . $email;
                 }
                 if (!is_null($startDate) && !is_null($endDate)) {
-                    $content .= "Durata : dal " . $startDate . " al " . $endDate . "\n" . "Descrizione : ";
+                    $content .= "Durata : dal " . $startDate . " al " . $endDate . "\n";
                 }
                 $content .= "\n" . $ResourceOriginUrl;
 
