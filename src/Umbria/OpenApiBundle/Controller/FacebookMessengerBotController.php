@@ -56,7 +56,7 @@ class FacebookMessengerBotController extends BaseController
         /*retrieve last user's message from db*/
         $em = $this->getDoctrine()->getManager();
         /**@var FacebookUsersMessagesRepository $messagesRepo */
-        $messagesRepo = $em->getRepository("FacebookUsersMessages");
+        $messagesRepo = $em->getRepository(FacebookUsersMessages::class);
         $lastSavedMessage = $messagesRepo->findLastUserMessage($sender);
         if ($lastSavedMessage !== null) {
             $logger->info("Saved message time:" . $lastSavedMessage->getTimeStamp()->format('Y-m-d H:i:s'));
