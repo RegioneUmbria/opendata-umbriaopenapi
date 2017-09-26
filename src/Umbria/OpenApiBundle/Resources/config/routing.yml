@@ -40,6 +40,12 @@ facebook_webhook:
   methods:  [GET|POST]
 
 
+fake:
+  path: /fake
+  defaults: { _controller: UmbriaOpenApiBundle:FacebookMessengerBot:fake }
+  methods:  [GET|POST]
+
+
 # API REST
 umbria_open_api_tourism_proposal: { type: rest, resource: 'Umbria\OpenApiBundle\Controller\Tourism\ProposalController' }
 umbria_open_api_tourism_attractor: { type: rest, resource: 'Umbria\OpenApiBundle\Controller\Tourism\AttractorController' }

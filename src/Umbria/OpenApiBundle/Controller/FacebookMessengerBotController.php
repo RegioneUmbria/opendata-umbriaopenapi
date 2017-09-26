@@ -25,6 +25,18 @@ use JMS\DiExtraBundle\Annotation as DI;
 class FacebookMessengerBotController extends BaseController
 {
 
+    public function fakeAction()
+    {
+        /*retrieve last user's message from db*/
+        $em = $this->getDoctrine()->getManager();
+        /**@var FacebookUsersMessagesRepository $messagesRepo */
+        $messagesRepo = $em->getRepository(FacebookUsersMessages::class);
+        $lastSavedMessage = $messagesRepo->findLastUserMessage("2147483647");
+        if ($lastSavedMessage !== null) {
+            $logger = $this->get('logger');
+            $logger->info("Saved message time:" . $lastSavedMessage->getTimeStamp()->format('Y-m-d H:i:s'));
+        }
+    }
 
     /**
      * @return Response
@@ -49,6 +61,7 @@ class FacebookMessengerBotController extends BaseController
         $logger->info(file_get_contents('php://input'));
         // Get the Senders Graph ID
         $sender = $input['entry'][0]['messaging'][0]['sender']['id'];
+        $logger->info($sender);
         // Get the returned message
         $message = strtolower($input['entry'][0]['messaging'][0]['message']['text']);
         $nlpEntities = $input['entry'][0]['messaging'][0]['message']['nlp']['entities'];
