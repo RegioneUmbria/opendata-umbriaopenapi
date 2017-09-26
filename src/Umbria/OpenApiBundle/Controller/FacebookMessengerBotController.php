@@ -53,7 +53,8 @@ class FacebookMessengerBotController extends BaseController
     public function indexAction()
     {
 
-        $isUserFirstMessageToday = true;
+        $isUserFirstMessageToday = false;
+        $isGreeting = false;
         $isValidQuery = false;
         $repeatOldQuery = false;
         $refuseRepeatOldQuery = false;
@@ -84,6 +85,10 @@ class FacebookMessengerBotController extends BaseController
         $messagesRepo = $em->getRepository(FacebookUsersMessages::class);
         $lastSavedMessage = $messagesRepo->findLastUserMessage($sender);
         $oldKeywords = null;
+
+        if ($this->getIntent($input) === "greeting") {
+            $isGreeting = true;
+        }
         if ($lastSavedMessage !== null) {
             $logger->info("Saved message time:" . $lastSavedMessage->getTimeStamp()->format('Y-m-d H:i:s'));
             $today = new DateTime(); // This object represents current date/time
@@ -125,7 +130,6 @@ class FacebookMessengerBotController extends BaseController
         $imageurl = null;
         //===========================Default Response==========================
         $welcomeText = "Benvenuto su Umbria Digitale Open API. \n " .
-            "Siamo sempre a disposizione per fornirle informazioni turistiche sulla regione Umbria. \n";
 
         $descriptionText = "Vuole conoscere le attrazioni da vedere, i prossimi eventi o le agenzie turistiche?";
         $notRecognizedQuery = "Scusi, ma non ho capito la sua richiesta. \n";
@@ -192,7 +196,7 @@ class FacebookMessengerBotController extends BaseController
                 }
             }
         } else {
-            if ($isUserFirstMessageToday) {
+            if ($isGreeting || $isUserFirstMessageToday) {
                 $payload = array("recipient" => array("id" => $sender), "message" => array("text" => $welcomeText . $descriptionText));
             } else {
                 if (!$refuseRepeatOldQuery) {
