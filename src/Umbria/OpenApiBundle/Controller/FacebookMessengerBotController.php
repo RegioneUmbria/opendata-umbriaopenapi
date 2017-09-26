@@ -24,6 +24,7 @@ use JMS\DiExtraBundle\Annotation as DI;
 
 class FacebookMessengerBotController extends BaseController
 {
+    private $response;
 
     public function fakeAction()
     {
@@ -56,16 +57,16 @@ class FacebookMessengerBotController extends BaseController
         $isValidQuery = false;
         $repeatOldQuery = false;
 
-        $response = new Response();
+        $this->response = new Response();
         $challenge = $_REQUEST['hub_challenge'];
         $verify_token = $_REQUEST['hub_verify_token'];
         if ($verify_token === 'testtoken') {
             // Set this Verify Token Value on your Facebook App
 
-            $response->headers->set('Content-Type', 'text/plain');
-            $response->sendHeaders();
-            $response->setContent($challenge);
-            return $response;
+            $this->response->headers->set('Content-Type', 'text/plain');
+            $this->response->sendHeaders();
+            $this->response->setContent($challenge);
+            return $this->response;
         }
 
         $input = json_decode(file_get_contents('php://input'), true);
@@ -96,6 +97,7 @@ class FacebookMessengerBotController extends BaseController
                 $logger->info("confirm");
                 $oldKeywords = $this->getKeywords($lastSavedMessage->getEntry());
                 if (count($oldKeywords) > 0) {
+                    $logger->info("old");
                     $repeatOldQuery = false;
                 }
             }
@@ -115,7 +117,7 @@ class FacebookMessengerBotController extends BaseController
 
         $keywords = $repeatOldQuery ? $oldKeywords : $this->getKeywords($input);
 
-        $logger->info(json_encode($keywords));
+        $logger->info("Keywords: " . json_encode($keywords));
 
         //====================================================Response of the Bot=======================================================
         //===========================Default Image=============================
@@ -179,13 +181,13 @@ class FacebookMessengerBotController extends BaseController
                 $content .= "\n" . $ResourceOriginUrl;
 
                 $payload = array("recipient" => array("id" => $sender), "message" => array("text" => $text . "\n" . $content));
-                $this->sendResponse($payload, $response);
+                $this->sendResponse($payload);
 
                 //Check any image is included
                 if (strcasecmp($imageurl, "@") != 0) {
                     //Sending the Imamge
                     $payload = array("recipient" => array("id" => $sender), "message" => array("attachment" => array("type" => "image", "payload" => array("url" => $imageurl))));
-                    $this->sendResponse($payload, $response);
+                    $this->sendResponse($payload);
                 }
             }
         } else {
@@ -194,7 +196,7 @@ class FacebookMessengerBotController extends BaseController
             } else {
                 $payload = array("recipient" => array("id" => $sender), "message" => array("text" => $notRecognizedQuery . $descriptionText));
             }
-            $this->sendResponse($payload, $response);
+            $this->sendResponse($payload);
         }
 
         if ($isValidQuery) {
@@ -211,14 +213,14 @@ class FacebookMessengerBotController extends BaseController
                 $responseMessage = "Vuole altri suggerimenti simili?";
             }
             $payload = array("recipient" => array("id" => $sender), "message" => array("text" => $responseMessage));
-            $this->sendResponse($payload, $responseMessage);
+            $this->sendResponse($payload);
         }
 
-        return $response;
+        return $this->response;
 
     }
 
-    private function sendResponse($payload, $response)
+    private function sendResponse($payload)
     {
 
         //API Url and Access Token, generate this token value on your Facebook App Page
@@ -238,7 +240,7 @@ class FacebookMessengerBotController extends BaseController
         //Execute the request but first check if the message is not empty.
         $result = curl_exec($ch);
         $logger->info("Risposta facebook: " . json_encode($result));
-        $response->setContent($response->getContent() . json_encode($payload));
+        $this->response->setContent($this->response->getContent() . json_encode($payload));
     }
 
     public function executeAttractorQuery($lat, $lng, $radius, $rand)
