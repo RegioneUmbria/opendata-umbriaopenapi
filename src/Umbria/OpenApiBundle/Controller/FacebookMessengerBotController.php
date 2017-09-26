@@ -93,9 +93,10 @@ class FacebookMessengerBotController extends BaseController
             }
 
             if ($this->getIntent($input) === "confirm") {
+                $logger->info("confirm");
                 $oldKeywords = $this->getKeywords($lastSavedMessage->getEntry());
                 if (count($oldKeywords) > 0) {
-                    $repeatOldQuery = true;
+                    $repeatOldQuery = false;
                 }
             }
 
@@ -221,7 +222,7 @@ class FacebookMessengerBotController extends BaseController
     {
 
         //API Url and Access Token, generate this token value on your Facebook App Page
-        $url = 'https://graph.facebook.com/v2.6/me/messages?access_token=EAAcCBY9TweYBAP1NeBu61c7hxv6wa1yMYFGSKJ3YffbatUJ6eYy2jIn7deTc4noiIGubZAJA8UhEa5keA3fGohlMO8SZBWpDfnHEQvaYi4YfO8ErW9p6YBZBkUXqIrSMjdXTuhfiiW42Jb3EWmqWTHXyLhVuYFeuQZAqzgVNEAZDZD';
+        $url = 'https://graph.facebook.com/v2.6/me/messages?access_token=EAAcCBY9TweYBAPARVvgoXnefMXoi1pDrAukZBSP4wyQP77Gv2uYkGZCps10R1RTYIL4qROi0pI2mNY57fDBz0ZC7ZBLZBxcwXDwqzivefaAyQUc3nqyVqjyKGCZCEICcPqZB6yjMwGllwrYxetff21mLmBQSo3whjjDznL1sTej8wZDZD';
 
         //Initiate cURL.
         $ch = curl_init($url);
