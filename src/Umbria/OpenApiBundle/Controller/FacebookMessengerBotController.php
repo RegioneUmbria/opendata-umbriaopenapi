@@ -198,20 +198,20 @@ class FacebookMessengerBotController extends BaseController
         }
 
         if ($isValidQuery) {
-            $response = "Vuole un altro suggerimento ";
+            $responseMessage = "Vuole un altro suggerimento ";
             if (count($keywords) == 1) {
                 if ($keywords[0] == "attractors") {
-                    $response .= "sulle attrazioni?";
+                    $responseMessage .= "sulle attrazioni?";
                 } else if ($keywords[0] == "events") {
-                    $response .= "sugli eventi?";
+                    $responseMessage .= "sugli eventi?";
                 } else {
-                    $response .= "sulle agenzie di viaggio?";
+                    $responseMessage .= "sulle agenzie di viaggio?";
                 }
             } else {
-                $response = "Vuole altri suggerimenti simili?";
+                $responseMessage = "Vuole altri suggerimenti simili?";
             }
-            $payload = array("recipient" => array("id" => $sender), "message" => array("text" => $response));
-            $this->sendResponse($payload, $response);
+            $payload = array("recipient" => array("id" => $sender), "message" => array("text" => $responseMessage));
+            $this->sendResponse($payload, $responseMessage);
         }
 
         return $response;
