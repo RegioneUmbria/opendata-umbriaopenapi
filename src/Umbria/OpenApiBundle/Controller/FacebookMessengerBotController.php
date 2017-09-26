@@ -113,14 +113,17 @@ class FacebookMessengerBotController extends BaseController
         }
 
         /*save received user's message*/
-        $messageEntity = new FacebookUsersMessages();
-        $messageEntity->setEntry($input);
-        $messageEntity->setSender($sender);
-        $date = new DateTime();
-        $date->setTimestamp(substr($input['entry'][0]['time'], 0, 10));
-        $messageEntity->setTimeStamp($date);
-        $em->persist($messageEntity);
-        $em->flush();
+        if (!$isConfirm) {
+            $messageEntity = new FacebookUsersMessages();
+            $messageEntity->setEntry($input);
+            $messageEntity->setSender($sender);
+            $date = new DateTime();
+            $date->setTimestamp(substr($input['entry'][0]['time'], 0, 10));
+            $messageEntity->setTimeStamp($date);
+            $em->persist($messageEntity);
+            $em->flush();
+        }
+
 
 
         $keywords = $repeatOldQuery ? $oldKeywords : $this->getKeywords($input);
