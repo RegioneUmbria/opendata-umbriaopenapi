@@ -201,8 +201,7 @@ class FacebookMessengerBotController extends BaseController
             if (count($keywords) == 1) {
                 if ($keywords[0] == "attractors") {
                     $response .= "sulle attrazioni?";
-                }
-                if ($keywords[0] == "events") {
+                } else if ($keywords[0] == "events") {
                     $response .= "sugli eventi?";
                 } else {
                     $response .= "sulle agenzie di viaggio?";
