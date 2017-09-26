@@ -52,6 +52,10 @@ class FacebookMessengerBotController extends BaseController
     public function indexAction()
     {
 
+        $isUserFirstMessageToday = true;
+        $isValidQuery = false;
+        $repeatOldQuery = false;
+
         $response = new Response();
         $challenge = $_REQUEST['hub_challenge'];
         $verify_token = $_REQUEST['hub_verify_token'];
@@ -70,17 +74,31 @@ class FacebookMessengerBotController extends BaseController
         // Get the Senders Graph ID
         $sender = $input['entry'][0]['messaging'][0]['sender']['id'];
         $logger->info($sender);
-        // Get the returned message
-        $message = strtolower($input['entry'][0]['messaging'][0]['message']['text']);
-        $nlpEntities = $input['entry'][0]['messaging'][0]['message']['nlp']['entities'];
+
 
         /*retrieve last user's message from db*/
         $em = $this->getDoctrine()->getManager();
         /**@var FacebookUsersMessagesRepository $messagesRepo */
         $messagesRepo = $em->getRepository(FacebookUsersMessages::class);
         $lastSavedMessage = $messagesRepo->findLastUserMessage($sender);
+        $oldKeywords = null;
         if ($lastSavedMessage !== null) {
             $logger->info("Saved message time:" . $lastSavedMessage->getTimeStamp()->format('Y-m-d H:i:s'));
+            $today = new DateTime(); // This object represents current date/time
+            $today->setTime(0, 0, 0);
+            $diff = $today->diff($lastSavedMessage->getTimeStamp());
+            $diffDays = (integer)$diff->format("%R%a"); // Extract days count in interval
+            if ($diffDays == 0) {
+                $isUserFirstMessageToday = false;
+            }
+
+            if ($this->getIntent($input) === "confirm") {
+                $oldKeywords = $this->getKeywords($lastSavedMessage->getEntry());
+                if (count($oldKeywords) > 0) {
+                    $repeatOldQuery = true;
+                }
+            }
+
         }
 
         /*save received user's message*/
@@ -94,33 +112,8 @@ class FacebookMessengerBotController extends BaseController
         $em->flush();
 
 
-        $keywords = array();
-        if (isset($nlpEntities["events"])) {
-            foreach ($nlpEntities["events"] as $eventEntity) {
-                if ($eventEntity["confidence"] > 0.8) {
-                    $keywords[] = "events";
-                    break;
-                }
-            }
-        }
+        $keywords = $repeatOldQuery ? $oldKeywords : $this->getKeywords($input);
 
-        if (isset($nlpEntities["attractors"])) {
-            foreach ($nlpEntities["attractors"] as $attractorEntity) {
-                if ($attractorEntity["confidence"] > 0.8) {
-                    $keywords[] = "attractors";
-                    break;
-                }
-            }
-        }
-
-        if (isset($nlpEntities["travel_agencies"])) {
-            foreach ($nlpEntities["travel_agencies"] as $taEntity) {
-                if ($taEntity["confidence"] > 0.8) {
-                    $keywords[] = "travel_agencies";
-                    break;
-                }
-            }
-        }
         $logger->info(json_encode($keywords));
 
         //====================================================Response of the Bot=======================================================
@@ -128,15 +121,15 @@ class FacebookMessengerBotController extends BaseController
         $imageurl = null;
         //===========================Default Response==========================
         $welcomeText = "Benvenuto su Umbria Digitale Open API. \n " .
-            "Siamo sempre a disposizione per forniriti informazioni turistiche sulla regione Umbria.";
+            "Siamo sempre a disposizione per fornirle informazioni turistiche sulla regione Umbria. \n";
 
-        $descriptionText = "Come possiamo aiutarti? \n" .
-            "Vuoi conoscere i prossimi eventi? \n" .
-            "Vuoi dei suggerimenti sugli attrattori da scoprire? \n" .
-            "Oppure preferisci avere dei contatti sulle agenzie di viaggio? \n";
+        $descriptionText = "Vuole conoscere le attrazioni da vedere, i prossimi eventi o le agenzie turistiche?";
+        $notRecognizedQuery = "Scusi, ma non ho capito la sua richiesta. \n";
         //=====================================================================
 
+
         if (count($keywords) > 0) {
+            $isValidQuery = true;
             foreach ($keywords as $keyword) {
                 $arrayOfMessages = array();
 
@@ -177,17 +170,14 @@ class FacebookMessengerBotController extends BaseController
                     $content .= "\n\tFax : " . $fax;
                 }
                 if (!is_null($email)) {
-                    $content .= "\n\temail : " . $email;
+                    $content .= "\n\tEmail : " . $email;
                 }
                 if (!is_null($startDate) && !is_null($endDate)) {
                     $content .= "Durata : dal " . $startDate . " al " . $endDate . "\n" . "Descrizione : ";
                 }
                 $content .= "\n" . $ResourceOriginUrl;
 
-                $payload = array("recipient" => array("id" => $sender), "message" => array("text" => $text));
-                $this->sendResponse($payload, $response);
-                //Set the Description and the ResourceOriginUrl
-                $payload = array("recipient" => array("id" => $sender), "message" => array("text" => $content));
+                $payload = array("recipient" => array("id" => $sender), "message" => array("text" => $text . "\n" . $content));
                 $this->sendResponse($payload, $response);
 
                 //Check any image is included
@@ -198,12 +188,31 @@ class FacebookMessengerBotController extends BaseController
                 }
             }
         } else {
-            $payload = array("recipient" => array("id" => $sender), "message" => array("text" => $welcomeText));
-            $this->sendResponse($payload, $response);
-            $payload = array("recipient" => array("id" => $sender), "message" => array("text" => $descriptionText));
+            if ($isUserFirstMessageToday) {
+                $payload = array("recipient" => array("id" => $sender), "message" => array("text" => $welcomeText . $descriptionText));
+            } else {
+                $payload = array("recipient" => array("id" => $sender), "message" => array("text" => $notRecognizedQuery . $descriptionText));
+            }
             $this->sendResponse($payload, $response);
         }
 
+        if ($isValidQuery) {
+            $response = "Vuole un altro suggerimento ";
+            if (count($keywords) == 1) {
+                if ($keywords[0] == "attractors") {
+                    $response .= "sulle attrazioni?";
+                }
+                if ($keywords[0] == "events") {
+                    $response .= "sugli eventi?";
+                } else {
+                    $response .= "sulle agenzie di viaggio?";
+                }
+            } else {
+                $response = "Vuole altri suggerimenti simili?";
+            }
+            $payload = array("recipient" => array("id" => $sender), "message" => array("text" => $response));
+            $this->sendResponse($payload, $response);
+        }
 
         return $response;
 
@@ -364,6 +373,47 @@ class FacebookMessengerBotController extends BaseController
         } else {
             throw new Exception();
         }
+    }
+
+    public function getKeywords($messageEntry)
+    {
+        $nlpEntities = $messageEntry['entry'][0]['messaging'][0]['message']['nlp']['entities'];
+        if (isset($nlpEntities["events"])) {
+            foreach ($nlpEntities["events"] as $eventEntity) {
+                if ($eventEntity["confidence"] > 0.8) {
+                    $keywords[] = "events";
+                    break;
+                }
+            }
+        }
+
+        if (isset($nlpEntities["attractors"])) {
+            foreach ($nlpEntities["attractors"] as $attractorEntity) {
+                if ($attractorEntity["confidence"] > 0.8) {
+                    $keywords[] = "attractors";
+                    break;
+                }
+            }
+        }
+
+        if (isset($nlpEntities["travel_agencies"])) {
+            foreach ($nlpEntities["travel_agencies"] as $taEntity) {
+                if ($taEntity["confidence"] > 0.8) {
+                    $keywords[] = "travel_agencies";
+                    break;
+                }
+            }
+        }
+        return $keywords;
+    }
+
+    public function getIntent($messageEntry)
+    {
+        $nlpEntities = $messageEntry['entry'][0]['messaging'][0]['message']['nlp']['entities'];
+        if (isset($nlpEntities["intent"])) {
+            return $nlpEntities["intent"][0]["value"];
+        }
+        return null;
     }
 
 }
