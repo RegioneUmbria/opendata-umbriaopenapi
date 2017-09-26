@@ -106,7 +106,7 @@ class FacebookMessengerBotController extends BaseController
 
         /*save received user's message*/
         $messageEntity = new FacebookUsersMessages();
-        $messageEntity->setEntry($input['entry']);
+        $messageEntity->setEntry($input);
         $messageEntity->setSender($sender);
         $date = new DateTime();
         $date->setTimestamp(substr($input['entry'][0]['time'], 0, 10));
