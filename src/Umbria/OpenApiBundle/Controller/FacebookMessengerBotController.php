@@ -31,6 +31,7 @@ class FacebookMessengerBotController extends BaseController
     const INTENT_REFUSE = 6;
     const INTENT_FIRST_DAILY_GREET = 7;
     const INTENT_GREET_AND_TOURISM_QUERY = 8;
+    const INTENT_REFUSE_AND_TOURISM_QUERY = 9;
 
 
     /**@var array $input */
@@ -88,7 +89,8 @@ class FacebookMessengerBotController extends BaseController
             $this->sendTextResponse($responseMessage);
         } elseif ($intent === self::INTENT_GREET_AND_TOURISM_QUERY ||
             $intent === self::INTENT_TOURISM_QUERY ||
-            $intent === self::INTENT_CONFIRM
+            $intent === self::INTENT_CONFIRM ||
+            $intent === self::INTENT_REFUSE_AND_TOURISM_QUERY
         ) {
             if ($intent === self::INTENT_GREET_AND_TOURISM_QUERY) {
                 $responseMessage = "Salve!\nSu Umbria Digitale Open API puoi conoscere le attrazioni da vedere, i prossimi eventi o le agenzie turistiche.";
@@ -150,6 +152,9 @@ class FacebookMessengerBotController extends BaseController
             }
         } else if ($intent === "refuse") {
             if ($this->isAnswer()) {
+                if ($this->hasKeywords($this->input)) {
+                    return self::INTENT_REFUSE_AND_TOURISM_QUERY;
+                }
                 return self::INTENT_REFUSE;
             }
             return self::NO_INTENT;
