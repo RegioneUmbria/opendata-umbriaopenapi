@@ -45,6 +45,16 @@ class FacebookUsersMessages
     private $entry;
 
     /**
+     * @ORM\Column(type="float", nullable=true)
+     */
+    private $lat;
+
+    /**
+     * @ORM\Column(type="float", nullable=true)
+     */
+    private $long;
+
+    /**
      * @return int
      */
     public function getId()
@@ -106,6 +116,38 @@ class FacebookUsersMessages
     public function setEntry($entry)
     {
         $this->entry = $entry;
+    }
+
+    /**
+     * @return float
+     */
+    public function getLat()
+    {
+        return $this->lat;
+    }
+
+    /**
+     * @param float $lat
+     */
+    public function setLat($lat)
+    {
+        $this->lat = $lat;
+    }
+
+    /**
+     * @return float
+     */
+    public function getLong()
+    {
+        return $this->long;
+    }
+
+    /**
+     * @param float $long
+     */
+    public function setLong($long)
+    {
+        $this->long = $long;
     }
 
 }
