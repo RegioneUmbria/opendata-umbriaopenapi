@@ -85,7 +85,7 @@ class FacebookMessengerBotController extends BaseController
         if ($intent === self::INTENT_FIRST_DAILY_GREET) {
             $responseMessage = "Benvenuto su Umbria Digitale Open API.\nVuole conoscere le attrazioni da vedere, i prossimi eventi o le agenzie turistiche?";
             $this->sendTextResponse($responseMessage);
-            $responseMessage = "Condividi con noi la posizione geografica su cui vuoi che effettuiamo la ricerca";
+            $responseMessage = "Condivida con noi la posizione geografica su cui vuole che effettuiamo la ricerca";
             $this->sendTextResponse($responseMessage);
             $this->sendLocationResponse();
         } elseif ($intent === self::INTENT_GREET) {
@@ -299,7 +299,7 @@ class FacebookMessengerBotController extends BaseController
 
     private function sendLocationResponse()
     {
-        $payload = array("recipient" => array("id" => $this->sender), "message" => array("quick_replies" => array(array("content_type" => "location"))));
+        $payload = array("recipient" => array("id" => $this->sender), "message" => array("text" => "", "quick_replies" => array(array("content_type" => "location"))));
         return $this->sendResponse($payload);
     }
 
