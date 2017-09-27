@@ -61,7 +61,7 @@ class FacebookMessengerBotController extends BaseController
         $this->em = $this->getDoctrine()->getManager();
         $this->messagesRepo = $this->em->getRepository(FacebookUsersMessages::class);
         $this->previousMessage = $this->messagesRepo->findLastUserMessage($this->sender);
-        $this->previousInput = $this->previousMessage->getEntry();
+        $this->previousInput = $this->previousMessage != null ? $this->previousMessage->getEntry() : null;
     }
 
     /**
