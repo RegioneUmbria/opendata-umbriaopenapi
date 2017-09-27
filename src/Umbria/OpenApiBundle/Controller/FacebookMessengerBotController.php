@@ -32,11 +32,20 @@ class FacebookMessengerBotController extends BaseController
     const INTENT_FIRST_DAILY_GREET = 7;
     const INTENT_GREET_AND_TOURISM_QUERY = 8;
 
+
+    /**@var array $input */
     private $input;
+    /**@var int $sender */
     private $sender;
+    /**@var array $previousInput */
     private $previousInput;
+    /**@var FacebookUsersMessages $previousMessage */
+    private $previousMessage;
+    /**@var Response $response */
     private $response;
+    /**@var FacebookUsersMessagesRepository $messagesRepo */
     private $messagesRepo;
+    /**@var EntityManager $em */
     private $em;
     /**@var Logger $logger */
     private $logger;
@@ -48,9 +57,9 @@ class FacebookMessengerBotController extends BaseController
         $this->sender = $this->input['entry'][0]['messaging'][0]['sender']['id'];
         /*retrieve last user's message from db*/
         $this->em = $this->getDoctrine()->getManager();
-        /**@var FacebookUsersMessagesRepository $messagesRepo */
         $this->messagesRepo = $this->em->getRepository(FacebookUsersMessages::class);
-        $this->previousInput = $this->messagesRepo->findLastUserMessage($this->sender)->getEntry();
+        $this->previousFacebookMessage = $this->messagesRepo->findLastUserMessage($this->sender);
+        $this->previousInput = $this->previousMessage->getEntry();
     }
 
     /**
@@ -176,11 +185,10 @@ class FacebookMessengerBotController extends BaseController
 
     private function isFirstDailyMessage()
     {
-        if ($this->previousInput !== null) {
-            $this->logger->info("DEBUG:" . json_encode($this->previousInput));
+        if ($this->previousMessage !== null) {
             $today = new DateTime(); // This object represents current date/time
             $today->setTime(0, 0, 0);
-            $diff = $today->diff($this->previousInput->getTimeStamp());
+            $diff = $today->diff($this->previousMessage->getTimeStamp());
             $diffDays = (integer)$diff->format("%R%a"); // Extract days count in interval
             if ($diffDays == 0) {
                 return false;
