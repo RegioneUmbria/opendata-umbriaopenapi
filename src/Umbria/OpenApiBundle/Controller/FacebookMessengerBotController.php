@@ -32,7 +32,7 @@ class FacebookMessengerBotController extends BaseController
     const INTENT_FIRST_DAILY_GREET = 7;
     const INTENT_GREET_AND_TOURISM_QUERY = 8;
     const INTENT_REFUSE_AND_TOURISM_QUERY = 9;
-
+    const INTENT_LOCATION_SENT = 10;
 
     /**@var array $input */
     private $input;
@@ -50,6 +50,7 @@ class FacebookMessengerBotController extends BaseController
     private $em;
     /**@var Logger $logger */
     private $logger;
+
 
     private function initObject()
     {
@@ -84,6 +85,9 @@ class FacebookMessengerBotController extends BaseController
         if ($intent === self::INTENT_FIRST_DAILY_GREET) {
             $responseMessage = "Benvenuto su Umbria Digitale Open API.\nVuole conoscere le attrazioni da vedere, i prossimi eventi o le agenzie turistiche?";
             $this->sendTextResponse($responseMessage);
+            $responseMessage = "Condividi con noi la posizione geografica su cui vuoi che effettuiamo la ricerca";
+            $this->sendTextResponse($responseMessage);
+            $this->sendLocationResponse();
         } elseif ($intent === self::INTENT_GREET) {
             $responseMessage = "Vuole conoscere le attrazioni da vedere, i prossimi eventi o le agenzie turistiche?";
             $this->sendTextResponse($responseMessage);
@@ -118,6 +122,10 @@ class FacebookMessengerBotController extends BaseController
             $this->sendTextResponse($responseMessage);
         } elseif ($intent === self::INTENT_SEND_LOCATION) {
             $this->sendLocationResponse();
+        } elseif ($intent === self::INTENT_LOCATION_SENT) {
+            $responseMessage = "Effettueremo le prossime ricerche nei dintorni della posizione che ci ha inviato.\n
+            Se vuole cambiare localizzazione basta chiedere.";
+            $this->sendTextResponse($responseMessage);
         } else {
             $responseMessage = "Scusi, ma non ho capito la sua richiesta. \nVuole conoscere le attrazioni da vedere, i prossimi eventi o le agenzie turistiche?";
             $this->sendTextResponse($responseMessage);
