@@ -140,8 +140,8 @@ class FacebookMessengerBotController extends BaseController
             $messageEntity = new FacebookUsersMessages();
             $messageEntity->setEntry($this->input);
             $messageEntity->setSender($this->sender);
-            $messageEntity->setLat($this->lat);
-            $messageEntity->setLong($this->long);
+            $this->lat != null ? $messageEntity->setLat($this->lat) : true;
+            $this->long != null ? $messageEntity->setLong($this->long) : true;
             $date = new DateTime();
             $date->setTimestamp(substr($this->input['entry'][0]['time'], 0, 10));
             $messageEntity->setTimeStamp($date);
