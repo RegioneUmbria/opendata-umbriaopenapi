@@ -177,7 +177,7 @@ class FacebookMessengerBotController extends BaseController
     private function isFirstDailyMessage()
     {
         if ($this->previousInput !== null) {
-            $this->logger->debug("DEBUG:" . json_encode($this->previousInput));
+            $this->logger->info("DEBUG:" . json_encode($this->previousInput));
             $today = new DateTime(); // This object represents current date/time
             $today->setTime(0, 0, 0);
             $diff = $today->diff($this->previousInput->getTimeStamp());
