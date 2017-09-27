@@ -152,6 +152,9 @@ class FacebookMessengerBotController extends BaseController
 
     private function hasKeywords($input)
     {
+        if ($input == null) {
+            return false;
+        }
         $keywords = $this->getKeywords($input);
         return $keywords != null && count($keywords) > 0;
     }
