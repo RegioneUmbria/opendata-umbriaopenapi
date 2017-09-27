@@ -9,7 +9,6 @@
 namespace Umbria\OpenApiBundle\Controller;
 
 use DateTime;
-use Doctrine\ORM\EntityManager;
 use Monolog\Logger;
 use Symfony\Component\HttpFoundation\Response;
 use Umbria\OpenApiBundle\Controller\Tourism\BaseController;
@@ -21,7 +20,6 @@ use Umbria\OpenApiBundle\Repository\Tourism\GraphsEntities\AttractorRepository;
 use Umbria\OpenApiBundle\Repository\Tourism\GraphsEntities\ProposalRepository;
 use Umbria\OpenApiBundle\Repository\Tourism\GraphsEntities\EventRepository;
 use Umbria\OpenApiBundle\Repository\Tourism\GraphsEntities\TravelAgencyRepository;
-use JMS\DiExtraBundle\Annotation as DI;
 
 class FacebookMessengerBotController extends BaseController
 {
@@ -42,6 +40,18 @@ class FacebookMessengerBotController extends BaseController
     private $em;
     /**@var Logger $logger */
     private $logger;
+
+    private function initObject()
+    {
+        $this->logger = $this->get('logger');
+        $this->input = json_decode(file_get_contents('php://input'), true);
+        $this->sender = $this->input['entry'][0]['messaging'][0]['sender']['id'];
+        /*retrieve last user's message from db*/
+        $this->em = $this->getDoctrine()->getManager();
+        /**@var FacebookUsersMessagesRepository $messagesRepo */
+        $this->messagesRepo = $this->em->getRepository(FacebookUsersMessages::class);
+        $this->previousInput = $this->messagesRepo->findLastUserMessage($this->sender)->getEntry();
+    }
 
     /**
      * @return Response
@@ -166,7 +176,8 @@ class FacebookMessengerBotController extends BaseController
 
     private function isFirstDailyMessage()
     {
-        if ($this->previousInput != null) {
+        if ($this->previousInput !== null) {
+            $this->logger->debug("DEBUG:" . json_encode($this->previousInput));
             $today = new DateTime(); // This object represents current date/time
             $today->setTime(0, 0, 0);
             $diff = $today->diff($this->previousInput->getTimeStamp());
@@ -250,18 +261,6 @@ class FacebookMessengerBotController extends BaseController
                 $this->sendImageResponse($imageurl);
             }
         }
-    }
-
-    private function initObject()
-    {
-        $this->logger = $this->get('logger');
-        $this->input = json_decode(file_get_contents('php://input'), true);
-        $this->sender = $this->input['entry'][0]['messaging'][0]['sender']['id'];
-        /*retrieve last user's message from db*/
-        $this->em = $this->getDoctrine()->getManager();
-        /**@var FacebookUsersMessagesRepository $messagesRepo */
-        $this->messagesRepo = $this->em->getRepository(FacebookUsersMessages::class);
-        $this->previousInput = $this->messagesRepo->findLastUserMessage($this->sender)->getEntry();
     }
 
 
