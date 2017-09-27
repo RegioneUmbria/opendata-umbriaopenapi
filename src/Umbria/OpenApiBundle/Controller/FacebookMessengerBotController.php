@@ -10,6 +10,7 @@ namespace Umbria\OpenApiBundle\Controller;
 
 use DateTime;
 use Doctrine\ORM\EntityManager;
+use Monolog\Logger;
 use Symfony\Component\HttpFoundation\Response;
 use Umbria\OpenApiBundle\Controller\Tourism\BaseController;
 use AnthonyMartin\GeoLocation\GeoLocation;
@@ -24,201 +25,60 @@ use JMS\DiExtraBundle\Annotation as DI;
 
 class FacebookMessengerBotController extends BaseController
 {
+    const NO_INTENT = -1;
+    const INTENT_GREET = 0;
+    const INTENT_SEND_LOCATION = 1;
+    const INTENT_TOURISM_QUERY = 2;
+    const INTENT_CONFIRM = 5;
+    const INTENT_REFUSE = 6;
+    const INTENT_FIRST_DAILY_GREET = 7;
+    const INTENT_GREET_AND_TOURISM_QUERY = 8;
+
+    private $input;
+    private $sender;
+    private $previousInput;
     private $response;
-
-    public function fakeAction()
-    {
-        /*retrieve last user's message from db*/
-        $em = $this->getDoctrine()->getManager();
-        /**@var FacebookUsersMessagesRepository $messagesRepo */
-        $messagesRepo = $em->getRepository(FacebookUsersMessages::class);
-        $lastSavedMessage = $messagesRepo->findLastUserMessage("2147483647");
-        if ($lastSavedMessage !== null) {
-            $logger = $this->get('logger');
-            $logger->info("Saved message time:" . $lastSavedMessage->getTimeStamp()->format('Y-m-d H:i:s'));
-
-
-            $messageEntity = new FacebookUsersMessages();
-            $messageEntity->setEntry(json_encode($lastSavedMessage->getEntry()));
-            $messageEntity->setSender($lastSavedMessage->getEntry()[0]['messaging'][0]['sender']['id']);
-            $messageEntity->setTimeStamp($lastSavedMessage->getTimeStamp());
-            $em->persist($messageEntity);
-            $em->flush();
-        }
-    }
+    private $messagesRepo;
+    private $em;
+    /**@var Logger $logger */
+    private $logger;
 
     /**
      * @return Response
      */
     public function indexAction()
     {
-
-        $isUserFirstMessageToday = false;
-        $isGreeting = false;
-        $isValidQuery = false;
-        $repeatOldQuery = false;
-        $refuseRepeatOldQuery = false;
-        $isConfirm = false;
-
         $this->response = new Response();
-        $challenge = $_REQUEST['hub_challenge'];
-        $verify_token = $_REQUEST['hub_verify_token'];
-        if ($verify_token === 'testtoken') {
-            // Set this Verify Token Value on your Facebook App
-
-            $this->response->headers->set('Content-Type', 'text/plain');
-            $this->response->sendHeaders();
-            $this->response->setContent($challenge);
+        if ($this->verifyToken()) {
             return $this->response;
         }
 
-        $input = json_decode(file_get_contents('php://input'), true);
-        $logger = $this->get('logger');
-        $logger->info(file_get_contents('php://input'));
-        // Get the Senders Graph ID
-        $sender = $input['entry'][0]['messaging'][0]['sender']['id'];
-        $logger->info($sender);
+        $this->initObject();
+
+        $this->logger->debug(file_get_contents('php://input'));
+        $this->logger->debug($this->sender);
 
 
-        /*retrieve last user's message from db*/
-        $em = $this->getDoctrine()->getManager();
-        /**@var FacebookUsersMessagesRepository $messagesRepo */
-        $messagesRepo = $em->getRepository(FacebookUsersMessages::class);
-        $lastSavedMessage = $messagesRepo->findLastUserMessage($sender);
-        $oldKeywords = null;
+        $intent = $this->retrieveIntent();
 
-        if ($this->getIntent($input) === "greeting") {
-            $isGreeting = true;
-        }
-        if ($lastSavedMessage !== null) {
-            $logger->info("Saved message time:" . $lastSavedMessage->getTimeStamp()->format('Y-m-d H:i:s'));
-            $today = new DateTime(); // This object represents current date/time
-            $today->setTime(0, 0, 0);
-            $diff = $today->diff($lastSavedMessage->getTimeStamp());
-            $diffDays = (integer)$diff->format("%R%a"); // Extract days count in interval
-            if ($diffDays == 0) {
-                $isUserFirstMessageToday = false;
+        if ($intent === self::INTENT_FIRST_DAILY_GREET) {
+            $responseMessage = "Benvenuto su Umbria Digitale Open API.\nVuole conoscere le attrazioni da vedere, i prossimi eventi o le agenzie turistiche?";
+            $this->sendTextResponse($responseMessage);
+        } elseif ($intent === self::INTENT_GREET) {
+            $responseMessage = "Vuole conoscere le attrazioni da vedere, i prossimi eventi o le agenzie turistiche?";
+            $this->sendTextResponse($responseMessage);
+        } elseif ($intent === self::INTENT_GREET_AND_TOURISM_QUERY ||
+            $intent === self::INTENT_TOURISM_QUERY ||
+            $intent === self::INTENT_CONFIRM
+        ) {
+            if ($intent === self::INTENT_GREET_AND_TOURISM_QUERY) {
+                $responseMessage = "Salve!\nSu Umbria Digitale Open API puoi conoscere le attrazioni da vedere, i prossimi eventi o le agenzie turistiche.";
+                $this->sendTextResponse($responseMessage);
             }
 
-            if ($this->getIntent($input) === "confirm") {
-                $isConfirm = true;
-                $oldKeywords = $this->getKeywords($lastSavedMessage->getEntry());
-                if (count($oldKeywords) > 0) {
-                    $repeatOldQuery = true;
-                }
-            } else if ($this->getIntent($input) === "refuse") {
-                $refuseRepeatOldQuery = true;
-            }
+            $keywords = $intent === self::INTENT_CONFIRM ? $this->getKeywords($this->previousInput) : $this->getKeywords($this->input);
+            $this->sendTourismInformations($keywords);
 
-        }
-
-        /*save received user's message*/
-        if (!$isConfirm) {
-            $messageEntity = new FacebookUsersMessages();
-            $messageEntity->setEntry($input);
-            $messageEntity->setSender($sender);
-            $date = new DateTime();
-            $date->setTimestamp(substr($input['entry'][0]['time'], 0, 10));
-            $messageEntity->setTimeStamp($date);
-            $em->persist($messageEntity);
-            $em->flush();
-        }
-
-
-
-        $keywords = $repeatOldQuery ? $oldKeywords : $this->getKeywords($input);
-
-        $logger->info("Keywords: " . json_encode($keywords));
-
-        //====================================================Response of the Bot=======================================================
-        //===========================Default Image=============================
-        $imageurl = null;
-        //===========================Default Response==========================
-        $welcomeText = "Benvenuto su Umbria Digitale Open API. \n";
-
-        $descriptionText = "Vuole conoscere le attrazioni da vedere, i prossimi eventi o le agenzie turistiche?";
-        $notRecognizedQuery = "Scusi, ma non ho capito la sua richiesta. \n";
-        //=====================================================================
-
-
-        if (count($keywords) > 0) {
-            $isValidQuery = true;
-            foreach ($keywords as $keyword) {
-                $arrayOfMessages = array();
-
-                $startDate = null;
-                $endDate = null;
-
-                $telephone = null;
-                $fax = null;
-                $email = null;
-
-                switch ($keyword) {
-                    case "attractors":
-                        $arrayOfMessages = $this->executeAttractorQuery(43.105275, 12.391995, 100, true);
-                        break;
-                    case "events":
-                        $arrayOfMessages = $this->executeEventQuery(43.105275, 12.391995, 100, true);
-                        $startDate = $arrayOfMessages[4];
-                        $endDate = $arrayOfMessages[5];
-                        break;
-                    case "travel_agencies":
-                        $arrayOfMessages = $this->executeTravelAgencyQuery(43.105275, 12.391995, 100, true);
-                        $telephone = $arrayOfMessages[4];
-                        $fax = $arrayOfMessages[5];
-                        $email = $arrayOfMessages[6];
-                        break;
-                }
-
-                $title = $arrayOfMessages[0];
-                $imageurl = $arrayOfMessages[1];
-                $subtitle = $arrayOfMessages[2];
-                $ResourceOriginUrl = $arrayOfMessages[3];
-                $text = $title . "\n";
-                $content = $subtitle != null ? "Descrizione : \n" . $subtitle . "\n" : "Descrizione:  \n";
-                if (!is_null($telephone)) {
-                    $content .= "\tTelephone : " . $telephone;
-                }
-                if (!is_null($fax)) {
-                    $content .= "\n\tFax : " . $fax;
-                }
-                if (!is_null($email)) {
-                    $content .= "\n\tEmail : " . $email;
-                }
-                if (!is_null($startDate) && !is_null($endDate)) {
-                    $content .= "Durata : dal " . $startDate . " al " . $endDate . "\n";
-                }
-                $content .= "\n" . $ResourceOriginUrl;
-
-                $payload = array("recipient" => array("id" => $sender), "message" => array("text" => $text . "\n" . $content));
-                $this->sendResponse($payload);
-
-                //Check any image is included
-                if (strcasecmp($imageurl, "@") != 0) {
-                    //Sending the Imamge
-                    $payload = array("recipient" => array("id" => $sender), "message" => array("attachment" => array("type" => "image", "payload" => array("url" => $imageurl))));
-                    $this->sendResponse($payload);
-                }
-            }
-        } else {
-            if ($isGreeting || $isUserFirstMessageToday) {
-                $payload = array("recipient" => array("id" => $sender), "message" => array("text" => $welcomeText . $descriptionText, "quick_replies" => array(array("content_type" => "location"))));
-
-            } else {
-                if (!$refuseRepeatOldQuery) {
-                    $text = $notRecognizedQuery . $descriptionText;
-                    if ($isConfirm) {
-                        $text = $descriptionText;
-                    }
-                    $payload = array("recipient" => array("id" => $sender), "message" => array("text" => $text));
-                } else {
-                    $payload = array("recipient" => array("id" => $sender), "message" => array("text" => "Va bene, per qualsiasi altra richiesta siamo sempre a sua disposizione."));
-                }
-            }
-            $this->sendResponse($payload);
-        }
-
-        if ($isValidQuery) {
             $responseMessage = "Vuole un altro suggerimento ";
             if (count($keywords) == 1) {
                 if ($keywords[0] == "attractors") {
@@ -231,34 +91,211 @@ class FacebookMessengerBotController extends BaseController
             } else {
                 $responseMessage = "Vuole altri suggerimenti simili?";
             }
-            $payload = array("recipient" => array("id" => $sender), "message" => array("text" => $responseMessage));
-            $this->sendResponse($payload);
+            $this->sendTextResponse($responseMessage);
+        } elseif ($intent === self::INTENT_REFUSE) {
+            $responseMessage = "Va bene, per qualsiasi altra richiesta siamo sempre a sua disposizione.";
+            $this->sendTextResponse($responseMessage);
+        } elseif ($intent === self::INTENT_SEND_LOCATION) {
+            $this->sendLocationResponse();
+        } else {
+            $responseMessage = "Scusi, ma non ho capito la sua richiesta. \nVuole conoscere le attrazioni da vedere, i prossimi eventi o le agenzie turistiche?";
+            $this->sendTextResponse($responseMessage);
+        }
+
+        /*save message*/
+        if ($intent !== self::INTENT_CONFIRM) {
+            $messageEntity = new FacebookUsersMessages();
+            $messageEntity->setEntry($this->input);
+            $messageEntity->setSender($this->sender);
+            $date = new DateTime();
+            $date->setTimestamp(substr($this->input['entry'][0]['time'], 0, 10));
+            $messageEntity->setTimeStamp($date);
+            $this->em->persist($messageEntity);
+            $this->em->flush();
         }
 
         return $this->response;
 
     }
 
+    private function retrieveIntent()
+    {
+        $intent = $this->getIntent($this->input);
+        if ($intent === "greeting") {
+            if ($this->hasKeywords($this->input)) {
+                return self::INTENT_GREET_AND_TOURISM_QUERY;
+            } else if ($this->isFirstDailyMessage()) {
+                return self::INTENT_FIRST_DAILY_GREET;
+            } else {
+                return self::INTENT_GREET;
+            }
+        } else if ($intent === "refuse") {
+            if ($this->isAnswer()) {
+                return self::INTENT_REFUSE;
+            }
+            return self::NO_INTENT;
+        } else if ($intent === "confirm") {
+            if ($this->isAnswer()) {
+                return self::INTENT_CONFIRM;
+            }
+            return self::NO_INTENT;
+        } else if ($intent === "tourism_query") {
+            if ($this->hasKeywords($this->input)) {
+                return self::INTENT_TOURISM_QUERY;
+            }
+            return self::NO_INTENT;
+        } else {
+            return self::NO_INTENT;
+        }
+
+    }
+
+    private function hasKeywords($input)
+    {
+        $keywords = $this->getKeywords($input);
+        return $keywords != null && count($keywords) > 0;
+    }
+
+    private function isAnswer()
+    {
+        return $this->hasKeywords($this->previousInput);
+    }
+
+    private function isFirstDailyMessage()
+    {
+        if ($this->previousInput != null) {
+            $today = new DateTime(); // This object represents current date/time
+            $today->setTime(0, 0, 0);
+            $diff = $today->diff($this->previousInput->getTimeStamp());
+            $diffDays = (integer)$diff->format("%R%a"); // Extract days count in interval
+            if ($diffDays == 0) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private function verifyToken()
+    {
+        $challenge = $_REQUEST['hub_challenge'];
+        $verify_token = $_REQUEST['hub_verify_token'];
+        if ($verify_token === 'testtoken') {
+            // Set this Verify Token Value on your Facebook App
+
+            $this->response->headers->set('Content-Type', 'text/plain');
+            $this->response->sendHeaders();
+            $this->response->setContent($challenge);
+            return true;
+        }
+        return false;
+    }
+
+    private function sendTourismInformations($keywords)
+    {
+        foreach ($keywords as $keyword) {
+            $arrayOfMessages = array();
+
+            $startDate = null;
+            $endDate = null;
+
+            $telephone = null;
+            $fax = null;
+            $email = null;
+
+            switch ($keyword) {
+                case "attractors":
+                    $arrayOfMessages = $this->executeAttractorQuery(43.105275, 12.391995, 100, true);
+                    break;
+                case "events":
+                    $arrayOfMessages = $this->executeEventQuery(43.105275, 12.391995, 100, true);
+                    $startDate = $arrayOfMessages[4];
+                    $endDate = $arrayOfMessages[5];
+                    break;
+                case "travel_agencies":
+                    $arrayOfMessages = $this->executeTravelAgencyQuery(43.105275, 12.391995, 100, true);
+                    $telephone = $arrayOfMessages[4];
+                    $fax = $arrayOfMessages[5];
+                    $email = $arrayOfMessages[6];
+                    break;
+            }
+
+            $title = $arrayOfMessages[0];
+            $imageurl = $arrayOfMessages[1];
+            $subtitle = $arrayOfMessages[2];
+            $ResourceOriginUrl = $arrayOfMessages[3];
+            $text = $title . "\n";
+            $content = $subtitle != null ? "Descrizione : \n" . $subtitle . "\n" : "Descrizione:  \n";
+            if (!is_null($telephone)) {
+                $content .= "\tTelefono : " . $telephone;
+            }
+            if (!is_null($fax)) {
+                $content .= "\n\tFax : " . $fax;
+            }
+            if (!is_null($email)) {
+                $content .= "\n\tEmail : " . $email;
+            }
+            if (!is_null($startDate) && !is_null($endDate)) {
+                $content .= "Durata : dal " . $startDate . " al " . $endDate . "\n";
+            }
+            $content .= "\n" . $ResourceOriginUrl;
+
+            $this->sendTextResponse($text . "\n" . $content);
+
+            //Check any image is included
+            if (strcasecmp($imageurl, "@") != 0) {
+                //Sending the Imamge
+                $this->sendImageResponse($imageurl);
+            }
+        }
+    }
+
+    private function initObject()
+    {
+        $this->logger = $this->get('logger');
+        $this->input = json_decode(file_get_contents('php://input'), true);
+        $this->sender = $this->input['entry'][0]['messaging'][0]['sender']['id'];
+        /*retrieve last user's message from db*/
+        $this->em = $this->getDoctrine()->getManager();
+        /**@var FacebookUsersMessagesRepository $messagesRepo */
+        $this->messagesRepo = $this->em->getRepository(FacebookUsersMessages::class);
+        $this->previousInput = $messagesRepo->findLastUserMessage($this->sender)->getEntry();
+    }
+
+
+    private function sendTextResponse($text)
+    {
+        $payload = array("recipient" => array("id" => $this->sender), "message" => array("text" => $text));
+        return $this->sendResponse($payload);
+    }
+
+    private function sendImageResponse($imageUrl)
+    {
+        $payload = array("recipient" => array("id" => $this->sender), "message" => array("attachment" => array("type" => "image", "payload" => array("url" => $imageUrl))));
+        return $this->sendResponse($payload);
+    }
+
+    private function sendLocationResponse()
+    {
+        $payload = array("recipient" => array("id" => $this->sender), "message" => array("quick_replies" => array(array("content_type" => "location"))));
+        return $this->sendResponse($payload);
+    }
+
     private function sendResponse($payload)
     {
-
         //API Url and Access Token, generate this token value on your Facebook App Page
         $url = 'https://graph.facebook.com/v2.6/me/messages?access_token=EAAcCBY9TweYBAPARVvgoXnefMXoi1pDrAukZBSP4wyQP77Gv2uYkGZCps10R1RTYIL4qROi0pI2mNY57fDBz0ZC7ZBLZBxcwXDwqzivefaAyQUc3nqyVqjyKGCZCEICcPqZB6yjMwGllwrYxetff21mLmBQSo3whjjDznL1sTej8wZDZD';
-
         //Initiate cURL.
         $ch = curl_init($url);
-
         //Tell cURL that we want to send a POST request.
         curl_setopt($ch, CURLOPT_POST, 1);
         //Attach our encoded JSON string to the POST fields.
         curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($payload));
         //Set the content type to apsplication/json
         curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json'));
-        $logger = $this->get('logger');
-        $logger->info("Payload: " . json_encode($payload));
+        $this->logger->debug("Payload: " . json_encode($payload));
         //Execute the request but first check if the message is not empty.
         $result = curl_exec($ch);
-        $logger->info("Risposta facebook: " . json_encode($result));
+        $this->logger->debug("Risposta facebook: " . json_encode($result));
         $this->response->setContent($this->response->getContent() . json_encode($payload));
     }
 
@@ -396,9 +433,9 @@ class FacebookMessengerBotController extends BaseController
         }
     }
 
-    public function getKeywords($messageEntry)
+    public function getKeywords($input)
     {
-        $nlpEntities = $messageEntry['entry'][0]['messaging'][0]['message']['nlp']['entities'];
+        $nlpEntities = $input['entry'][0]['messaging'][0]['message']['nlp']['entities'];
         if (isset($nlpEntities["events"])) {
             foreach ($nlpEntities["events"] as $eventEntity) {
                 if ($eventEntity["confidence"] > 0.8) {
