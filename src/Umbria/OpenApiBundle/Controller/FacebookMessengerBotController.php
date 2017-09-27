@@ -50,6 +50,8 @@ class FacebookMessengerBotController extends BaseController
     private $em;
     /**@var Logger $logger */
     private $logger;
+    private $lat;
+    private $long;
 
 
     private function initObject()
@@ -62,6 +64,10 @@ class FacebookMessengerBotController extends BaseController
         $this->messagesRepo = $this->em->getRepository(FacebookUsersMessages::class);
         $this->previousMessage = $this->messagesRepo->findLastUserMessage($this->sender);
         $this->previousInput = $this->previousMessage != null ? $this->previousMessage->getEntry() : null;
+        if ($this->previousMessage != null) {
+            $this->lat = $this->previousMessage->getLat();
+            $this->long = $this->previousMessage->getLong();
+        }
     }
 
     /**
@@ -134,6 +140,8 @@ class FacebookMessengerBotController extends BaseController
             $messageEntity = new FacebookUsersMessages();
             $messageEntity->setEntry($this->input);
             $messageEntity->setSender($this->sender);
+            $messageEntity->setLat($this->lat);
+            $messageEntity->setLong($this->long);
             $date = new DateTime();
             $date->setTimestamp(substr($this->input['entry'][0]['time'], 0, 10));
             $messageEntity->setTimeStamp($date);
@@ -174,6 +182,10 @@ class FacebookMessengerBotController extends BaseController
                 return self::INTENT_TOURISM_QUERY;
             }
             return self::NO_INTENT;
+        } else if ($intent === "location_sent") {
+            return self::INTENT_LOCATION_SENT;
+        } else if ($intent === "send_location") {
+            return self::INTENT_SEND_LOCATION;
         } else {
             return self::NO_INTENT;
         }
@@ -492,6 +504,14 @@ class FacebookMessengerBotController extends BaseController
         $nlpEntities = $messageEntry['entry'][0]['messaging'][0]['message']['nlp']['entities'];
         if (isset($nlpEntities["intent"])) {
             return $nlpEntities["intent"][0]["value"];
+        }
+
+        $lat = $messageEntry['entry'][0]['messaging'][0]['message']['attachments'][0]['payload']['coordinates']['lat'];
+        $long = $messageEntry['entry'][0]['messaging'][0]['message']['attachments'][0]['payload']['coordinates']['long'];
+        if (isset($lat) && isset($long)) {
+            $this->lat = $lat;
+            $this->long = $long;
+            return "location_sent";
         }
         return null;
     }
