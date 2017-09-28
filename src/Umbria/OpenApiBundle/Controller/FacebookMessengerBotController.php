@@ -13,7 +13,6 @@ use Monolog\Logger;
 use Symfony\Component\HttpFoundation\Response;
 use Umbria\OpenApiBundle\Controller\Tourism\BaseController;
 use AnthonyMartin\GeoLocation\GeoLocation;
-use Symfony\Component\Config\Definition\Exception\Exception;
 use Umbria\OpenApiBundle\Entity\FacebookUsersMessages;
 use Umbria\OpenApiBundle\Repository\FacebookUsersMessagesRepository;
 use Umbria\OpenApiBundle\Repository\Tourism\GraphsEntities\AttractorRepository;
@@ -51,7 +50,7 @@ class FacebookMessengerBotController extends BaseController
     /**@var Logger $logger */
     private $logger;
     private $lat;
-    private $long;
+    private $lng;
 
 
     private function initObject()
@@ -66,7 +65,7 @@ class FacebookMessengerBotController extends BaseController
         $this->previousInput = $this->previousMessage != null ? $this->previousMessage->getEntry() : null;
         if ($this->previousMessage != null) {
             $this->lat = $this->previousMessage->getLat();
-            $this->long = $this->previousMessage->getLng();
+            $this->lng = $this->previousMessage->getLng();
         }
     }
 
@@ -127,8 +126,7 @@ class FacebookMessengerBotController extends BaseController
         } elseif ($intent === self::INTENT_SEND_LOCATION) {
             $this->sendLocationResponse();
         } elseif ($intent === self::INTENT_LOCATION_SENT) {
-            $responseMessage = "Effettueremo le prossime ricerche nei dintorni della posizione che ci ha inviato.\n
-            Se vuole cambiare localizzazione basta chiedere.";
+            $responseMessage = "Effettueremo le prossime ricerche nei dintorni della posizione che ci ha inviato.\nSe vuole cambiare localizzazione basta chiedere.";
             $this->sendTextResponse($responseMessage);
         } else {
             $responseMessage = "Scusi, ma non ho capito la sua richiesta. \nVuole conoscere le attrazioni da vedere, i prossimi eventi o le agenzie turistiche?";
@@ -141,7 +139,7 @@ class FacebookMessengerBotController extends BaseController
             $messageEntity->setEntry($this->input);
             $messageEntity->setSender($this->sender);
             $this->lat != null ? $messageEntity->setLat($this->lat) : true;
-            $this->long != null ? $messageEntity->setLng($this->long) : true;
+            $this->lng != null ? $messageEntity->setLng($this->lng) : true;
             $date = new DateTime();
             $date->setTimestamp(substr($this->input['entry'][0]['time'], 0, 10));
             $messageEntity->setTimeStamp($date);
@@ -247,17 +245,23 @@ class FacebookMessengerBotController extends BaseController
             $fax = null;
             $email = null;
 
+            $lat = 43.105275;
+            $lng = 12.391995;
+            if ($this->lat != null && $this->lng != null) {
+                $lat = $this->lat;
+                $lng = $this->lng;
+            }
             switch ($keyword) {
                 case "attractors":
-                    $arrayOfMessages = $this->executeAttractorQuery(43.105275, 12.391995, 100, true);
+                    $arrayOfMessages = $this->executeAttractorQuery($lat, $lng);
                     break;
                 case "events":
-                    $arrayOfMessages = $this->executeEventQuery(43.105275, 12.391995, 100, true);
+                    $arrayOfMessages = $this->executeEventQuery($lat, $lng);
                     $startDate = $arrayOfMessages[4];
                     $endDate = $arrayOfMessages[5];
                     break;
                 case "travel_agencies":
-                    $arrayOfMessages = $this->executeTravelAgencyQuery(43.105275, 12.391995, 100, true);
+                    $arrayOfMessages = $this->executeTravelAgencyQuery($lat, $lng);
                     $telephone = $arrayOfMessages[4];
                     $fax = $arrayOfMessages[5];
                     $email = $arrayOfMessages[6];
@@ -333,25 +337,28 @@ class FacebookMessengerBotController extends BaseController
         $this->response->setContent($this->response->getContent() . json_encode($payload));
     }
 
-    public function executeAttractorQuery($lat, $lng, $radius, $rand)
+    public function executeAttractorQuery($lat, $lng, $radius = 20, $rand = true)
     {
-        /**@var AttractorRepository $attractorRepo */
-        $attractorRepo = $this->getDoctrine()->getRepository('UmbriaOpenApiBundle:Tourism\GraphsEntities\Attractor');
+        while ($radius < 200) {
+            /**@var AttractorRepository $attractorRepo */
+            $attractorRepo = $this->getDoctrine()->getRepository('UmbriaOpenApiBundle:Tourism\GraphsEntities\Attractor');
 
-        $location = GeoLocation::fromDegrees($lat, $lng);
-        /** @var GeoLocation[] $bounds */
-        /** @noinspection PhpInternalEntityUsedInspection */
-        $bounds = $location->boundingCoordinates($radius, 'km');
+            $location = GeoLocation::fromDegrees($lat, $lng);
+            /** @var GeoLocation[] $bounds */
+            /** @noinspection PhpInternalEntityUsedInspection */
+            $bounds = $location->boundingCoordinates($radius, 'km');
 
-        $pois = $attractorRepo->findByPosition(
-            $bounds[1]->getLatitudeInDegrees(),
-            $bounds[0]->getLatitudeInDegrees(),
-            $bounds[1]->getLongitudeInDegrees(),
-            $bounds[0]->getLongitudeInDegrees());
+            $pois = $attractorRepo->findByPosition(
+                $bounds[1]->getLatitudeInDegrees(),
+                $bounds[0]->getLatitudeInDegrees(),
+                $bounds[1]->getLongitudeInDegrees(),
+                $bounds[0]->getLongitudeInDegrees());
 
-        if (sizeof($pois) > 0) {
-            if ($rand) {
-                $key = array_rand($pois);
+            if (sizeof($pois) > 0) {
+                $key = 0;
+                if ($rand) {
+                    $key = array_rand($pois);
+                }
                 $poi = $pois[$key];
                 //$stringResult[0] = $poi->getName() . "\nDescriptions : " . str_replace('&nbsp;', ' ', strip_tags($poi->getDescriptions())) . "\n" . $poi->getResourceOriginUrl();
                 $stringResult[0] = $poi->getName();
@@ -359,31 +366,35 @@ class FacebookMessengerBotController extends BaseController
                 $stringResult[2] = str_replace('&nbsp;', ' ', strip_tags($poi->getShortDescription())) ;
                 $stringResult[3] = $poi->getResourceOriginUrl();
                 return $stringResult;
+            } else {
+                $radius += 10;
             }
-        } else {
-            throw new Exception();
         }
+        return null;
     }
 
-    public function executeProposalQuery($lat, $lng, $radius,$rand)
+    public function executeProposalQuery($lat, $lng, $radius = 20, $rand = true)
     {
-        /**@var ProposalRepository $proposalRepo */
-        $proposalRepo = $this->getDoctrine()->getRepository('UmbriaOpenApiBundle:Tourism\GraphsEntities\Proposal');
+        while ($radius < 200) {
+            /**@var ProposalRepository $proposalRepo */
+            $proposalRepo = $this->getDoctrine()->getRepository('UmbriaOpenApiBundle:Tourism\GraphsEntities\Proposal');
 
-        $location = GeoLocation::fromDegrees($lat, $lng);
-        /** @var GeoLocation[] $bounds */
-        /** @noinspection PhpInternalEntityUsedInspection */
-        $bounds = $location->boundingCoordinates($radius, 'km');
+            $location = GeoLocation::fromDegrees($lat, $lng);
+            /** @var GeoLocation[] $bounds */
+            /** @noinspection PhpInternalEntityUsedInspection */
+            $bounds = $location->boundingCoordinates($radius, 'km');
 
-        $pois = $proposalRepo->findByPosition(
-            $bounds[1]->getLatitudeInDegrees(),
-            $bounds[0]->getLatitudeInDegrees(),
-            $bounds[1]->getLongitudeInDegrees(),
-            $bounds[0]->getLongitudeInDegrees());
+            $pois = $proposalRepo->findByPosition(
+                $bounds[1]->getLatitudeInDegrees(),
+                $bounds[0]->getLatitudeInDegrees(),
+                $bounds[1]->getLongitudeInDegrees(),
+                $bounds[0]->getLongitudeInDegrees());
 
-        if (sizeof($pois) > 0) {
-            if ($rand) {
-                $key = array_rand($pois);
+            if (sizeof($pois) > 0) {
+                $key = 0;
+                if ($rand) {
+                    $key = array_rand($pois);
+                }
                 $poi = $pois[$key];
                 //$stringResult[0] = $poi->getName() . "\nDescriptions : " . str_replace('&nbsp;', ' ', strip_tags($poi->getDescriptions())) . "\n" . $poi->getResourceOriginUrl();
                 $stringResult[0] = $poi->getName();
@@ -391,34 +402,38 @@ class FacebookMessengerBotController extends BaseController
                 $stringResult[2] = str_replace('&nbsp;', ' ', strip_tags($poi->getshortDescription())) ;
                 $stringResult[3] = $poi->getResourceOriginUrl();
                 return $stringResult;
+            } else {
+                $radius += 10;
             }
-        } else {
-            throw new Exception();
         }
+        return null;
     }
 
-    public function executeEventQuery($lat, $lng, $radius, $rand)
+    public function executeEventQuery($lat, $lng, $radius = 20, $rand = true)
     {
-        /**@var EventRepository $eventRepo */
-        $eventRepo = $this->getDoctrine()->getRepository('UmbriaOpenApiBundle:Tourism\GraphsEntities\Event');
+        while ($radius < 200) {
+            /**@var EventRepository $eventRepo */
+            $eventRepo = $this->getDoctrine()->getRepository('UmbriaOpenApiBundle:Tourism\GraphsEntities\Event');
 
-        //$pois = $eventRepo->findByID($id);
+            //$pois = $eventRepo->findByID($id);
 
-        $location = GeoLocation::fromDegrees($lat, $lng);
-        /** @var GeoLocation[] $bounds */
-        /** @noinspection PhpInternalEntityUsedInspection */
-        $bounds = $location->boundingCoordinates($radius, 'km');
+            $location = GeoLocation::fromDegrees($lat, $lng);
+            /** @var GeoLocation[] $bounds */
+            /** @noinspection PhpInternalEntityUsedInspection */
+            $bounds = $location->boundingCoordinates($radius, 'km');
 
-        $pois = $eventRepo->findByPosition(
-            $bounds[1]->getLatitudeInDegrees(),
-            $bounds[0]->getLatitudeInDegrees(),
-            $bounds[1]->getLongitudeInDegrees(),
-            $bounds[0]->getLongitudeInDegrees());
+            $pois = $eventRepo->findByPosition(
+                $bounds[1]->getLatitudeInDegrees(),
+                $bounds[0]->getLatitudeInDegrees(),
+                $bounds[1]->getLongitudeInDegrees(),
+                $bounds[0]->getLongitudeInDegrees());
 
 
-        if (sizeof($pois) > 0) {
-            if ($rand) {
-                $key = array_rand($pois);
+            if (sizeof($pois) > 0) {
+                $key = 0;
+                if ($rand) {
+                    $key = array_rand($pois);
+                }
                 $poi = $pois[$key];
                 //$stringResult[0] = $poi->getName() . "\nDescriptions : " . str_replace('&nbsp;', ' ', strip_tags($poi->getDescriptions())) . "\n" . $poi->getResourceOriginUrl();
                 $stringResult[0] = $poi->getName();
@@ -428,29 +443,33 @@ class FacebookMessengerBotController extends BaseController
                 $stringResult[4] = date_format($poi-> getStartDate(),"d-m-Y");
                 $stringResult[5] = date_format($poi-> getEndDate(),"d-m-Y");
                 return $stringResult;
+            } else {
+                $radius += 10;
             }
-        } else {
-            throw new Exception();
         }
+        return null;
     }
 
-    public function executeTravelAgencyQuery($lat, $lng, $radius, $rand)
+    public function executeTravelAgencyQuery($lat, $lng, $radius = 20, $rand = true)
     {
-        /**@var TravelAgencyRepository $travelagencyRepo */
-        $travelagencyRepo = $this->getDoctrine()->getRepository('UmbriaOpenApiBundle:Tourism\GraphsEntities\TravelAgency');
+        while ($radius < 200) {
+            /**@var TravelAgencyRepository $travelagencyRepo */
+            $travelagencyRepo = $this->getDoctrine()->getRepository('UmbriaOpenApiBundle:Tourism\GraphsEntities\TravelAgency');
 
-        //$pois = $eventRepo->findByID($id);
+            //$pois = $eventRepo->findByID($id);
 
-        $location = GeoLocation::fromDegrees($lat, $lng);
-        /** @var GeoLocation[] $bounds */
-        /** @noinspection PhpInternalEntityUsedInspection */
-        $bounds = $location->boundingCoordinates($radius, 'km');
+            $location = GeoLocation::fromDegrees($lat, $lng);
+            /** @var GeoLocation[] $bounds */
+            /** @noinspection PhpInternalEntityUsedInspection */
+            $bounds = $location->boundingCoordinates($radius, 'km');
 
-        $pois = $travelagencyRepo->findByPosition($bounds[1]->getLatitudeInDegrees(), $bounds[0]->getLatitudeInDegrees(), $bounds[1]->getLongitudeInDegrees(), $bounds[0]->getLongitudeInDegrees());
+            $pois = $travelagencyRepo->findByPosition($bounds[1]->getLatitudeInDegrees(), $bounds[0]->getLatitudeInDegrees(), $bounds[1]->getLongitudeInDegrees(), $bounds[0]->getLongitudeInDegrees());
 
-        if (sizeof($pois) > 0) {
-            if ($rand) {
-                $key = array_rand($pois);
+            if (sizeof($pois) > 0) {
+                $key = 0;
+                if ($rand) {
+                    $key = array_rand($pois);
+                }
                 $poi = $pois[$key];
                 //$stringResult[0] = $poi->getName() . "\nDescriptions : " . str_replace('&nbsp;', ' ', strip_tags($poi->getDescriptions())) . "\n" . $poi->getResourceOriginUrl();
                 $stringResult[0] = $poi->getName();
@@ -461,10 +480,11 @@ class FacebookMessengerBotController extends BaseController
                 $stringResult[5] = $poi->getFax()[0];
                 $stringResult[6] = $poi->getEmail()[0];
                 return $stringResult;
+            } else {
+                $radius += 10;
             }
-        } else {
-            throw new Exception();
         }
+        return null;
     }
 
     public function getKeywords($input)
@@ -510,7 +530,7 @@ class FacebookMessengerBotController extends BaseController
         $long = $messageEntry['entry'][0]['messaging'][0]['message']['attachments'][0]['payload']['coordinates']['long'];
         if (isset($lat) && isset($long)) {
             $this->lat = $lat;
-            $this->long = $long;
+            $this->lng = $long;
             return "location_sent";
         }
         return null;
