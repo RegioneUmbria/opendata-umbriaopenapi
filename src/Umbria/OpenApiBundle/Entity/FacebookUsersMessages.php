@@ -52,7 +52,7 @@ class FacebookUsersMessages
     /**
      * @ORM\Column(type="float", nullable=true)
      */
-    private $long;
+    private $lng;
 
     /**
      * @return int
@@ -137,17 +137,17 @@ class FacebookUsersMessages
     /**
      * @return float
      */
-    public function getLong()
+    public function getLng()
     {
-        return $this->long;
+        return $this->lng;
     }
 
     /**
-     * @param float $long
+     * @param float $lng
      */
-    public function setLong($long)
+    public function setLng($lng)
     {
-        $this->long = $long;
+        $this->lng = $lng;
     }
 
 }
