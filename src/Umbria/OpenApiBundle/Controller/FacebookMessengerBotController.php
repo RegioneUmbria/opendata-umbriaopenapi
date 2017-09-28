@@ -66,7 +66,7 @@ class FacebookMessengerBotController extends BaseController
         $this->previousInput = $this->previousMessage != null ? $this->previousMessage->getEntry() : null;
         if ($this->previousMessage != null) {
             $this->lat = $this->previousMessage->getLat();
-            $this->long = $this->previousMessage->getLong();
+            $this->long = $this->previousMessage->getLng();
         }
     }
 
