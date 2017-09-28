@@ -9,6 +9,7 @@
 namespace Umbria\OpenApiBundle\Controller;
 
 use DateTime;
+use Doctrine\ORM\EntityManager;
 use Monolog\Logger;
 use Symfony\Component\HttpFoundation\Response;
 use Umbria\OpenApiBundle\Controller\Tourism\BaseController;
@@ -490,6 +491,7 @@ class FacebookMessengerBotController extends BaseController
 
     public function getKeywords($input)
     {
+        $keywords = null;
         $nlpEntities = $input['entry'][0]['messaging'][0]['message']['nlp']['entities'];
         if (isset($nlpEntities["events"])) {
             foreach ($nlpEntities["events"] as $eventEntity) {
