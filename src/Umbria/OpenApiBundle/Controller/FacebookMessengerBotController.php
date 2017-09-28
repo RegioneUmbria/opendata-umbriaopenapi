@@ -94,6 +94,7 @@ class FacebookMessengerBotController extends BaseController
         } elseif ($intent === self::INTENT_GREET) {
             $responseMessage = "Vuole conoscere le attrazioni da vedere, i prossimi eventi o le agenzie turistiche?";
             $this->sendTextResponse($responseMessage);
+            $this->sendLocationResponse();
         } elseif ($intent === self::INTENT_GREET_AND_TOURISM_QUERY ||
             $intent === self::INTENT_TOURISM_QUERY ||
             $intent === self::INTENT_CONFIRM ||
