@@ -69,7 +69,7 @@ class EntitiesUpdateController extends BaseController
 
                 $isFirstEntityTypeRetrieve=false;
                 $diff=null;
-                if ($setting == null) {
+                if ($setting == null || $setting->getUpdatedAt() == null) {
                     $setting = new Setting();
                     $setting->setDatasetName($entityType);
                     $isFirstEntityTypeRetrieve=true;
