@@ -2,7 +2,7 @@
  * Created by Lorenzo Franco Ranucci on 13/12/2016.
  */
 
-var url;
+var endpointSparqlQueryServerSide;
 
 function mainDrawCharts() {
     setControllerUrl();
@@ -12,7 +12,7 @@ function mainDrawCharts() {
 function setControllerUrl() {
     var currentUrl = window.location.href;
     var tmpUrl = currentUrl.concat("/execute_sparql_query/");
-    url = tmpUrl.replace("statistiche/execute_sparql_query/", "statistiche/SUAPE/execute_sparql_query/");
+    endpointSparqlQueryServerSide = tmpUrl.replace("statistiche/execute_sparql_query/", "statistiche/SUAPE/execute_sparql_query/");
 }
 
 function drawCharts(dataSelectorButtonPressed) {
@@ -77,7 +77,7 @@ function drawEvaseAnnotationAndTableCharts() {
         " ORDER BY  ?anno ?mese";
 
     var queryObj = {query: sparqlQuery};
-    $.post(url, queryObj, function (resp, textStatus) {
+    $.post(endpointSparqlQueryServerSide, queryObj, function (resp, textStatus) {
         var data = new google.visualization.DataTable();
         data.addColumn('date', 'Data');
         data.addColumn('number', 'Chiuse positivamente');
@@ -138,7 +138,7 @@ function drawTipologieAnnotationChart() {
 
     var queryObj = {query: sparqlQueryTipologie};
     /*Get every tipologia value that is tipologia of at least one pratica of selected comune*/
-    $.post(url, queryObj, function (resp, textStatus) {
+    $.post(endpointSparqlQueryServerSide, queryObj, function (resp, textStatus) {
         var tipologieArray = JSON.parse(resp.data).results.bindings;
         var select1 = "";
         var selectSubquery = "";
@@ -183,7 +183,7 @@ function drawTipologieAnnotationChart() {
             "\n GROUP BY ?anno ?mese" +
             "\n ORDER BY ?anno ?mese";
         var queryObj = {query: sparqlQuery};
-        $.post(url, queryObj, function (resp2, textStatus) {
+        $.post(endpointSparqlQueryServerSide, queryObj, function (resp2, textStatus) {
             var dataPratichePerTipologia = new google.visualization.DataTable();
             dataPratichePerTipologia.addColumn('date', 'Data');
             for (var j = 0; j < tipologie.length; j++) {
@@ -242,7 +242,7 @@ function drawTipologiePieChart() {
         "GROUP BY ?tipologia " +
         "ORDER BY DESC(?quantita)";
     var queryObj = {query: sparqlQueryTipologie};
-    $.post(url, queryObj, function (resp, textStatus) {
+    $.post(endpointSparqlQueryServerSide, queryObj, function (resp, textStatus) {
         var dataPratichePerTipologia = new google.visualization.DataTable();
         dataPratichePerTipologia.addColumn('string', 'Tipologia');
         dataPratichePerTipologia.addColumn('number', 'Quantità');
@@ -280,7 +280,7 @@ function drawCategorieAnnotationChart() {
 
     var queryObj = {query: sparqlQueryCategorie};
     /*Get every categoria value that is categoria of at least one pratica of selected comune*/
-    $.post(url, queryObj, function (resp, textStatus) {
+    $.post(endpointSparqlQueryServerSide, queryObj, function (resp, textStatus) {
         var categorieArray = JSON.parse(resp.data).results.bindings;
         var select1 = "";
         var selectSubquery = "";
@@ -327,7 +327,7 @@ function drawCategorieAnnotationChart() {
             "\n ORDER BY ?anno ?mese";
 
         var queryObj = {query: sparqlQuery};
-        $.post(url, queryObj, function (resp2, textStatus) {
+        $.post(endpointSparqlQueryServerSide, queryObj, function (resp2, textStatus) {
             var dataPratichePerCategoria = new google.visualization.DataTable();
             dataPratichePerCategoria.addColumn('date', 'Data');
             for (var j = 0; j < categorie.length; j++) {
@@ -389,7 +389,7 @@ function drawCategoriePieChart() {
         "GROUP BY ?categoria " +
         "ORDER BY DESC (?quantita) ";
     var queryObj = {query: sparqlQueryCategorie};
-    $.post(url, queryObj, function (resp, textStatus) {
+    $.post(endpointSparqlQueryServerSide, queryObj, function (resp, textStatus) {
         var dataPratichePerCategoria = new google.visualization.DataTable();
         dataPratichePerCategoria.addColumn('string', 'Categoria');
         dataPratichePerCategoria.addColumn('number', 'Quantità');
@@ -430,7 +430,7 @@ function setComuneSelectOptions() {
         " }" +
         "ORDER BY  (?comune) ";
     var queryObj = {query: sparqlQuery};
-    $.post(url, queryObj, function (resp, textStatus) {
+    $.post(endpointSparqlQueryServerSide, queryObj, function (resp, textStatus) {
         var rows = JSON.parse(resp.data).results.bindings;
         for (var i = 0; i < rows.length; i++) {
             var row = rows[i];
@@ -467,7 +467,7 @@ function setAnnoSelectOptions() {
         "}" +
         "ORDER BY ?anno";
     var queryObj = {query: sparqlQuery};
-    $.post(url, queryObj, function (resp, textStatus) {
+    $.post(endpointSparqlQueryServerSide, queryObj, function (resp, textStatus) {
         var rows = JSON.parse(resp.data).results.bindings;
         for (var i = 0; i < rows.length; i++) {
             var row = rows[i];
@@ -502,7 +502,7 @@ function setMeseSelectOptions() {
         "ORDER BY ?mese";
 
     var queryObj = {query: sparqlQuery};
-    $.post(url, queryObj, function (resp, textStatus) {
+    $.post(endpointSparqlQueryServerSide, queryObj, function (resp, textStatus) {
         var rows = JSON.parse(resp.data).results.bindings;
         var months = [];
         for (var i = 0; i < rows.length; i++) {
