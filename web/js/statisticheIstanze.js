@@ -26,7 +26,7 @@ function drawCharts() {
 
 function drawArgomentiCharts() {
     drawArgomentiAnnotationChart();
-    drawArgomentiPieChart();
+
 }
 
 function drawServiziCharts() {
@@ -50,7 +50,7 @@ function drawArgomentiAnnotationChart() {
         "ORDER BY DESC (?numero) ";
 
     var queryObj = {query: sparqlQueryArgomenti};
-    /*Get every tipologia value that is tipologia of at least one pratica of selected comune*/
+    /*Get every argomento value that is argomento of at least one istanza of selected ente*/
     $.post(endpointSparqlQueryServerSide, queryObj, function (resp, textStatus) {
         var argomentiArray = JSON.parse(resp.data).results.bindings;
         var select1 = "";
@@ -60,7 +60,7 @@ function drawArgomentiAnnotationChart() {
 
         for (var j = 0; j < argomentiArray.length; j++) {
             var argomento = argomentiArray[j].argomento.value;
-            var argomentoForQuery = tipologia.replace(/\W/g, '');
+            var argomentoForQuery = argomento.replace(/\W/g, '');
             argomenti[cntArgomenti] = argomento;
             select1 += " SUM(?" + argomentoForQuery + ") as ?" + argomentoForQuery;
             selectSubquery += " ?" + argomentoForQuery;
@@ -69,7 +69,7 @@ function drawArgomentiAnnotationChart() {
 
         /*Make a subquery for each tipologia. */
         var allSubqueries = "";
-        for (var i = 0; i < argomenti.length; i++) {
+        for (var i = 0; i < 3; i++) {
             var currentSubQuery = "{ SELECT ?anno ?mese " + selectSubquery +
                 "\n WHERE " +
                 "\n {?s <http://purl.org/linked-data/cube#dataSet> <http://dati.umbria.it/risorsa/dataset/Istanze/0>. " +
@@ -78,7 +78,7 @@ function drawArgomentiAnnotationChart() {
                 "\n ?s <http://dati.umbria.it/risorsa/dimensione/mese> ?mese. " +
                 "\n ?s <http://dati.umbria.it/risorsa/dimensione/istanze-dipartimento> ?argomento. " +
                 "\n ?s <http://dati.umbria.it/risorsa/misura/istanze-numero> ?" + argomenti[i].replace(/\W/g, '') + ". " +
-                "\n FILTER regex(?comune, \"" + ente + "\", \"i\"). " +
+                "\n FILTER regex(?ente, \"" + ente + "\", \"i\"). " +
                 "\n FILTER regex(?argomento, \"" + argomenti[i] + "\", \"i\"). " +
                 getBindings(argomenti, i) +
                 "\n} " +
@@ -125,55 +125,57 @@ function drawArgomentiAnnotationChart() {
         }, "json");
 
     }, "json");
+
+    //drawArgomentiPieChart();
 }
 
-function drawTipologiePieChart() {
-    var comune = $("#comuneFilter").val();
+function drawArgomentiPieChart() {
+    var ente = $("#enteFilter").val();
     var anno = $("#annoFilter").val();
     var mese = $("#meseFilter").val();
     var filterAnno = "";
     var filterMese = "";
     if (anno != "all") {
-        filterAnno = "FILTER (?anno=" + anno + ").";
+        filterAnno = "FILTER (?anno" + anno + ").";
     }
     if (mese != "all") {
         filterMese = "FILTER regex(?mese,\"" + mese + "\", \"i\").";
     }
 
-    var sparqlQueryTipologie = "SELECT ?tipologia (SUM(?quantita) AS ?quantita)" +
+    var sparqlQueryArgomenti = "SELECT ?argomento (SUM(?quantita) AS ?quantita)" +
         " WHERE{" +
-        "     ?s <http://purl.org/linked-data/cube#dataSet> <http://dati.umbria.it/risorsa/dataset/SUAPE/2> ." +
-        "     ?s <http://dati.umbria.it/risorsa/dimensione/tipologia_SUAPE> ?tipologia." +
-        "     ?s <http://dati.umbria.it/risorsa/misura/quantita> ?quantita." +
-        "     ?s <http://dati.umbria.it/risorsa/dimensione/comune> ?comune." +
-        "     FILTER regex(?comune, \"" + comune + "\", \"i\")." +
+        "\n ?s <http://purl.org/linked-data/cube#dataSet> <http://dati.umbria.it/risorsa/dataset/Istanze/0>. " +
+        "\n ?s <http://dati.umbria.it/risorsa/dimensione/istanze-ente> ?ente. " +
+        "\n     FILTER regex(?ente, \"" + ente + "\", \"i\")." +
+        "\n ?s <http://dati.umbria.it/risorsa/dimensione/istanze-dipartimento> ?argomento. " +
+        "     ?s <http://dati.umbria.it/risorsa/misura/istanze-numero> ?quantita." +
         "     ?s <http://dati.umbria.it/risorsa/dimensione/anno> ?anno." +
         "     " + filterAnno +
         "     ?s <http://dati.umbria.it/risorsa/dimensione/mese> ?mese." +
         "     " + filterMese +
-        " }" +
-        "GROUP BY ?tipologia " +
-        "ORDER BY DESC(?quantita)";
-    var queryObj = {query: sparqlQueryTipologie};
+        " } " +
+        "\n GROUP BY ?argomento " +
+        "\n ORDER BY DESC(?quantita)";
+    var queryObj = {query: sparqlQueryArgomenti};
     $.post(endpointSparqlQueryServerSide, queryObj, function (resp, textStatus) {
-        var dataPratichePerTipologia = new google.visualization.DataTable();
-        dataPratichePerTipologia.addColumn('string', 'Tipologia');
-        dataPratichePerTipologia.addColumn('number', 'Quantità');
-        var rowsPratichePerTipologia = JSON.parse(resp.data).results.bindings;
-        for (var i = 0; i < rowsPratichePerTipologia.length; i++) {
-            var row = rowsPratichePerTipologia[i];
-            var tipologiaLabel = row.tipologia.value;
-            var tipologiaQuantita = parseInt(row.quantita.value);
-            var rowArray = [tipologiaLabel, tipologiaQuantita];
-            dataPratichePerTipologia.addRow(rowArray);
+        var dataPratichePerArgomento = new google.visualization.DataTable();
+        dataPratichePerArgomento.addColumn('string', 'Argomento');
+        dataPratichePerArgomento.addColumn('number', 'Quantità');
+        var rowsPratichePerArgomento = JSON.parse(resp.data).results.bindings;
+        for (var i = 0; i < rowsPratichePerArgomento.length; i++) {
+            var row = rowsPratichePerArgomento[i];
+            var argomentoLabel = row.argomento.value;
+            var argomentoQuantita = parseInt(row.quantita.value);
+            var rowArray = [argomentoLabel, argomentoQuantita];
+            dataPratichePerArgomento.addRow(rowArray);
         }
-        var tipologieChartOptions = {
+        var argomentiChartOptions = {
             pieHole: 0.4,
             backgroundColor: "#EEEEEE",
             chartArea: {left: 250}
         };
-        var tipologieChart = new google.visualization.PieChart(document.getElementById('chart_div_2'));
-        tipologieChart.draw(dataPratichePerTipologia, tipologieChartOptions);
+        var argomentiChart = new google.visualization.PieChart(document.getElementById('chart_div_2'));
+        argomentiChart.draw(dataPratichePerArgomento, argomentiChartOptions);
 
     }, "json");
 }
@@ -351,9 +353,11 @@ function setEnteSelectOptions() {
             $("#enteFilter").html($("#enteFilter").html() + " <option value=\"" + row.ente.value + "\" " + selected + " >" + row.ente.value + "</option>");
         }
 
+
         if (document.getElementById("argomentiDatasetSelector").classList.contains("btn-primary")) {
             google.charts.load('current', {'packages': ['corechart', 'controls', 'annotationchart', 'table']});
             google.charts.setOnLoadCallback(drawCharts);
+            setAnnoSelectOptions();
         }
         else {
             setArgomentiSelectOptions();
@@ -381,12 +385,13 @@ function setArgomentiSelectOptions() {
         }
         google.charts.load('current', {'packages': ['corechart', 'controls', 'annotationchart', 'table']});
         google.charts.setOnLoadCallback(drawCharts);
+        setAnnoSelectOptions();
     });
 
 }
 
 function setAnnoSelectOptions() {
-    $("#annoFilter").html("<option value=\"all\" selected>Tutti</option>");
+    $("#annoFilter").html("<option value=\"\" selected>Tutti</option>");
     var ente = $("#enteFilter").val();
     var argomento = $("#argomentoFilter").val();
     if (document.getElementById("argomentiDatasetSelector").classList.contains("btn-primary")) {
@@ -410,11 +415,12 @@ function setAnnoSelectOptions() {
             var anno = row.anno.value;
             $("#annoFilter").html($("#annoFilter").html() + " <option value=\"" + anno + "\">" + anno + "</option>");
         }
+        setMeseSelectOptions();
     }, "json");
 }
 
 function setMeseSelectOptions() {
-    $("#meseFilter").html("<option value=\"all\" selected>Tutti</option>");
+    $("#meseFilter").html("<option value=\"\" selected>Tutti</option>");
     var ente = $("#enteFilter").val();
     var argomento = $("#argomentoFilter").val();
     var anno = $("#annoFilter").val();

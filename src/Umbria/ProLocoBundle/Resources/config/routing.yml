@@ -54,3 +54,9 @@ umbria_pro_loco_suape_execute_sparql_query:
     path:     /statistiche/SUAPE/execute_sparql_query/
     defaults: {_controller: UmbriaProLocoBundle:SUAPE:executeSparqlQuery }
     methods:  [POST]
+
+
+umbria_pro_loco_istanze_execute_sparql_query:
+    path:     /statistiche/istanze/execute_sparql_query/
+    defaults: {_controller: UmbriaProLocoBundle:Istanze:executeSparqlQuery }
+    methods:  [POST, GET]

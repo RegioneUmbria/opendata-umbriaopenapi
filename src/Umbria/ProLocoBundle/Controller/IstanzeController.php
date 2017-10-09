@@ -22,7 +22,7 @@ class IstanzeController extends BaseController
     public function executeSparqlQueryAction()
     {
         $options = array('query' => $_POST['query'], 'format' => "application/sparql-results+json");
-        $response = $this->postWebResource("http://dati.umbria.it/sparql", $options);
+        $response = $this->postWebResource("http://172.29.0.180/sparql", $options);
         return new JsonResponse(array('data' => $response));
     }
 
