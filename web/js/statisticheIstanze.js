@@ -26,6 +26,7 @@ function drawCharts() {
 
 function drawArgomentiCharts() {
     drawArgomentiAnnotationChart();
+    drawArgomentiPieChart();
 
 }
 
@@ -69,7 +70,7 @@ function drawArgomentiAnnotationChart() {
 
         /*Make a subquery for each tipologia. */
         var allSubqueries = "";
-        for (var i = 0; i < 3; i++) {
+        for (var i = 0; i < argomenti.length; i++) {
             var currentSubQuery = "{ SELECT ?anno ?mese " + selectSubquery +
                 "\n WHERE " +
                 "\n {?s <http://purl.org/linked-data/cube#dataSet> <http://dati.umbria.it/risorsa/dataset/Istanze/0>. " +
@@ -126,7 +127,7 @@ function drawArgomentiAnnotationChart() {
 
     }, "json");
 
-    //drawArgomentiPieChart();
+
 }
 
 function drawArgomentiPieChart() {
@@ -135,10 +136,10 @@ function drawArgomentiPieChart() {
     var mese = $("#meseFilter").val();
     var filterAnno = "";
     var filterMese = "";
-    if (anno != "all") {
-        filterAnno = "FILTER (?anno" + anno + ").";
+    if (anno != "all" && anno != null) {
+        filterAnno = "FILTER regex(?anno,\"" + anno + "\", \"i\").";
     }
-    if (mese != "all") {
+    if (mese != "all" && mese != null) {
         filterMese = "FILTER regex(?mese,\"" + mese + "\", \"i\").";
     }
 
@@ -169,6 +170,12 @@ function drawArgomentiPieChart() {
             var rowArray = [argomentoLabel, argomentoQuantita];
             dataPratichePerArgomento.addRow(rowArray);
         }
+
+
+        /*Todo remove this workaround*/
+        var evase_chart = new google.visualization.Table(document.getElementById('chart_div_2'));
+        evase_chart.draw(dataPratichePerArgomento);
+
         var argomentiChartOptions = {
             pieHole: 0.4,
             backgroundColor: "#EEEEEE",
@@ -180,52 +187,57 @@ function drawArgomentiPieChart() {
     }, "json");
 }
 
-function drawCategorieAnnotationChart() {
-    var comune = $("#comuneFilter").val();
-    var sparqlQueryCategorie = "SELECT ?categorie (SUM(?quantita) AS ?quantita)" +
+function drawServiziAnnotationChart() {
+    var ente = $("#enteFilter").val();
+    var argomento = $("#argomentoFilter").val();
+    var sparqlQueryServizi = "SELECT ?servizio (SUM(?numero) AS ?numero)" +
         "WHERE{" +
-        "     ?pratiche <http://purl.org/linked-data/cube#dataSet> <http://dati.umbria.it/risorsa/dataset/SUAPE/3> ." +
-        "     ?pratiche <http://dati.umbria.it/risorsa/dimensione/categoria_SUAPE> ?categorie." +
-        "     ?pratiche <http://dati.umbria.it/risorsa/misura/quantita> ?quantita." +
-        "     ?pratiche <http://dati.umbria.it/risorsa/dimensione/comune> ?comune." +
-        "     FILTER regex(?comune, \"" + comune + "\", \"i\")." +
+        "     ?s <http://purl.org/linked-data/cube#dataSet> <http://dati.umbria.it/risorsa/dataset/Istanze/0> ." +
+        "     ?s <http://dati.umbria.it/risorsa/dimensione/istanze-ente> ?ente." +
+        "     ?s <http://dati.umbria.it/risorsa/dimensione/istanze-dipartimento> ?argomento." +
+        "     ?s <http://dati.umbria.it/risorsa/dimensione/istanze-family> ?servizio." +
+        "     ?s <http://dati.umbria.it/risorsa/misura/istanze-numero> ?numero." +
+        "     FILTER regex(?argomento, \"" + argomento + "\", \"i\")." +
+        "     FILTER regex(?ente, \"" + ente + "\", \"i\")." +
         "}" +
-        "GROUP BY ?categorie " +
-        "ORDER BY DESC (?quantita) ";
+        "GROUP BY ?servizio " +
+        "ORDER BY DESC (?numero) ";
 
-    var queryObj = {query: sparqlQueryCategorie};
-    /*Get every categoria value that is categoria of at least one pratica of selected comune*/
+    var queryObj = {query: sparqlQueryServizi};
+    /*Get every servizio value that is servizio of at least one istanza of selected ente and argomento*/
     $.post(endpointSparqlQueryServerSide, queryObj, function (resp, textStatus) {
-        var categorieArray = JSON.parse(resp.data).results.bindings;
+        var serviziArray = JSON.parse(resp.data).results.bindings;
         var select1 = "";
         var selectSubquery = "";
-        var categorie = [];
-        var cntCategorie = 0;
+        var servizi = [];
+        var cntServizi = 0;
 
 
-        for (var j = 0; j < categorieArray.length; j++) {
-            var categoria = categorieArray[j].categorie.value;
-            var categoriaForQuery = categoria.replace(/\W/g, '');
-            categorie[cntCategorie] = categoria;
-            select1 += " SUM(?" + categoriaForQuery + ") as ?" + categoriaForQuery;
-            selectSubquery += " ?" + categoriaForQuery;
-            cntCategorie++;
+        for (var j = 0; j < serviziArray.length; j++) {
+            var servizio = serviziArray[j].servizio.value;
+            var servizioForQuery = servizio.replace(/\W/g, '');
+            servizi[cntServizi] = servizio;
+            select1 += " SUM(?" + servizioForQuery + ") as ?" + servizioForQuery;
+            selectSubquery += " ?" + servizioForQuery;
+            cntServizi++;
         }
 
-        /*Make a subquery for each categoria. */
+        /*Make a subquery for each servizio. */
         var allSubqueries = "";
-        for (var i = 0; i < categorie.length; i++) {
+        for (var i = 0; i < servizi.length; i++) {
             var currentSubQuery = "{ SELECT ?anno ?mese " + selectSubquery +
                 "\n WHERE " +
-                "\n {?s <http://purl.org/linked-data/cube#dataSet> <http://dati.umbria.it/risorsa/dataset/SUAPE/3>. " +
+                "\n {?s <http://purl.org/linked-data/cube#dataSet> <http://dati.umbria.it/risorsa/dataset/Istanze/0>. " +
                 "\n ?s <http://dati.umbria.it/risorsa/dimensione/anno> ?anno. " +
-                "\n ?s <http://dati.umbria.it/risorsa/dimensione/comune> ?comune. " +
+                "\n ?s <http://dati.umbria.it/risorsa/dimensione/istanze-ente> ?ente. " +
                 "\n ?s <http://dati.umbria.it/risorsa/dimensione/mese> ?mese. " +
-                "\n ?s <http://dati.umbria.it/risorsa/dimensione/categoria_SUAPE> ?categoria. " +
-                "\n ?s <http://dati.umbria.it/risorsa/misura/quantita> ?" + categorie[i].replace(/\W/g, '') + ". " +
-                "\n FILTER regex(?comune, \"" + comune + "\", \"i\"). " +
-                "\n FILTER regex(?categoria, \"" + categorie[i].replace(new RegExp("\\(", 'g'), "\\\\(").replace(new RegExp("\\)", 'g'), "\\\\)") + "\", \"i\"). " +
-                getBindings(categorie, i) +
+                "\n ?s <http://dati.umbria.it/risorsa/dimensione/istanze-dipartimento> ?argomento. " +
+                "\n ?s <http://dati.umbria.it/risorsa/dimensione/istanze-family> ?servizio." +
+                "\n ?s <http://dati.umbria.it/risorsa/misura/istanze-numero> ?" + servizi[i].replace(/\W/g, '') + ". " +
+                "\n FILTER regex(?ente, \"" + ente + "\", \"i\"). " +
+                "\n FILTER regex(?argomento, \"" + argomento + "\", \"i\"). " +
+                "\n FILTER regex(?servizio, \"" + servizi[i] + "\", \"i\"). " +
+                getBindings(servizi, i) +
                 "\n} " +
                 "\n GROUP BY ?anno ?mese " +
                 "\n ORDER BY ?anno ?mese }";
@@ -243,24 +255,24 @@ function drawCategorieAnnotationChart() {
 
         var queryObj = {query: sparqlQuery};
         $.post(endpointSparqlQueryServerSide, queryObj, function (resp2, textStatus) {
-            var dataPratichePerCategoria = new google.visualization.DataTable();
-            dataPratichePerCategoria.addColumn('date', 'Data');
-            for (var j = 0; j < categorie.length; j++) {
-                dataPratichePerCategoria.addColumn('number', categorie[j]);
+            var dataPratichePerServizio = new google.visualization.DataTable();
+            dataPratichePerServizio.addColumn('date', 'Data');
+            for (var j = 0; j < servizi.length; j++) {
+                dataPratichePerServizio.addColumn('number', servizi[j]);
             }
-            var rowsPratichePerCategoria = JSON.parse(resp2.data).results.bindings;
-            for (var i = 0; i < rowsPratichePerCategoria.length; i++) {
-                var row = rowsPratichePerCategoria[i];
-                var date = new Date(row.anno.value, new Date(Date.parse(row.mese.value + " 1, 2012")).getMonth());
+            var rowsPratichePerServizio = JSON.parse(resp2.data).results.bindings;
+            for (var i = 0; i < rowsPratichePerServizio.length; i++) {
+                var row = rowsPratichePerServizio[i];
+                var date = new Date(row.anno.value, new Date(Date.parse(row.mese.value + " 1, 2016")).getMonth());
                 var rowArray = Object.keys(row).map(function (key) {
                     return parseInt(row[key].value);
                 });
                 rowArray[1] = date;
                 rowArray = rowArray.slice(1, rowArray.length);
-                dataPratichePerCategoria.addRow(rowArray);
+                dataPratichePerServizio.addRow(rowArray);
             }
 
-            var categorieChartOptions = {
+            var serviziChartOptions = {
                 dateFormat: 'MMMM, yyyy',
                 fill: 10,
                 legendPosition: 'newRow',
@@ -269,60 +281,64 @@ function drawCategorieAnnotationChart() {
                 allowHtml: true,
                 annotationsWidth: 80
             };
-            var categorieChart = new google.visualization.AnnotationChart(document.getElementById('chart_div_1'));
-            categorieChart.draw(dataPratichePerCategoria, categorieChartOptions);
+            var serviziChart = new google.visualization.AnnotationChart(document.getElementById('chart_div_1'));
+            serviziChart.draw(dataPratichePerServizio, serviziChartOptions);
         }, "json");
     }, "json");
 
 }
 
-function drawCategoriePieChart() {
-    var comune = $("#comuneFilter").val();
+function drawServiziPieChart() {
+    var ente = $("#enteFilter").val();
+    var argomento = $("#argomentoFilter").val();
     var anno = $("#annoFilter").val();
     var mese = $("#meseFilter").val();
     var filterAnno = "";
     var filterMese = "";
-    if (anno != "all") {
-        filterAnno = "FILTER (?anno=" + anno + ").";
+    if (anno != "all" && anno != null) {
+        filterAnno = "FILTER regex(?anno,\"" + anno + "\", \"i\").";
     }
-    if (mese != "all") {
+    if (mese != "all" && mese != null) {
         filterMese = "FILTER regex(?mese,\"" + mese + "\", \"i\").";
     }
 
-    var sparqlQueryCategorie = "SELECT ?categoria (SUM(?quantita) AS ?quantita)" +
+    var sparqlQueryServizi = "SELECT ?servizio (SUM(?quantita) AS ?quantita)" +
         " WHERE{" +
-        "     ?s <http://purl.org/linked-data/cube#dataSet> <http://dati.umbria.it/risorsa/dataset/SUAPE/3> ." +
-        "     ?s <http://dati.umbria.it/risorsa/dimensione/categoria_SUAPE> ?categoria." +
-        "     ?s <http://dati.umbria.it/risorsa/misura/quantita> ?quantita." +
-        "     ?s <http://dati.umbria.it/risorsa/dimensione/comune> ?comune." +
-        "     FILTER regex(?comune, \"" + comune + "\", \"i\")." +
-        "     ?s <http://dati.umbria.it/risorsa/dimensione/anno> ?anno." +
-        "     " + filterAnno +
-        "     ?s <http://dati.umbria.it/risorsa/dimensione/mese> ?mese." +
-        "     " + filterMese +
-        " }" +
-        "GROUP BY ?categoria " +
-        "ORDER BY DESC (?quantita) ";
-    var queryObj = {query: sparqlQueryCategorie};
+        "\n  ?s <http://purl.org/linked-data/cube#dataSet> <http://dati.umbria.it/risorsa/dataset/Istanze/0>. " +
+        "\n  ?s <http://dati.umbria.it/risorsa/dimensione/istanze-ente> ?ente. " +
+        "\n  FILTER regex(?ente, \"" + ente + "\", \"i\")." +
+        "\n  ?s <http://dati.umbria.it/risorsa/dimensione/istanze-dipartimento> ?argomento. " +
+        "\n  FILTER regex(?argomento, \"" + argomento + "\", \"i\"). " +
+        "\n  ?s <http://dati.umbria.it/risorsa/dimensione/istanze-family> ?servizio. " +
+        "\n  ?s <http://dati.umbria.it/risorsa/misura/istanze-numero> ?quantita." +
+        "\n  ?s <http://dati.umbria.it/risorsa/dimensione/anno> ?anno." +
+        "\n  " + filterAnno +
+        "\n  ?s <http://dati.umbria.it/risorsa/dimensione/mese> ?mese." +
+        "\n  " + filterMese +
+        "\n } " +
+        "\n GROUP BY ?servizio " +
+        "\n ORDER BY DESC(?quantita)";
+    var queryObj = {query: sparqlQueryServizi};
     $.post(endpointSparqlQueryServerSide, queryObj, function (resp, textStatus) {
-        var dataPratichePerCategoria = new google.visualization.DataTable();
-        dataPratichePerCategoria.addColumn('string', 'Categoria');
-        dataPratichePerCategoria.addColumn('number', 'Quantità');
-        var rowsPratichePerCategoria = JSON.parse(resp.data).results.bindings;
-        for (var i = 0; i < rowsPratichePerCategoria.length; i++) {
-            var row = rowsPratichePerCategoria[i];
-            var categoriaLabel = row.categoria.value;
-            var categoriaQuantita = parseInt(row.quantita.value);
-            var rowArray = [categoriaLabel, categoriaQuantita];
-            dataPratichePerCategoria.addRow(rowArray);
+        var dataPratichePerServizio = new google.visualization.DataTable();
+        dataPratichePerServizio.addColumn('string', 'Servizio');
+        dataPratichePerServizio.addColumn('number', 'Quantità');
+        var rowsPratichePerServizio = JSON.parse(resp.data).results.bindings;
+        for (var i = 0; i < rowsPratichePerServizio.length; i++) {
+            var row = rowsPratichePerServizio[i];
+            var servizioLabel = row.servizio.value;
+            var servizioQuantita = parseInt(row.quantita.value);
+            var rowArray = [servizioLabel, servizioQuantita];
+            dataPratichePerServizio.addRow(rowArray);
         }
-        var categorieChartOptions = {
+
+        var serviziChartOptions = {
             pieHole: 0.4,
             backgroundColor: "#EEEEEE",
             chartArea: {left: 250}
         };
-        var categorieChart = new google.visualization.PieChart(document.getElementById('chart_div_2'));
-        categorieChart.draw(dataPratichePerCategoria, categorieChartOptions);
+        var serviziChart = new google.visualization.PieChart(document.getElementById('chart_div_2'));
+        serviziChart.draw(dataPratichePerServizio, serviziChartOptions);
 
     }, "json");
 }
@@ -368,7 +384,7 @@ function setEnteSelectOptions() {
 function setArgomentiSelectOptions() {
     $("#argomentoFilter").html("");
     var ente = $("#enteFilter").val();
-    var sparqlQuery = "select distinct ?argomento" +
+    var sparqlQuery = "select distinct ?argomento \n" +
         "WHERE{" +
         "        ?s <http://dati.umbria.it/risorsa/dimensione/istanze-ente> ?ente." +
         "            ?s <http://dati.umbria.it/risorsa/dimensione/istanze-dipartimento> ?argomento." +
@@ -391,7 +407,7 @@ function setArgomentiSelectOptions() {
 }
 
 function setAnnoSelectOptions() {
-    $("#annoFilter").html("<option value=\"\" selected>Tutti</option>");
+    $("#annoFilter").html("<option value=\"all\" selected>Tutti</option>");
     var ente = $("#enteFilter").val();
     var argomento = $("#argomentoFilter").val();
     if (document.getElementById("argomentiDatasetSelector").classList.contains("btn-primary")) {
@@ -420,39 +436,11 @@ function setAnnoSelectOptions() {
 }
 
 function setMeseSelectOptions() {
-    $("#meseFilter").html("<option value=\"\" selected>Tutti</option>");
-    var ente = $("#enteFilter").val();
-    var argomento = $("#argomentoFilter").val();
-    var anno = $("#annoFilter").val();
-    if (document.getElementById("argomentiDatasetSelector").classList.contains("btn-primary")) {
-        argomento = "";
+    $("#meseFilter").html("<option value=\"all\" selected>Tutti</option>");
+    var allMonths = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+    for (var j = 1; j <= 12; j++) {
+        $("#meseFilter").html($("#meseFilter").html() + " <option value=\"" + j + "\">" + allMonths[j - 1] + "</option>");
     }
-    var sparqlQuery = "SELECT DISTINCT ?mese" +
-        " WHERE{" +
-        "     ?s <http://dati.umbria.it/risorsa/dimensione/mese> ?mese." +
-        "     ?s <http://dati.umbria.it/risorsa/dimensione/anno> ?anno." +
-        "     ?s <http://dati.umbria.it/risorsa/dimensione/istanze-ente> ?ente." +
-        "     ?s <http://dati.umbria.it/risorsa/dimensione/istanze-dipartimento> ?argomento." +
-        "     FILTER regex(?ente, \"" + ente + "\", \"i\")." +
-        "     FILTER regex(?argomento, \"" + argomento + "\", \"i\")." +
-        "     FILTER regex(?anno, \"" + anno + "\", \"i\")." +
-        "}" +
-        "ORDER BY ?mese";
-    var queryObj = {query: sparqlQuery};
-    $.post(endpointSparqlQueryServerSide, queryObj, function (resp, textStatus) {
-        var rows = JSON.parse(resp.data).results.bindings;
-        var months = [];
-        for (var i = 0; i < rows.length; i++) {
-            var row = rows[i];
-            months[i] = row.mese.value;
-        }
-        var allMonths = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-        for (var j = 0; j < 12; j++) {
-            if ($.inArray(j, months) >= 0) {
-                $("#meseFilter").html($("#meseFilter").html() + " <option value=\"" + allMonths[j] + "\">" + allMonths[j] + "</option>");
-            }
-        }
-    }, "json");
 }
 
 
@@ -468,6 +456,7 @@ function showCorrectFilters(buttonPressed) {
     setAnnoSelectOptions();
     setMeseSelectOptions();
     if (buttonId == 'serviziDatasetSelector') {
+        setArgomentiSelectOptions();
         $('#argomentoFilterContainer').css('visibility', 'visible');
 
     }
