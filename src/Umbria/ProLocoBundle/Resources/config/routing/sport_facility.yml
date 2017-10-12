@@ -1,9 +1,0 @@
-sport_facility_index:
-    path:     /
-    defaults: { _controller: "UmbriaProLocoBundle:SportFacility:index" }
-    methods:  [GET,POST]
-
-sport_facility_show:
-    path:     /{id}/show
-    defaults: { _controller: "UmbriaProLocoBundle:SportFacility:show" }
-    methods:  GET

@@ -1,9 +1,0 @@
-iat_index:
-    path:     /
-    defaults: { _controller: "UmbriaProLocoBundle:Iat:index" }
-    methods:  [GET,POST]
-
-iat_show:
-    path:     /{id}/show
-    defaults: { _controller: "UmbriaProLocoBundle:Iat:show" }
-    methods:  GET

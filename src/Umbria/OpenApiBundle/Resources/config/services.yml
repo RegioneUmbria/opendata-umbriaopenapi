@@ -1,5 +1,6 @@
 parameters:
 
+    items_on_page: 15
 
     sparql_endpoint_uri: http://dati.umbria.it/sparql
 

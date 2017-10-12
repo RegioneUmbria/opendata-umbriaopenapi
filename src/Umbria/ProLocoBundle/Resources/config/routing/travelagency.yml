@@ -1,9 +1,0 @@
-travelagency_index:
-    path:     /
-    defaults: { _controller: "UmbriaProLocoBundle:TravelAgency:index" }
-    methods:  [GET,POST]
-
-travelagency_show:
-    path:     /{id}/show
-    defaults: { _controller: "UmbriaProLocoBundle:TravelAgency:show" }
-    methods:  GET
