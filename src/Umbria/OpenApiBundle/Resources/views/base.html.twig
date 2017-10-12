@@ -21,7 +21,71 @@
     <![endif]-->
 </head>
 <body>
+<nav class="navbar navbar-default navbar-fixed-top navbar-inverse">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar"
+                    aria-expanded="false" aria-controls="navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="{{ path('umbria_open_api_homepage') }}">Umbria - Open API</a>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+            <ul class="nav navbar-nav ">
+                <li class="dropdown show">
+                    <a class="btn btn-secondary dropdown-toggle"
+                       role="button" id="turismoMenuLink" data-toggle="dropdown"
+                       aria-haspopup="true" aria-expanded="false"
+                    >
+                        Turismo
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="turismoMenuLink">
+                        <a class="dropdown-item" href="{{ path('umbria_open_api_map') }}">Mappa</a>
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item" href="{{ path('attractor_index') }}">Attrattori</a>
+                        <a class="dropdown-item" href="{{ path('event_index') }}">Eventi</a>
+                        <a class="dropdown-item" href="{{ path('accomodation_index') }}">Strutture ricettive</a>
+                        <a class="dropdown-item" href="{{ path('sport_facility_index') }}">Impianti sportivi</a>
+                        <a class="dropdown-item" href="{{ path('proposal_index') }}">Proposte</a>
+                        <a class="dropdown-item" href="{{ path('profession_index') }}">Professioni</a>
+                        <a class="dropdown-item" href="{{ path('travel_agency_index') }}">Agenzie di viaggi</a>
+                        <a class="dropdown-item" href="{{ path('consortium_index') }}">Consorzi</a>
+                        <a class="dropdown-item" href="{{ path('iat_index') }}">Iat</a>
+                    </div>
+                </li>
+                <li class="dropdown show">
+                    <a class="btn btn-secondary dropdown-toggle"
+                       role="button" id="statisticheMenuLink" data-toggle="dropdown"
+                       aria-haspopup="true" aria-expanded="false"
+                    >
+                        Statistiche
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="statisticheMenuLink">
+                        <a class="dropdown-item" href="{{ path('statistiche_suape') }}">Istanze</a>
+                        <a class="dropdown-item" href="{{ path('statistiche_istanze') }}">SUAPE</a>
+                    </div>
+                </li>
+                <li class="dropdown show">
+                    <a class="btn btn-secondary dropdown-toggle"
+                       role="button" id="developersMenuLink" data-toggle="dropdown"
+                       aria-haspopup="true" aria-expanded="false"
+                    >
+                        Developers
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="developersMenuLink">
+                        <a class="dropdown-item" href="{{ path('nelmio_api_doc_index') }}">API docs</a>
+                        <a class="dropdown-item" href="{{ path('umbria_open_api_sparql_manual') }}">SPARQL Manual</a>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
 {% block body %}{% endblock %}
+
 
 {% block javascripts %}
     <script src="{{ asset('js/jquery-2.2.4.js') }}"></script>
