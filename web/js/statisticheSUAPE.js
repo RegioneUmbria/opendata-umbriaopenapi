@@ -552,13 +552,13 @@ function changeChartDescription(buttonPressed) {
 
     var buttonId = buttonPressed.id;
     if (buttonId == 'tipologieDatasetSelector') {
-        $('#chartDescription').html("Grafici che mostrano la ripartizione delle tipologie delle proposte");
+        $('#chartDescription').html("Pratiche raggruppate per tipologia delle proposte e filtrate per comune");
     }
     else if (buttonId == 'categorieDatasetSelector') {
-        $('#chartDescription').html("Grafici che mostrano la ripartizione delle categorie delle proposte");
+        $('#chartDescription').html("Pratiche raggruppate per categoria delle proposte e filtrate per comune");
     }
     else {
-        $('#chartDescription').html("Grafici che mostrano il rapporto tra le pratiche evase e le pratiche totali");
+        $('#chartDescription').html("Rapporto tra le pratiche evase e le pratiche totali filtrate per comune");
     }
 }
 

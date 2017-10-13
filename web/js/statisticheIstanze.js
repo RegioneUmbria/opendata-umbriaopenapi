@@ -477,10 +477,10 @@ function changeChartDescription(buttonPressed) {
 
     var buttonId = buttonPressed.id;
     if (buttonId == 'argomentiDatasetSelector') {
-        $('#chartDescription').html("Grafici che mostrano la ripartizione delle istanze per argomento");
+        $('#chartDescription').html("Istanze raggruppate per Argomento e filtrate per Ente");
     }
     else if (buttonId == 'serviziDatasetSelector') {
-        $('#chartDescription').html("Grafici che mostrano la ripartizione delle istanze per servizio");
+        $('#chartDescription').html("Istanze raggruppate per Servizio e filtrate per Ente e Argomento");
     }
 
 }
