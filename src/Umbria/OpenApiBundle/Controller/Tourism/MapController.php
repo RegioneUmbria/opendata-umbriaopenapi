@@ -147,7 +147,7 @@ class MapController extends Controller
                     $place->setLatitude($travelAgency->getLat());
                     $place->setLongitude($travelAgency->getLng());
 
-                    $uri = $this->get('router')->generate('travelagency_show', array(
+                    $uri = $this->get('router')->generate('travel_agency_show', array(
                         'id' => $travelAgency->getId(),
                     ), UrlGeneratorInterface::ABSOLUTE_URL);
                     $place->setHref($uri);
