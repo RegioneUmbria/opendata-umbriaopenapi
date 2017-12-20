@@ -92,9 +92,31 @@
 
 {% block javascripts %}
     <script src="{{ asset('js/jquery-2.2.4.js') }}"></script>
+    <script src="{{ asset('js/markerclusterer_compiled.js') }}"></script>
     <script src="{{ asset('js/bootstrap.min.js') }}"></script>
-    <!-- Just to make our placeholder images work. Don't actually copy the next line! -->
+    <script src="{{ asset('js/js.cookie.js') }}"></script>
     <script src="{{ asset('js/vendor/holder.min.js') }}"></script>
+
+    <script>
+        function toggleGroup(type, element) {
+            for (var i = 0; i < markerGroups[type].length; i++) {
+                var marker = markerGroups[type][i];
+                if (element.checked) {
+                    marker.setVisible(true);
+                } else {
+                    marker.setVisible(false);
+                }
+            }
+
+        }
+        function setCoordCookie(lat, lng, layer) {
+            Cookies.set('lat', lat);
+            Cookies.set('lng', lng);
+            Cookies.set('zoom', 18);
+            Cookies.set('layer', layer);
+        }
+
+    </script>
 {% endblock %}
 
 </body>
