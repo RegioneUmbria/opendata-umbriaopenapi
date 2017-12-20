@@ -1,0 +1,150 @@
+{% extends "UmbriaOpenApiBundle::base.html.twig" %}
+
+{% block body %}
+    <div class="container">
+        <div class="row">
+            <div class="page-header">
+                <h2>
+                    {{ profession.firstName }} {{ profession.lastName }}
+                </h2>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-7">
+                <p>
+                <address>
+                    <strong>{{ profession.firstName }} {{ profession.lastName }}</strong><br>
+                    {% if profession.address != null %}
+                        {% if profession.address.streetAddress != null and profession.address.streetAddress != '' %}
+                            {{ profession.address.streetAddress }}
+                        {% endif %}
+                        <br>
+                        {% if profession.address.addressLocality != null and profession.address.addressLocality != '' %}
+                            {{ profession.address.addressLocality }}
+                        {% endif %}
+                        {% if profession.address.addressRegion != null and profession.address.addressRegion != '' %}
+                            , {{ profession.address.addressRegion }}
+                        {% endif %}
+                        {% if profession.address.postalCode != null and profession.address.postalCode != '' %}
+                            {{ profession.address.postalCode }}
+                        {% endif %}
+                        <br>
+                    {% endif %}
+                    <br>
+                    {% for phone in profession.telephone %}
+                        <abbr title="Phone">P:</abbr> {{ phone }}<br>
+                    {% endfor %}
+                    {% for faxNumber in profession.fax %}
+                        <abbr title="Fax number">F:</abbr> {{ faxNumber }}<br>
+                    {% endfor %}
+                    {% for mbox in profession.email %}
+                        <abbr title="Email">E:</abbr> {{ mbox }}<br>
+                    {% endfor %}
+                    {% if profession.resourceOriginUrl != null and profession.resourceOriginUrl != '' %}
+                        <abbr title="Homepage">H:</abbr> {{ profession.resourceOriginUrl }}<br>
+                    {% endif %}
+                </address>
+                </p>
+                <p>
+                    Lingue parlate:
+                    <br>
+                    {% for language in profession.spokenLanguage %}
+                        {{ language }}<br>
+                    {% endfor %}
+                </p>
+                <p>
+                    Specializzazione:
+                    <br>
+                    {% for specialization in profession.specialization %}
+                        {{ specialization }}<br>
+                    {% endfor %}
+                </p>
+            </div>
+            <div class="col-md-5">
+                <div class="row">
+                    <table class="table table-condensed">
+                        <tbody>
+                        <tr>
+                            <td>
+                                <small><b>Risorsa RDF</b></small>
+                            </td>
+                            <td><b>
+                                    <a href="{{ profession.uri }}">
+                                        {{ profession.uri }}
+                                    </a>
+                                </b>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <small>coordinate</small>
+                            </td>
+                            <td>
+                                {% if profession.lat != null and profession.lat != '' %}
+                                    <a href="{{ path('umbria_open_api_map') }}"
+                                       onclick="setCoordCookie({{ profession.lat }},{{ profession.lng }},'tourism_profession_cb')">
+                                        {{ profession.lat }},{{ profession.lng }}
+                                    </a>
+                                {% else %}
+                                    -
+                                {% endif %}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <small>codice ISTAT comune</small>
+                            </td>
+                            <td>
+                                {% if profession.address !=null and profession.address.istat != null and profession.address.istat != '' %}
+                                    {{ profession.address.istat }}
+                                {% else %}
+                                    -
+                                {% endif %}
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="row">
+                    <table class="table table-condensed">
+                        <tbody>
+                        <tr>
+                            <td>
+                                <small>tipo</small>
+                            </td>
+                            <td>
+                                http://dati.umbria.it/tourism/ontology/ProfessioniTuristiche
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <br/>
+            <ol class="breadcrumb">
+                <li><a href="{{ path('profession_index') }}">Lista Agenzie Viaggio</a></li>
+                <li class="active">{{ profession.firstName }} {{ profession.lastName }}</li>
+            </ol>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+
+    <script>
+        $(function () {
+            $('[data-toggle="tooltip"]').tooltip()
+        })
+
+        {% set latitude = '' %}
+        {% set longitude = '' %}
+        {% if profession.lat != null and profession.lat != '' %}
+        {% set latitude = profession.lat %}
+        {% set longitude = profession.lng %}
+        {% endif %}
+
+    </script>
+{% endblock %}

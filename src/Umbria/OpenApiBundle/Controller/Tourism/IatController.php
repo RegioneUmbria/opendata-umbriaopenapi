@@ -9,8 +9,12 @@ use JMS\DiExtraBundle\Annotation as DI;
 use Knp\Component\Pager\Pagination\AbstractPagination;
 use Knp\Component\Pager\Paginator;
 use Nelmio\ApiDocBundle\Annotation as ApiDoc;
+use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Umbria\OpenApiBundle\Entity\SearchFilter;
 use Umbria\OpenApiBundle\Serializer\View\EntityResponse;
 use Umbria\OpenApiBundle\Service\FilterBag;
 
@@ -45,6 +49,76 @@ class IatController extends BaseController
         $this->filterBag = $filterBag;
         $this->paginator = $paginator;
         $this->em = $em;
+    }
+
+    /**
+     * Lists all Iat entities.
+     *
+     * @param Request $request
+     *
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
+    public function indexAction(Request $request)
+    {
+        $itemsOnPage = $this->container->getParameter('items_on_page');
+
+        $searchFilter = new SearchFilter();
+
+        $form = $this->createFormBuilder($searchFilter)
+            ->add("text", TextType::class, array('required' => false))
+            ->add('search', SubmitType::class, array('label' => 'Cerca'))
+            ->getForm();
+
+        $form->handleRequest($request);
+        $text = "";
+        if ($form->isSubmitted() && $form->isValid()) {
+            // $form->getData() holds the submitted values
+            // but, the original `$task` variable has also been updated
+            $searchFilter = $form->getData();
+            $text = $searchFilter->getText();
+            $form = $this->createFormBuilder($searchFilter)
+                ->add("text", TextType::class, array('required' => false))
+                ->add('search', SubmitType::class, array('label' => 'Ricerca'))
+                ->getForm();
+        }
+
+        /**@var IatRepository $repository */
+        $repository = $this->getDoctrine()
+            ->getRepository('UmbriaOpenApiBundle:Tourism\GraphsEntities\Iat');
+        $qb = $repository->createQueryBuilder('a');
+        $query = $qb
+            ->where($qb->expr()->like('a.name', '?1'))
+            ->setParameter(1, '%' . $text . '%');
+
+        $paginator = $this->get('knp_paginator');
+        $pagination = $paginator->paginate(
+            $query,
+            $request->query->getInt('page', 1),
+            $itemsOnPage
+        );
+
+        return $this->render('UmbriaOpenApiBundle:Iat:index.html.twig', array(
+            'pagination' => $pagination,
+            'form' => $form->createView(),
+        ));
+    }
+
+    /**
+     * Finds and displays a Iat entity.
+     *
+     * @param int $id
+     *
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
+    public function showAction($id)
+    {
+        /**@var IatRepository $repository */
+        $repository = $this->getDoctrine()
+            ->getRepository('UmbriaOpenApiBundle:Tourism\GraphsEntities\Iat');
+        $iat = $repository->findById($id);
+        return $this->render('UmbriaOpenApiBundle:Iat:show.html.twig', array(
+            'iat' => $iat[0]
+        ));
     }
 
     /**

@@ -1,9 +1,0 @@
-accomodation_index:
-    path:     /
-    defaults: { _controller: "UmbriaProLocoBundle:Accomodation:index" }
-    methods:  [GET,POST]
-
-accomodation_show:
-    path:     /{id}/show
-    defaults: { _controller: "UmbriaProLocoBundle:Accomodation:show" }
-    methods:  GET
