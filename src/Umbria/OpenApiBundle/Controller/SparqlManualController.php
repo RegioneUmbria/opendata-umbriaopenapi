@@ -3,7 +3,6 @@
 namespace Umbria\OpenApiBundle\Controller;
 
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Umbria\OpenApiBundle\Controller\Tourism\BaseController;
 
 
 class SparqlManualController extends BaseController

@@ -1,6 +1,6 @@
 <?php
 
-namespace Umbria\OpenApiBundle\Controller\Tourism;
+namespace Umbria\OpenApiBundle\Controller;
 
 use Doctrine\ORM\EntityManager;
 use EasyRdf_Resource;
@@ -11,7 +11,7 @@ use Umbria\OpenApiBundle\Entity\ExternalResource;
 
 /**
  * Class BaseController
- * @package Umbria\OpenApiBundle\Controller\Tourism
+ * @package Umbria\OpenApiBundle\Controller
  *
  * @author Lorenzo Franco Ranucci <loryzizu@gmail.com>
  */

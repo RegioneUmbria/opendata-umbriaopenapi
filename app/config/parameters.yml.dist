@@ -2,8 +2,8 @@
 parameters:
     database_host: mysql
     database_port: 33060
-    database_name: uoa
-    database_user: root
+    database_name: umbriaopenapi
+    database_user:
     database_password: null
     mailer_transport: smtp
     mailer_host: 127.0.0.1

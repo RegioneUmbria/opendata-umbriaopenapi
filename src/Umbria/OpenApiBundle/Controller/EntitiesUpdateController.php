@@ -11,7 +11,6 @@ use EasyRdf_Resource;
 use EasyRdf_Sparql_Client;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Umbria\OpenApiBundle\Controller\Tourism\BaseController;
 use Umbria\OpenApiBundle\Entity\Address;
 use Umbria\OpenApiBundle\Entity\Category;
 use Umbria\OpenApiBundle\Entity\Tourism\GraphsEntities\Accomodation;

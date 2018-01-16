@@ -140,19 +140,19 @@ statistiche_suape:
     path:     /statistiche/SUAPE
     defaults: { _controller: UmbriaOpenApiBundle:SUAPE:index }
 
-statistiche_istanze:
-    path:     /statistiche/istanze
-    defaults: { _controller: UmbriaOpenApiBundle:Istanze:index }
+statistiche_servizi-in-rete:
+    path:     /statistiche/servizi-in-rete
+    defaults: { _controller: UmbriaOpenApiBundle:ServiziInRete:index }
 
-umbria_pro_loco_suape_execute_sparql_query:
+suape_execute_sparql_query:
     path:     /statistiche/SUAPE/execute_sparql_query/
     defaults: {_controller: UmbriaOpenApiBundle:SUAPE:executeSparqlQuery }
     methods:  [POST]
 
 
-umbria_pro_loco_istanze_execute_sparql_query:
-    path:     /statistiche/istanze/execute_sparql_query/
-    defaults: {_controller: UmbriaOpenApiBundle:Istanze:executeSparqlQuery }
+servizi-in-rete_execute_sparql_query:
+    path:     /statistiche/servizi-in-rete/execute_sparql_query/
+    defaults: {_controller: UmbriaOpenApiBundle:ServiziInRete:executeSparqlQuery }
     methods:  [POST, GET]
 
 

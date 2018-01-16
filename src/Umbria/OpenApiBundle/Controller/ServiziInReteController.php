@@ -3,20 +3,19 @@
 namespace Umbria\OpenApiBundle\Controller;
 
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Umbria\OpenApiBundle\Controller\Tourism\BaseController;
 
 /**
- * Class IstanzeController
+ * Class ServiziInReteController
  * @package Umbria\OpenApiBundle\Controller
  *
  * @author Lorenzo Franco Ranucci <loryzizu@gmail.com>
  */
-class IstanzeController extends BaseController
+class ServiziInReteController extends BaseController
 {
 
     public function indexAction()
     {
-        return $this->render('UmbriaOpenApiBundle:Istanze:index.html.twig');
+        return $this->render('UmbriaOpenApiBundle:ServiziInRete:index.html.twig');
     }
 
     public function executeSparqlQueryAction()
