@@ -24,7 +24,7 @@ use Umbria\OpenApiBundle\Service\FilterBag;
  *
  * @author Lorenzo Franco Ranucci <loryzizu@gmail.com>
  */
-class IatController extends BaseController
+class IatController extends Controller
 {
     const DEFAULT_PAGE_SIZE = 100;
 
