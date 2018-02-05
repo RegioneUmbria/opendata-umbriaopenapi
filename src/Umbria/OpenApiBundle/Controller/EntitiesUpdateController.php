@@ -883,9 +883,12 @@ class EntitiesUpdateController extends BaseController
                     $newAccomodation->setAddress($tempAddress);
                 }
 
-                if (!$isAlreadyPersisted) {
+                //if (!$isAlreadyPersisted) {
                     $this->em->persist($newAccomodation);
-                }
+                //}
+                //else{
+                //    $this->em->merge($newAccomodation);
+                //}
 
                 $this->em->flush();
 

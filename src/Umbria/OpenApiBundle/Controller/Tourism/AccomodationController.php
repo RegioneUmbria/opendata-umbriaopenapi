@@ -83,13 +83,26 @@ class AccomodationController extends Controller
         $repository = $this->getDoctrine()
             ->getRepository('UmbriaOpenApiBundle:Tourism\GraphsEntities\Accomodation');
         $qb = $repository->createQueryBuilder('a');
-        $query = $qb
-            ->where($qb->expr()->like('a.name', '?1'))
+        $qb
+            ->andWhere($qb->expr()->like('a.name', '?1'))
             ->setParameter(1, '%' . $text . '%');
+
+        $maxQb = $this->em->createQueryBuilder();
+        $maxQb->select('MAX(a.lastUpdateAt) AS maxLastUpdatedAt')
+            ->from('UmbriaOpenApiBundle:Tourism\GraphsEntities\Accomodation', 'a')
+            ->groupBy('a.uri')
+            ->orderBy('maxLastUpdatedAt', 'DESC');
+
+        $maxResult = $maxQb->getQuery()->getResult();
+        if ($maxResult != null && count($maxResult) > 0) {
+            $maxResult = $maxResult[0]['maxLastUpdatedAt'];
+            $qb->andWhere($qb->expr()->eq('a.lastUpdateAt', ':lastUpdateAt'));
+            $qb->setParameter("lastUpdateAt", $maxResult);
+        }
 
         $paginator = $this->get('knp_paginator');
         $pagination = $paginator->paginate(
-            $query, /* query NOT result */
+            $qb, /* query NOT result */
             $request->query->getInt('page', 1)/*page number*/,
             $itemsOnPage/*limit per page*/
         );
@@ -185,21 +198,34 @@ class AccomodationController extends Controller
         $page = floor($offset / $limit) + 1;
 
         $qb = $this->em->createQueryBuilder();
-        $builder = $qb
+        $qb
             ->select('a')
             ->from('UmbriaOpenApiBundle:Tourism\GraphsEntities\Accomodation', 'a');
 
 
+        $maxQb = $this->em->createQueryBuilder();
+        $maxQb->select('MAX(a.lastUpdateAt) AS maxLastUpdatedAt')
+            ->from('UmbriaOpenApiBundle:Tourism\GraphsEntities\Accomodation', 'a')
+            ->groupBy('a.uri')
+            ->orderBy('maxLastUpdatedAt', 'DESC');
+
+        $maxResult = $maxQb->getQuery()->getResult();
+        if ($maxResult != null && count($maxResult) > 0) {
+            $maxResult = $maxResult[0]['maxLastUpdatedAt'];
+            $qb->andWhere($qb->expr()->eq('a.lastUpdateAt', ':lastUpdateAt'));
+            $qb->setParameter("lastUpdateAt", $maxResult);
+        }
+
+
         if ($labelLike != null) {
-            $builder = $qb
+            $qb
                 ->andWhere($qb->expr()->like('a.name', '?2'))
                 ->setParameter(2, $labelLike);
         }
 
 
         if ($categoryLike != null) {
-            $builder = $qb
-                ->leftJoin('a.categories', 'cat')
+            $qb->leftJoin('a.categories', 'cat')
                 ->andWhere(
                     $qb->expr()->like('cat.name', ':categoryLike')
                 )
@@ -212,10 +238,9 @@ class AccomodationController extends Controller
             $lngMax != null ||
             $lngMin != null
         ) {
-            $builder = $qb->join('a.address', 'address');
+            $qb->join('a.address', 'address');
             if ($latMax != null) {
-                $builder =
-                    $qb->andWhere(
+                $qb->andWhere(
                         $qb->expr()->lte("address.lat", ':latMax'),
                         $qb->expr()->isNotNull("address.lat"),
                         $qb->expr()->gt("address.lat", ':empty')
@@ -224,8 +249,7 @@ class AccomodationController extends Controller
                         ->setParameter('empty', '0');
             }
             if ($latMin != null) {
-                $builder =
-                    $qb->andWhere(
+                $qb->andWhere(
                         $qb->expr()->gte("address.lat", ':latMin'),
                         $qb->expr()->isNotNull("address.lat"),
                         $qb->expr()->gt("address.lat", ":empty")
@@ -234,8 +258,7 @@ class AccomodationController extends Controller
                         ->setParameter('empty', '0');
             }
             if ($lngMax != null) {
-                $builder =
-                    $qb->andWhere(
+                $qb->andWhere(
                         $qb->expr()->lte("address.lng", ':lngMax'),
                         $qb->expr()->isNotNull("address.lng"),
                         $qb->expr()->gt("address.lng", ":empty")
@@ -244,8 +267,7 @@ class AccomodationController extends Controller
                         ->setParameter('empty', '0');
             }
             if ($lngMin != null) {
-                $builder =
-                    $qb->andWhere(
+                $qb->andWhere(
                         $qb->expr()->gte("address.lng", ':lngMin'),
                         $qb->expr()->isNotNull("address.lng"),
                         $qb->expr()->gt("address.lng", ":empty")
@@ -256,9 +278,9 @@ class AccomodationController extends Controller
         }
 
         /** @var AbstractPagination $resultsPagination */
-        $resultsPagination = $this->paginator->paginate($builder, $page, $limit);
+        $resultsPagination = $this->paginator->paginate($qb, $page, $limit);
         /** @var AbstractPagination $countPagination */
-        $countPagination = $this->paginator->paginate($builder, 1, 1);
+        $countPagination = $this->paginator->paginate($qb, 1, 1);
 
 
         $view = new View(new EntityResponse($resultsPagination->getItems(), count($resultsPagination), $countPagination->getTotalItemCount()));
