@@ -472,7 +472,7 @@ class Profession
     /**
      * @param boolean $isDeleted
      */
-    public function setIsDeleted($idDeleted)
+    public function setIsDeleted($isDeleted)
     {
         $this->isDeleted = $isDeleted;
     }
