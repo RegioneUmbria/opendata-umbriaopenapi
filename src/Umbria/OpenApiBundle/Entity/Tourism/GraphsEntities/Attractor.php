@@ -163,11 +163,19 @@ class Attractor
     /**
      * @var \DateTime
      *
-     * @ORM\Column(name="last_update_at", type="date")
+     * @ORM\Column(name="last_update_at", type="datetime")
      *
      * @JMS\Exclude()
      */
     private $lastUpdateAt;
+
+    /**
+     * @var \boolean
+     *
+     * @ORM\Column(name="is_deleted", type="boolean")
+     * @JMS\Exclude()
+     **/
+    private $isDeleted;
 
     /**
      * @var Category[]
@@ -599,29 +607,6 @@ class Attractor
         $this->descriptions = $descriptions;
     }
 
-    /**
-     * Set lastUpdateAt
-     *
-     * @param \DateTime $lastUpdateAt
-     *
-     * @return Attractor
-     */
-    public function setLastUpdateAt($lastUpdateAt)
-    {
-        $this->lastUpdateAt = $lastUpdateAt;
-
-        return $this;
-    }
-
-    /**
-     * Get lastUpdateAt
-     *
-     * @return \DateTime
-     */
-    public function getLastUpdateAt()
-    {
-        return $this->lastUpdateAt;
-    }
 
     public function hasDbpediaInfo()
     {
@@ -662,5 +647,46 @@ class Attractor
     {
         return $this->categories;
     }
+
+    /**
+     * Set lastUpdateAt
+     *
+     * @param \timestamp $lastUpdateAt
+     *
+     * @return Attractor
+     */
+    public function setLastUpdateAt($lastUpdateAt)
+    {
+        $this->lastUpdateAt = $lastUpdateAt;
+
+        return $this;
+    }
+
+    /**
+     * Get lastUpdateAt
+     *
+     * @return \DateTime
+     */
+    public function getLastUpdateAt()
+    {
+        return $this->lastUpdateAt;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function isDeleted()
+    {
+        return $this->isDeleted;
+    }
+
+    /**
+     * @param boolean $isDeleted
+     */
+    public function setIsDeleted($idDeleted)
+    {
+        $this->isDeleted = $isDeleted;
+    }
 }
+
 

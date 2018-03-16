@@ -137,11 +137,19 @@ class Proposal
     /**
      * @var \DateTime
      *
-     * @ORM\Column(name="last_update_at", type="date")
+     * @ORM\Column(name="last_update_at", type="datetime")
      *
      * @JMS\Exclude()
      */
     private $lastUpdateAt;
+
+    /**
+     * @var \boolean
+     *
+     * @ORM\Column(name="is_deleted", type="boolean")
+     * @JMS\Exclude()
+     **/
+    private $isDeleted;
 
 
     /**
@@ -457,9 +465,9 @@ class Proposal
     /**
      * Set lastUpdateAt
      *
-     * @param \DateTime $lastUpdateAt
+     * @param \timestamp $lastUpdateAt
      *
-     * @return Proposal
+     * @return Attractor
      */
     public function setLastUpdateAt($lastUpdateAt)
     {
@@ -476,6 +484,22 @@ class Proposal
     public function getLastUpdateAt()
     {
         return $this->lastUpdateAt;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function isDeleted()
+    {
+        return $this->isDeleted;
+    }
+
+    /**
+     * @param boolean $isDeleted
+     */
+    public function setIsDeleted($idDeleted)
+    {
+        $this->isDeleted = $isDeleted;
     }
 
 
