@@ -88,7 +88,8 @@ class IatController extends Controller
         $qb = $repository->createQueryBuilder('a');
         $query = $qb
             ->where($qb->expr()->like('a.name', '?1'))
-            ->setParameter(1, '%' . $text . '%');
+            ->setParameter(1, '%' . $text . '%')
+            ->andWhere($qb->expr()->eq('a.isDeleted', '0'));
 
         $paginator = $this->get('knp_paginator');
         $pagination = $paginator->paginate(
@@ -116,6 +117,9 @@ class IatController extends Controller
         $repository = $this->getDoctrine()
             ->getRepository('UmbriaOpenApiBundle:Tourism\GraphsEntities\Iat');
         $iat = $repository->findById($id);
+        if (!isset($iat) || $iat[0]->isDeleted()) {
+            throw $this->createNotFoundException('La risorsa non esiste');
+        }
         return $this->render('UmbriaOpenApiBundle:Iat:show.html.twig', array(
             'iat' => $iat[0]
         ));
@@ -178,8 +182,8 @@ class IatController extends Controller
 
         $builder = $this->em->createQueryBuilder()
             ->select('i')
-            ->from('UmbriaOpenApiBundle:Tourism\GraphsEntities\Iat', 'i');
-
+            ->from('UmbriaOpenApiBundle:Tourism\GraphsEntities\Iat', 'i')
+            ->where($qb->expr()->eq('a.isDeleted', '0'));
         /** @var AbstractPagination $resultsPagination */
         $resultsPagination = $this->paginator->paginate($builder, $page, $limit);
         /** @var AbstractPagination $countPagination */

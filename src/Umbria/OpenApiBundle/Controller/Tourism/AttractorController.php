@@ -87,7 +87,8 @@ class AttractorController extends Controller
         $qb = $repository->createQueryBuilder('a');
         $query = $qb
             ->where($qb->expr()->like('a.name', '?1'))
-            ->setParameter(1, '%' . $text . '%');
+            ->setParameter(1, '%' . $text . '%')
+            ->andWhere($qb->expr()->eq('a.isDeleted', '0'));
 
         $paginator = $this->get('knp_paginator');
         $pagination = $paginator->paginate(
@@ -114,6 +115,11 @@ class AttractorController extends Controller
         $repository = $this->getDoctrine()
             ->getRepository('UmbriaOpenApiBundle:Tourism\GraphsEntities\Attractor');
         $attractor = $repository->findById($id);
+
+        if (!isset($attractor) || $attractor[0]->isDeleted()) {
+            throw $this->createNotFoundException('La risorsa non esiste');
+        }
+
         return $this->render('UmbriaOpenApiBundle:Attractor:show.html.twig', array(
             'attractor' => $attractor[0]
         ));
@@ -271,7 +277,7 @@ class AttractorController extends Controller
                         ->setParameter('empty', '0');
             }
         }
-
+        $builder = $qb->andWhere($qb->expr()->eq('a.isDeleted', '0'));
         /** @var AbstractPagination $resultsPagination */
         $resultsPagination = $this->paginator->paginate($builder, $page, $limit);
         /** @var AbstractPagination $countPagination */

@@ -87,7 +87,8 @@ class ProposalController extends Controller
         $qb = $repository->createQueryBuilder('a');
         $query = $qb
             ->where($qb->expr()->like('a.name', '?1'))
-            ->setParameter(1, '%' . $text . '%');
+            ->setParameter(1, '%' . $text . '%')
+            ->andWhere($qb->expr()->eq('a.isDeleted', '0'));
 
         $paginator = $this->get('knp_paginator');
         $pagination = $paginator->paginate(
@@ -114,6 +115,9 @@ class ProposalController extends Controller
         $repository = $this->getDoctrine()
             ->getRepository('UmbriaOpenApiBundle:Tourism\GraphsEntities\Proposal');
         $proposal = $repository->findById($id);
+        if (!isset($proposal) || $proposal[0]->isDeleted()) {
+            throw $this->createNotFoundException('La risorsa non esiste');
+        }
         return $this->render('UmbriaOpenApiBundle:Proposal:show.html.twig', array(
             'proposal' => $proposal[0]
         ));
@@ -177,7 +181,8 @@ class ProposalController extends Controller
 
         $builder = $this->em->createQueryBuilder()
             ->select('a')
-            ->from('UmbriaOpenApiBundle:Tourism\GraphsEntities\Proposal', 'a');
+            ->from('UmbriaOpenApiBundle:Tourism\GraphsEntities\Proposal', 'a')
+            ->where($qb->expr()->eq('a.isDeleted', '0'));;
 
         /** @var AbstractPagination $resultsPagination */
         $resultsPagination = $this->paginator->paginate($builder, $page, $limit);

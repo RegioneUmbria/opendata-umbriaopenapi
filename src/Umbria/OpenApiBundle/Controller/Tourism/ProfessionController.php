@@ -92,7 +92,8 @@ class ProfessionController extends Controller
                 $qb->expr()->like('a.lastName', '?1')
             )
             )
-            ->setParameter(1, '%' . $text . '%');
+            ->setParameter(1, '%' . $text . '%')
+            ->andWhere($qb->expr()->eq('a.isDeleted', '0'));
 
         $paginator = $this->get('knp_paginator');
         $pagination = $paginator->paginate(
@@ -120,6 +121,9 @@ class ProfessionController extends Controller
         $repository = $this->getDoctrine()
             ->getRepository('UmbriaOpenApiBundle:Tourism\GraphsEntities\Profession');
         $profession = $repository->findById($id);
+        if (!isset($profession) || $profession[0]->isDeleted()) {
+            throw $this->createNotFoundException('La risorsa non esiste');
+        }
         return $this->render('UmbriaOpenApiBundle:Profession:show.html.twig', array(
             'profession' => $profession[0]
         ));
@@ -183,7 +187,8 @@ class ProfessionController extends Controller
 
         $builder = $this->em->createQueryBuilder()
             ->select('a')
-            ->from('UmbriaOpenApiBundle:Tourism\GraphsEntities\Profession', 'a');
+            ->from('UmbriaOpenApiBundle:Tourism\GraphsEntities\Profession', 'a')
+            ->where($qb->expr()->eq('a.isDeleted', '0'));
 
         /** @var AbstractPagination $resultsPagination */
         $resultsPagination = $this->paginator->paginate($builder, $page, $limit);

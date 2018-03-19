@@ -72,7 +72,7 @@ class MapController extends Controller
 
             /** @var Attractor $attractor */
         foreach ($this->attractorRepo->findAll() as $attractor) {
-            if (isset($attractor) && $attractor->getLat() != null) {
+            if (isset($attractor) && $attractor->getLat() != null && !$attractor->isDeleted()) {
                     $place = new PlaceDetails();
                     $place->setId($attractor->getId());
                     $place->setName($attractor->getName());
@@ -94,7 +94,7 @@ class MapController extends Controller
             }
         /** @var Proposal $proposal */
         foreach ($this->proposalRepo->findAll() as $proposal) {
-            if (isset($proposal)) {
+            if (isset($proposal) && !$proposal->isDeleted()) {
                 $place = new PlaceDetails();
                 $place->setId($proposal->getId());
                 $place->setName($proposal->getName());
@@ -117,7 +117,7 @@ class MapController extends Controller
         }
         /** @var Event $event */
         foreach ($this->eventRepo->findAll() as $event) {
-            if (isset($event)) {
+            if (isset($event) && !$event->isDeleted()) {
                 $place = new PlaceDetails();
                 $place->setId($event->getId());
                 $place->setName($event->getName());
@@ -139,7 +139,7 @@ class MapController extends Controller
         /** @var TravelAgency $travelAgency */
         foreach ($this->travelAgencyRepo->findAll() as $travelAgency) {
             if (isset($travelAgency)) {
-                if ($travelAgency->getLat() != null) {
+                if ($travelAgency->getLat() != null && !$travelAgency->isDeleted()) {
                     $place = new PlaceDetails();
                     $place->setId($travelAgency->getId());
                     $place->setName($travelAgency->getName());
@@ -158,7 +158,7 @@ class MapController extends Controller
         }
         /** @var Consortium $consortium */
         foreach ($this->consortiumRepo->findAll() as $consortium) {
-            if (isset($consortium) && $consortium->getLat() != null) {
+            if (isset($consortium) && $consortium->getLat() != null && !$consortium->isDeleted()) {
                 $place = new PlaceDetails();
                 $place->setId($consortium->getId());
                 $place->setName($consortium->getName());
@@ -175,7 +175,7 @@ class MapController extends Controller
         }
         /** @var Profession $profession */
         foreach ($this->professionRepo->findAll() as $profession) {
-            if (isset($profession)) {
+            if (isset($profession) && !$profession->isDeleted()) {
                 /** @var Address $address */
                 if (($address = $profession->getAddress()) != null) {
                     if ($profession->getLat() != null && $profession->getLat() != '') {
@@ -199,7 +199,7 @@ class MapController extends Controller
         }
         /** @var Iat $iat */
         foreach ($this->iatRepo->findAll() as $iat) {
-            if (isset($iat)) {
+            if (isset($iat) && !$iat->isDeleted()) {
                 if ($iat->getLat() != null) {
                     $place = new PlaceDetails();
                     $place->setId($iat->getId());
@@ -219,7 +219,7 @@ class MapController extends Controller
         }
         /** @var SportFacility $sportFacility */
         foreach ($this->sportFacilityRepo->findAll() as $sportFacility) {
-            if (isset($sportFacility)) {
+            if (isset($sportFacility) && !$sportFacility->isDeleted()) {
                 $place = new PlaceDetails();
                 $place->setId($sportFacility->getId());
                 $place->setName($sportFacility->getName());
@@ -244,7 +244,7 @@ class MapController extends Controller
         }
         /** @var Accomodation $accomodation */
         foreach ($this->accomodationRepo->findAll() as $accomodation) {
-            if (isset($accomodation)) {
+            if (isset($accomodation) && !$accomodation->isDeleted()) {
                 $place = new PlaceDetails();
                 $place->setId($accomodation->getId());
                 $place->setName($accomodation->getName());

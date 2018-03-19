@@ -87,7 +87,8 @@ class TravelAgencyController extends Controller
         $qb = $repository->createQueryBuilder('a');
         $query = $qb
             ->where($qb->expr()->like('a.name', '?1'))
-            ->setParameter(1, '%' . $text . '%');
+            ->setParameter(1, '%' . $text . '%')
+            ->andWhere($qb->expr()->eq('a.isDeleted', '0'));
 
         $paginator = $this->get('knp_paginator');
         $pagination = $paginator->paginate(
@@ -116,6 +117,9 @@ class TravelAgencyController extends Controller
         $repository = $this->getDoctrine()
             ->getRepository('UmbriaOpenApiBundle:Tourism\GraphsEntities\TravelAgency');
         $travelAgency = $repository->findById($id);
+        if (!isset($travelAgency) || $travelAgency[0]->isDeleted()) {
+            throw $this->createNotFoundException('La risorsa non esiste');
+        }
         return $this->render('UmbriaOpenApiBundle:TravelAgency:show.html.twig', array(
             'travelAgency' => $travelAgency[0]
         ));
@@ -176,7 +180,8 @@ class TravelAgencyController extends Controller
 
         $builder = $this->em->createQueryBuilder()
             ->select('a')
-            ->from('UmbriaOpenApiBundle:Tourism\GraphsEntities\TravelAgency', 'a');
+            ->from('UmbriaOpenApiBundle:Tourism\GraphsEntities\TravelAgency', 'a')
+            ->where($qb->expr()->eq('a.isDeleted', '0'));
 
         /** @var AbstractPagination $resultsPagination */
         $resultsPagination = $this->paginator->paginate($builder, $page, $limit);

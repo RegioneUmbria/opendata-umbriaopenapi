@@ -88,7 +88,8 @@ class SportFacilityController extends Controller
         $qb = $repository->createQueryBuilder('a');
         $query = $qb
             ->where($qb->expr()->like('a.name', '?1'))
-            ->setParameter(1, '%' . $text . '%');
+            ->setParameter(1, '%' . $text . '%')
+            ->andWhere($qb->expr()->eq('a.isDeleted', '0'));
 
         $paginator = $this->get('knp_paginator');
         $pagination = $paginator->paginate(
@@ -115,6 +116,9 @@ class SportFacilityController extends Controller
         $repository = $this->getDoctrine()
             ->getRepository('UmbriaOpenApiBundle:Tourism\GraphsEntities\SportFacility');
         $sportFacility = $repository->findById($id);
+        if (!isset($sportFacility) || $sportFacility[0]->isDeleted()) {
+            throw $this->createNotFoundException('La risorsa non esiste');
+        }
         return $this->render('UmbriaOpenApiBundle:SportFacility:show.html.twig', array(
             'sportFacility' => $sportFacility[0]
         ));
@@ -272,7 +276,7 @@ class SportFacilityController extends Controller
                         ->setParameter('empty', '0');
             }
         }
-
+        $builder = $qb->andWhere($qb->expr()->eq('a.isDeleted', '0'));
         /** @var AbstractPagination $resultsPagination */
         $resultsPagination = $this->paginator->paginate($builder, $page, $limit);
         /** @var AbstractPagination $countPagination */

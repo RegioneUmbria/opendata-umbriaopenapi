@@ -87,18 +87,7 @@ class AccomodationController extends Controller
             ->andWhere($qb->expr()->like('a.name', '?1'))
             ->setParameter(1, '%' . $text . '%');
 
-        $maxQb = $this->em->createQueryBuilder();
-        $maxQb->select('MAX(a.lastUpdateAt) AS maxLastUpdatedAt')
-            ->from('UmbriaOpenApiBundle:Tourism\GraphsEntities\Accomodation', 'a')
-            ->groupBy('a.uri')
-            ->orderBy('maxLastUpdatedAt', 'DESC');
-
-        $maxResult = $maxQb->getQuery()->getResult();
-        if ($maxResult != null && count($maxResult) > 0) {
-            $maxResult = $maxResult[0]['maxLastUpdatedAt'];
-            $qb->andWhere($qb->expr()->eq('a.lastUpdateAt', ':lastUpdateAt'));
-            $qb->setParameter("lastUpdateAt", $maxResult);
-        }
+        $qb->andWhere($qb->expr()->eq('a.isDeleted', '0'));
 
         $paginator = $this->get('knp_paginator');
         $pagination = $paginator->paginate(
@@ -125,6 +114,9 @@ class AccomodationController extends Controller
         $repository = $this->getDoctrine()
             ->getRepository('UmbriaOpenApiBundle:Tourism\GraphsEntities\Accomodation');
         $accomodation = $repository->findById($id);
+        if (!isset($accomodation) || $accomodation[0]->isDeleted()) {
+            throw $this->createNotFoundException('La risorsa non esiste');
+        }
         return $this->render('UmbriaOpenApiBundle:Accomodation:show.html.twig', array(
             'accomodation' => $accomodation[0]
         ));
@@ -276,7 +268,7 @@ class AccomodationController extends Controller
                         ->setParameter('empty', '0');
             }
         }
-
+        $qb->andWhere($qb->expr()->eq('a.isDeleted', '0'));
         /** @var AbstractPagination $resultsPagination */
         $resultsPagination = $this->paginator->paginate($qb, $page, $limit);
         /** @var AbstractPagination $countPagination */

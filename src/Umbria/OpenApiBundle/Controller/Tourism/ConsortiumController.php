@@ -82,7 +82,8 @@ class ConsortiumController extends Controller
         $qb = $repository->createQueryBuilder('a');
         $query = $qb
             ->where($qb->expr()->like('a.name', '?1'))
-            ->setParameter(1, '%' . $text . '%');
+            ->setParameter(1, '%' . $text . '%')
+            ->andWhere($qb->expr()->eq('a.isDeleted', '0'));
 
         $paginator = $this->get('knp_paginator');
         $pagination = $paginator->paginate(
@@ -109,6 +110,9 @@ class ConsortiumController extends Controller
         $repository = $this->getDoctrine()
             ->getRepository('UmbriaOpenApiBundle:Tourism\GraphsEntities\Consortium');
         $consortium = $repository->findById($id);
+        if (!isset($consortium) || $consortium[0]->isDeleted()) {
+            throw $this->createNotFoundException('La risorsa non esiste');
+        }
         return $this->render('UmbriaOpenApiBundle:Consortium:show.html.twig', array(
             'consortium' => $consortium[0]
         ));
@@ -173,7 +177,7 @@ class ConsortiumController extends Controller
         $builder = $this->em->createQueryBuilder()
             ->select('a')
             ->from('UmbriaOpenApiBundle:Tourism\GraphsEntities\Consortium', 'a');
-
+        $builder = $qb->andWhere($qb->expr()->eq('a.isDeleted', '0'));
         /** @var AbstractPagination $resultsPagination */
         $resultsPagination = $this->paginator->paginate($builder, $page, $limit);
         /** @var AbstractPagination $countPagination */
