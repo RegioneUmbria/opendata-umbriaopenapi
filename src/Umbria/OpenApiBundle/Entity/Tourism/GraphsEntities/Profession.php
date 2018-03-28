@@ -51,6 +51,14 @@ class Profession
     private $isDeleted;
 
     /**
+     * @var \boolean
+     *
+     * @ORM\Column(name="is_in_error", type="boolean")
+     * @JMS\Exclude()
+     **/
+    private $isInError;
+
+    /**
      * @var array
      *
      * @ORM\Column(name="email", type="array", nullable=true)
@@ -482,5 +490,21 @@ class Profession
     {
         $uriarray = explode("/", $this->uri);
         return $uriarray[count($uriarray) - 1];
+    }
+
+    /**
+     * @return boolean
+     */
+    public function isInError()
+    {
+        return $this->isInError;
+    }
+
+    /**
+     * @param boolean $isInError
+     */
+    public function setIsInError($isInError)
+    {
+        $this->isInError = $isInError;
     }
 }

@@ -44,14 +44,14 @@ class Event
     /**
      * @var \DateTime
      *
-     * @ORM\Column(name="startDate", type="date")
+     * @ORM\Column(name="startDate", type="date", nullable=true)
      */
     private $startDate;
 
     /**
      * @var \DateTime
      *
-     * @ORM\Column(name="endDate", type="date")
+     * @ORM\Column(name="endDate", type="date", nullable=true)
      */
     private $endDate;
 
@@ -136,6 +136,14 @@ class Event
      * @JMS\Exclude()
      **/
     private $isDeleted;
+
+    /**
+     * @var \boolean
+     *
+     * @ORM\Column(name="is_in_error", type="boolean")
+     * @JMS\Exclude()
+     **/
+    private $isInError;
 
 
     /**
@@ -511,6 +519,22 @@ class Event
     public function getComment()
     {
         return $this->comment;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function isInError()
+    {
+        return $this->isInError;
+    }
+
+    /**
+     * @param boolean $isInError
+     */
+    public function setIsInError($isInError)
+    {
+        $this->isInError = $isInError;
     }
 }
 

@@ -29,7 +29,7 @@ class Proposal
     /**
      * @var string
      *
-     * @ORM\Column(name="name", type="string", length=255)
+     * @ORM\Column(name="name", type="string", length=255, nullable=true)
      */
     private $name;
 
@@ -150,6 +150,14 @@ class Proposal
      * @JMS\Exclude()
      **/
     private $isDeleted;
+
+    /**
+     * @var \boolean
+     *
+     * @ORM\Column(name="is_in_error", type="boolean")
+     * @JMS\Exclude()
+     **/
+    private $isInError;
 
 
     /**
@@ -557,6 +565,20 @@ class Proposal
         $this->comment = $comment;
     }
 
+    /**
+     * @return boolean
+     */
+    public function isInError()
+    {
+        return $this->isInError;
+    }
 
+    /**
+     * @param boolean $isInError
+     */
+    public function setIsInError($isInError)
+    {
+        $this->isInError = $isInError;
+    }
 }
 

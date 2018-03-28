@@ -31,7 +31,7 @@ class Accomodation
     /**
      * @var string
      *
-     * @ORM\Column(name="name", type="string", length=255)
+     * @ORM\Column(name="name", type="string", length=255, nullable=true)
      */
     private $name;
 
@@ -135,6 +135,14 @@ class Accomodation
      * @JMS\Exclude()
      **/
     private $isDeleted;
+
+    /**
+     * @var \boolean
+     *
+     * @ORM\Column(name="is_in_error", type="boolean")
+     * @JMS\Exclude()
+     **/
+    private $isInError;
 
     /**
      * Set uri
@@ -455,5 +463,19 @@ class Accomodation
         return $uriarray[count($uriarray) - 1];
     }
 
+    /**
+     * @return boolean
+     */
+    public function isInError()
+    {
+        return $this->isInError;
+    }
 
+    /**
+     * @param boolean $isInError
+     */
+    public function setIsInError($isInError)
+    {
+        $this->isInError = $isInError;
+    }
 }

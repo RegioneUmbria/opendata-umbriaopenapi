@@ -112,6 +112,14 @@ class TravelAgency
      **/
     private $isDeleted;
 
+    /**
+     * @var \boolean
+     *
+     * @ORM\Column(name="is_in_error", type="boolean")
+     * @JMS\Exclude()
+     **/
+    private $isInError;
+
 
     /**
      * Set uri
@@ -417,6 +425,21 @@ class TravelAgency
         $this->isDeleted = $isDeleted;
     }
 
+    /**
+     * @return boolean
+     */
+    public function isInError()
+    {
+        return $this->isInError;
+    }
+
+    /**
+     * @param boolean $isInError
+     */
+    public function setIsInError($isInError)
+    {
+        $this->isInError = $isInError;
+    }
 
     public function getId()
     {

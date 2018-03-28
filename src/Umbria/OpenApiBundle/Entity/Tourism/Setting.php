@@ -35,6 +35,13 @@ class Setting
     private $isUpdating;
 
     /**
+     * @var boolean
+     *
+     * @ORM\Column(name="has_errors", type="boolean", nullable=false, options={"default":false})
+     */
+    private $hasErrors;
+
+    /**
      * @var \DateTime
      *
      * @ORM\Column(name="updated_at", type="datetime", nullable=true)
@@ -114,6 +121,22 @@ class Setting
     public function setIsUpdating($isUpdating)
     {
         $this->isUpdating = $isUpdating;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function getHasErrors()
+    {
+        return $this->hasErrors;
+    }
+
+    /**
+     * @param boolean $hasErrors
+     */
+    public function setHasErrors($hasErrors)
+    {
+        $this->hasErrors = $hasErrors;
     }
 
 

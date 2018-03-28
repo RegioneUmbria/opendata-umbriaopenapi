@@ -123,6 +123,14 @@ class SportFacility
      **/
     private $isDeleted;
 
+    /**
+     * @var \boolean
+     *
+     * @ORM\Column(name="is_in_error", type="boolean")
+     * @JMS\Exclude()
+     **/
+    private $isInError;
+
 
     /**
      * Set uri
@@ -412,5 +420,20 @@ class SportFacility
         return $this->lng;
     }
 
+    /**
+     * @return boolean
+     */
+    public function isInError()
+    {
+        return $this->isInError;
+    }
+
+    /**
+     * @param boolean $isInError
+     */
+    public function setIsInError($isInError)
+    {
+        $this->isInError = $isInError;
+    }
 
 }

@@ -114,6 +114,14 @@ class Iat
      **/
     private $isDeleted;
 
+    /**
+     * @var \boolean
+     *
+     * @ORM\Column(name="is_in_error", type="boolean")
+     * @JMS\Exclude()
+     **/
+    private $isInError;
+
 
     /**
      * Set uri
@@ -424,5 +432,21 @@ class Iat
     {
         $uriarray = explode("/", $this->uri);
         return $uriarray[count($uriarray) - 1];
+    }
+
+    /**
+     * @return boolean
+     */
+    public function isInError()
+    {
+        return $this->isInError;
+    }
+
+    /**
+     * @param boolean $isInError
+     */
+    public function setIsInError($isInError)
+    {
+        $this->isInError = $isInError;
     }
 }

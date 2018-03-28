@@ -32,7 +32,7 @@ class Attractor
     /**
      * @var string
      *
-     * @ORM\Column(name="name", type="string", length=255)
+     * @ORM\Column(name="name", type="string", length=255, nullable=true)
      */
     private $name;
 
@@ -176,6 +176,14 @@ class Attractor
      * @JMS\Exclude()
      **/
     private $isDeleted;
+
+    /**
+     * @var \boolean
+     *
+     * @ORM\Column(name="is_in_error", type="boolean")
+     * @JMS\Exclude()
+     **/
+    private $isInError;
 
     /**
      * @var Category[]
@@ -687,6 +695,23 @@ class Attractor
     {
         $this->isDeleted = $isDeleted;
     }
+
+    /**
+     * @return boolean
+     */
+    public function isInError()
+    {
+        return $this->isInError;
+    }
+
+    /**
+     * @param boolean $isInError
+     */
+    public function setIsInError($isInError)
+    {
+        $this->isInError = $isInError;
+    }
+
 }
 
 
