@@ -114,7 +114,7 @@ umbria_open_api_sparql_manual_query_data:
     defaults: {_controller: UmbriaOpenApiBundle:SparqlManual:sparqlQueryData }
 
 umbria_open_api_entities_update:
-    path:     /entities_update/{attractor}/{consortium}/{event}/{iat}/{sport_facility}/{profession}/{proposal}/{accomodation}/{travel_agency}/
+    path:     /entities_update/{attractor}/{consortium}/{event}/{iat}/{sport_facility}/{profession}/{proposal}/{accomodation}/{travel_agency}/{error}/
     defaults: { _controller: UmbriaOpenApiBundle:EntitiesUpdate:index }
     methods:  [PUT]
     requirements:
@@ -127,6 +127,7 @@ umbria_open_api_entities_update:
       proposal: '0|1'
       accomodation: '0|1'
       travel_agency: '0|1'
+      error: '0|1'
 
 
 facebook_webhook:
