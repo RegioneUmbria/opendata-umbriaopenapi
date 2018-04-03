@@ -179,10 +179,11 @@ class ProposalController extends Controller
         $page = floor($offset / $limit) + 1;
 
 
-        $builder = $this->em->createQueryBuilder()
+        $builder = $this->em->createQueryBuilder();
+        $builder = $builder
             ->select('a')
             ->from('UmbriaOpenApiBundle:Tourism\GraphsEntities\Proposal', 'a')
-            ->where($qb->expr()->eq('a.isDeleted', '0'));;
+            ->where($builder->expr()->eq('a.isDeleted', '0'));;
 
         /** @var AbstractPagination $resultsPagination */
         $resultsPagination = $this->paginator->paginate($builder, $page, $limit);
