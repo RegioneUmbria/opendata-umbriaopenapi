@@ -180,8 +180,8 @@ class TravelAgencyController extends Controller
 
         $builder = $this->em->createQueryBuilder()
             ->select('a')
-            ->from('UmbriaOpenApiBundle:Tourism\GraphsEntities\TravelAgency', 'a')
-            ->where($qb->expr()->eq('a.isDeleted', '0'));
+            ->from('UmbriaOpenApiBundle:Tourism\GraphsEntities\TravelAgency', 'a');
+        $builder = $builder->where($builder->expr()->eq('a.isDeleted', '0'));
 
         /** @var AbstractPagination $resultsPagination */
         $resultsPagination = $this->paginator->paginate($builder, $page, $limit);
