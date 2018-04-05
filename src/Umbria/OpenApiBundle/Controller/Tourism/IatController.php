@@ -45,7 +45,6 @@ class IatController extends Controller
      */
     public function __construct($em, $filterBag, $paginator)
     {
-        parent::__construct($em);
         $this->filterBag = $filterBag;
         $this->paginator = $paginator;
         $this->em = $em;
@@ -182,8 +181,9 @@ class IatController extends Controller
 
         $builder = $this->em->createQueryBuilder()
             ->select('i')
-            ->from('UmbriaOpenApiBundle:Tourism\GraphsEntities\Iat', 'i')
-            ->where($qb->expr()->eq('a.isDeleted', '0'));
+            ->from('UmbriaOpenApiBundle:Tourism\GraphsEntities\Iat', 'i');
+
+        $builder = $builder->where($builder->expr()->eq('i.isDeleted', '0'));
         /** @var AbstractPagination $resultsPagination */
         $resultsPagination = $this->paginator->paginate($builder, $page, $limit);
         /** @var AbstractPagination $countPagination */
