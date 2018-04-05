@@ -177,7 +177,7 @@ class ConsortiumController extends Controller
         $builder = $this->em->createQueryBuilder()
             ->select('a')
             ->from('UmbriaOpenApiBundle:Tourism\GraphsEntities\Consortium', 'a');
-        $builder = $qb->andWhere($qb->expr()->eq('a.isDeleted', '0'));
+        $builder = $builder->andWhere($builder->expr()->eq('a.isDeleted', '0'));
         /** @var AbstractPagination $resultsPagination */
         $resultsPagination = $this->paginator->paginate($builder, $page, $limit);
         /** @var AbstractPagination $countPagination */
