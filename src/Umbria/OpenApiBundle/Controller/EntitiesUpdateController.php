@@ -149,16 +149,16 @@ class EntitiesUpdateController extends BaseController
         if ($entityType == "accomodation") {
             $sparqlClient = new EasyRdf_Sparql_Client("http://dati.umbria.it/sparql?format=text%2Fturtle");
             $query = "
-CONSTRUCT {?s ?p ?o.
-?s <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://purl.org/acco/ns#Accomodation>}
+CONSTRUCT {?s ?p ?o.}
 WHERE{
 	SELECT DISTINCT ?s ?p ?o
 	FROM <http://dati.umbria.it/graph/strutture_ricettive>
 	WHERE{
 		?s ?p ?o .
 		?s <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://purl.org/acco/ns#Accomodation>.
-		FILTER( ?p = <http://www.w3.org/2000/01/rdf-schema#label> || ?p = <http://www.w3.org/1999/02/22-rdf-syntax-ns#type>).			
+		FILTER( ?p = <http://www.w3.org/2000/01/rdf-schema#label> ).			
 	}
+	Limit 10
 }
 ";
 
@@ -195,25 +195,19 @@ WHERE{
                 $is_to_delete = false;
                 try {
                     $entity_uri = $entity->getUri();
-                    $RDFResource = $graph->resource($entity_uri);
-                    if ($RDFResource != null) {
+                    if (isset($graph->resources[$entity_uri])) {
+                        $RDFResource = $graph->resource($entity_uri);
                         //update entity
                         $entityTypeURI = $this->getResourceTypeURIByEntityType($entityType);
                         //check if resource match type and provenance (dati.umbria.it)
-                        $isResourceToBeSaved = $this->isResourceToBeSaved($RDFResource, $entityType, $entityTypeURI);
-                        if ($isResourceToBeSaved) {
-                            $updatedEntity = $this->{"createOrUpdate" . $entityClassName}($RDFResource);
-                            if ($updatedEntity != null) {
-                                $updatedEntity->setLastUpdateAt(new \DateTime('now'));
-                                $updatedEntity->setIsDeleted(false);
-                                $updatedEntity->setIsInError(false);
-                                $this->em->flush();
-                            } else {
-                                $is_entity_error = true;
-                            }
+                        $updatedEntity = $this->{"createOrUpdate" . $entityClassName}($RDFResource);
+                        if ($updatedEntity != null) {
+                            $updatedEntity->setLastUpdateAt(new \DateTime('now'));
+                            $updatedEntity->setIsDeleted(false);
+                            $updatedEntity->setIsInError(false);
+                            $this->em->flush();
                         } else {
-                            $this->get('logger')->info("Skip URI (not to be saved) " + $entity_uri);
-                            $is_to_delete = true;
+                            $is_entity_error = true;
                         }
                     } else {
                         $is_to_delete = true;
@@ -222,6 +216,7 @@ WHERE{
                     if ($is_to_delete == true) {
                         //logically delete entity
                         $entity->setLastUpdateAt(new \DateTime('now'));
+                        $updatedEntity->setIsInError(false);
                         $entity->setIsDeleted(true);
                         $this->em->flush();
                     }
@@ -1237,6 +1232,9 @@ WHERE{
             foreach ($resourceTypes as $resourceType) {
                 $isValidType = $resourceType->getUri() === $entityTypeURI;
                 break;
+            }
+            if ($entityType == 'accomodation') {
+                $isValidType = true;
             }
         }
         return ($isValidType && $isValidURI);
