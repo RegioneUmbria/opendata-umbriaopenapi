@@ -34,6 +34,13 @@ class Profession
     private $firstName;
 
     /**
+     * @var string
+     *
+     * @ORM\Column(name="lastName", type="string", length=255, nullable=true)
+     */
+    private $lastName;
+
+    /**
      * @var \DateTime
      *
      * @ORM\Column(name="last_update_at", type="datetime")
