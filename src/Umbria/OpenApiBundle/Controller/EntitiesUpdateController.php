@@ -189,7 +189,7 @@ WHERE{
         $entities = $entityRepo->findAll();
         foreach ($entities as $entity) {
             if ($errors_only == false || $entity->isInError() == true) {
-                $entity_uri = null;
+                $entity_uri = "";
                 $isResourceToBeSaved = false;
                 $is_entity_error = false;
                 $is_to_delete = false;
@@ -212,12 +212,12 @@ WHERE{
                                 $is_entity_error = true;
                             }
                         } else {
-                            $this->get('logger')->debug("Skip URI (not to be saved) " + $entity_uri);
+                            $this->get('logger')->info("Skip URI (not to be saved) " + $entity_uri);
                             $is_to_delete = true;
                         }
                     } else {
                         $is_to_delete = true;
-                        $this->get('logger')->debug("Delete URI " + $entity_uri);
+                        $this->get('logger')->info("Delete URI " + $entity_uri);
                     }
                     if ($is_to_delete == true) {
                         //logically delete entity
@@ -262,7 +262,7 @@ WHERE{
         foreach ($resources as $RDFResource) {
             $isResourceToBeSaved = false;
             $is_entity_error = false;
-            $resourceURI = null;
+            $resourceURI = "";
             try {
                 $resourceURI = $RDFResource->getURI();
                 //check if resource match type and provenance (dati.umbria.it)
@@ -286,10 +286,10 @@ WHERE{
                         }
 
                     } else {
-                        $this->get('logger')->debug("Skip URI (already be saved) " + $resourceURI);
+                        $this->get('logger')->info("Skip URI (already be saved) " + $resourceURI);
                     }
                 } else {
-                    $this->get('logger')->debug("Skip URI (not to be saved) " + $resourceURI);
+                    $this->get('logger')->info("Skip URI (not to be saved) " + $resourceURI);
                 }
             } catch (Throwable $e) {
                 $is_entity_error = true;
@@ -299,7 +299,7 @@ WHERE{
                 $has_error = true;
                 if ($resourceURI != null) {
                     try {
-                        if ($resourceURI != null && $isResourceToBeSaved == true) {
+                        if ($resourceURI != "" && $isResourceToBeSaved == true) {
                             $entityClassNameComplete = "Umbria\OpenApiBundle\Entity\Tourism\GraphsEntities\\$entityClassName";
                             $inErrorEntity = new $entityClassNameComplete();
                             $inErrorEntity->setUri($resourceURI);
