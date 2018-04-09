@@ -195,7 +195,7 @@ WHERE{
                 $is_to_delete = false;
                 try {
                     $entity_uri = $entity->getUri();
-                    if (isset($graph->resources[$entity_uri])) {
+                    if (isset($graph->index[$entity_uri])) {
                         $RDFResource = $graph->resource($entity_uri);
                         //update entity
                         $entityTypeURI = $this->getResourceTypeURIByEntityType($entityType);
