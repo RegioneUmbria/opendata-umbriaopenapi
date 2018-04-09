@@ -216,7 +216,7 @@ WHERE{
                     if ($is_to_delete == true) {
                         //logically delete entity
                         $entity->setLastUpdateAt(new \DateTime('now'));
-                        $updatedEntity->setIsInError(false);
+                        $entity->setIsInError(false);
                         $entity->setIsDeleted(true);
                         $this->em->flush();
                     }
