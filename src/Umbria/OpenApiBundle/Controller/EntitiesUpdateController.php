@@ -158,7 +158,6 @@ WHERE{
 		?s <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://purl.org/acco/ns#Accomodation>.
 		FILTER( ?p = <http://www.w3.org/2000/01/rdf-schema#label> ).			
 	}
-	Limit 10
 }
 ";
 
@@ -187,6 +186,7 @@ WHERE{
          */
         $entityRepo = $this->em->getRepository(trim("UmbriaOpenApiBundle:Tourism\GraphsEntities\ ") . $entityClassName);
         $entities = $entityRepo->findAll();
+        $resources = $graph->resources();
         foreach ($entities as $entity) {
             if ($errors_only == false || $entity->isInError() == true) {
                 $entity_uri = "";
@@ -195,7 +195,7 @@ WHERE{
                 $is_to_delete = false;
                 try {
                     $entity_uri = $entity->getUri();
-                    if (isset($graph->index[$entity_uri])) {
+                    if (isset($resources[$entity_uri])) {
                         $RDFResource = $graph->resource($entity_uri);
                         //update entity
                         $entityTypeURI = $this->getResourceTypeURIByEntityType($entityType);
