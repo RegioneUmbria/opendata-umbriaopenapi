@@ -31,6 +31,7 @@ use Umbria\OpenApiBundle\Repository\CategoryRepository;
 use JMS\DiExtraBundle\Annotation as DI;
 use Umbria\OpenApiBundle\Repository\TypeRepository;
 use Throwable;
+use ReflectionClass;
 
 class EntitiesUpdateController extends BaseController
 {
@@ -115,6 +116,8 @@ class EntitiesUpdateController extends BaseController
                         $responseObj->end = new \DateTime();
                         if ($has_errors == true) {
                             /*invia email con tipo di entità*/
+                            $this->send_error_mail($entityType);
+                            $responseObj->error = "Check entity table for individual errors!";
                         }
 
                     }
@@ -155,7 +158,7 @@ WHERE{
 		?s ?p ?o .
 		?s <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://purl.org/acco/ns#Accomodation>.
 		FILTER( ?p = <http://www.w3.org/2000/01/rdf-schema#label> || ?p = <http://www.w3.org/1999/02/22-rdf-syntax-ns#type>).			
-	}	
+	}
 }
 ";
 
@@ -187,7 +190,9 @@ WHERE{
         foreach ($entities as $entity) {
             if ($errors_only == false || $entity->isInError() == true) {
                 $entity_uri = null;
-                $isResourceToBeSaved = null;
+                $isResourceToBeSaved = false;
+                $is_entity_error = false;
+                $is_to_delete = false;
                 try {
                     $entity_uri = $entity->getUri();
                     $RDFResource = $graph->resource($entity_uri);
@@ -198,23 +203,35 @@ WHERE{
                         $isResourceToBeSaved = $this->isResourceToBeSaved($RDFResource, $entityType, $entityTypeURI);
                         if ($isResourceToBeSaved) {
                             $updatedEntity = $this->{"createOrUpdate" . $entityClassName}($RDFResource);
-                            $updatedEntity->setLastUpdateAt(new \DateTime('now'));
-                            $updatedEntity->setIsDeleted(false);
-                            $updatedEntity->setIsInError(false);
-                            $this->em->flush();
+                            if ($updatedEntity != null) {
+                                $updatedEntity->setLastUpdateAt(new \DateTime('now'));
+                                $updatedEntity->setIsDeleted(false);
+                                $updatedEntity->setIsInError(false);
+                                $this->em->flush();
+                            } else {
+                                $is_entity_error = true;
+                            }
                         } else {
                             $this->get('logger')->debug("Skip URI (not to be saved) " + $entity_uri);
+                            $is_to_delete = true;
                         }
                     } else {
+                        $is_to_delete = true;
                         $this->get('logger')->debug("Delete URI " + $entity_uri);
+                    }
+                    if ($is_to_delete == true) {
                         //logically delete entity
                         $entity->setLastUpdateAt(new \DateTime('now'));
                         $entity->setIsDeleted(true);
                         $this->em->flush();
                     }
                 } catch (Throwable $e) {
-                    $has_error = true;
+                    $is_entity_error = true;
                     $this->get('logger')->error("$resourceURI create error:" . $e->getTraceAsString());
+                }
+                if ($is_entity_error == true) {
+                    $has_error = true;
+
                     try {
                         $this->get('logger')->info("$entity->getUri() trying to save with state in error");
                         $entity->setLastUpdateAt(new \DateTime('now'));
@@ -243,6 +260,9 @@ WHERE{
         //get all resources from graph by type
         $resources = $graph->resources();
         foreach ($resources as $RDFResource) {
+            $isResourceToBeSaved = false;
+            $is_entity_error = false;
+            $resourceURI = null;
             try {
                 $resourceURI = $RDFResource->getURI();
                 //check if resource match type and provenance (dati.umbria.it)
@@ -255,11 +275,16 @@ WHERE{
                     if (!$isAlreadyPersisted) {
                         //create new resource
                         $createdEntity = $this->{"createOrUpdate" . $entityClassName}($RDFResource);
-                        $createdEntity->setLastUpdateAt(new \DateTime('now'));
-                        $createdEntity->setIsDeleted(false);
-                        $createdEntity->setIsInError(false);
-                        $this->em->persist($createdEntity);
-                        $this->em->flush();
+                        if ($createdEntity != null) {
+                            $createdEntity->setLastUpdateAt(new \DateTime('now'));
+                            $createdEntity->setIsDeleted(false);
+                            $createdEntity->setIsInError(false);
+                            $this->em->persist($createdEntity);
+                            $this->em->flush();
+                        } else {
+                            $is_entity_error = true;
+                        }
+
                     } else {
                         $this->get('logger')->debug("Skip URI (already be saved) " + $resourceURI);
                     }
@@ -267,19 +292,26 @@ WHERE{
                     $this->get('logger')->debug("Skip URI (not to be saved) " + $resourceURI);
                 }
             } catch (Throwable $e) {
-                $has_error = true;
+                $is_entity_error = true;
                 $this->get('logger')->error("$resourceURI create error:" . $e->getTraceAsString());
-                try {
-                    if ($resourceURI != null && $isResourceToBeSaved == true) {
-                        $inErrorEntity = new $entityClassName();
-                        $inErrorEntity->setUri($resourceURI);
-                        $inErrorEntity->setIsDeleted(true);
-                        $inErrorEntity->setIsInErro(true);
-                        $this->em->persist($inErrorEntity);
-                        $this->em->flush();
+            }
+            if ($is_entity_error) {
+                $has_error = true;
+                if ($resourceURI != null) {
+                    try {
+                        if ($resourceURI != null && $isResourceToBeSaved == true) {
+                            $entityClassNameComplete = "Umbria\OpenApiBundle\Entity\Tourism\GraphsEntities\\$entityClassName";
+                            $inErrorEntity = new $entityClassNameComplete();
+                            $inErrorEntity->setUri($resourceURI);
+                            $inErrorEntity->setIsDeleted(false);
+                            $inErrorEntity->setIsInError(true);
+                            $inErrorEntity->setLastUpdateAt(new \DateTime('now'));
+                            $this->em->persist($inErrorEntity);
+                            $this->em->flush();
+                        }
+                    } catch (Throwable $e2) {
+                        $this->get('logger')->error("$resourceURI error trying to save with state in error:" . $e2->getTraceAsString());
                     }
-                } catch (Throwable $e2) {
-                    $this->get('logger')->error("$resourceURI error trying to save with state in error:" . $e->getTraceAsString());
                 }
             }
         }
@@ -1232,5 +1264,23 @@ WHERE{
             case 'accomodation':
                 return "Accomodation";
         }
+    }
+
+    private function send_error_mail($entityType)
+    {
+        try {
+            $message = (new \Swift_Message('Umbriaopenapi update error'))
+                ->setFrom('send@example.com')
+                ->setTo('recipient@example.com')
+                ->setBody(
+                    "Update error: " . $entityType,
+                    'text/plain'
+                );
+
+            $mailer->send($message);
+        } catch (Throwable $t) {
+            $this->get('logger')->error("Mail error:" . $t->getTraceAsString());
+        }
+
     }
 }
