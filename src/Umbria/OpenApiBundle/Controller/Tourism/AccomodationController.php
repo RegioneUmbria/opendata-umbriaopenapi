@@ -195,20 +195,6 @@ class AccomodationController extends Controller
             ->from('UmbriaOpenApiBundle:Tourism\GraphsEntities\Accomodation', 'a');
 
 
-        $maxQb = $this->em->createQueryBuilder();
-        $maxQb->select('MAX(a.lastUpdateAt) AS maxLastUpdatedAt')
-            ->from('UmbriaOpenApiBundle:Tourism\GraphsEntities\Accomodation', 'a')
-            ->groupBy('a.uri')
-            ->orderBy('maxLastUpdatedAt', 'DESC');
-
-        $maxResult = $maxQb->getQuery()->getResult();
-        if ($maxResult != null && count($maxResult) > 0) {
-            $maxResult = $maxResult[0]['maxLastUpdatedAt'];
-            $qb->andWhere($qb->expr()->eq('a.lastUpdateAt', ':lastUpdateAt'));
-            $qb->setParameter("lastUpdateAt", $maxResult);
-        }
-
-
         if ($labelLike != null) {
             $qb
                 ->andWhere($qb->expr()->like('a.name', '?2'))
