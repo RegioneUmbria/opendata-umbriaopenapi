@@ -164,7 +164,8 @@ class AccomodationController extends Controller
      *      {"name"="lat_max", "dataType"="number", "required"=false, "description"="Latitudine massima"},
      *      {"name"="lat_min", "dataType"="number", "required"=false, "description"="Latitudine minima"},
      *      {"name"="lng_max", "dataType"="number", "required"=false, "description"="Longitudine massima"},
-     *      {"name"="lng_min", "dataType"="number", "required"=false, "description"="Longitudine minima"}
+     *      {"name"="lng_min", "dataType"="number", "required"=false, "description"="Longitudine minima"},
+     *      {"name"="address_locality", "dataType"="string", "required"=false, "description"="Condizione 'LIKE' su Comune"}
      *
      *
      *  },
@@ -179,6 +180,7 @@ class AccomodationController extends Controller
         $offset = $filters->has('start') ? $filters->get('start') : 0;
         $limit = $filters->has('limit') ? $filters->get('limit') : self::DEFAULT_PAGE_SIZE;
         $labelLike = $filters->has('label_like') ? $filters->get('label_like') : null;
+        $addressLocality = $filters->has('address_locality') ? $filters->get('address_locality') : null;
         $categoryLike = $filters->has('category_like') ? $filters->get('category_like') : null;
         $latMax = $filters->has('lat_max') && $filters->get('lat_max') ? floatval($filters->get('lat_max')) : null;
         $latMin = $filters->has('lat_min') && $filters->get('lat_min') ? floatval($filters->get('lat_min')) : null;
@@ -214,7 +216,8 @@ class AccomodationController extends Controller
         if ($latMax != null ||
             $latMin != null ||
             $lngMax != null ||
-            $lngMin != null
+            $lngMin != null ||
+            $addressLocality != null
         ) {
             $qb->join('a.address', 'address');
             if ($latMax != null) {
@@ -252,6 +255,11 @@ class AccomodationController extends Controller
                     )
                         ->setParameter('lngMin', $lngMin)
                         ->setParameter('empty', '0');
+            }
+            if ($addressLocality != null) {
+                $qb->andWhere(
+                    $qb->expr()->like("address.addressLocality", ":addressLocality")
+                )->setParameter('addressLocality', $addressLocality);
             }
         }
         $qb->andWhere($qb->expr()->eq('a.isDeleted', '0'));
