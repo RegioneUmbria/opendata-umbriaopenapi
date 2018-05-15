@@ -259,7 +259,7 @@ class AccomodationController extends Controller
             if ($addressLocality != null) {
                 $qb->andWhere(
                     $qb->expr()->like("address.addressLocality", ":addressLocality")
-                )->setParameter('addressLocality', $addressLocality);
+                )->setParameter('addressLocality', '%' . $addressLocality . '%');
             }
         }
         $qb->andWhere($qb->expr()->eq('a.isDeleted', '0'));
