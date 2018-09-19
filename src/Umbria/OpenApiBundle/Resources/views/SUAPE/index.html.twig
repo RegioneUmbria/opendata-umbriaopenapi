@@ -1,0 +1,69 @@
+{% extends "UmbriaOpenApiBundle::base.html.twig" %}
+
+{% block body %}
+    <div class="container">
+        <div class="row">
+            <div class="page-header">
+                <h2>Statistiche SUAPE</h2>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6 col-md-offset-4">
+                <div class="btn-group btn-group-lg" role="group">
+                    <button id="evaseDatasetSelector" type="button" class="btn btn-primary active" aria-pressed="true"
+                    onclick="datasetSelectorChange(this)">Pratiche evase</button>
+                    <button id="tipologieDatasetSelector" type="button" class="btn btn-default" onclick="datasetSelectorChange(this)">Tipologie</button>
+                    <button id="categorieDatasetSelector" type="button" class="btn btn-default" onclick="datasetSelectorChange(this)">Categorie</button>
+                </div>
+            </div>
+        </div>
+        <br>
+        <div class="row">
+            <div class="col-md-9 col-md-offset-2">
+                <h3 id="chartDescription">Rapporto tra le pratiche evase e le pratiche totali filtrate per comune</h3>
+            </div>
+        </div>
+        <br><br>
+        <div class="row" >
+            <div class="row col-md-4 col-md-offset-4" >
+                <label for="comuneFilter" class="col-md-3">Comune</label>
+                <select id="comuneFilter" class="col-md-9" onchange="setAnnoSelectOptions(); setMeseSelectOptions();drawCharts()">
+                </select>
+            </div>
+        </div>
+        <br><br>
+        <div class="row">
+            <div id="chart_div_1"></div>
+        </div>
+
+        <div id="chart2_time_filter" class="row" style="visibility: hidden">
+            <br><br>
+            <div class="row col-md-4 col-md-offset-4" >
+                <label for="annoFilter" class="col-md-3">Anno</label>
+                <select id="annoFilter" class="col-md-9" onchange="drawCharts()" >
+                </select>
+            </div>
+            <div class="row col-md-4 col-md-offset-4" >
+                <label for="meseFilter" class="col-md-3">Mese</label>
+                <select id="meseFilter" class="col-md-9" onchange="drawCharts()" >
+                </select>
+            </div>
+        </div>
+        <br><br>
+        <div class="row">
+            <div id="chart_div_2" class="col-md-10 col-md-offset-1"></div>
+        </div>
+    </div>
+
+
+
+{% endblock %}
+
+ {% block javascripts %}
+     {{ parent() }}
+     <script src="{{ asset('js/statisticheSUAPE.js') }}"></script>
+     <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+     <script type="text/javascript">
+        mainDrawCharts();
+     </script>
+ {% endblock %}

@@ -25,7 +25,6 @@ class AppKernel extends Kernel
             new Craue\GeoBundle\CraueGeoBundle(),
 
             new Umbria\OpenApiBundle\UmbriaOpenApiBundle(),
-            new Umbria\ProLocoBundle\UmbriaProLocoBundle(),
             new Umbria\TelegramBotBundle\UmbriaTelegramBotBundle(),
         );
 

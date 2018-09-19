@@ -12,7 +12,6 @@ use DateTime;
 use Doctrine\ORM\EntityManager;
 use Monolog\Logger;
 use Symfony\Component\HttpFoundation\Response;
-use Umbria\OpenApiBundle\Controller\Tourism\BaseController;
 use AnthonyMartin\GeoLocation\GeoLocation;
 use Umbria\OpenApiBundle\Entity\FacebookUsersMessages;
 use Umbria\OpenApiBundle\Repository\FacebookUsersMessagesRepository;

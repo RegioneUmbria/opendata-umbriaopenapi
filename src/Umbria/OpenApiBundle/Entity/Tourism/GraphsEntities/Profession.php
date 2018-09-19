@@ -41,6 +41,31 @@ class Profession
     private $lastName;
 
     /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="last_update_at", type="datetime")
+     *
+     * @JMS\Exclude()
+     */
+    private $lastUpdateAt;
+
+    /**
+     * @var \boolean
+     *
+     * @ORM\Column(name="is_deleted", type="boolean")
+     * @JMS\Exclude()
+     **/
+    private $isDeleted;
+
+    /**
+     * @var \boolean
+     *
+     * @ORM\Column(name="is_in_error", type="boolean")
+     * @JMS\Exclude()
+     **/
+    private $isInError;
+
+    /**
      * @var array
      *
      * @ORM\Column(name="email", type="array", nullable=true)
@@ -110,15 +135,6 @@ class Profession
      * @ORM\Column(name="lng", type="float", nullable=true)
      */
     private $lng;
-
-    /**
-     * @var \DateTime
-     *
-     * @ORM\Column(name="last_update_at", type="date")
-     *
-     * @JMS\Exclude()
-     */
-    private $lastUpdateAt;
 
 
     /**
@@ -439,9 +455,9 @@ class Profession
     /**
      * Set lastUpdateAt
      *
-     * @param \DateTime $lastUpdateAt
+     * @param \timestamp $lastUpdateAt
      *
-     * @return Consortium
+     * @return Attractor
      */
     public function setLastUpdateAt($lastUpdateAt)
     {
@@ -460,10 +476,42 @@ class Profession
         return $this->lastUpdateAt;
     }
 
+    /**
+     * @return boolean
+     */
+    public function isDeleted()
+    {
+        return $this->isDeleted;
+    }
+
+    /**
+     * @param boolean $isDeleted
+     */
+    public function setIsDeleted($isDeleted)
+    {
+        $this->isDeleted = $isDeleted;
+    }
+
 
     public function getId()
     {
         $uriarray = explode("/", $this->uri);
         return $uriarray[count($uriarray) - 1];
+    }
+
+    /**
+     * @return boolean
+     */
+    public function isInError()
+    {
+        return $this->isInError;
+    }
+
+    /**
+     * @param boolean $isInError
+     */
+    public function setIsInError($isInError)
+    {
+        $this->isInError = $isInError;
     }
 }

@@ -1,41 +1,34 @@
 parameters:
 
+    items_on_page: 15
 
     sparql_endpoint_uri: http://dati.umbria.it/sparql
 
     proposal_graph_url: http://dati.umbria.it/dataset/8b4f4b4b-7abc-4103-9082-96ba7023021d/resource/3a6d0af4-8ba2-43ce-9ffe-8eb62e0a0375/download/proposte.rdf
-    proposal_days_to_old: 0
     proposal_type_uri: http://dati.umbria.it/tourism/ontology/proposte
 
     attractor_graph_url : http://dati.umbria.it/dataset/ab39e23d-540f-4aa1-b27f-3fb244837545/resource/df1012df-04d4-4666-acd1-d756d3b1c903/download/attrattori.rdf
-    attractor_days_to_old: 0
     attractor_type_uri: http://linkedgeodata.org/ontology/Attraction
 
     event_graph_url: http://dati.umbria.it/dataset/410faa97-546b-4362-a6d7-f8794d18ed19/resource/0b15587e-fe50-4db5-86ab-14e3d50c0a82/download/eventi.rdf
-    event_days_to_old: 0
     event_type_uri: http://schema.org/Event
 
     travel_agency_graph_url: http://dati.umbria.it/dataset/84d1bd8f-ec95-404c-93c8-81ce2e4705ab/resource/acbc5c8a-7c7c-42de-99d1-02da0f653895/download/agenzieturistiche.rdf
-    travel_agency_days_to_old: 0
     travel_agency_type_uri: http://dati.umbria.it/tourism/ontology/agenzia_viaggio
 
     consortium_graph_url: http://dati.umbria.it/dataset/826515b8-a19d-4496-99af-e3b9967db130/resource/9ba67744-e844-4ea4-896d-9990ed751982/download/consorzi.rdf
-    consortium_days_to_old: 0
     consortium_type_uri: http://dati.umbria.it/tourism/ontology/turismo_consorzi
 
     profession_graph_url: http://dati.umbria.it/dataset/6afb8a5c-6907-45ee-941c-881dc0ab95f6/resource/b045b366-8a94-4b0e-b72b-91cf26c63a09/download/professionituristiche.rdf
-    profession_days_to_old: 0
     profession_type_uri: http://dati.umbria.it/turismo/ontology/professioni_turistiche
 
     iat_graph_url: http://dati.umbria.it/dataset/32cca8e8-4e6e-43ed-b7df-2f577de8ac4d/resource/4bc8be8f-52f1-440a-a7b7-2860b9611be7/download/iat.rdf
-    iat_days_to_old: 0
     iat_type_uri: http://dati.umbria.it/tourism/ontology/iat
 
     sport_facility_graph_url: http://dati.umbria.it/dataset/c2b4592f-618f-41eb-a37d-f0fc74200441/resource/d7699464-3b02-46cd-baff-6780a2c76643/download/impiantisportivigeocoded.rdf
-    sport_facility_days_to_old: 0
     sport_facility_type_uri: http://dbpedia.org/ontology/sportFacility
 
-    accomodation_days_to_old: 0
+    accomodation_type_uri: http://purl.org/acco/ns#Accomodation
 
 services:
     umbria_open_api.filter_bag:

@@ -39,15 +39,61 @@
             <a class="navbar-brand" href="{{ path('umbria_open_api_homepage') }}">Umbria - Open API</a>
         </div>
         <div id="navbar" class="navbar-collapse collapse">
-            <ul class="nav navbar-nav">
-                <li><a href="{{ path('umbria_pro_loco_homepage') }}">Turismo</a></li>
-                <li><a href="{{ path('umbria_pro_loco_statistiche') }}">Statistiche SUAPE</a></li>
-                <li><a href="{{ path('nelmio_api_doc_index') }}">API docs</a></li>
-                <li><a href="{{ path('umbria_open_api_sparql_manual') }}">SPARQL Manual</a></li>
+            <ul class="nav navbar-nav ">
+                <li class="dropdown show">
+                    <a class="btn btn-secondary dropdown-toggle"
+                       role="button" id="turismoMenuLink" data-toggle="dropdown"
+                       aria-haspopup="true" aria-expanded="false"
+                    >
+                        Turismo
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="turismoMenuLink">
+                        <li><a class="dropdown-item" href="{{ path('umbria_open_api_map') }}">Mappa</a></li>
+                        <li role="separator" class="divider"></li>
+                        <li><a class="dropdown-item" href="{{ path('attractor_index') }}">Attrattori</a></li>
+                        <li><a class="dropdown-item" href="{{ path('event_index') }}">Eventi</a></li>
+                        <li><a class="dropdown-item" href="{{ path('accomodation_index') }}">Strutture ricettive</a>
+                        </li>
+                        <li><a class="dropdown-item" href="{{ path('sport_facility_index') }}">Impianti sportivi</a>
+                        </li>
+                        <li><a class="dropdown-item" href="{{ path('proposal_index') }}">Proposte</a></li>
+                        <li><a class="dropdown-item" href="{{ path('profession_index') }}">Professioni</a></li>
+                        <li><a class="dropdown-item" href="{{ path('travel_agency_index') }}">Agenzie di viaggi</a></li>
+                        <li><a class="dropdown-item" href="{{ path('consortium_index') }}">Consorzi</a></li>
+                        <li><a class="dropdown-item" href="{{ path('iat_index') }}">Iat</a></li>
+                    </ul>
+                </li>
+                <li class="dropdown show">
+                    <a class="btn btn-secondary dropdown-toggle"
+                       role="button" id="statisticheMenuLink" data-toggle="dropdown"
+                       aria-haspopup="true" aria-expanded="false"
+                    >
+                        Statistiche
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="statisticheMenuLink">
+                        <li><a class="dropdown-item" href="{{ path('statistiche_servizi-in-rete') }}">Servizi in
+                                Rete</a></li>
+                        <li><a class="dropdown-item" href="{{ path('statistiche_suape') }}">SUAPE</a></li>
+                    </ul>
+                </li>
+                <li class="dropdown show">
+                    <a class="btn btn-secondary dropdown-toggle"
+                       role="button" id="developersMenuLink" data-toggle="dropdown"
+                       aria-haspopup="true" aria-expanded="false"
+                    >
+                        Developers
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="developersMenuLink">
+                        <li><a class="dropdown-item" href="{{ path('nelmio_api_doc_index') }}">API docs</a></li>
+                        <li><a class="dropdown-item" href="{{ path('umbria_open_api_sparql_manual') }}">SPARQL
+                                Manual</a></li>
+                    </ul>
+                </li>
             </ul>
         </div>
     </div>
 </nav>
+
 <h1 style="margin-top: 90px; margin-left: 120px">{{ apiName }}</h1>
 {#<div id="header">
     <a href="{{ path('nelmio_api_doc_index') }}"><h1>{{ apiName }}</h1></a>

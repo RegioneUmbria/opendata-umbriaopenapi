@@ -98,11 +98,27 @@ class TravelAgency
     /**
      * @var \DateTime
      *
-     * @ORM\Column(name="last_update_at", type="date")
+     * @ORM\Column(name="last_update_at", type="datetime")
      *
      * @JMS\Exclude()
      */
     private $lastUpdateAt;
+
+    /**
+     * @var \boolean
+     *
+     * @ORM\Column(name="is_deleted", type="boolean")
+     * @JMS\Exclude()
+     **/
+    private $isDeleted;
+
+    /**
+     * @var \boolean
+     *
+     * @ORM\Column(name="is_in_error", type="boolean")
+     * @JMS\Exclude()
+     **/
+    private $isInError;
 
 
     /**
@@ -372,9 +388,9 @@ class TravelAgency
     /**
      * Set lastUpdateAt
      *
-     * @param \DateTime $lastUpdateAt
+     * @param \timestamp $lastUpdateAt
      *
-     * @return Consortium
+     * @return Attractor
      */
     public function setLastUpdateAt($lastUpdateAt)
     {
@@ -393,6 +409,37 @@ class TravelAgency
         return $this->lastUpdateAt;
     }
 
+    /**
+     * @return boolean
+     */
+    public function isDeleted()
+    {
+        return $this->isDeleted;
+    }
+
+    /**
+     * @param boolean $isDeleted
+     */
+    public function setIsDeleted($isDeleted)
+    {
+        $this->isDeleted = $isDeleted;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function isInError()
+    {
+        return $this->isInError;
+    }
+
+    /**
+     * @param boolean $isInError
+     */
+    public function setIsInError($isInError)
+    {
+        $this->isInError = $isInError;
+    }
 
     public function getId()
     {

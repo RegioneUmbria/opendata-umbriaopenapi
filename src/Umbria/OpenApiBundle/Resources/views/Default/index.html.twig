@@ -2,28 +2,7 @@
 
 {% block body %}
 
-    <nav class="navbar navbar-default navbar-fixed-top navbar-inverse">
-        <div class="container">
-            <div class="navbar-header">
-                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar"
-                        aria-expanded="false" aria-controls="navbar">
-                    <span class="sr-only">Toggle navigation</span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </button>
-                <a class="navbar-brand" href="{{ path('umbria_open_api_homepage') }}">Umbria - Open API</a>
-            </div>
-            <div id="navbar" class="navbar-collapse collapse">
-                <ul class="nav navbar-nav">
-                    <li><a href="{{ path('umbria_pro_loco_homepage') }}">Turismo</a></li>
-                    <li><a href="{{ path('umbria_pro_loco_statistiche') }}">Statistiche SUAPE</a></li>
-                    <li><a href="{{ path('nelmio_api_doc_index') }}">API docs</a></li>
-                    <li><a href="{{ path('umbria_open_api_sparql_manual') }}">SPARQL Manual</a></li>
-                </ul>
-            </div>
-        </div>
-    </nav>
+
 
 
     <!-- Carousel
@@ -45,7 +24,7 @@
                     <div class="carousel-caption">
                         <h1>Turismo</h1>
                         <p> Tutti i punti di interesse del portale <b>UmbriaTourism</b> in una sola mappa</p>
-                        <p><a class="btn btn-lg btn-primary" href="{{ path('umbria_pro_loco_homepage') }}"
+                        <p><a class="btn btn-lg btn-primary" href="{{ path('umbria_open_api_map') }}"
                               role="button">Vai</a></p>
                     </div>
                 </div>
@@ -107,7 +86,7 @@
                       alt="Generic placeholder image" width="140" height="140">
                  <h2>Turismo</h2>
                  <p>Tutti i punti di interesse del portale <b>UmbriaTourism</b> in una sola mappa!</p>
-                 <p><a class="btn btn-default" href="{{ path('umbria_pro_loco_homepage') }}" role="button">Apri</a></p>
+                 <p><a class="btn btn-default" href="{{ path('umbria_open_api_map') }}" role="button">Apri</a></p>
              </div><!-- /.col-lg-4 -->
              <div class="col-lg-4">
                  <img class="img-circle"

@@ -2,6 +2,101 @@ umbria_open_api_homepage:
     path:     /
     defaults: { _controller: UmbriaOpenApiBundle:Default:index }
 
+umbria_open_api_map:
+    path:     /tourism/map
+    defaults: { _controller: UmbriaOpenApiBundle:Tourism\Map:index }
+
+attractor_index:
+    path:     /tourism/attractor
+    defaults: { _controller: UmbriaOpenApiBundle:Tourism\Attractor:index }
+    methods:  [GET,POST]
+
+attractor_show:
+    path:     /tourism/attractor/{id}/show
+    defaults: { _controller: UmbriaOpenApiBundle:Tourism\Attractor:show }
+    methods:  GET
+
+consortium_index:
+    path:     /tourism/consortium
+    defaults: { _controller: UmbriaOpenApiBundle:Tourism\Consortium:index }
+    methods:  [GET,POST]
+
+consortium_show:
+    path:     /tourism/consortium/{id}/show
+    defaults: { _controller: UmbriaOpenApiBundle:Tourism\Consortium:show }
+    methods:  GET
+
+event_index:
+    path:     /tourism/event
+    defaults: { _controller: UmbriaOpenApiBundle:Tourism\Event:index }
+    methods:  [GET,POST]
+
+event_show:
+    path:     /tourism/event/{id}/show
+    defaults: { _controller: UmbriaOpenApiBundle:Tourism\Event:show }
+    methods:  GET
+
+iat_index:
+    path:     /tourism/iat
+    defaults: { _controller: UmbriaOpenApiBundle:Tourism\Iat:index }
+    methods:  [GET,POST]
+
+iat_show:
+    path:     /tourism/iat/{id}/show
+    defaults: { _controller: UmbriaOpenApiBundle:Tourism\Iat:show }
+    methods:  GET
+
+profession_index:
+    path:     /tourism/profession
+    defaults: { _controller: UmbriaOpenApiBundle:Tourism\Profession:index }
+    methods:  [GET,POST]
+
+profession_show:
+    path:     /tourism/profession/{id}/show
+    defaults: { _controller: UmbriaOpenApiBundle:Tourism\Profession:show }
+    methods:  GET
+
+proposal_index:
+    path:     /tourism/proposal
+    defaults: { _controller: UmbriaOpenApiBundle:Tourism\Proposal:index }
+    methods:  [GET,POST]
+
+proposal_show:
+    path:     /tourism/proposal/{id}/show
+    defaults: { _controller: UmbriaOpenApiBundle:Tourism\Proposal:show }
+    methods:  GET
+
+sport_facility_index:
+    path:     /tourism/sport_facility
+    defaults: { _controller: UmbriaOpenApiBundle:Tourism\SportFacility:index }
+    methods:  [GET,POST]
+
+sport_facility_show:
+    path:     /tourism/sport_facility/{id}/show
+    defaults: { _controller: UmbriaOpenApiBundle:Tourism\SportFacility:show }
+    methods:  GET
+
+accomodation_index:
+    path:     /tourism/accomodation
+    defaults: { _controller: UmbriaOpenApiBundle:Tourism\Accomodation:index }
+    methods:  GET
+
+accomodation_show:
+    path:     /tourism/accomodation/{id}/show
+    defaults: { _controller: UmbriaOpenApiBundle:Tourism\Accomodation:show }
+    methods:  GET
+
+
+travel_agency_index:
+    path:     /tourism/travel_agency
+    defaults: { _controller: UmbriaOpenApiBundle:Tourism\TravelAgency:index }
+    methods:  GET
+
+travel_agency_show:
+    path:     /tourism/travel_agency/{id}/show
+    defaults: { _controller: UmbriaOpenApiBundle:Tourism\TravelAgency:show }
+    methods:  GET
+
 umbria_open_api_sparql_manual:
     path:     /sparql_manual
     defaults: { _controller: UmbriaOpenApiBundle:SparqlManual:index }
@@ -19,7 +114,7 @@ umbria_open_api_sparql_manual_query_data:
     defaults: {_controller: UmbriaOpenApiBundle:SparqlManual:sparqlQueryData }
 
 umbria_open_api_entities_update:
-    path:     /entities_update/{attractor}/{consortium}/{event}/{iat}/{sport_facility}/{profession}/{proposal}/{accomodation}/{travel_agency}/
+    path:     /entities_update/{attractor}/{consortium}/{event}/{iat}/{sport_facility}/{profession}/{proposal}/{accomodation}/{travel_agency}/{error}/
     defaults: { _controller: UmbriaOpenApiBundle:EntitiesUpdate:index }
     methods:  [PUT]
     requirements:
@@ -32,12 +127,35 @@ umbria_open_api_entities_update:
       proposal: '0|1'
       accomodation: '0|1'
       travel_agency: '0|1'
+      error: '0|1'
 
 
 facebook_webhook:
   path: /facebook-webhook
   defaults: { _controller: UmbriaOpenApiBundle:FacebookMessengerBot:index }
   methods:  [GET|POST]
+
+
+
+statistiche_suape:
+    path:     /statistiche/SUAPE
+    defaults: { _controller: UmbriaOpenApiBundle:SUAPE:index }
+
+statistiche_servizi-in-rete:
+    path:     /statistiche/servizi-in-rete
+    defaults: { _controller: UmbriaOpenApiBundle:ServiziInRete:index }
+
+suape_execute_sparql_query:
+    path:     /statistiche/SUAPE/execute_sparql_query/
+    defaults: {_controller: UmbriaOpenApiBundle:SUAPE:executeSparqlQuery }
+    methods:  [POST]
+
+
+servizi-in-rete_execute_sparql_query:
+    path:     /statistiche/servizi-in-rete/execute_sparql_query/
+    defaults: {_controller: UmbriaOpenApiBundle:ServiziInRete:executeSparqlQuery }
+    methods:  [POST, GET]
+
 
 
 # API REST
