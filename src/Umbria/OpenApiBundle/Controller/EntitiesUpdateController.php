@@ -9,6 +9,7 @@ use EasyRdf_Graph;
 use EasyRdf_Literal;
 use EasyRdf_Resource;
 use EasyRdf_Sparql_Client;
+use mysql_xdevapi\Exception;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Umbria\OpenApiBundle\Entity\Address;
@@ -21,6 +22,7 @@ use Umbria\OpenApiBundle\Entity\Tourism\GraphsEntities\Iat;
 use Umbria\OpenApiBundle\Entity\Tourism\GraphsEntities\Profession;
 use Umbria\OpenApiBundle\Entity\Tourism\GraphsEntities\Proposal;
 use Umbria\OpenApiBundle\Entity\Tourism\GraphsEntities\SportFacility;
+use Umbria\OpenApiBundle\Entity\Tourism\GraphsEntities\TouristLocation;
 use Umbria\OpenApiBundle\Entity\Tourism\GraphsEntities\TravelAgency;
 use Umbria\OpenApiBundle\Entity\Tourism\GraphsEntitiesInnerObjects\AttractorDescription;
 use Umbria\OpenApiBundle\Entity\Tourism\GraphsEntitiesInnerObjects\EventDescription;
@@ -91,6 +93,9 @@ class EntitiesUpdateController extends BaseController
                     if ($isUpdating == null) {
                         $isUpdating = false;
                     }
+                    if ($isUpdating == true) {
+                        $isUpdating = false;
+                    }
                 }
 
                 if (!$isUpdating) {
@@ -103,11 +108,15 @@ class EntitiesUpdateController extends BaseController
                         $responseObj->start = new \DateTime();
                         $has_errors = $this->createUpdateDeleteEntities($entityType, $errors_only);
                         $this->em->flush();
-                    } catch (Throwable $e) {
+                    } catch (Throwable $t) {
                         $has_errors = true;
-                        $responseObj->error = $e->getMessage();
-                        $logger->error('$entityType update failed with error: ' . $e->getTraceAsString());
-                    } finally {
+                        $responseObj->error = $t->getMessage();
+                        $logger->error($entityType.' update failed with error: ' . $t->getTraceAsString());
+                    }catch (Exception $e) {
+                    $has_errors = true;
+                    $responseObj->error = $e->getMessage();
+                    $logger->error($entityType.' update failed with error: ' . $e->getTraceAsString());
+                }finally {
                         $setting->setUpdatedAt(new \DateTime());
                         $setting->setIsUpdating(false);
                         $setting->setHasErrors($has_errors);
@@ -118,6 +127,7 @@ class EntitiesUpdateController extends BaseController
                             /*invia email con tipo di entità*/
                             $this->send_error_mail($entityType);
                             $responseObj->error = "Check entity table for individual errors!";
+                            $logger->error($entityType.' update failed. Check the log file to see the error or debug the project');
                         }
 
                     }
@@ -146,29 +156,60 @@ class EntitiesUpdateController extends BaseController
     private function getGraph($entityType)
     {
         $graph = null;
-        if ($entityType == "accomodation") {
-            $sparqlClient = new EasyRdf_Sparql_Client("http://dati.umbria.it/sparql?format=text%2Fturtle");
-            $query = "
-CONSTRUCT {?s ?p ?o.}
-WHERE{
-	SELECT DISTINCT ?s ?p ?o
-	FROM <http://dati.umbria.it/graph/strutture_ricettive>
-	WHERE{
-		?s ?p ?o .
-		?s <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://purl.org/acco/ns#Accomodation>.
-		FILTER( ?p = <http://www.w3.org/2000/01/rdf-schema#label> ).			
-	}
-}
-";
 
-            $graph = $sparqlClient->query($query);
-        }
-        else{
+            if ($entityType == "accomodation" or $entityType == "event" or $entityType == "tourist_location") {
+                $sparqlClient = new EasyRdf_Sparql_Client("https://odn.regione.umbria.it/sparql?format=text%2Fturtle");
+                if ($entityType == "accomodation") {
+                    $query = "
+                        CONSTRUCT {?s ?p ?o.}
+                        WHERE{
+                            SELECT DISTINCT ?s ?p ?o
+                            FROM <http://dati.umbria.it/graph/strutture_ricettive>
+                            WHERE{
+                                ?s ?p ?o .
+                                ?s <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://purl.org/acco/ns#Accomodation>.
+                                FILTER( ?p = <http://www.w3.org/2000/01/rdf-schema#label> ).			
+                            }
+                        }
+                        ";
+                }
+                if ($entityType == "event"){
+                    $query = "
+                        CONSTRUCT {?s ?p ?o.}
+                        WHERE{
+                            SELECT DISTINCT ?s ?p ?o
+                            FROM <http://dati.umbria.it/graph/eventi>
+                            WHERE{
+                                ?s ?p ?o .
+                                ?s <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://schema.org/Event>.
+                                FILTER( ?p = <http://www.w3.org/2000/01/rdf-schema#label> ).
+                                FILTER langMatches(lang(?o),'it')			
+                            }
+                        } ";
+
+                }
+                if ($entityType == "tourist_location") {
+                    $query = "
+                        CONSTRUCT {?s ?p ?o.}
+                        WHERE{
+                            SELECT DISTINCT ?s ?p ?o
+                            FROM <http://dati.umbria.it/graph/locazioni-turistiche>
+                            WHERE{
+                                ?s ?p ?o .
+                                ?s <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://purl.org/acco/ns#House>.
+                                FILTER( ?p = <http://www.w3.org/2000/01/rdf-schema#label> ).			
+                            }
+                        }
+                        ";
+                }
+                $graph = $sparqlClient->query($query);
+            }
+
             $graphURL = $this->getGraphURLByEntityType($entityType);
             if ($graphURL != "") {
                 $graph = EasyRdf_Graph::newAndLoad($graphURL);
             }
-        }
+
 
         return $graph;
     }
@@ -178,7 +219,7 @@ WHERE{
      */
     private function updateDeleteEntities($graph, $entityType, $errors_only)
     {
-        $has_error = false;
+        $has_error = true;
         $entityClassName = $this->getEntityTypeClassName($entityType);
         /**get all entities from db by type*/
         /**
@@ -186,59 +227,75 @@ WHERE{
          */
         $entityRepo = $this->em->getRepository(trim("UmbriaOpenApiBundle:Tourism\GraphsEntities\ ") . $entityClassName);
         $entities = $entityRepo->findAll();
-        $resources = $graph->resources();
-        foreach ($entities as $entity) {
-            if ($errors_only == false || $entity->isInError() == true) {
-                $entity_uri = "";
-                $isResourceToBeSaved = false;
-                $is_entity_error = false;
-                $is_to_delete = false;
-                try {
-                    $entity_uri = $entity->getUri();
-                    if (isset($resources[$entity_uri])) {
-                        $RDFResource = $graph->resource($entity_uri);
-                        //update entity
-                        $entityTypeURI = $this->getResourceTypeURIByEntityType($entityType);
-                        //check if resource match type and provenance (dati.umbria.it)
-                        $updatedEntity = $this->{"createOrUpdate" . $entityClassName}($RDFResource);
-                        if ($updatedEntity != null) {
-                            $updatedEntity->setLastUpdateAt(new \DateTime('now'));
-                            $updatedEntity->setIsDeleted(false);
-                            $updatedEntity->setIsInError(false);
-                            $this->em->flush();
-                        } else {
-                            $is_entity_error = true;
-                        }
-                    } else {
-                        $is_to_delete = true;
-                        $this->get('logger')->info("Delete URI " + $entity_uri);
-                    }
-                    if ($is_to_delete == true) {
-                        //logically delete entity
-                        $entity->setLastUpdateAt(new \DateTime('now'));
-                        $entity->setIsInError(false);
-                        $entity->setIsDeleted(true);
-                        $this->em->flush();
-                    }
-                } catch (Throwable $e) {
-                    $is_entity_error = true;
-                    $this->get('logger')->error("$resourceURI create error:" . $e->getTraceAsString());
-                }
-                if ($is_entity_error == true) {
-                    $has_error = true;
-
+        if($graph != null) {
+            //controllo per gestione fatal error non gestibile con php 5, da php 7 gestibile con la throwable
+            $has_error = false;
+            $resources = $graph->resources();
+            foreach ($entities as $entity) {
+                if ($errors_only == false || $entity->isInError() == true) {
+                    $entity_uri = "";
+                    $isResourceToBeSaved = false;
+                    $is_entity_error = false;
+                    $is_to_delete = false;
                     try {
-                        $this->get('logger')->info("$entity->getUri() trying to save with state in error");
-                        $entity->setLastUpdateAt(new \DateTime('now'));
-                        $entity->setIsDeleted(false);
-                        $entity->setIsInError(true);
-                        $this->em->flush();
-                        $this->get('logger')->info("$entity->getUri() saved with state in error");
-                    } catch (Throwable $e2) {
-                        $this->get('logger')->error($entity->getUri() . "error trying to save with state in error:" . $e->getTraceAsString());
+                        $entity_uri = $entity->getUri();
+                        if (isset($resources[$entity_uri])) {
+                            $RDFResource = $graph->resource($entity_uri);
+                            //update entity
+                            $entityTypeURI = $this->getResourceTypeURIByEntityType($entityType);
+                            //check if resource match type and provenance (dati.umbria.it)
+                            $updatedEntity = $this->{"createOrUpdate" . $entityClassName}($RDFResource);
+                            $this->get('logger')->info("Now updating -> $entity_uri");
+                            if ($updatedEntity != null) {
+                                $updatedEntity->setLastUpdateAt(new \DateTime('now'));
+                                $updatedEntity->setIsDeleted(false);
+                                $updatedEntity->setIsInError(false);
+
+                            } else {
+                                $is_entity_error = true;
+                            }
+                            $this->get('logger')->info("End updating -> $entity_uri");
+                        } else {
+                            $is_to_delete = true;
+                            $this->get('logger')->info("Delete URI -> $entity_uri");
+                        }
+                        if ($is_to_delete == true) {
+                            //logically delete entity
+                            $entity->setLastUpdateAt(new \DateTime('now'));
+                            $entity->setIsInError(false);
+                            $entity->setIsDeleted(true);
+                            $this->em->flush();
+                        }
+                    } catch (Throwable $t) {
+                        $is_entity_error = true;
+                        $this->get('logger')->error("$entity_uri create error:" . $t->getTraceAsString());
+
+                    } catch (Exception $e) {
+                        $is_entity_error = true;
+                        $this->get('logger')->error("$entity_uri create error:" . $e->getTraceAsString());
+                    }
+                    if ($is_entity_error == true) {
+                        $has_error = true;
+
+                        try {
+                            $this->get('logger')->info("$entity_uri trying to save with state in error");
+                            $entity->setLastUpdateAt(new \DateTime('now'));
+                            $entity->setIsDeleted(false);
+                            $entity->setIsInError(true);
+                            $this->em->flush();
+                            $this->get('logger')->info("$entity_uri saved with state in error");
+                        } catch (Throwable $t2) {
+                            $this->get('logger')->error("$entity_uri trying to save with state in error:" . $t2->getTraceAsString());
+                        } catch (Exception $e2) {
+                            $this->get('logger')->error("$entity_uri trying to save with state in error:" . $e2->getTraceAsString());
+                        }
                     }
                 }
             }
+
+            $this->get('logger')->info("Now flushing -> $entity_uri");
+            $this->em->flush();
+            $this->get('logger')->info("Flushing done -> $entity_uri");
         }
         return $has_error;
     }
@@ -249,78 +306,89 @@ WHERE{
      */
     private function createEntities($graph, $entityType)
     {
-        $has_error = false;
+        $has_error = true;
         $entityClassName = $this->getEntityTypeClassName($entityType);
         $entityRepo = $this->em->getRepository(trim("UmbriaOpenApiBundle:Tourism\GraphsEntities\ ") . $entityClassName);
         //get all resources from graph by type
-        $resources = $graph->resources();
-        foreach ($resources as $RDFResource) {
-            $isResourceToBeSaved = false;
-            $is_entity_error = false;
-            $resourceURI = "";
-            try {
-                $resourceURI = $RDFResource->getURI();
-                //check if resource match type and provenance (dati.umbria.it)
-                $entityTypeURI = $this->getResourceTypeURIByEntityType($entityType);
-                $isResourceToBeSaved = $this->isResourceToBeSaved($RDFResource, $entityType, $entityTypeURI);
-                if ($isResourceToBeSaved) {
-                    //check if there is a resource with the same uri and same type on db
-                    $entity = $entityRepo->find($resourceURI);
-                    $isAlreadyPersisted = $entity != null;
-                    if (!$isAlreadyPersisted) {
-                        //create new resource
-                        $createdEntity = $this->{"createOrUpdate" . $entityClassName}($RDFResource);
-                        if ($createdEntity != null) {
-                            $createdEntity->setLastUpdateAt(new \DateTime('now'));
-                            $createdEntity->setIsDeleted(false);
-                            $createdEntity->setIsInError(false);
-                            $this->em->persist($createdEntity);
-                            $this->em->flush();
-                        } else {
-                            $is_entity_error = true;
-                        }
+        if($graph != null) {
+            //controllo per gestione fatal error grafo vuoto non gestibile con php 5, da php 7 gestibile con la throwable
+            $has_error = false;
+            $resources = $graph->resources();
+            foreach ($resources as $RDFResource) {
+                $isResourceToBeSaved = false;
+                $is_entity_error = false;
+                $resourceURI = "";
+                try {
+                    $resourceURI = $RDFResource->getURI();
+                    //check if resource match type and provenance (dati.umbria.it)
+                    $entityTypeURI = $this->getResourceTypeURIByEntityType($entityType);
+                    $isResourceToBeSaved = $this->isResourceToBeSaved($RDFResource, $entityType, $entityTypeURI);
+                    if ($isResourceToBeSaved) {
+                        //check if there is a resource with the same uri and same type on db
+                        $entity = $entityRepo->find($resourceURI);
+                        $isAlreadyPersisted = $entity != null;
+                        if (!$isAlreadyPersisted) {
+                            //create new resource
+                            $createdEntity = $this->{"createOrUpdate" . $entityClassName}($RDFResource);
+                            $this->get('logger')->info("-------- CREATE ENTITY -----------");
+                            if ($createdEntity != null) {
+                                $createdEntity->setLastUpdateAt(new \DateTime('now'));
+                                $createdEntity->setIsDeleted(false);
+                                $createdEntity->setIsInError(false);
+                                $this->em->persist($createdEntity);
+                                $this->em->flush();
+                            } else {
+                                $is_entity_error = true;
+                            }
 
-                    } else {
-                        $this->get('logger')->info("Skip URI (already be saved) " + $resourceURI);
-                    }
-                } else {
-                    $this->get('logger')->info("Skip URI (not to be saved) " + $resourceURI);
-                }
-            } catch (Throwable $e) {
-                $is_entity_error = true;
-                $this->get('logger')->error("$resourceURI create error:" . $e->getTraceAsString());
-            }
-            if ($is_entity_error) {
-                $has_error = true;
-                if ($resourceURI != null) {
-                    try {
-                        if ($resourceURI != "" && $isResourceToBeSaved == true) {
-                            $entityClassNameComplete = "Umbria\OpenApiBundle\Entity\Tourism\GraphsEntities\\$entityClassName";
-                            $inErrorEntity = new $entityClassNameComplete();
-                            $inErrorEntity->setUri($resourceURI);
-                            $inErrorEntity->setIsDeleted(false);
-                            $inErrorEntity->setIsInError(true);
-                            $inErrorEntity->setLastUpdateAt(new \DateTime('now'));
-                            $this->em->persist($inErrorEntity);
-                            $this->em->flush();
+                        } else {
+                            $this->get('logger')->info("Skip URI (already be saved) " + $resourceURI);
                         }
-                    } catch (Throwable $e2) {
-                        $this->get('logger')->error("$resourceURI error trying to save with state in error:" . $e2->getTraceAsString());
+                    } else {
+                        $this->get('logger')->info("Skip URI (not to be saved) " + $resourceURI);
+                    }
+                } catch (Throwable $t) {
+                    $is_entity_error = true;
+                    $this->get('logger')->error("$resourceURI create error:" . $t->getTraceAsString());
+                } catch (Exception $e) {
+                    $is_entity_error = true;
+                    $this->get('logger')->error("$resourceURI create error:" . $e->getTraceAsString());
+                }
+                if ($is_entity_error) {
+                    $has_error = true;
+                    if ($resourceURI != null) {
+                        try {
+                            if ($resourceURI != "" && $isResourceToBeSaved == true) {
+                                $entityClassNameComplete = "Umbria\OpenApiBundle\Entity\Tourism\GraphsEntities\\$entityClassName";
+                                $inErrorEntity = new $entityClassNameComplete();
+                                $inErrorEntity->setUri($resourceURI);
+                                $inErrorEntity->setIsDeleted(false);
+                                $inErrorEntity->setIsInError(true);
+                                $inErrorEntity->setLastUpdateAt(new \DateTime('now'));
+                                $this->em->persist($inErrorEntity);
+
+                            }
+                        } catch (Throwable $t2) {
+                            $this->get('logger')->error("$resourceURI error trying to save with state in error:" . $t2->getTraceAsString());
+                        } catch (Exception $e2) {
+                            $this->get('logger')->error("$resourceURI error trying to save with state in error:" . $e2->getTraceAsString());
+                        }
                     }
                 }
             }
+            $this->em->flush();
         }
         return $has_error;
     }
 
-
+    /** rdf resource */
     private function createOrUpdateAccomodation($accomodationResource)
     {
         $accomodationRepo = $this->em->getRepository('UmbriaOpenApiBundle:Tourism\GraphsEntities\Accomodation');
         /** @var Attractor $newAttractor */
         $newAccomodation = null;
         $uri = $accomodationResource->getUri();
-        $sparqlClient = new EasyRdf_Sparql_Client("http://dati.umbria.it/sparql");
+        $sparqlClient = new EasyRdf_Sparql_Client("https://odn.regione.umbria.it/sparql");
         if ($uri != null) {
             $oldAccomodation = $accomodationRepo->find($uri);
             $isAlreadyPersisted = $oldAccomodation != null;
@@ -332,166 +400,129 @@ WHERE{
 
             $newAccomodation->setUri($uri);
             $this->mapName($accomodationResource, $newAccomodation);
-
-            $queryType = "SELECT ?type ?label ?comment
-            FROM <http://dati.umbria.it/graph/strutture_ricettive>
-            WHERE {
-                <" . $uri . "> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> ?type.
-                OPTIONAL{?type <http://www.w3.org/2000/01/rdf-schema#label> ?label}.
-                OPTIONAL{?type <http://www.w3.org/2000/01/rdf-schema#comment> ?comment}.
-            } ";
-            $sparqlResultType = $sparqlClient->query($queryType);
-            $sparqlResultType->rewind();
-            if ($sparqlResultType->valid()) {
-                /**@var Type[] $tempType */
-                $tempType = array();
-                $cnt = 0;
-                while ($sparqlResultType->valid()) {
-                    $currentType = $sparqlResultType->current();
-                    $typeUri = $currentType->type->getUri();
-                    $oldType = $this->typeRepo->find($typeUri);
-                    if ($oldType != null) {
-                        $tempType[$cnt] = $oldType;
-                    } else {
-                        $tempType[$cnt] = new Type();
-                        $tempType[$cnt]->setUri($typeUri);
-                        $tempType[$cnt]->setName(isset($currentType->label) ? $currentType->label->getValue() : null);
-                        $tempType[$cnt]->setComment(isset($currentType->comment) ? $currentType->comment->getValue() : null);
-                    }
-                    $cnt++;
-                    $sparqlResultType->next();
-                }
-                count($tempType) > 0 ? $newAccomodation->setTypes($tempType) : $newAccomodation->setTypes(null);
-            }
-
-            $query = "    SELECT  ?provenance ?typology ?resourceOriginUrl ?units ?beds ?toilets
-                     FROM <http://dati.umbria.it/graph/strutture_ricettive>
-                     WHERE {
-                        
-                            OPTIONAL{<" . $uri . "> <http://dati.umbria.it/base/ontology/tipologia> ?typology}.
-                            OPTIONAL{<" . $uri . "> <http://schema.org/web> ?resourceOriginUrl}.
-                            OPTIONAL{<" . $uri . "> <http://dati.umbria.it/base/ontology/numeroUnita> ?units}.
-                            OPTIONAL{<" . $uri . "> <http://dati.umbria.it/base/ontology/numeroLetti> ?beds}.
-                            OPTIONAL{<" . $uri . "> <http://dati.umbria.it/base/ontology/numeroBagni> ?toilets}.
-                    } ";
-
-
+            $query = "SELECT ?label ?typology ?resourceOriginUrl ?units ?beds ?toilets ?cir ?ema ?fa ?tel ?postalcode ?istat ?addressLocality ?addressRegion ?streetAddress ?coordx ?coordy
+					FROM <http://dati.umbria.it/graph/strutture_ricettive>
+		WHERE {
+					OPTIONAL{<" . $uri . "> <http://dati.umbria.it/base/ontology/tipologia> ?typology}.
+					OPTIONAL{<" . $uri . "> <http://schema.org/web> ?resourceOriginUrl}.
+					OPTIONAL{<" . $uri . "> <http://dati.umbria.it/base/ontology/numeroUnita> ?units}.
+					OPTIONAL{<" . $uri . "> <http://dati.umbria.it/base/ontology/numeroLetti> ?beds}.
+					OPTIONAL{<" . $uri . "> <http://dati.umbria.it/base/ontology/numeroBagni> ?toilets}.
+					OPTIONAL{<" . $uri . "> <http://dati.umbria.it/base/ontology/cir> ?cir}.
+					OPTIONAL{select ?label (group_concat(?email;separator=' | ') as ?ema)
+							 FROM <http://dati.umbria.it/graph/strutture_ricettive> 
+							 WHERE {<" . $uri . "> <http://www.w3.org/2000/01/rdf-schema#label> ?label.
+									<" . $uri . "> <http://schema.org/email> ?email .
+							} group by ?label}.
+					OPTIONAL{select ?label (group_concat(?fax;separator=' | ') as ?fa)
+							 FROM <http://dati.umbria.it/graph/strutture_ricettive> 
+							 WHERE {<" . $uri . "> <http://www.w3.org/2000/01/rdf-schema#label> ?label.
+									<" . $uri . "> <http://schema.org/fax> ?fax .
+							} group by ?label}.
+					OPTIONAL{select ?label (group_concat(?telephone;separator=' | ') as ?tel)
+							 FROM <http://dati.umbria.it/graph/strutture_ricettive> 
+							 WHERE {<" . $uri . "> <http://www.w3.org/2000/01/rdf-schema#label> ?label.
+									<" . $uri . "> <http://schema.org/telephone> ?telephone .
+							} group by ?label}.   
+					OPTIONAL{<" . $uri . "> <http://www.w3.org/2000/01/rdf-schema#label> ?label}.
+					OPTIONAL{<" . $uri . "> <http://www.w3.org/2000/01/rdf-schema#comment> ?comment}.
+					OPTIONAL{<" . $uri . "> <http://schema.org/address> ?uri}.
+					OPTIONAL{?uri <http://schema.org/postalCode> ?postalcode}.
+					OPTIONAL{?uri <http://dbpedia.org/ontology/istat> ?istat}.
+					OPTIONAL{?uri <http://schema.org/addressLocality> ?addressLocality}.
+					OPTIONAL{?uri <http://schema.org/addressRegion> ?addressRegion}.
+					OPTIONAL{?uri <http://schema.org/streetAddress> ?streetAddress}.
+					OPTIONAL{<" . $uri . "> <http://dati.umbria.it/base/ontology/localizzazione> ?uricoord}.
+					OPTIONAL{?uricoord <http://dati.umbria.it/base/ontology/coordy> ?coordy}.
+					OPTIONAL{?uricoord <http://dati.umbria.it/base/ontology/coordx> ?coordx}. 
+			}limit 1";
             $sparqlResult = $sparqlClient->query($query);
             $sparqlResult->rewind();
             if ($sparqlResult->valid()) {
-                if (isset($sparqlResult->current()->resourceOriginUrl)) $newAccomodation->setResourceOriginUrl($sparqlResult->current()->resourceOriginUrl->getValue());
-                if (isset($sparqlResult->current()->typology)) $newAccomodation->setTypology($sparqlResult->current()->typology->getValue());
-                if (isset($sparqlResult->current()->units)) $newAccomodation->setUnits($sparqlResult->current()->units->getValue());
-                if (isset($sparqlResult->current()->beds)) $newAccomodation->setBeds($sparqlResult->current()->beds->getValue());
-                if (isset($sparqlResult->current()->toilets)) $newAccomodation->setToilets($sparqlResult->current()->toilets->getValue());
-            }
-
-
-            $queryEmail = "SELECT ?email FROM <http://dati.umbria.it/graph/strutture_ricettive> WHERE { <" . $uri . "> <http://schema.org/email> ?email. } ";
-            $sparqlResultEmail = $sparqlClient->query($queryEmail);
-            $sparqlResultEmail->rewind();
-            if ($sparqlResultEmail->valid()) {
-                $tempEmail = array();
-                $cnt = 0;
-                while ($sparqlResultEmail->valid()) {
-                    $tempEmail[$cnt] = $sparqlResultEmail->current()->email->getValue();
-                    $cnt++;
-                    $sparqlResultEmail->next();
-
-                }
-                count($tempEmail) > 0 ? $newAccomodation->setEmail($tempEmail) : $newAccomodation->setEmail(null);
-            }
-
-            $queryTelephone = "SELECT ?telephone FROM <http://dati.umbria.it/graph/strutture_ricettive> WHERE { <" . $uri . "> <http://schema.org/telephone> ?telephone. } ";
-            $sparqlResultTelephone = $sparqlClient->query($queryTelephone);
-            $sparqlResultTelephone->rewind();
-            if ($sparqlResultTelephone->valid()) {
-                $tempTelephone = array();
-                $cnt = 0;
-                while ($sparqlResultTelephone->valid()) {
-                    $tempTelephone[$cnt] = $sparqlResultTelephone->current()->telephone->getValue();
-                    $cnt++;
-                    $sparqlResultTelephone->next();
-                }
-                count($tempTelephone) > 0 ? $newAccomodation->setTelephone($tempTelephone) : $newAccomodation->setTelephone(null);
-            }
-
-            $queryFax = "SELECT ?fax FROM <http://dati.umbria.it/graph/strutture_ricettive> WHERE { <" . $uri . "> <http://schema.org/fax> ?fax. } ";
-            $sparqlResultFax = $sparqlClient->query($queryFax);
-            $sparqlResultFax->rewind();
-            if ($sparqlResultFax->valid()) {
-                $tempFax = array();
-                $cnt = 0;
-                while ($sparqlResultFax->valid()) {
-                    $tempFax[$cnt] = $sparqlResultFax->current()->fax->getValue();
-                    $cnt++;
-                    $sparqlResultFax->next();
-                }
-                count($tempFax) > 0 ? $newAccomodation->setFax($tempFax) : $newAccomodation->setFax(null);
-            }
-
-            $queryCategory = "SELECT ?category ?label ?comment
-            FROM <http://dati.umbria.it/graph/strutture_ricettive>
-            WHERE {
-                <" . $uri . "> <http://dati.umbria.it/tourism/ontology/categoria> ?category.
-                OPTIONAL{?category <http://www.w3.org/2000/01/rdf-schema#label> ?label}.
-                OPTIONAL{?category <http://www.w3.org/2000/01/rdf-schema#comment> ?comment}.
-            } ";
-            $sparqlResultCategory = $sparqlClient->query($queryCategory);
-            $sparqlResultCategory->rewind();
-            if ($sparqlResultCategory->valid()) {
-                /**@var Category[] $tempCategory */
-                $tempCategory = array();
-                $cnt = 0;
-                while ($sparqlResultCategory->valid()) {
-                    $currentCategory = $sparqlResultCategory->current();
-                    $categoryUri = $currentCategory->category->getUri();
-                    $oldCategory = $this->categoryRepo->find($categoryUri);
-                    if ($oldCategory != null) {
-                        $tempCategory[$cnt] = $oldCategory;
-                    } else {
-                        $tempCategory[$cnt] = new Category();
-                        $tempCategory[$cnt]->setUri($categoryUri);
-                        $tempCategory[$cnt]->setName(isset($currentCategory->label) ? $currentCategory->label->getValue() : null);
-                        $tempCategory[$cnt]->setComment(isset($currentCategory->comment) ? $currentCategory->comment->getValue() : null);
+                try {
+                    if (isset($sparqlResult->current()->resourceOriginUrl)) $newAccomodation->setResourceOriginUrl($sparqlResult->current()->resourceOriginUrl->getValue());
+                    if (isset($sparqlResult->current()->typology)) $newAccomodation->setTypology($sparqlResult->current()->typology->getValue());
+                    if (isset($sparqlResult->current()->units)){
+                        $cu = $sparqlResult->current()->units;
+                        if(strcmp($cu, "http://linked.opendata.cz/ontology/odcs/tabular/blank-cell") == 0){
+                            $newAccomodation->setUnits(null);
+                        }else {
+                            $newAccomodation->setUnits($sparqlResult->current()->units->getValue());
+                        }
                     }
-                    $cnt++;
-                    $sparqlResultCategory->next();
+                    else{
+                        $newAccomodation->setUnits(null);
+                    }
+                    if (isset($sparqlResult->current()->beds)){
+                        $cb = $sparqlResult->current()->beds;
+                        if(strcmp($cb, "http://linked.opendata.cz/ontology/odcs/tabular/blank-cell") == 0){
+                            $newAccomodation->setBeds(null);
+                        }else {
+                            $newAccomodation->setBeds($sparqlResult->current()->beds->getValue());
+                        }
+                    }
+                    else{
+                        $newAccomodation->setBeds(null);
+                    }
+                    if (isset($sparqlResult->current()->toilets)){
+                        $ct = $sparqlResult->current()->toilets;
+                        if(strcmp($ct, "http://linked.opendata.cz/ontology/odcs/tabular/blank-cell") == 0){
+                            $newAccomodation->setToilets(null);
+                        }else {
+                            $newAccomodation->setToilets($sparqlResult->current()->toilets->getValue());
+                        }
+                    }
+                    else{
+                        $newAccomodation->setToilets(null);
+                    }
+
+                    if (isset($sparqlResult->current()->cir)) $newAccomodation->setCir($sparqlResult->current()->cir->getValue());
+                    if (isset($sparqlResult->current()->ema)) $newAccomodation->setEmail($sparqlResult->current()->ema->getValue());
+                    if (isset($sparqlResult->current()->fa)) $newAccomodation->setFax($sparqlResult->current()->fa->getValue());
+                    if (isset($sparqlResult->current()->tel)) $newAccomodation->setTelephone($sparqlResult->current()->tel->getValue());
+                    $tempAddress = new Address();
+                    $currentAddress = $sparqlResult->current();
+                    $tempAddress->setPostalCode(isset($currentAddress->postalCode) ? $currentAddress->postalCode->getValue() : null);
+                    $tempAddress->setIstat(isset($currentAddress->istat) ? $currentAddress->istat->getValue() : null);
+                    $tempAddress->setAddressLocality(isset($currentAddress->addressLocality) ? $currentAddress->addressLocality->getValue() : null);
+                    $tempAddress->setAddressRegion(isset($currentAddress->addressRegion) ? $currentAddress->addressRegion->getValue() : null);
+                    $tempAddress->setStreetAddress(isset($currentAddress->streetAddress) ? $currentAddress->streetAddress->getValue() : null);
+                    if (isset($currentAddress->coordy)){
+                        $cy = $currentAddress->coordy;
+                        if(strcmp($cy, "http://linked.opendata.cz/ontology/odcs/tabular/blank-cell") == 0){
+                            $tempAddress->setLat(43.0000);
+                        }else {
+                            $tempAddress->setLat($currentAddress->coordy->getValue());
+                        }
+                    }
+                    else{
+                        $tempAddress->setLat(43.0000);
+                    }
+                    if(isset($currentAddress->coordx)){
+                        $cx = $currentAddress->coordx;
+                        if(strcmp($cx, "http://linked.opendata.cz/ontology/odcs/tabular/blank-cell") == 0){
+                            $tempAddress->setLng(12.0000);
+                        }else{
+                            $tempAddress->setLng($currentAddress->coordx->getValue());
+                        }
+                    }
+                    else{
+                        $tempAddress->setLng(12.0000);
+                    }
+                    $newAccomodation->setAddress($tempAddress);
                 }
-                count($tempCategory) > 0 ? $newAccomodation->setCategories($tempCategory) : $newAccomodation->setCategories(null);
+                catch (Throwable $t) {
+                    $t->getMessage();
+                    $this->get('logger')->error('Error getting values from: ' . $t);
+                }
+                catch (Exception $e) {
+                    $e->getMessage();
+                    $this->get('logger')->error('Error getting values from: ' . $e);
+                }
             }
-
-            $queryAddress = "SELECT ?uri ?postalcode ?istat ?addressLocality ?addressRegion ?streetAddress ?lat ?lng
-                            FROM <http://dati.umbria.it/graph/strutture_ricettive>
-                            WHERE {
-                                 <" . $uri . "> <http://schema.org/address> ?uri.
-                                OPTIONAL{?uri <http://schema.org/postalCode> ?postalcode}.
-                                OPTIONAL{?uri <http://dbpedia.org/ontology/istat> ?istat}.
-                                OPTIONAL{?uri <http://schema.org/addressLocality> ?addressLocality}.
-                                OPTIONAL{?uri <http://schema.org/addressRegion> ?addressRegion}.
-                                OPTIONAL{?uri <http://schema.org/streetAddress> ?streetAddress}.
-                                OPTIONAL{?uri <http://www.w3.org/2003/01/geo/wgs84_pos#lat> ?lat}.
-                                OPTIONAL{?uri <http://www.w3.org/2003/01/geo/wgs84_pos#long> ?lng}.
-                            }";
-            $sparqlResultAddress = $sparqlClient->query($queryAddress);
-            $sparqlResultAddress->rewind();
-            if ($sparqlResultAddress->valid()) {
-                /**@var Address $tempAddress */
-                $tempAddress = new Address();
-                $currentAddress = $sparqlResultAddress->current();
-                $tempAddress->setPostalCode(isset($currentAddress->postalCode) ? $currentAddress->postalCode->getValue() : null);
-                $tempAddress->setIstat(isset($currentAddress->istat) ? $currentAddress->istat->getValue() : null);
-                $tempAddress->setAddressLocality(isset($currentAddress->addressLocality) ? $currentAddress->addressLocality->getValue() : null);
-                $tempAddress->setAddressRegion(isset($currentAddress->addressRegion) ? $currentAddress->addressRegion->getValue() : null);
-                $tempAddress->setStreetAddress(isset($currentAddress->streetAddress) ? $currentAddress->streetAddress->getValue() : null);
-                $tempAddress->setLat(isset($currentAddress->lat) ? $currentAddress->lat->getValue() : null);
-                $tempAddress->setLng(isset($currentAddress->lng) ? $currentAddress->lng->getValue() : null);
-                $newAccomodation->setAddress($tempAddress);
-            }
-
-
         }
         return $newAccomodation;
+
     }
 
     /**
@@ -514,7 +545,7 @@ WHERE{
             $newAttractor->setUri($uri);
             $newAttractor->setLastUpdateAt(new \DateTime('now'));
 
-            $this->mapName($attractorResource, $newAttractor);
+
             $this->mapTypes($attractorResource, $newAttractor);
             $this->mapCategories($attractorResource, $newAttractor);
             $this->mapComment($attractorResource, $newAttractor);
@@ -527,6 +558,15 @@ WHERE{
             $newAttractor->setSubject(($p = $attractorResource->get("<http://purl.org/dc/elements/1.1/subject>")) != null ? $p->getValue() : null);
             $newAttractor->setLat(($p = $attractorResource->get("<http://www.w3.org/2003/01/geo/wgs84_pos#lat>")) != null ? (float)$p->getValue() : null);
             $newAttractor->setLng(($p = $attractorResource->get("<http://www.w3.org/2003/01/geo/wgs84_pos#long>")) != null ? (float)$p->getValue() : null);
+
+            /**@var EasyRdf_Literal[] $labelArray */
+            $labelArray = $attractorResource->all("<http://www.w3.org/2000/01/rdf-schema#label>");
+            foreach ($labelArray as $label) {
+                if ($label->getLang() == "it" || $label->getLang() == null) {
+                    $newAttractor->setName($label->getValue());
+                    break;
+                }
+            }
 
 
             /**@var EasyRdf_Literal[] $shortDescriptionArray */
@@ -545,16 +585,15 @@ WHERE{
                 $newAttractor->setDescriptions(null);
             }
             /**@var EasyRdf_Resource[] $descriptionArray */
-            $descriptionArray = $attractorResource->all("<http://dati.umbria.it/tourism/ontology/descrizione>");
+            $descriptionArray = $attractorResource->all("<http://dati.umbria.it/tourism/ontology/testo>");
             if ($descriptionArray != null) {
                 $tempDescriptions = array();
                 $cnt = 0;
                 foreach ($descriptionArray as $descriptionResource) {
-                    if ($descriptionResource->get("<http://dati.umbria.it/tourism/ontology/testo>") != null &&
-                        $descriptionResource->get("<http://dati.umbria.it/tourism/ontology/testo>")->getLang() == "it"
-                    ) {
-                        $descriptionTitle = ($p = $descriptionResource->get("<http://dati.umbria.it/tourism/ontology/titolo>")) != null ? $p->getValue() : null;
-                        $descriptionText = $descriptionResource->get("<http://dati.umbria.it/tourism/ontology/testo>")->getValue();
+                    if ($descriptionResource->getValue() != null &&
+                        $descriptionResource->getLang() == "it") {
+                        $descriptionTitle = (($p = $attractorResource->get("<http://dati.umbria.it/tourism/ontology/titolo_testo>")) != null ? $p->getValue() : null);
+                        $descriptionText = $descriptionResource->getValue();
                         $descriptionObject = new AttractorDescription();
                         $descriptionObject->setTitle($descriptionTitle);
                         $descriptionObject->setText($descriptionText);
@@ -571,13 +610,13 @@ WHERE{
             /**@var EasyRdf_Resource[] $sameAsArray */
             $sameAsArray = $attractorResource->all("<http://www.w3.org/2002/07/owl#sameAs>");
             if ($sameAsArray != null) {
-                $newAttractor->setSameAs($this->getExternalResources($sameAsArray, "http://dbpedia.org/sparql",
+                $newAttractor->setSameAs($this->getExternalResources($sameAsArray, "https://dbpedia.org/sparql",
                     "http://www.w3.org/2000/01/rdf-schema#label", "http://dbpedia.org/ontology/abstract", "http://www.w3.org/ns/prov#wasDerivedFrom"));
             }
             /**@var EasyRdf_Resource[] $locatedInArray */
             $locatedInArray = $attractorResource->all("<http://www.geonames.org/ontology#locatedIn>");
             if ($locatedInArray != null) {
-                $newAttractor->setLocatedIn($this->getExternalResources($locatedInArray, "http://it.dbpedia.org/sparql",
+                $newAttractor->setLocatedIn($this->getExternalResources($locatedInArray, "https://dbpedia.org/sparql",
                     "http://www.w3.org/2000/01/rdf-schema#label", "http://dbpedia.org/ontology/abstract", "http://www.w3.org/ns/prov#wasDerivedFrom"));
             }
         }
@@ -623,79 +662,94 @@ WHERE{
     private function createOrUpdateEvent($eventResource)
     {
         $eventRepo = $this->em->getRepository('UmbriaOpenApiBundle:Tourism\GraphsEntities\Event');
-        /** @var Event $newEvent */
-        $newEvent = null;
+        /** @var Event $newEvent*/
+        $newEvent= null;
         $uri = $eventResource->getUri();
+        $sparqlClient = new EasyRdf_Sparql_Client("https://odn.regione.umbria.it/sparql");
         if ($uri != null) {
-            $oldEvent = $eventRepo->find($uri);
+            $oldEvent= $eventRepo->find($uri);
             $isAlreadyPersisted = $oldEvent != null;
             if ($isAlreadyPersisted) {
                 $newEvent = $oldEvent;
             } else {
                 $newEvent = new Event();
             }
+
             $newEvent->setUri($uri);
-            $newEvent->setLastUpdateAt(new \DateTime('now'));
-
             $this->mapName($eventResource, $newEvent);
-            $this->mapTypes($eventResource, $newEvent);
-            $this->mapImages($eventResource, $newEvent);
-            $newEvent->setResourceOriginUrl(($p = $eventResource->get("<http://xmlns.com/foaf/0.1/homepage>")) != null ? $p->getValue() : null);
-            $newEvent->setMunicipality(($p = $eventResource->get("<http://dbpedia.org/ontology/municipality>")) != null ? $p->getValue() : null);
-            $newEvent->setIstat(($p = $eventResource->get("<http://dbpedia.org/ontology/istat>")) != null ? $p->getValue() : null);
-
-            /**@var EasyRdf_Literal[] $commentArray */
-            $commentArray = $eventResource->all("<http://dati.umbria.it/tourism/ontology/event_description>");
-            foreach ($commentArray as $comment) {
-                if ($comment->getLang() == "it") {
-                    $newEvent->setComment($comment->getValue());
-                    break;
+            $query = "SELECT ?label ?startDate ?endDate ?lat ?long ?ttesto ?imgcopertina ?descr ?municipality ?resourceOriginUrl
+					FROM <http://dati.umbria.it/graph/eventi>
+		WHERE {
+					OPTIONAL{<" . $uri . "> <http://www.w3.org/2000/01/rdf-schema#label> ?label}.
+					OPTIONAL{<" . $uri . "> <http://schema.org/end_date> ?endDate}.
+					OPTIONAL{<" . $uri . "> <http://schema.org/start_date> ?startDate}.
+					OPTIONAL{<" . $uri . "> <http://www.w3.org/2003/01/geo/wgs84_pos#lat> ?lat}.
+					OPTIONAL{<" . $uri . "> <http://www.w3.org/2003/01/geo/wgs84_pos#long> ?long}.
+					OPTIONAL{<" . $uri . "> <http://dbpedia.org/ontology/municipality> ?municipality}.
+					OPTIONAL{<" . $uri . "> <http://dati.umbria.it/tourism/ontology/titolo_testo> ?ttesto}.
+					OPTIONAL{<" . $uri . "> <http://dati.umbria.it/tourism/ontology/immagine_copertina> ?imgcopertina}.
+					OPTIONAL{<" . $uri . "> <http://dati.umbria.it/tourism/ontology/event_description> ?descr}.
+					OPTIONAL{<" . $uri . "> <http://xmlns.com/foaf/0.1/homepage> ?resourceOriginUrl}.
+                   
+			}";
+            $sparqlResult = $sparqlClient->query($query);
+            $sparqlResult->rewind();
+            if ($sparqlResult->valid()) {
+                if (isset($sparqlResult->current()->label)) {
+                    if($sparqlResult->current()->label->getLang() == "it"){
+                        $newEvent->setName($sparqlResult->current()->label->getValue());
+                    }
+                }
+                if (isset($sparqlResult->current()->startDate)){
+                   $variable = $sparqlResult->current()->startDate->getValue();
+                    $time = substr($variable, 0, strpos($variable, "T"));
+                   $newEvent->setStartDate(new \DateTime($time));
+                }
+                if (isset($sparqlResult->current()->endDate)){
+                    $variable = $sparqlResult->current()->endDate->getValue();
+                    $time = substr($variable, 0, strpos($variable, "T"));
+                    $newEvent->setEndDate(new \DateTime($time));
+                }
+                if (isset($sparqlResult->current()->lat)) $newEvent->setLat($sparqlResult->current()->lat->getValue());
+                if (isset($sparqlResult->current()->long)) $newEvent->setLng($sparqlResult->current()->long->getValue());
+                if (isset($sparqlResult->current()->municipality)) $newEvent->setMunicipality($sparqlResult->current()->municipality->getValue());
+                if (isset($sparqlResult->current()->resourceOriginUrl)) $newEvent->setResourceOriginUrl($sparqlResult->current()->resourceOriginUrl->getValue());
+                if (isset($sparqlResult->current()->imgcopertina)) $newEvent->setImages($sparqlResult->current()->imgcopertina->getValue());
+                if (isset($sparqlResult->current()->ttesto)){
+                    if($sparqlResult->current()->ttesto->getLang() == "it"){
+                        $newEvent->setComment($sparqlResult->current()->ttesto->getValue());
+                    }
                 }
             }
-            $newEvent->setLat(($p = $eventResource->get("<http://www.w3.org/2003/01/geo/wgs84_pos#lat>")) != null ? (float)$p->getValue() : null);
-            $newEvent->setLng(($p = $eventResource->get("<http://www.w3.org/2003/01/geo/wgs84_pos#long>")) != null ? (float)$p->getValue() : null);
-            $startDate = $eventResource->get("<http://schema.org/start_date>");
-            if ($startDate != null) {
-                $startDateObj = DateTime::createFromFormat('d/m/Y', $startDate);
-                $newEvent->setStartDate($startDateObj);
-            }
-            $endDate = $eventResource->get("<http://schema.org/end_date>");
-            if ($endDate != null) {
-                $endDateObj = DateTime::createFromFormat('d/m/Y', $endDate);
-                $newEvent->setEndDate($endDateObj);
-            }
-
             if ($isAlreadyPersisted && ($oldDescriptions = $newEvent->getDescriptions()) != null) {
                 foreach ($oldDescriptions as $oldDescription) {
                     $this->em->remove($oldDescription);
                 }
                 $newEvent->setDescriptions(null);
             }
-            /**@var EasyRdf_Resource[] $descriptionArray */
-            $descriptionArray = $eventResource->all("<http://dati.umbria.it/tourism/ontology/descrizione>");
-            if ($descriptionArray != null) {
+
+            $sparqlResult->rewind();
+            if ($sparqlResult->valid() ) {
                 $tempDescriptions = array();
-                $cnt = 0;
-                foreach ($descriptionArray as $descriptionResource) {
-                    if ($descriptionResource->get("<http://dati.umbria.it/tourism/ontology/titolo>") != null &&
-                        $descriptionResource->get("<http://dati.umbria.it/tourism/ontology/titolo>")->getLang() == "it"
-                    ) {
-                        $descriptionText = ($p = $descriptionResource->get("<http://dati.umbria.it/tourism/ontology/text>")) != null ? $p->getValue() : null;
-                        $descriptionTitle = $descriptionResource->get("<http://dati.umbria.it/tourism/ontology/titolo>")->getValue();
-                        $descriptionObject = new EventDescription();
-                        $descriptionObject->setTitle($descriptionTitle);
-                        $descriptionObject->setText($descriptionText);
-                        $descriptionObject->setEvent($newEvent);
-                        $tempDescriptions[$cnt] = $descriptionObject;
-                        $cnt++;
-                    }
-                }
-                if (count($tempDescriptions) > 0) {
-                    $newEvent->setDescriptions($tempDescriptions);
-                }
+                $descriptionTitle = null;
+                $descriptionText = null;
+            if($sparqlResult->current()->label->getLang() == "it"){
+                $descriptionTitle = $sparqlResult->current()->label->getValue();
             }
+            if($sparqlResult->current()->descr->getLang() == "it"){
+                $descriptionText = $sparqlResult->current()->descr->getValue();
+            }
+            $descriptionObject = new EventDescription();
+            $descriptionObject->setTitle($descriptionTitle);
+            $descriptionObject->setText($descriptionText);
+            $descriptionObject->setEvent($newEvent);
+            $tempDescriptions[0] = $descriptionObject;
+            $newEvent->setDescriptions($tempDescriptions);
+            }
+
         }
         return $newEvent;
+
     }
 
     /**
@@ -909,16 +963,16 @@ WHERE{
                 $newProposal->setDescriptions(null);
             }
             /**@var EasyRdf_Resource[] $descriptionArray */
-            $descriptionArray = $proposalResource->all("<http://dati.umbria.it/tourism/ontology/descrizione>");
+            $descriptionArray = $proposalResource->all("<http://dati.umbria.it/tourism/ontology/testo>");
             if ($descriptionArray != null) {
                 $tempDescriptions = array();
                 $cnt = 0;
                 foreach ($descriptionArray as $descriptionResource) {
-                    if ($descriptionResource->get("<http://dati.umbria.it/tourism/ontology/testo>") != null &&
-                        $descriptionResource->get("<http://dati.umbria.it/tourism/ontology/testo>")->getLang() == "it"
+                    if ($descriptionResource->getValue() != null &&
+                        $descriptionResource->getLang() == "it"
                     ) {
-                        $descriptionTitle = ($p = $descriptionResource->get("<http://dati.umbria.it/tourism/ontology/titolo>")) != null ? $p->getValue() : null;
-                        $descriptionText = $descriptionResource->get("<http://dati.umbria.it/tourism/ontology/testo>")->getValue();
+                        $descriptionTitle = (($p = $proposalResource->get("<http://www.w3.org/2000/01/rdf-schema#label>")) != null ? $p->getValue() : null);
+                        $descriptionText = $descriptionResource->getValue();
                         $descriptionObject = new ProposalDescription();
                         $descriptionObject->setTitle($descriptionTitle);
                         $descriptionObject->setText($descriptionText);
@@ -931,8 +985,9 @@ WHERE{
                     $newProposal->setDescriptions($tempDescriptions);
                 }
             }
+
+            return $newProposal;
         }
-        return $newProposal;
     }
 
     /**
@@ -965,6 +1020,130 @@ WHERE{
 
         }
         return $newTravelAgency;
+    }
+    private function createOrUpdateTouristLocation($TouristLocationResource)
+    {
+        $TouristLocationRepo = $this->em->getRepository('UmbriaOpenApiBundle:Tourism\GraphsEntities\TouristLocation');
+        /** @var TouristLocation $newTouristLocation */
+        $newLocation = null;
+        $uri = $TouristLocationResource->getUri();
+        $sparqlClient = new EasyRdf_Sparql_Client("https://odn.regione.umbria.it/sparql");
+        if ($uri != null) {
+            $oldTouristLocation = $TouristLocationRepo->find($uri);
+            $isAlreadyPersisted = $oldTouristLocation != null;
+            if ($isAlreadyPersisted) {
+                $newTouristLocation = $oldTouristLocation;
+            } else {
+                $newTouristLocation = new TouristLocation();
+            }
+
+            $newTouristLocation->setUri($uri);
+            $this->mapName($TouristLocationResource, $newTouristLocation);
+            $query = "SELECT ?label ?typology ?resourceOriginUrl ?units ?beds ?toilets ?cir ?postalcode ?istat ?addressLocality ?addressRegion ?streetAddress ?coordx ?coordy
+					FROM <http://dati.umbria.it/graph/locazioni-turistiche>
+		WHERE {
+					OPTIONAL{<" . $uri . "> <http://dati.umbria.it/base/ontology/tipologia> ?typology}.
+					OPTIONAL{<" . $uri . "> <http://schema.org/web> ?resourceOriginUrl}.
+					OPTIONAL{<" . $uri . "> <http://dati.umbria.it/base/ontology/numeroUnita> ?units}.
+					OPTIONAL{<" . $uri . "> <http://dati.umbria.it/base/ontology/numeroLetti> ?beds}.
+					OPTIONAL{<" . $uri . "> <http://dati.umbria.it/base/ontology/numeroBagni> ?toilets}.
+					OPTIONAL{<" . $uri . "> <http://dati.umbria.it/base/ontology/cir> ?cir}.
+					OPTIONAL{<" . $uri . "> <http://www.w3.org/2000/01/rdf-schema#label> ?label}.
+					OPTIONAL{<" . $uri . "> <http://www.w3.org/2000/01/rdf-schema#comment> ?comment}.
+					OPTIONAL{<" . $uri . "> <http://schema.org/address> ?uri}.
+					OPTIONAL{?uri <http://schema.org/postalCode> ?postalcode}.
+					OPTIONAL{?uri <http://dbpedia.org/ontology/istat> ?istat}.
+					OPTIONAL{?uri <http://schema.org/addressLocality> ?addressLocality}.
+					OPTIONAL{?uri <http://schema.org/addressRegion> ?addressRegion}.
+					OPTIONAL{?uri <http://schema.org/streetAddress> ?streetAddress}.
+					OPTIONAL{<" . $uri . "> <http://dati.umbria.it/base/ontology/localizzazione> ?uricoord}.
+					OPTIONAL{?uricoord <http://dati.umbria.it/base/ontology/coordy> ?coordy}.
+					OPTIONAL{?uricoord <http://dati.umbria.it/base/ontology/coordx> ?coordx}. 
+			}limit 1";
+            $sparqlResult = $sparqlClient->query($query);
+            $sparqlResult->rewind();
+            if ($sparqlResult->valid()) {
+                try {
+                    if (isset($sparqlResult->current()->resourceOriginUrl)) $newTouristLocation->setResourceOriginUrl($sparqlResult->current()->resourceOriginUrl->getValue());
+                    if (isset($sparqlResult->current()->typology)) $newTouristLocation->setTypology($sparqlResult->current()->typology->getValue());
+                    if (isset($sparqlResult->current()->units)){
+                        $cu = $sparqlResult->current()->units;
+                        if(strcmp($cu, "http://linked.opendata.cz/ontology/odcs/tabular/blank-cell") == 0){
+                            $newTouristLocation->setUnits(null);
+                        }else {
+                            $newTouristLocation->setUnits($sparqlResult->current()->units->getValue());
+                        }
+                    }
+                    else{
+                        $newTouristLocation->setUnits(null);
+                    }
+                    if (isset($sparqlResult->current()->beds)){
+                        $cb = $sparqlResult->current()->beds;
+                        if(strcmp($cb, "http://linked.opendata.cz/ontology/odcs/tabular/blank-cell") == 0){
+                            $newTouristLocation>setBeds(null);
+                        }else {
+                            $newTouristLocation->setBeds($sparqlResult->current()->beds->getValue());
+                        }
+                    }
+                    else{
+                        $newTouristLocation->setBeds(null);
+                    }
+                    if (isset($sparqlResult->current()->toilets)){
+                        $ct = $sparqlResult->current()->toilets;
+                        if(strcmp($ct, "http://linked.opendata.cz/ontology/odcs/tabular/blank-cell") == 0){
+                            $newTouristLocation->setToilets(null);
+                        }else {
+                            $newTouristLocation->setToilets($sparqlResult->current()->toilets->getValue());
+                        }
+                    }
+                    else{
+                        $newTouristLocation->setToilets(null);
+                    }
+
+                    if (isset($sparqlResult->current()->cir)) $newTouristLocation->setCir($sparqlResult->current()->cir->getValue());
+                    $tempAddress = new Address();
+                    $currentAddress = $sparqlResult->current();
+                    $tempAddress->setPostalCode(isset($currentAddress->postalCode) ? $currentAddress->postalCode->getValue() : null);
+                    $tempAddress->setIstat(isset($currentAddress->istat) ? $currentAddress->istat->getValue() : null);
+                    $tempAddress->setAddressLocality(isset($currentAddress->addressLocality) ? $currentAddress->addressLocality->getValue() : null);
+                    $tempAddress->setAddressRegion(isset($currentAddress->addressRegion) ? $currentAddress->addressRegion->getValue() : null);
+                    $tempAddress->setStreetAddress(isset($currentAddress->streetAddress) ? $currentAddress->streetAddress->getValue() : null);
+                    if (isset($currentAddress->coordy)){
+                        $cy = $currentAddress->coordy;
+                        if(strcmp($cy, "http://linked.opendata.cz/ontology/odcs/tabular/blank-cell") == 0){
+                            $tempAddress->setLat(43.0000);
+                        }else {
+                            $tempAddress->setLat($currentAddress->coordy->getValue());
+                        }
+                    }
+                    else{
+                        $tempAddress->setLat(43.0000);
+                    }
+                    if(isset($currentAddress->coordx)){
+                        $cx = $currentAddress->coordx;
+                        if(strcmp($cx, "http://linked.opendata.cz/ontology/odcs/tabular/blank-cell") == 0){
+                            $tempAddress->setLng(12.0000);
+                        }else{
+                            $tempAddress->setLng($currentAddress->coordx->getValue());
+                        }
+                    }
+                    else{
+                        $tempAddress->setLng(12.0000);
+                    }
+                    $newTouristLocation->setAddress($tempAddress);
+                }
+                catch (Throwable $t) {
+                    $t->getMessage();
+                    $this->get('logger')->error('Error getting values from: ' . $t);
+                }
+                catch (Exception $e) {
+                    $e->getMessage();
+                    $this->get('logger')->error('Error getting values from: ' . $e);
+                }
+            }
+        }
+        return $newTouristLocation;
+
     }
 
 
@@ -1133,10 +1312,10 @@ WHERE{
                 $entity->setLng($addressObject->getLng());
             } else {
                 // Google Maps Api --------------------------
-                $url = 'http://maps.google.com/maps/api/geocode/json?address=' . urlencode($addressObject->getStreetAddress()) .
+                $url = 'http://maps.google.com/maps/api/geocode/json?address=' . $addressObject->getStreetAddress() .
                     '+' . $addressObject->getPostalCode() .
                     '+' . $addressObject->getAddressLocality() .
-                    '+' . $addressObject->getAddressRegion() . '+Umbria+Italia';
+                    '+' . $addressObject->getAddressRegion() . '+Umbria+Italia&key=AIzaSyCUhLUsc6u6hiWzn8r9PYhIq-hqS-hHHn4';
 
                 $resp = json_decode($this->getWebResource($url), true);
 
@@ -1210,7 +1389,10 @@ WHERE{
 
     private function getGraphURLByEntityType($entityType)
     {
-        if ($entityType == "accomodation") return "";
+        if ($entityType == "accomodation" or $entityType == "tourist_location" or $entityType == "event")
+        {
+            return "";
+        }
         else {
             return $this->container->getParameter($entityType . "_graph_url");
         }
@@ -1234,6 +1416,12 @@ WHERE{
                 break;
             }
             if ($entityType == 'accomodation') {
+                $isValidType = true;
+            }
+            if ($entityType == 'tourist_location') {
+            $isValidType = true;
+            }
+            if ($entityType == 'event') {
                 $isValidType = true;
             }
         }
@@ -1261,24 +1449,30 @@ WHERE{
                 return "TravelAgency";
             case 'accomodation':
                 return "Accomodation";
+            case 'tourist_location':
+                return "TouristLocation";
         }
     }
 
     private function send_error_mail($entityType)
     {
+        require_once '/var/www/umbriaopenapi/vendor/autoload.php';
         try {
+            $transport = (new \Swift_SmtpTransport('smtp.umbriadigitale.it', 25));
+
+            $mailer = new \Swift_Mailer($transport);
+
             $message = (new \Swift_Message('Umbriaopenapi update error'))
-                ->setFrom('send@example.com')
-                ->setTo('recipient@example.com')
+                ->setFrom(['umbriaopenapi_sys@noreply.it' => 'UmbriaOpenApi'])
+                ->setTo('progettazione.opendata@umbriadigitale.it')
                 ->setBody(
-                    "Update error: " . $entityType,
+                    "Errore durante l'aggiornamento di: " . $entityType,
                     'text/plain'
                 );
-
-            $mailer->send($message);
+            $result = $mailer->send($message);
+            $this->get('logger')->error("Mail sent:" . $result);
         } catch (Throwable $t) {
             $this->get('logger')->error("Mail error:" . $t->getTraceAsString());
         }
-
     }
 }

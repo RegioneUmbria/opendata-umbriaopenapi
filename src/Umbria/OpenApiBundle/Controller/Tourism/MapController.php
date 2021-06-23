@@ -35,6 +35,7 @@ class MapController extends Controller
     private $iatRepo;
     private $accomodationRepo;
     private $sportFacilityRepo;
+    private $touristLocationRepo;
 
 
     /**
@@ -54,6 +55,7 @@ class MapController extends Controller
         $this->iatRepo = $em->getRepository('UmbriaOpenApiBundle:Tourism\GraphsEntities\Iat');
         $this->accomodationRepo = $em->getRepository('UmbriaOpenApiBundle:Tourism\GraphsEntities\Accomodation');
         $this->sportFacilityRepo = $em->getRepository('UmbriaOpenApiBundle:Tourism\GraphsEntities\SportFacility');
+        $this->touristLocationRepo = $em->getRepository('UmbriaOpenApiBundle:Tourism\GraphsEntities\TouristLocation');
     }
 
     public function indexAction()
@@ -69,6 +71,7 @@ class MapController extends Controller
         $iats = array();
         $accomodations = array();
         $sportFacilities = array();
+        $touristLocations = array();
 
             /** @var Attractor $attractor */
         foreach ($this->attractorRepo->findAll() as $attractor) {
@@ -268,11 +271,36 @@ class MapController extends Controller
             }
         }
 
+        foreach ($this->touristLocationRepo->findAll() as $touristLocation) {
+            if (isset($touristLocation) && !$touristLocation->isDeleted()) {
+                $place = new PlaceDetails();
+                $place->setId($touristLocation->getId());
+                $place->setName($touristLocation->getName());
+                $place->setType('tourism_tourist_location');
+
+                if ($touristLocation->getAddress() != null &&
+                    $touristLocation->getAddress()->getLat() != null && $touristLocation->getAddress()->getLat() != 0
+                ) {
+                    $place->setLatitude($touristLocation->getAddress()->getLat());
+                    $place->setLongitude($touristLocation->getAddress()->getLng());
+                }
+
+                $uri = $this->get('router')->generate('tourist_location_show', array(
+                    'id' => $touristLocation->getId(),
+                ), UrlGeneratorInterface::ABSOLUTE_URL);
+                $place->setHref($uri);
+
+                if ($place->getLatitude() != '') {
+                    $touristLocations[] = $place;
+                }
+            }
+        }
+
         return $this->render('UmbriaOpenApiBundle:Map:index.html.twig', array(
             'attrattori' => $attrattori, 'proposte' => $proposte, 'eventi' => $eventi,
             'agenzieViaggio' => $agenzieViaggio, 'professioni' => $professioni, 'consorzi' => $consorzi,
             'iat' => $iats, 'accomodation' => $accomodations,
-            'sportFacility' => $sportFacilities
+            'sportFacility' => $sportFacilities, 'touristLocation' => $touristLocations
         ));
     }
 }

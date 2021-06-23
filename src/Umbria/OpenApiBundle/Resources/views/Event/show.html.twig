@@ -6,17 +6,19 @@
             <div class="page-header">
                 <h2>
                     {{ event.name }}
+                    <a href="{{ event.uri }}" target="_blank">
+                        <span class="glyphicon glyphicon-link pull-right" aria-hidden="true"></span>
+                    </a>
+                    <small>
+                        {{ event.comment|raw }}
+                    </small>
                 </h2>
+
             </div>
         </div>
         <div class="row">
             <div class="col-md-7">
-                <h4>{{ event.name }}</h4>
-                <p>
-                    <small>
-                        {{ event.comment }}
-                    </small>
-                </p>
+
                 <br/>
                 <br/>
                 {% for description in event.descriptions %}
@@ -59,7 +61,7 @@
                             <td>
                                 <small>periodo</small>
                             </td>
-                            <td>{{ event.startDate.format("d/m/Y") }} - {{ event.endDate.format("d/m/Y") }}</td>
+                            <td>Dal {{ event.startDate.format("d/m/Y") }} Al {{ event.endDate.format("d/m/Y") }}</td>
                         </tr>
                         </tbody>
                     </table>
@@ -83,10 +85,8 @@
                     </table>
                 </div>
                 <div class="row">
-                    {% for image in event.images %}
-                        <img src="{{ image }}" height="150">
+                        <img src="{{ event.images }}" height="150">
                         <br/>
-                    {% endfor %}
                 </div>
             </div>
         </div>

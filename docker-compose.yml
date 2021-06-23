@@ -4,9 +4,10 @@ services:
     image: mysql:5.6
     container_name: mysql
     environment:
-      MYSQL_ALLOW_EMPTY_PASSWORD: 1
-      MYSQL_USER: root
-      MYSQL_PASSWORD:
+      MYSQL_DATABASE: 'db_prova_openapi'
+      #MYSQL_ALLOW_EMPTY_PASSWORD: 1
+      #MYSQL_USER: 'root'
+      MYSQL_ROOT_PASSWORD: 'root'
     ports:
       - 3306:3306
     volumes:
@@ -23,6 +24,8 @@ services:
     volumes:
       - .:/var/www/html/
 
-
-
-
+# aggiunte manualmente 
+    x-environment:
+        &default-environment
+            XDEBUG_ENABLE: "true"
+            DOCKERHOST: host.docker.internal

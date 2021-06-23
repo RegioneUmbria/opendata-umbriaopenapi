@@ -15,7 +15,7 @@ RUN apt-get update && \
         git
 
 RUN docker-php-ext-install zip pdo_mysql
-RUN pecl install xdebug
+RUN pecl install xdebug-2.7.0
 RUN curl --insecure https://getcomposer.org/composer.phar -o /usr/bin/composer && chmod +x /usr/bin/composer
 
 RUN cd /var/www/html

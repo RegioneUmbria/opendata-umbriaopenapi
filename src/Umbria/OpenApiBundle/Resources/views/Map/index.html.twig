@@ -23,7 +23,8 @@
             "tourism_profession": [],
             "tourism_iat": [],
             "tourism_sport_facility": [],
-            "accomodation": []
+            "accomodation": [],
+            "tourism_tourist_location" :[]
         };
 
         // lista delle posizioni
@@ -145,6 +146,20 @@
             {% endfor %}
         ];
 
+        var touristLocation = [
+            {% for entity in touristLocation %}
+            {
+                id: {{ entity.id }},
+                name: "{{ entity.name }}",
+                type: "{{ entity.type }}",
+                latitude: {{ entity.latitude }},
+                longitude: {{ entity.longitude }},
+                latLng: {lat: {{ entity.latitude }}, lng: {{ entity.longitude }}},
+                href: "{{ entity.href }}"
+            },
+            {% endfor %}
+        ];
+
         var mcAttrattori;
         var mcProposte;
         var mcEventi;
@@ -154,6 +169,7 @@
         var mcIat;
         var mcAccomodation;
         var mcSportFacility;
+        var mcTouristLocation;
 
         function initMap() {
             // opzioni mappa
@@ -313,100 +329,122 @@
             var mcOptions9 = {maxZoom: 15, styles: clusterStyles9};
             mcAccomodation = new MarkerClusterer(map, [], mcOptions9);
 
+            var clusterStyles10 = [
+                {
+                    textColor: '#e9967a',
+                    url: '{{ asset('img/map/cluster_marker.png') }}',
+                    height: 52,
+                    width: 53
+                }
+            ];
+            var mcOptions10 = {maxZoom: 15, styles: clusterStyles10};
+            mcTouristLocation = new MarkerClusterer(map, [], mcOptions10);
+
         }
         function initLegend() {
             //legend
             map.controls[google.maps.ControlPosition.RIGHT_BOTTOM].push(
-                    document.getElementById('legend'));
+                document.getElementById('legend'));
 
             var div = document.createElement('div');
             div.innerHTML =
-                    '<div class="legendrow">' +
-                    '<div style="background-color:#DA4F49; width: 10px; height: 10px; display: inline-block"></div> ' +
-                    '<span class="legendlabel">Attrattori</span> ' +
-                    '<input id="tourism_attractor_cb" class="legendcheckbox" type="checkbox" ' +
-                    'onchange="updateMarkers(\'tourism_attractor\')" checked="checked">' +
-                    '</div>';
+                '<div class="legendrow">' +
+                '<div style="background-color:#DA4F49; width: 10px; height: 10px; display: inline-block"></div> ' +
+                '<span class="legendlabel">Attrattori</span> ' +
+                '<input id="tourism_attractor_cb" class="legendcheckbox" type="checkbox" ' +
+                'onchange="updateMarkers(\'tourism_attractor\')" checked="checked">' +
+                '</div>';
             legend.appendChild(div);
 
             var div = document.createElement('div');
             div.innerHTML =
-                    '<div class="legendrow">' +
-                    '<div style="background-color:#FAA732; width: 10px; height: 10px; display: inline-block"></div> ' +
-                    '<span class="legendlabel">Proposte</span>' +
-                    '<input id="tourism_proposal_cb" class="legendcheckbox" type="checkbox" ' +
-                    'onchange="updateMarkers(\'tourism_proposal\')" >' +
-                    '</div>';
+                '<div class="legendrow">' +
+                '<div style="background-color:#FAA732; width: 10px; height: 10px; display: inline-block"></div> ' +
+                '<span class="legendlabel">Proposte</span>' +
+                '<input id="tourism_proposal_cb" class="legendcheckbox" type="checkbox" ' +
+                'onchange="updateMarkers(\'tourism_proposal\')" >' +
+                '</div>';
             legend.appendChild(div);
 
             var div = document.createElement('div');
             div.innerHTML =
-                    '<div class="legendrow">' +
-                    '<div style="background-color:#5BB75B; width: 10px; height: 10px; display: inline-block"></div> ' +
-                    '<span class="legendlabel">Eventi</span>' +
-                    '<input id="tourism_event_cb" class="legendcheckbox" type="checkbox" ' +
-                    'onchange="updateMarkers(\'tourism_event\')" checked="checked">' +
-                    '</div>';
+                '<div class="legendrow">' +
+                '<div style="background-color:#5BB75B; width: 10px; height: 10px; display: inline-block"></div> ' +
+                '<span class="legendlabel">Eventi</span>' +
+                '<input id="tourism_event_cb" class="legendcheckbox" type="checkbox" ' +
+                'onchange="updateMarkers(\'tourism_event\')" checked="checked">' +
+                '</div>';
             legend.appendChild(div);
 
             var div = document.createElement('div');
             div.innerHTML =
-                    '<div class="legendrow">' +
-                    '<div style="background-color:#EFE926; width: 10px; height: 10px; display: inline-block"></div> ' +
-                    '<span class="legendlabel">Agenzie di viaggio</span>' +
-                    '<input id="tourism_travel_agency_cb" class="legendcheckbox" type="checkbox" ' +
-                    'onchange="updateMarkers(\'tourism_travel_agency\')" >' +
-                    '</div>';
+                '<div class="legendrow">' +
+                '<div style="background-color:#EFE926; width: 10px; height: 10px; display: inline-block"></div> ' +
+                '<span class="legendlabel">Agenzie di viaggio</span>' +
+                '<input id="tourism_travel_agency_cb" class="legendcheckbox" type="checkbox" ' +
+                'onchange="updateMarkers(\'tourism_travel_agency\')" >' +
+                '</div>';
             legend.appendChild(div);
 
             var div = document.createElement('div');
             div.innerHTML =
-                    '<div class="legendrow">' +
-                    '<div style="background-color:#8824B2; width: 10px; height: 10px; display: inline-block"></div> ' +
-                    '<span class="legendlabel">Consorzi</span>' +
-                    '<input id="tourism_consortium_cb" class="legendcheckbox" type="checkbox" ' +
-                    'onchange="updateMarkers(\'tourism_consortium\')" >' +
-                    '</div>';
+                '<div class="legendrow">' +
+                '<div style="background-color:#8824B2; width: 10px; height: 10px; display: inline-block"></div> ' +
+                '<span class="legendlabel">Consorzi</span>' +
+                '<input id="tourism_consortium_cb" class="legendcheckbox" type="checkbox" ' +
+                'onchange="updateMarkers(\'tourism_consortium\')" >' +
+                '</div>';
             legend.appendChild(div);
 
             var div = document.createElement('div');
             div.innerHTML =
-                    '<div class="legendrow">' +
-                    '<div style="background-color:#3D94EA; width: 10px; height: 10px; display: inline-block"></div> ' +
-                    '<span class="legendlabel">Professioni turistiche</span>' +
-                    '<input id="tourism_profession_cb" class="legendcheckbox" type="checkbox" ' +
-                    'onchange="updateMarkers(\'tourism_profession\')" >' +
-                    '</div>';
+                '<div class="legendrow">' +
+                '<div style="background-color:#3D94EA; width: 10px; height: 10px; display: inline-block"></div> ' +
+                '<span class="legendlabel">Professioni turistiche</span>' +
+                '<input id="tourism_profession_cb" class="legendcheckbox" type="checkbox" ' +
+                'onchange="updateMarkers(\'tourism_profession\')" >' +
+                '</div>';
             legend.appendChild(div);
 
             var div = document.createElement('div');
             div.innerHTML =
-                    '<div class="legendrow">' +
-                    '<div style="background-color:#006DCC; width: 10px; height: 10px; display: inline-block"></div> ' +
-                    '<span class="legendlabel">Iat </span>' +
-                    '<input id="tourism_iat_cb" class="legendcheckbox" type="checkbox"' +
-                    'onchange="updateMarkers(\'tourism_iat\')">' +
-                    '</div>';
+                '<div class="legendrow">' +
+                '<div style="background-color:#006DCC; width: 10px; height: 10px; display: inline-block"></div> ' +
+                '<span class="legendlabel">Iat </span>' +
+                '<input id="tourism_iat_cb" class="legendcheckbox" type="checkbox"' +
+                'onchange="updateMarkers(\'tourism_iat\')">' +
+                '</div>';
             legend.appendChild(div);
 
             var div = document.createElement('div');
             div.innerHTML =
-                    '<div class="legendrow">' +
-                    '<div style="background-color:#525052; width: 10px; height: 10px; display: inline-block"></div> ' +
-                    '<span class="legendlabel">Impianti Sportivi </span>' +
-                    '<input id="tourism_sport_facility_cb" class="legendcheckbox" type="checkbox"' +
-                    'onchange="updateMarkers(\'tourism_sport_facility\')">' +
-                    '</div>';
+                '<div class="legendrow">' +
+                '<div style="background-color:#525052; width: 10px; height: 10px; display: inline-block"></div> ' +
+                '<span class="legendlabel">Impianti Sportivi </span>' +
+                '<input id="tourism_sport_facility_cb" class="legendcheckbox" type="checkbox"' +
+                'onchange="updateMarkers(\'tourism_sport_facility\')">' +
+                '</div>';
             legend.appendChild(div);
 
             var div = document.createElement('div');
             div.innerHTML =
-                    '<div class="legendrow">' +
-                    '<div style="background-color:#fa6603; width: 10px; height: 10px; display: inline-block"></div> ' +
-                    '<span class="legendlabel">Strutture Ricettive </span>' +
-                    '<input id="accomodation_cb" class="legendcheckbox" type="checkbox"' +
-                    'onchange="updateMarkers(\'accomodation\')">' +
-                    '</div>';
+                '<div class="legendrow">' +
+                '<div style="background-color:#fa6603; width: 10px; height: 10px; display: inline-block"></div> ' +
+                '<span class="legendlabel">Strutture Ricettive </span>' +
+                '<input id="accomodation_cb" class="legendcheckbox" type="checkbox"' +
+                'onchange="updateMarkers(\'accomodation\')">' +
+                '</div>';
+            legend.appendChild(div);
+            setLayerFromCookies();
+
+            var div = document.createElement('div');
+            div.innerHTML =
+                '<div class="legendrow">' +
+                '<div style="background-color:#e9967a; width: 10px; height: 10px; display: inline-block"></div> ' +
+                '<span class="legendlabel">Locazioni Turistiche </span>' +
+                '<input id="tourism_tourist_location_cb" class="legendcheckbox" type="checkbox"' +
+                'onchange="updateMarkers(\'tourism_tourist_location\')">' +
+                '</div>';
             legend.appendChild(div);
             setLayerFromCookies();
         }
@@ -447,6 +485,7 @@
                 document.getElementById("tourism_iat_cb").checked = false;
                 document.getElementById("tourism_sport_facility_cb").checked = false;
                 document.getElementById("accomodation_cb").checked = false;
+                document.getElementById("tourism_tourist_location_cb").checked = false;
                 document.getElementById(layer).checked = true;
             }
 
@@ -481,13 +520,13 @@
             mc.addMarker(marker);
 
             var contentString = '<div id="content">' +
-                    '<h5>' +
-                    name +
-                    '</h5>' +
-                    '<a  href="' +
-                    href +
-                    '">show</a>' +
-                    '</div>';
+                '<h5>' +
+                name +
+                '</h5>' +
+                '<a  href="' +
+                href +
+                '">show</a>' +
+                '</div>';
 
             // infowindow
             var infowindow = new google.maps.InfoWindow({
@@ -548,6 +587,7 @@
                 tourism_profession: 0,
                 tourism_iat: 0,
                 tourism_sport_facility: 0,
+                tourism_tourist_location: 0,
                 accomodation: 0
             };
 
@@ -577,6 +617,9 @@
             }
             if (document.getElementById("accomodation_cb").checked) {
                 selectedPOI.accomodation = 1;
+            }
+            if (document.getElementById("tourism_tourist_location_cb").checked) {
+                selectedPOI.tourism_tourist_location = 1;
             }
             return selectedPOI;
         }
@@ -620,6 +663,11 @@
                 selectedPOI[cnt] = "accomodation";
                 cnt++;
             }
+            if (document.getElementById("tourism_tourist_location_cb").checked) {
+                selectedPOI[cnt] = "tourism_tourist_location";
+                cnt++;
+            }
+
             return selectedPOI;
         }
 
@@ -667,7 +715,11 @@
                 return sportFacility;
             } else if (type == 'accomodation') {
                 return accomodation;
+            } else if (type == 'tourism_tourist_location') {
+                return touristLocation;
             }
+
+
             return [];
         }
 
@@ -690,7 +742,10 @@
                 return mcSportFacility;
             } else if (type == 'accomodation') {
                 return mcAccomodation;
+            } else if (type == 'tourism_tourist_location') {
+                return mcTouristLocation;
             }
+
             return [];
         }
 
@@ -714,7 +769,10 @@
                 markerIcon = '{{ asset('img/map/marker_football_grey.png') }}';
             } else if (type == 'accomodation') {
                 markerIcon = '{{ asset('img/map/marker_star_orange_dark.png') }}';
+            } else if (type == 'tourism_tourist_location') {
+                markerIcon = '{{ asset('img/map/marker_star_orange.png') }}';
             }
+
             return markerIcon;
         }
 
@@ -737,6 +795,8 @@
                 return markerGroups.tourism_sport_facility;
             } else if (type == 'accomodation') {
                 return markerGroups.accomodation;
+            } else if (type == 'tourism_tourist_location') {
+                return markerGroups.tourism_tourist_location;
             }
             return [];
         }
@@ -774,11 +834,14 @@
             } else if (type == 'tourism_sport_facility') {
                 if (document.getElementById("tourism_sport_facility_cb").checked)
                     return true;
-            }
-            else if (type == 'accomodation') {
+            } else if (type == 'accomodation') {
                 if (document.getElementById("accomodation_cb").checked)
                     return true;
+            } else if (type == 'tourism_tourist_location') {
+                if (document.getElementById("tourism_tourist_location_cb").checked)
+                    return true;
             }
+
             return false;
         }
 
@@ -803,7 +866,7 @@
             }
          }*/
 
-
     </script>
-    <script async defer src="https://maps.googleapis.com/maps/api/js?callback=initMap"></script>
+    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCUhLUsc6u6hiWzn8r9PYhIq-hqS-hHHn4&callback=initMap">
+    </script>
 {% endblock %}

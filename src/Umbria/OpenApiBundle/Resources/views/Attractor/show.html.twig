@@ -6,23 +6,21 @@
             <div class="page-header">
                 <h2>
                     {{ attractor.name }}
-                    <small>
-                        {{ attractor.shortDescription|raw }}
-                    </small>
+
                     <a href="{{ attractor.uri }}" target="_blank">
                         <span class="glyphicon glyphicon-link pull-right" aria-hidden="true"></span>
                     </a>
+                    <small>
+                        {{ attractor.shortDescription|raw }}
+                    </small>
                 </h2>
+
             </div>
         </div>
         <div class="row">
             <div class="col-md-7">
                 <h4>{{ attractor.textTitle }}</h4>
                 <p>
-                    <small>
-                        {{ attractor.comment|raw }}
-                    </small>
-                    <br/>
                     <br/>
                     {% for description in attractor.descriptions %}
                         {{ description.title|raw }}

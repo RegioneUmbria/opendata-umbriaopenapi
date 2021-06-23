@@ -10,10 +10,10 @@ parameters:
     attractor_graph_url : http://dati.umbria.it/dataset/ab39e23d-540f-4aa1-b27f-3fb244837545/resource/df1012df-04d4-4666-acd1-d756d3b1c903/download/attrattori.rdf
     attractor_type_uri: http://linkedgeodata.org/ontology/Attraction
 
-    event_graph_url: http://dati.umbria.it/dataset/410faa97-546b-4362-a6d7-f8794d18ed19/resource/0b15587e-fe50-4db5-86ab-14e3d50c0a82/download/eventi.rdf
+    #event_graph_url: http://dati.umbria.it/dataset/410faa97-546b-4362-a6d7-f8794d18ed19/resource/0b15587e-fe50-4db5-86ab-14e3d50c0a82/download/eventi.rdf
     event_type_uri: http://schema.org/Event
 
-    travel_agency_graph_url: http://dati.umbria.it/dataset/84d1bd8f-ec95-404c-93c8-81ce2e4705ab/resource/acbc5c8a-7c7c-42de-99d1-02da0f653895/download/agenzieturistiche.rdf
+    travel_agency_graph_url: http://dati.umbria.it/dataset/84d1bd8f-ec95-404c-93c8-81ce2e4705ab/resource/dab9d875-0b6c-42e0-9f12-be8599772730/download/agenzieturistiche.rdf
     travel_agency_type_uri: http://dati.umbria.it/tourism/ontology/agenzia_viaggio
 
     consortium_graph_url: http://dati.umbria.it/dataset/826515b8-a19d-4496-99af-e3b9967db130/resource/9ba67744-e844-4ea4-896d-9990ed751982/download/consorzi.rdf
@@ -25,10 +25,13 @@ parameters:
     iat_graph_url: http://dati.umbria.it/dataset/32cca8e8-4e6e-43ed-b7df-2f577de8ac4d/resource/4bc8be8f-52f1-440a-a7b7-2860b9611be7/download/iat.rdf
     iat_type_uri: http://dati.umbria.it/tourism/ontology/iat
 
-    sport_facility_graph_url: http://dati.umbria.it/dataset/c2b4592f-618f-41eb-a37d-f0fc74200441/resource/d7699464-3b02-46cd-baff-6780a2c76643/download/impiantisportivigeocoded.rdf
+    sport_facility_graph_url: http://dati.umbria.it/dataset/c2b4592f-618f-41eb-a37d-f0fc74200441/resource/915d49ae-e973-4d2e-828f-03918060830e/download/impiantisportivi.rdf
     sport_facility_type_uri: http://dbpedia.org/ontology/sportFacility
 
     accomodation_type_uri: http://purl.org/acco/ns#Accomodation
+
+    #tourist_location_graph_uri: http://dati.umbria.it/dataset/8f550838-e5b3-4cd1-b0dd-de90910d2e85/resource/aa958554-9bb6-45ad-a23a-7c5d88ec1354/download/elencolocazionituristiche.rdf
+    tourist_location_type_uri: http://purl.org/acco/ns#House
 
 services:
     umbria_open_api.filter_bag:

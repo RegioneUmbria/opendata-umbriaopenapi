@@ -35,33 +35,52 @@
                 <hr>
                 <p>
                 <h4>Contatti</h4>
-                {% for phone in accomodation.telephone %}
-                        <span title="Telefono">Telefono:</span> {{ phone }}<br>
-                    {% endfor %}
-                {% for faxNumber in accomodation.fax %}
-                        <span title="Fax">Fax:</span> {{ faxNumber }}<br>
-                    {% endfor %}
-                {% for mbox in accomodation.email %}
-                        <span title="Email">Email:</span> {{ mbox }}<br>
-                    {% endfor %}
-                {% for homepage in accomodation.resourceOriginUrl %}
-                        <span title="Homepage">Homepage:</span> {{ homepage }}<br>
-                    {% endfor %}
+                {% if accomodation.telephone is not null %}
+                        <span title="Telefono">Telefono:</span> {{ accomodation.telephone }}<br>
+                {% else %}
+                    <span title="Telefono">Telefono:</span> -<br>
+                {% endif %}
+
+                {% if accomodation.fax != " " %}
+                        <span title="Fax">Fax:</span> {{ accomodation.fax }}<br>
+                {% else %}
+                    <span title="Fax">Fax:</span> -<br>
+                {% endif %}
+
+                {% if accomodation.email != " " %}
+                        <span title="Email">Email:</span> {{ accomodation.email }}<br>
+                {% else %}
+                    <span title="Email">Email:</span> -<br>
+                {% endif %}
+                {% if accomodation.resourceOriginUrl != " " %}
+                    <span title="Homepage">Homepage:</span> {{ accomodation.resourceOriginUrl }}<br>
+                {% else %}
+                    <span title="Homepage">Homepage:</span> -<br>
+                {% endif %}
                 </p>
                 <hr>
                 <p>
                 <h4>Caratteristiche</h4>
                 {% if accomodation.units is not null %}
-                    <span title="Unità">Unità:</span>{{ accomodation.units }}
+                    <span title="Unità">Unità: </span>{{ accomodation.units }}
                     {% endif %}
                     <br>
                 {% if accomodation.beds is not null %}
-                    <span title="Letti">Letti:</span>{{ accomodation.beds }}
+                    <span title="Letti">Letti: </span>{{ accomodation.beds }}
                     {% endif %}
                     <br>
                 {% if accomodation.toilets is not null %}
-                    <span title="Bagni">Bagni:</span>{{ accomodation.toilets }}
+                    <span title="Bagni">Bagni: </span>{{ accomodation.toilets }}
                     {% endif %}
+                </p>
+                <hr>
+                <p>
+                    <h4>CIR</h4>
+                        {% if accomodation.cir is not null %}
+                            {{ accomodation.cir }}
+                        {% else %}
+                             -
+                        {% endif %}
                 </p>
             </div>
             <div class="col-md-5">
@@ -86,7 +105,6 @@
                             </td>
                             <td>
                                 {% if accomodation.address is not null and accomodation.address.lat is not null %}
-                                    <small>umbria:</small>
                                     <a href="{{ path('umbria_open_api_map') }}"
                                        onclick="setCoordCookie({{ accomodation.address.lat }},{{ accomodation.address.lng }},'accomodation_cb')">
                                         {{ accomodation.address.lat }},{{ accomodation.address.lng }}

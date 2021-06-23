@@ -182,7 +182,7 @@ class AttractorController extends Controller
         $filters = $this->filterBag->getFilterBag($request);
         $offset = $filters->has('start') ? $filters->get('start') : 0;
         $limit = $filters->has('limit') ? $filters->get('limit') : self::DEFAULT_PAGE_SIZE;
-        $labelLike = $filters->has('label_like') ? $filters->get('label_like') : null;
+        $labelLike = $filters->has('title_like') ? $filters->get('label_like') : null;
         $descriptionLike = $filters->has('descriptions_like') ? $filters->get('descriptions_like') : null;
         $categoryLike = $filters->has('category_like') ? $filters->get('category_like') : null;
         $latMax = $filters->has('lat_max') && $filters->get('lat_max') ? floatval($filters->get('lat_max')) : null;

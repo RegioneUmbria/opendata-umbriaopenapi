@@ -83,15 +83,14 @@ class AccomodationController extends Controller
         $repository = $this->getDoctrine()
             ->getRepository('UmbriaOpenApiBundle:Tourism\GraphsEntities\Accomodation');
         $qb = $repository->createQueryBuilder('a');
-        $qb
+        $query = $qb
             ->andWhere($qb->expr()->like('a.name', '?1'))
-            ->setParameter(1, '%' . $text . '%');
-
-        $qb->andWhere($qb->expr()->eq('a.isDeleted', '0'));
+            ->setParameter(1, '%' . $text . '%')
+            ->andWhere($qb->expr()->eq('a.isDeleted', '0'));
 
         $paginator = $this->get('knp_paginator');
         $pagination = $paginator->paginate(
-            $qb, /* query NOT result */
+            $query, /* query NOT result */
             $request->query->getInt('page', 1)/*page number*/,
             $itemsOnPage/*limit per page*/
         );
@@ -192,20 +191,21 @@ class AccomodationController extends Controller
         $page = floor($offset / $limit) + 1;
 
         $qb = $this->em->createQueryBuilder();
-        $qb
+        $builder = $qb
             ->select('a')
             ->from('UmbriaOpenApiBundle:Tourism\GraphsEntities\Accomodation', 'a');
 
 
         if ($labelLike != null) {
-            $qb
+            $builder = $qb
                 ->andWhere($qb->expr()->like('a.name', '?2'))
                 ->setParameter(2, $labelLike);
         }
 
 
         if ($categoryLike != null) {
-            $qb->leftJoin('a.categories', 'cat')
+            $builder = $qb
+                ->leftJoin('a.categories', 'cat')
                 ->andWhere(
                     $qb->expr()->like('cat.name', ':categoryLike')
                 )
@@ -219,9 +219,10 @@ class AccomodationController extends Controller
             $lngMin != null ||
             $addressLocality != null
         ) {
-            $qb->join('a.address', 'address');
+            $builder = $qb->join('a.address', 'address');
             if ($latMax != null) {
-                $qb->andWhere(
+                $builder =
+                    $qb-> andWhere(
                         $qb->expr()->lte("address.lat", ':latMax'),
                         $qb->expr()->isNotNull("address.lat"),
                         $qb->expr()->gt("address.lat", ':empty')
@@ -230,7 +231,8 @@ class AccomodationController extends Controller
                         ->setParameter('empty', '0');
             }
             if ($latMin != null) {
-                $qb->andWhere(
+                $builder =
+                    $qb->andWhere(
                         $qb->expr()->gte("address.lat", ':latMin'),
                         $qb->expr()->isNotNull("address.lat"),
                         $qb->expr()->gt("address.lat", ":empty")
@@ -239,42 +241,39 @@ class AccomodationController extends Controller
                         ->setParameter('empty', '0');
             }
             if ($lngMax != null) {
-                $qb->andWhere(
-                        $qb->expr()->lte("address.lng", ':lngMax'),
-                        $qb->expr()->isNotNull("address.lng"),
-                        $qb->expr()->gt("address.lng", ":empty")
-                    )
-                        ->setParameter('lngMax', $lngMax)
-                        ->setParameter('empty', '0');
+                $builder = $qb->andWhere(
+                    $qb->expr()->lte("address.lng", ':lngMax'),
+                    $qb->expr()->isNotNull("address.lng"),
+                    $qb->expr()->gt("address.lng", ":empty")
+                )
+                    ->setParameter('lngMax', $lngMax)
+                    ->setParameter('empty', '0');
             }
             if ($lngMin != null) {
-                $qb->andWhere(
-                        $qb->expr()->gte("address.lng", ':lngMin'),
-                        $qb->expr()->isNotNull("address.lng"),
-                        $qb->expr()->gt("address.lng", ":empty")
-                    )
-                        ->setParameter('lngMin', $lngMin)
-                        ->setParameter('empty', '0');
+                $builder = $qb->andWhere(
+                    $qb->expr()->gte("address.lng", ':lngMin'),
+                    $qb->expr()->isNotNull("address.lng"),
+                    $qb->expr()->gt("address.lng", ":empty")
+                )
+                    ->setParameter('lngMin', $lngMin)
+                    ->setParameter('empty', '0');
             }
             if ($addressLocality != null) {
-                $qb->andWhere(
+                $builder = $qb->andWhere(
                     $qb->expr()->like("address.addressLocality", ":addressLocality")
                 )->setParameter('addressLocality', '%' . $addressLocality . '%');
             }
         }
-        $qb->andWhere($qb->expr()->eq('a.isDeleted', '0'));
+        $builder = $qb->andWhere($qb->expr()->eq('a.isDeleted', '0'));
         /** @var AbstractPagination $resultsPagination */
-        $resultsPagination = $this->paginator->paginate($qb, $page, $limit);
+        $resultsPagination = $this->paginator->paginate($builder, $page, $limit);
         /** @var AbstractPagination $countPagination */
-        $countPagination = $this->paginator->paginate($qb, 1, 1);
+        $countPagination = $this->paginator->paginate($builder, 1, 1);
 
 
         $view = new View(new EntityResponse($resultsPagination->getItems(), count($resultsPagination), $countPagination->getTotalItemCount()));
 
         return $view;
     }
-
-
-
 
 }

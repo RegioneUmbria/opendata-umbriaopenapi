@@ -21,9 +21,8 @@ class ServiziInReteController extends BaseController
     public function executeSparqlQueryAction()
     {
         $options = array('query' => $_POST['query'], 'format' => "application/sparql-results+json");
-        $response = $this->postWebResource("http://dati.umbria.it/sparql", $options);
+        $response = $this->postWebResource("https://odn.regione.umbria.it/sparql", $options);
         return new JsonResponse(array('data' => $response));
     }
-
 
 }

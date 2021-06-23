@@ -19,10 +19,6 @@
             <div class="col-md-7">
                 <h4>{{ proposal.textTitle }}</h4>
                 <p>
-                    <small>
-                        {{ proposal.comment|raw }}
-                    </small>
-                    <br/>
                     <br/>
                     {% for description in proposal.descriptions %}
                         {{ description.title|raw }}

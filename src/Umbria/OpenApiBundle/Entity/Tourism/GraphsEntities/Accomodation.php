@@ -64,16 +64,16 @@ class Accomodation
     private $categories;
 
     /**
-     * @var array
+     * @var string
      *
-     * @ORM\Column(name="email", type="array", nullable=true)
+     * @ORM\Column(name="email", type="string", length=255, nullable=true)
      */
     private $email;
 
     /**
-     * @var array
+     * @var string
      *
-     * @ORM\Column(name="telephone", type="array", nullable=true)
+     * @ORM\Column(name="telephone",type="string", length=255, nullable=true)
      */
     private $telephone;
 
@@ -85,9 +85,9 @@ class Accomodation
     private $resourceOriginUrl;
 
     /**
-     * @var array
+     * @var string
      *
-     * @ORM\Column(name="fax", type="array", nullable=true)
+     * @ORM\Column(name="fax",type="string", length=255, nullable=true)
      */
     private $fax;
 
@@ -111,6 +111,13 @@ class Accomodation
      * @ORM\Column(name="toilets", type="integer", nullable=true)
      */
     private $toilets;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="cir", type="string", length=255, nullable=true)
+     */
+    private $cir;
 
     /**
      * @var Address
@@ -144,6 +151,8 @@ class Accomodation
      **/
     private $isInError;
 
+
+
     /**
      * Set uri
      *
@@ -151,6 +160,7 @@ class Accomodation
      *
      * @return Accomodation
      */
+
     public function setUri($uri)
     {
         $this->uri = $uri;
@@ -284,7 +294,7 @@ class Accomodation
     /**
      * Set telephone
      *
-     * @param array $telephone
+     * @param string $telephone
      *
      * @return Accomodation
      */
@@ -298,11 +308,37 @@ class Accomodation
     /**
      * Get telephone
      *
-     * @return array
+     * @return string
      */
     public function getTelephone()
     {
         return $this->telephone;
+    }
+
+    /**
+     * Set Cir
+     *
+     * @param string $cir
+     *
+     * @return Accomodation
+     */
+
+    public function setCir($cir)
+    {
+        $this->cir = $cir;
+
+        return $this;
+    }
+
+    /**
+     * Get Cir
+     *
+     * @return string
+     */
+
+    public function getCir(){
+
+        return $this->cir;
     }
 
     /**
@@ -332,7 +368,7 @@ class Accomodation
     /**
      * Set fax
      *
-     * @param array $fax
+     * @param string $fax
      *
      * @return Accomodation
      */
@@ -346,7 +382,7 @@ class Accomodation
     /**
      * Get fax
      *
-     * @return array
+     * @return string
      */
     public function getFax()
     {
@@ -400,6 +436,8 @@ class Accomodation
     {
         $this->toilets = $toilets;
     }
+
+
 
     /**
      * @return Address
@@ -478,4 +516,6 @@ class Accomodation
     {
         $this->isInError = $isInError;
     }
+
+
 }
