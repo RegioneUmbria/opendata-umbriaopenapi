@@ -713,10 +713,8 @@ class EntitiesUpdateController extends BaseController
                 if (isset($sparqlResult->current()->municipality)) $newEvent->setMunicipality($sparqlResult->current()->municipality->getValue());
                 if (isset($sparqlResult->current()->resourceOriginUrl)) $newEvent->setResourceOriginUrl($sparqlResult->current()->resourceOriginUrl->getValue());
                 if (isset($sparqlResult->current()->imgcopertina)) $newEvent->setImages($sparqlResult->current()->imgcopertina->getValue());
-                if (isset($sparqlResult->current()->ttesto)){
-                    if($sparqlResult->current()->ttesto->getLang() == "it"){
+                if (isset($sparqlResult->current()->ttesto) and $sparqlResult->current()->ttesto->getLang() == "it"){
                         $newEvent->setComment($sparqlResult->current()->ttesto->getValue());
-                    }
                 }
             }
             if ($isAlreadyPersisted && ($oldDescriptions = $newEvent->getDescriptions()) != null) {
