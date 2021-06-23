@@ -695,10 +695,8 @@ class EntitiesUpdateController extends BaseController
             $sparqlResult = $sparqlClient->query($query);
             $sparqlResult->rewind();
             if ($sparqlResult->valid()) {
-                if (isset($sparqlResult->current()->label)) {
-                    if($sparqlResult->current()->label->getLang() == "it"){
+                if (isset($sparqlResult->current()->label) and $sparqlResult->current()->label->getLang() == "it"){
                         $newEvent->setName($sparqlResult->current()->label->getValue());
-                    }
                 }
                 if (isset($sparqlResult->current()->startDate)){
                    $variable = $sparqlResult->current()->startDate->getValue();
