@@ -733,10 +733,10 @@ class EntitiesUpdateController extends BaseController
                 $tempDescriptions = array();
                 $descriptionTitle = null;
                 $descriptionText = null;
-            if($sparqlResult->current()->label->getLang() == "it"){
+            if(isset($sparqlResult->current()->label) and $sparqlResult->current()->label->getLang() == "it"){
                 $descriptionTitle = $sparqlResult->current()->label->getValue();
             }
-            if($sparqlResult->current()->descr->getLang() == "it"){
+            if(isset($sparqlResult->current()->descr) and $sparqlResult->current()->descr->getLang() == "it"){
                 $descriptionText = $sparqlResult->current()->descr->getValue();
             }
             $descriptionObject = new EventDescription();
