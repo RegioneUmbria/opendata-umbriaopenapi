@@ -276,7 +276,6 @@ class EntitiesUpdateController extends BaseController
                     }
                     if ($is_entity_error == true) {
                         $has_error = true;
-
                         try {
                             $this->get('logger')->info("$entity_uri trying to save with state in error");
                             $entity->setLastUpdateAt(new \DateTime('now'));
@@ -690,7 +689,7 @@ class EntitiesUpdateController extends BaseController
 					OPTIONAL{<" . $uri . "> <http://dati.umbria.it/tourism/ontology/immagine_copertina> ?imgcopertina}.
 					OPTIONAL{<" . $uri . "> <http://dati.umbria.it/tourism/ontology/event_description> ?descr}.
 					OPTIONAL{<" . $uri . "> <http://xmlns.com/foaf/0.1/homepage> ?resourceOriginUrl}.
-                   
+                   FILTER langMatches(lang(?descr),'it')
 			}";
             $sparqlResult = $sparqlClient->query($query);
             $sparqlResult->rewind();
@@ -729,12 +728,10 @@ class EntitiesUpdateController extends BaseController
                 $tempDescriptions = array();
                 $descriptionTitle = null;
                 $descriptionText = null;
-            if(isset($sparqlResult->current()->label) and $sparqlResult->current()->label->getLang() == "it"){
+            if (isset($sparqlResult->current()->label) and $sparqlResult->current()->label->getLang() == "it"){
                 $descriptionTitle = $sparqlResult->current()->label->getValue();
             }
-            if(isset($sparqlResult->current()->descr) and $sparqlResult->current()->descr->getLang() == "it"){
-                $descriptionText = $sparqlResult->current()->descr->getValue();
-            }
+            if(isset($sparqlResult->current()->descr)) $descriptionText = $sparqlResult->current()->descr->getValue();
             $descriptionObject = new EventDescription();
             $descriptionObject->setTitle($descriptionTitle);
             $descriptionObject->setText($descriptionText);
