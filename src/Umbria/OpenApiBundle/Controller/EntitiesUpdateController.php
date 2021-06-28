@@ -384,7 +384,7 @@ class EntitiesUpdateController extends BaseController
     private function createOrUpdateAccomodation($accomodationResource)
     {
         $accomodationRepo = $this->em->getRepository('UmbriaOpenApiBundle:Tourism\GraphsEntities\Accomodation');
-        /** @var Attractor $newAttractor */
+        /** @var Accomodation $newAccomodation*/
         $newAccomodation = null;
         $uri = $accomodationResource->getUri();
         $sparqlClient = new EasyRdf_Sparql_Client("https://odn.regione.umbria.it/sparql");
@@ -606,18 +606,22 @@ class EntitiesUpdateController extends BaseController
                 }
             }
 
-            /**@var EasyRdf_Resource[] $sameAsArray */
-            $sameAsArray = $attractorResource->all("<http://www.w3.org/2002/07/owl#sameAs>");
-            if ($sameAsArray != null) {
-                $newAttractor->setSameAs($this->getExternalResources($sameAsArray, "https://dbpedia.org/sparql",
-                    "http://www.w3.org/2000/01/rdf-schema#label", "http://dbpedia.org/ontology/abstract", "http://www.w3.org/ns/prov#wasDerivedFrom"));
+            /** if ($isAlreadyPersisted && ($oldSameAs = $newAttractor->getSameAs()) != null) {
+                foreach ($oldSameAs as $oldSa) {
+                    $this->em->remove($oldSa);
+                }
+
+                $sameAsArray = $attractorResource->all("<http://www.w3.org/2002/07/owl#sameAs>");
+                if ($sameAsArray != null) {
+                    $newAttractor->setSameAs($this->getExternalResources($sameAsArray, "https://dbpedia.org/sparql",
+                        "http://www.w3.org/2000/01/rdf-schema#label", "http://dbpedia.org/ontology/abstract", "http://www.w3.org/ns/prov#wasDerivedFrom"));
+                }
             }
-            /**@var EasyRdf_Resource[] $locatedInArray */
             $locatedInArray = $attractorResource->all("<http://www.geonames.org/ontology#locatedIn>");
             if ($locatedInArray != null) {
                 $newAttractor->setLocatedIn($this->getExternalResources($locatedInArray, "https://dbpedia.org/sparql",
                     "http://www.w3.org/2000/01/rdf-schema#label", "http://dbpedia.org/ontology/abstract", "http://www.w3.org/ns/prov#wasDerivedFrom"));
-            }
+            } */
         }
         return $newAttractor;
     }
