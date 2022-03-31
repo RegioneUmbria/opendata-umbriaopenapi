@@ -1,0 +1,12 @@
+# This file is auto-generated during the composer install
+parameters:
+    database_host: mysql
+    database_port: 3306
+    database_name: umbriaopenapi
+    database_user: root
+    database_password: root
+    mailer_transport: smtp
+    mailer_host: smtp.umbriadigitale.it
+    mailer_user: null
+    mailer_password: null
+    secret: 1b6e8e2b48c9c26eba9db0a78b8402dbd13a80f9
