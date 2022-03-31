@@ -1,7 +1,9 @@
 body {
   padding-top: 70px;
-background-color: #eee;
+  background-color: white;
   font-family: 'Lato', sans-serif;
+  padding-bottom:0px !important;
+  
 }
 
 .relative {
@@ -477,4 +479,13 @@ a.resource_uri button.resource_uri {
 .triple-result-heigth-fixed {
   height: 40px;
   max-height: 40px;
+}
+
+.it-footer-small-prints {
+	background-color:#222;
+	color:white;
+}
+
+.it-footer-small-prints a{
+	color:white !important;
 }

@@ -12,11 +12,13 @@ RUN a2ensite umbriaopenapi_vh.conf
 RUN apt-get update && \
     apt-get install -y \
         zlib1g-dev \
-        git
+		libzip-dev \
+        git	\
+		nano
 
 RUN docker-php-ext-install zip pdo_mysql
-RUN pecl install xdebug-2.7.0
-RUN curl --insecure https://getcomposer.org/composer.phar -o /usr/bin/composer && chmod +x /usr/bin/composer
+RUN pecl install xdebug-3.0.0
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
 RUN cd /var/www/html
 RUN chmod +x install.sh

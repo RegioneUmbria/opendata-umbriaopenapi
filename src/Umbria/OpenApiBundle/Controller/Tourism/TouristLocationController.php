@@ -141,7 +141,7 @@ class TouristLocationController extends Controller
     }
 
     /**
-     * @Rest\Get(pattern="/open-api/tourism-accomodation")
+     * @Rest\Get(pattern="/open-api/tourism-tourist-location")
      *
      * @param Request $request
      *
